@@ -1,0 +1,59 @@
+<div class="container center-content">
+    <form [formGroup]="mainForm">
+      <div formGroupName="loginForm" *ngIf="showlogin">
+        <div class="card">
+          <h4 class="card-header">Login as </h4>
+          <div *ngIf="showmessage" class="textalert">
+            {{this.messagetext}}
+          </div>
+          <div class="card-body">
+  
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <mat-icon class="input-group-text mic-front" id="basic-addon1">person</mat-icon>
+              </div>
+              <input type="text" class="form-control" autocomplete="username" placeholder="Username" aria-label="Username"
+                aria-describedby="basic-addon1" formControlName="username">
+            </div>
+  
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <mat-icon class="input-group-text mic-front" id="basic-addon1">lock</mat-icon>
+              </div>
+              <input type="password" class="form-control" autocomplete="current-password" placeholder="Password"
+                aria-label="Username" aria-describedby="basic-addon1" formControlName="password">
+            </div>
+            <div *ngIf="false" class="pass"><a [routerLink]="" (click)="clikforgetpassword()">Forgot password?</a></div>
+  
+          </div>
+        </div>
+        <button mat-raised-button type="submit" type="submit" [disabled]="!this.mainForm.controls['loginForm'].valid"
+          color="primary" class="submit-btn" (click)="submitForm(1)">
+          Submit</button>
+      </div>
+      <div formGroupName="forgetpasswordForm" *ngIf="showforgetpassword">
+        <button mat-icon-button color="primary" (click)="backtologin()" aria-label="Example icon button with a heart icon">
+          <mat-icon>arrow_back_ios_new</mat-icon>
+          กลับไปหน้า Login
+        </button>
+        <div class="card">
+          <h4 class="card-header">Forget password</h4>
+          <div class="card-body">
+  
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <mat-icon class="input-group-text mic-front" id="basic-addon1">mail</mat-icon>
+              </div>
+              <input type="email" class="form-control" autocomplete="email" placeholder="Email" aria-label="Email"
+                aria-describedby="basic-addon1" formControlName="emailfield">
+            </div>
+            <div>
+              <button mat-raised-button color="primary" type="submit" 
+              [disabled]="!this.mainForm.controls['forgetpasswordForm'].valid" 
+              (click)="confirmemail()">ยืนยัน Email</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>

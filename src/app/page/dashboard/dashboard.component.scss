@@ -1,0 +1,19 @@
+.c-box {
+    display: flex;
+    max-width: 150px;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    margin: 0 auto;
+}
+
+.box {
+    display: flex;
+    justify-content: center;
+    margin: 0.5em auto;
+}
+
+.btn-dashboard-size {
+    min-width: 400px;
+    max-width: 600px;
+}

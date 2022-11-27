@@ -1,0 +1,182 @@
+<form [formGroup]="searchform">
+    <div class="container">
+        <!-- sub Header menu -->
+        <div style="margin-top: 1em;" *ngIf="!(isAdmin$ | async)">
+            <button type="button" mat-raised-button color="primary" (click)="addNewQuotation()" class="btnhome">
+                <mat-icon>add</mat-icon>
+                เพิ่มใบสมัครใหม่
+            </button>
+        </div>
+        <mat-card class="card-header-home" style="margin-top: 1em;">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-sm">
+                            <!-- <div *ngIf="(isAdmin$ | async)"> -->
+                            <div style="margin-right: 1em; display: inline-block;">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>ชื่อลูกค้า</mat-label>
+                                    <input type="text" matInput placeholder="ชื่อลูกค้า" formControlName="customername"
+                                        (change)="onsearchnamechange($event)">
+                                    <mat-error *ngIf="searchform.get('customername')?.errors?.['minlength']">
+                                        กรอกชื่อให้ถูกต้อง
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div style="margin-right: 1em; display: inline;">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>เลขบัตรประชาชน</mat-label>
+                                    <input type="text" matInput placeholder="เลขบัตรประชาชน"
+                                        formControlName="customeridcard" (change)="onsearchidcardchange($event)">
+                                    <mat-error *ngIf="searchform.get('customeridcard')?.errors?.['pattern']">
+                                        กรอกเลบบัตรประชาชนให้ครบ 13 หลัก
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <!-- <div class="form-group" [ngStyle.xs]="{ color: 'blue'}"> -->
+                            <div class="form-group" style="color: blue">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>สถานะใบคำขอ</mat-label>
+                                    <mat-select  formControlName="status">
+                                        <mat-option [value]="undefined" disabled hidden>เลือกสถานะ</mat-option>
+                                        <mat-option *ngFor="let qs of quotationStatus" [value]="qs.status">
+                                            {{qs.statustext}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="col-sm" *ngIf="showrefpaynumbtn">
+                            <div style="margin-right: 1em; display: inline;">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>REF PAY NO.</mat-label>
+                                    <input type="text" matInput placeholder="ref pay no."
+                                        formControlName="refpaynum" (change)="onsearchidrefpaynumchange($event)">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div style="margin-right: 1em; display: inline;">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>สถานะการชำระเงิน</mat-label>
+                                    <mat-select  formControlName="paystatus" (valueChange)="onsearchpaystatuschange($event)">
+                                        <mat-option [value]="undefined" disabled hidden>เลือกสถานะ</mat-option>
+                                        <mat-option *ngFor="let qs of payStatus" [value]="qs.value">
+                                            {{qs.status}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div style="margin-left: 1em; display: inline-block;">
+                                <button type="button" mat-raised-button color="primary" [disabled]="!searchform.valid"
+                                    (click)="onfindsearch()" style="margin-right: 1em;">ค้นหา</button>
+                                <button type="button" mat-raised-button color="primary"
+                                    (click)="clearandrefresh()">clear</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="offset-md-4 col-md-4 mt-4"> -->
+                <!-- <div class="col-md-4 mt-4" style="margin: auto;">
+                    <div class="form-group" [ngStyle.xs]="{ color: 'blue'}">
+                        <mat-form-field appearance="outline">
+                            <mat-label>สถานะใบคำขอ</mat-label>
+                            <mat-select (selectionChange)="onSelectStatus($event)" formControlName="status">
+                                <mat-option [value]="undefined" disabled hidden>เลือกสถานะ</mat-option>
+                                <mat-option *ngFor="let qs of quotationStatus" [value]="qs.status">
+                                    {{qs.statustext}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div> -->
+            </div>
+        </mat-card>
+
+        <!-- <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 sp1em" [ngStyle.xs]="{'width.%': 90}"
+            [ngStyle.sm]="{'width.%': 90}" [ngStyle.lt-sm]="{'width.%': 100}" [ngStyle.gt-sm]="{'width.%': 100}"
+            [ngStyle.lg]="{'width.%': 100}" [ngStyle.xl]="{'width.%': 100}"> -->
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 sp1em" style="width: 90%;">
+            <!-- Position Column -->
+            <ng-container matColumnDef="sequence">
+                <th mat-header-cell *matHeaderCellDef> ลำดับ </th>
+                <td mat-cell *matCellDef="let element">{{element.line_number}}</td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="dateCreate">
+                <th mat-header-cell *matHeaderCellDef> วันที่ </th>
+                <td mat-cell *matCellDef="let element"> {{element.created_time | date}} </td>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="quotationNo">
+                <th mat-header-cell *matHeaderCellDef> เลขที่ </th>
+                <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
+            </ng-container>
+
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="customerName">
+                <th mat-header-cell *matHeaderCellDef> ชื่อผู้สมัคร </th>
+                <td mat-cell *matCellDef="let element"> {{element.first_name}} {{element.last_name}} </td>
+            </ng-container>
+
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="dealerName">
+                <th mat-header-cell *matHeaderCellDef> ชื่อ Dealer </th>
+                <td mat-cell *matCellDef="let element"> {{element.dl_name}} </td>
+            </ng-container>
+
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="branchName">
+                <th mat-header-cell *matHeaderCellDef> สาขา </th>
+                <td mat-cell *matCellDef="let element"> {{element.branch_name}} </td>
+            </ng-container>
+
+            <!-- button -->
+            <ng-container matColumnDef="buttonName">
+                <th mat-header-cell *matHeaderCellDef> </th>
+                <td mat-cell *matCellDef="let element">
+                    <button type="button" mat-raised-button color="primary" (click)="onbtnclick(element.quo_key_app_id, 'info')"> View
+                    </button>
+                    <button *ngIf="(showbypass$ | async)" style="margin-left: 1em;" mat-raised-button color="warm"
+                    type="button" (click)="onbtnclick(element.quo_key_app_id, 'bypass')"> bypass </button>
+
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="canclebtn">
+                <th mat-header-cell *matHeaderCellDef> </th>
+                <td mat-cell *matCellDef="let element">
+                    <button type="button" mat-raised-button color="warn" (click)="cancleCase(element.quo_key_app_id)"
+                        *ngIf="!(isAdmin$ | async)">
+                        ยกเลิก
+                    </button>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="statusName">
+                <th mat-header-cell *matHeaderCellDef> สถานะ </th>
+                <td mat-cell *matCellDef="let element"> {{element._client_quo_status}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;  let i = index"></tr>
+        </table>
+
+        <mat-paginator 
+            [length]="pageLength" 
+            [pageSize]="pageSize" 
+            [hidePageSize]="true"
+            [pageIndex]="pageno-1"
+            (page)="onPaginationChange($event)" 
+            aria-label="Select page">
+        </mat-paginator> 
+    </div>
+</form>

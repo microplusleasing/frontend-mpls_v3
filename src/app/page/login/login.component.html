@@ -1,59 +1,89 @@
 <div class="container center-content">
-    <form [formGroup]="mainForm">
-      <div formGroupName="loginForm" *ngIf="showlogin">
-        <div class="card">
-          <h4 class="card-header">Login as </h4>
-          <div *ngIf="showmessage" class="textalert">
+  <form [formGroup]="mainForm">
+    <div formGroupName="loginForm" *ngIf="showlogin" class="flexbox">
+
+      <div class="example-container nox">
+        <div class="box">
+
+          <mat-form-field appearance="fill" style="width: 100%;">
+            <mat-label>User ID</mat-label>
+            <input matInput formControlName="username" type="username">
+            <mat-error *ngIf="username.invalid">
+              <div *ngIf="this.username.hasError('required')">
+                กรอก User ID
+              </div>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="box">
+          <mat-form-field appearance="fill" style="width: 100%;">
+            <mat-label>รหัสผ่าน</mat-label>
+            <input matInput formControlName="password"
+            [type]="hide ? 'password' : 'text'" autocomplete="on">
+            <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+              <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error *ngIf="this.password.invalid">
+              <div *ngIf="this.password.hasError('required')">
+                กรอกรหัสผ่าน
+              </div>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="box">
+          <mat-form-field appearance="fill" style="width: 100%;">
+            <mat-label>ประเภทการใช้งาน</mat-label>
+            <mat-select formControlName="usertype">
+              <mat-option [value]="null" disabled hidden>เลือกประเภทการใช้งาน</mat-option>
+              <mat-option [value]="1">Checker</mat-option>
+              <mat-option [value]="2">FCR</mat-option>
+              <mat-option [value]="0">Dealer</mat-option>
+            </mat-select>
+            <mat-error *ngIf="this.usertype.invalid">
+              <div *ngIf="this.usertype.hasError('required')">
+                เลือกประเภทการใช้งาน
+              </div>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="box">
+          <mat-error *ngIf="this.showmessage">
             {{this.messagetext}}
-          </div>
-          <div class="card-body">
-  
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <mat-icon class="input-group-text mic-front" id="basic-addon1">person</mat-icon>
-              </div>
-              <input type="text" class="form-control" autocomplete="username" placeholder="Username" aria-label="Username"
-                aria-describedby="basic-addon1" formControlName="username">
-            </div>
-  
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <mat-icon class="input-group-text mic-front" id="basic-addon1">lock</mat-icon>
-              </div>
-              <input type="password" class="form-control" autocomplete="current-password" placeholder="Password"
-                aria-label="Username" aria-describedby="basic-addon1" formControlName="password">
-            </div>
-            <div *ngIf="false" class="pass"><a [routerLink]="" (click)="clikforgetpassword()">Forgot password?</a></div>
-  
-          </div>
+          </mat-error>
         </div>
-        <button mat-raised-button type="submit" type="submit" [disabled]="!this.mainForm.controls['loginForm'].valid"
-          color="primary" class="submit-btn" (click)="submitForm(1)">
-          Submit</button>
+        <div class="box">
+          <button mat-raised-button type="submit" [disabled]="!this.mainForm.controls['loginForm'].valid"
+            color="primary" class="submit-btn" (click)="submitForm()">
+            ยืนยัน</button>
+        </div>
       </div>
-      <div formGroupName="forgetpasswordForm" *ngIf="showforgetpassword">
-        <button mat-icon-button color="primary" (click)="backtologin()" aria-label="Example icon button with a heart icon">
-          <mat-icon>arrow_back_ios_new</mat-icon>
-          กลับไปหน้า Login
-        </button>
-        <div class="card">
-          <h4 class="card-header">Forget password</h4>
-          <div class="card-body">
-  
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <mat-icon class="input-group-text mic-front" id="basic-addon1">mail</mat-icon>
-              </div>
-              <input type="email" class="form-control" autocomplete="email" placeholder="Email" aria-label="Email"
-                aria-describedby="basic-addon1" formControlName="emailfield">
+
+
+    </div>
+    <div formGroupName="forgetpasswordForm" *ngIf="showforgetpassword">
+      <button mat-icon-button color="primary" (click)="backtologin()"
+        aria-label="Example icon button with a heart icon">
+        <mat-icon>arrow_back_ios_new</mat-icon>
+        กลับไปหน้า Login
+      </button>
+      <div class="card">
+        <h4 class="card-header">Forget password</h4>
+        <div class="card-body">
+
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <mat-icon class="input-group-text mic-front" id="basic-addon1">mail</mat-icon>
             </div>
-            <div>
-              <button mat-raised-button color="primary" type="submit" 
-              [disabled]="!this.mainForm.controls['forgetpasswordForm'].valid" 
-              (click)="confirmemail()">ยืนยัน Email</button>
-            </div>
+            <input type="email" class="form-control" autocomplete="email" placeholder="Email" aria-label="Email"
+              aria-describedby="basic-addon1" formControlName="emailfield">
+          </div>
+          <div>
+            <button mat-raised-button color="primary" type="submit"
+              [disabled]="!this.mainForm.controls['forgetpasswordForm'].valid" (click)="confirmemail()">ยืนยัน
+              Email</button>
           </div>
         </div>
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
+</div>

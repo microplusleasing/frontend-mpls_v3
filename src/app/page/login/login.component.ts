@@ -1,5 +1,5 @@
 import { AuthService } from 'src/app/service/auth/auth.service';
-import { UntypedFormControl, UntypedFormGroup, Validators, UntypedFormBuilder, FormGroup, FormControl, FormBuilder } from '@angular/forms';
+import { Validators, FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { Component, Inject } from '@angular/core';
 import { first } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,6 +21,14 @@ export class LoginComponent {
   showchangepassword: boolean
   showforgetpassword: boolean
 
+  // === delare form control here ===
+  username = new FormControl<string>('', Validators.required)
+  password = new FormControl<string>('', Validators.required)
+  usertype = new FormControl(null, Validators.required)
+
+  // === hide password status ===
+  hide = true;
+  
   constructor(
 
     private authService: AuthService,
@@ -31,13 +39,14 @@ export class LoginComponent {
   ) {
     this.mainForm = this.fb.group({
       loginForm: this.fb.group({
-        username: new FormControl<string>('', Validators.required),
-        password: new FormControl<string>('', Validators.required)
+        username: this.username,
+        password: this.password,
+        usertype: this.usertype
       }),
       changepasswordForm: this.fb.group({
         oldpassword: new FormControl<string>('', Validators.required),
         newpassword: new FormControl<string>('', Validators.required),
-        retypenewpassword: new FormControl<string>('', Validators.required)
+        retypenewpassword: new FormControl(Validators.required)
       }),
       forgetpasswordForm: this.fb.group({
         emailfield: new FormControl<string>('', [
@@ -71,32 +80,33 @@ export class LoginComponent {
     }
   }
 
-  submitForm(type: number) {
+  submitForm() {
     const data = {
       username: this.mainForm.get('loginForm.username')?.value,
-      password: this.mainForm.get('loginForm.password')?.value
+      password: this.mainForm.get('loginForm.password')?.value,
+      usertype: this.mainForm.get('loginForm.usertype')?.value
     }
 
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
-    this.authService.login(data.username, data.password, type)
+    this.authService.login(data.username, data.password, data.usertype)
       .pipe(first())
       .subscribe({
-        next: (data) => {
-          if (data.status == 200) {
+        next: (result) => {
+          if (result.status == 200) {
             // === contain user in database ==== 
             if (this.returnUrl == '/') {
-              if (type == 1) {
+              if (data.usertype == 1) {
                 this.router.navigate(['/quotation-view']);
 
-              } else if (type == 2) {
+              } else if (data.usertype == 2) {
                 this.router.navigate(['/quotation-view']);
               }
             } else {
               // this.router.navigate([this.returnUrl]);
               this.router.navigateByUrl(this.returnUrl)
             }
-          } else if (data.status == 201) {
+          } else if (result.status == 201) {
             // === Not found user id on database
             this.messagetext = `ไม่เจอผู้ใช้งานในระบบ หรือรหัสผ่านไม่ถูกต้อง`
             this.showmessage = true;

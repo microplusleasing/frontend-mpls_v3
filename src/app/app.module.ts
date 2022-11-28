@@ -8,7 +8,6 @@ import { FormGroupDirective, FormsModule, ReactiveFormsModule } from '@angular/f
 import { MaterialModule } from './module/material/material.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgxSpinnerModule } from "ngx-spinner";
-import { MainComponent } from './page/main/main.component';
 import { QuotationViewComponent } from './page/quotation-view/quotation-view.component';
 import { QuotationDetailComponent } from './page/quotation-detail/quotation-detail.component';
 import { HeaderComponent } from './widget/header/header.component';
@@ -18,18 +17,19 @@ import { InformationDialogComponent } from './widget/dialog/information-dialog/i
 import { JwtInterceptor } from './interceptor/jwt.interceptor';
 import { LoadingInterceptor } from './interceptor/loading.interceptor';
 import { DashboardComponent } from './page/dashboard/dashboard.component';
+import { NotFoundComponent } from './page/not-found/not-found.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MainComponent,
     QuotationViewComponent,
     QuotationDetailComponent,
     HeaderComponent,
     MainDialogComponent,
     LoginComponent,
     InformationDialogComponent,
-    DashboardComponent
+    DashboardComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,

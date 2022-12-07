@@ -1,1 +1,20 @@
-<p>quotation-detail works!</p>
+<form [formGroup]="quoForm">
+    <mat-stepper labelPosition="bottom" [orientation]="(stepperOrientation | async)!" [linear]="isLinear" #stepper
+        (selectionChange)="changeStage($event)">
+        <mat-step [stepControl]="this.cizcardtab.cizForm">
+            <mat-divider></mat-divider>
+            <ng-template matStepLabel>ข้อมูลบัตรประชาชน</ng-template>
+            <app-ciz-card-tab [quotationReq]="quotationResult$" (dipchipRes)="recieve_dipchipData($event)">
+            </app-ciz-card-tab>
+            <div *ngIf="this.cizcardtab.cizForm.valid">
+                <div class="flex-center">
+                    <button mat-raised-button color="primary" matStepperNext type="button">Next</button>
+                </div>
+            </div>
+        </mat-step>
+        <mat-step [stepControl]="this.productdetailtab.productForm">
+            <ng-template matStepLabel>ข้อมูลผลิตภัณฑ์/วงเงินสินเชื่อ</ng-template>
+            <app-product-detail-tab [quotationReq]="quotationResult$"></app-product-detail-tab>
+        </mat-step>
+    </mat-stepper>
+</form>

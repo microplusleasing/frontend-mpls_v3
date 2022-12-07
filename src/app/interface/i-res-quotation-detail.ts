@@ -245,6 +245,7 @@ export interface IResQuotationDetailData {
     ciz_stayed_year: number;
     ciz_stayed_month: number;
     ciz_maried_status: number;
+    ciz_quo_stage: number;
 
 
 }

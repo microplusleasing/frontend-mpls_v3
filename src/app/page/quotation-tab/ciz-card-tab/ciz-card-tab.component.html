@@ -1,0 +1,334 @@
+<div class="form-container">
+  <form [formGroup]="cizForm">
+    <div class="flexbox"> 
+      <button mat-raised-button color="primary" (click)="onClickDipchipBtn()">Dipchip</button>
+    </div>
+    <div class="flex-image-header">
+        <img [src]="cizCardImage" class="img-box">
+        <img [src]="cameraImage" class="img-box">
+    </div>
+    <div class="flexbox">
+      <mat-form-field appearance="fill">
+        <mat-select required formControlName="titleCode">
+          <mat-option [value]="null" disabled hidden>เลือกคำนำหน้า</mat-option>
+          <mat-option *ngFor="let item of masterTitle.data" [value]="item.title_id">{{item.title_name}}</mat-option>
+        </mat-select>
+        <mat-label>
+          คำนำหน้า
+        </mat-label>
+        <mat-error *ngIf="this.titleCode.invalid">กรุณากรอกคำนำหน้า</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>ชื่อ</mat-label>
+        <input matInput required formControlName="firstName">
+        <mat-error *ngIf="this.firstName.invalid">กรุณากรอกชื่อ</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>นามสกุล</mat-label>
+        <input matInput required formControlName="lastName">
+        <mat-error *ngIf="this.lastName.invalid">กรุณากรอกนามสกุล</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-select required formControlName="gender">
+          <mat-option [value]="null" disabled hidden>เลือกคำนำหน้า</mat-option>
+          <mat-option *ngFor="let item of masterGender" [value]="item.value">{{item.name}}</mat-option>
+        </mat-select>
+        <mat-label>
+          เพศ
+        </mat-label>
+        <mat-error *ngIf="this.gender.invalid">กรุณากรอกเพศ</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>เบอร์โทรศัพท์</mat-label>
+        <input matInput required formControlName="phoneNumber">
+        <mat-error *ngIf="this.phoneNumber.invalid">กรุณากรอกเบอร์โทรศัพท์</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput required formControlName="email">
+        <mat-error *ngIf="this.email.invalid">กรุณากรอก Email</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>เลขบัตรประชาชน</mat-label>
+        <input matInput required formControlName="citizenId">
+        <mat-error *ngIf="this.citizenId.invalid">กรุณากรอกเลขบัตรประชาชน</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>วันเกิด</mat-label>
+        <input matInput required type="date" formControlName="birthDate">
+        <mat-error *ngIf="this.birthDate.invalid">กรุณากรอกวันเกิด</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>วันที่ออกบัตร</mat-label>
+        <input matInput required type="date" formControlName="issueDate">
+        <mat-error *ngIf="this.issueDate.invalid">กรุณากรอกวันที่ออกบัตร</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>วันบัตรหมดอายุ</mat-label>
+        <input matInput required type="date" formControlName="expireDate">
+        <mat-error *ngIf="this.expireDate.invalid">กรุณากรอกวันบัตรหมดอายุ</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>สถานที่ออกบัตร</mat-label>
+        <input matInput required formControlName="issuePlace">
+        <mat-error *ngIf="this.issuePlace.invalid">กรุณากรอกสถานที่ออกบัตร</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>สถานภาพ</mat-label>
+        <input matInput required formControlName="mariedStatus">
+        <mat-error *ngIf="this.mariedStatus.invalid">กรุณากรอกสถานภาพ</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>ชื่อเล่น</mat-label>
+        <input matInput required formControlName="nickName">
+        <mat-error *ngIf="this.nickName.invalid">กรุณากรอกชื่อเล่น</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>ลักษณะที่พักอาศัย</mat-label>
+        <input matInput required formControlName="houseType">
+        <mat-error *ngIf="this.houseType.invalid">กรุณากรอกลักษณะที่พักอาศัย</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>จำนวนปีที่พักอาศัย</mat-label>
+        <input matInput required type="number" formControlName="stayedYear">
+        <mat-error *ngIf="this.stayedYear.invalid">กรุณากรอกจำนวนปีที่พักอาศัย</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>จำนวนเดือนที่พักอาศัย</mat-label>
+        <input matInput required formControlName="stayedMonth">
+        <mat-error *ngIf="this.stayedMonth.invalid">กรุณากรอกจำนวนเดือนที่พักอาศัย</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>กรรมสิทธิ์ที่พักอาศัย</mat-label>
+        <input matInput required formControlName="houseOwnerType">
+        <mat-error *ngIf="this.houseOwnerType.invalid">กรุณากรอกกรรมสิทธิ์ที่พักอาศัย</mat-error>
+      </mat-form-field>
+
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="header-left">
+      ที่อยู่ตามบัตรประชาชน
+    </div>
+
+    <div class="flexbox">
+      <mat-form-field appearance="fill">
+        <mat-label>ที่อยู่</mat-label>
+        <input matInput required formControlName="address">
+        <mat-error *ngIf="this.address.invalid">กรุณากรอกที่อยู่</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>แขวง/ตำบล</mat-label>
+        <input matInput required formControlName="subDistrict">
+        <mat-error *ngIf="this.subDistrict.invalid">กรุณากรอก แขวง/ตำบล</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>เขต/อำเภอ</mat-label>
+        <input matInput required formControlName="district">
+        <mat-error *ngIf="this.district.invalid">กรุณากรอก เขต/อำเภอ</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-select required formControlName="provinceName">
+          <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
+          <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_name">{{item.prov_name}}</mat-option>
+        </mat-select>
+        <mat-label>
+          จังหวัด
+        </mat-label>
+        <mat-error *ngIf="this.provinceName.invalid">กรุณากรอกจังหวัด</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>รหัสไปรษณีย์</mat-label>
+        <input matInput required formControlName="postalCode">
+        <mat-error *ngIf="this.postalCode.invalid">กรุณากรอกรหัสไปรษณีย์</mat-error>
+      </mat-form-field>
+
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- ที่อยู่ปัจจุบัน -->
+    <div formGroupName="livingAddress">
+      <div class="header-left">
+        ที่อยู่ปัจจุบัน
+      </div>
+      <div class="flexbox">
+        <mat-form-field appearance="fill">
+          <mat-label>ที่อยู่</mat-label>
+          <input matInput formControlName="address">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>แขวง/ตำบล</mat-label>
+          <input matInput formControlName="subDistrict">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>เขต/อำเภอ</mat-label>
+          <input matInput formControlName="district">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-select formControlName="provinceName">
+            <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
+            <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_name">{{item.prov_name}}
+            </mat-option>
+          </mat-select>
+          <mat-label>
+            จังหวัด
+          </mat-label>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>รหัสไปรษณีย์</mat-label>
+          <input matInput formControlName="postalCode">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- ที่อยู่ส่งจดหมาย-->
+    <div formGroupName="contactAddress">
+      <div class="header-left">
+        ที่อยู่ส่งจดหมาย
+      </div>
+      <div class="flexbox">
+        <mat-form-field appearance="fill">
+          <mat-label>ที่อยู่</mat-label>
+          <input matInput formControlName="address">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>แขวง/ตำบล</mat-label>
+          <input matInput formControlName="subDistrict">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>เขต/อำเภอ</mat-label>
+          <input matInput formControlName="district">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-select formControlName="provinceName">
+            <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
+            <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_name">{{item.prov_name}}
+            </mat-option>
+          </mat-select>
+          <mat-label>
+            จังหวัด
+          </mat-label>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>รหัสไปรษณีย์</mat-label>
+          <input matInput formControlName="postalCode">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- ที่อยู่ตามทะเบียนบ้าน-->
+    <div formGroupName="houseRegisAddress">
+      <div class="header-left">
+        ที่อยู่ตามทะเบียนบ้าน
+      </div>
+      <div class="flexbox">
+        <mat-form-field appearance="fill">
+          <mat-label>ที่อยู่</mat-label>
+          <input matInput formControlName="address">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>แขวง/ตำบล</mat-label>
+          <input matInput formControlName="subDistrict">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>เขต/อำเภอ</mat-label>
+          <input matInput formControlName="district">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-select formControlName="provinceName">
+            <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
+            <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_name">{{item.prov_name}}
+            </mat-option>
+          </mat-select>
+          <mat-label>
+            จังหวัด
+          </mat-label>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>รหัสไปรษณีย์</mat-label>
+          <input matInput formControlName="postalCode">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- ที่อยู่ที่ทำงาน-->
+    <div formGroupName="workAddress">
+      <div class="header-left">
+        ที่อยู่ที่ทำงาน
+      </div>
+      <div class="flexbox">
+        <mat-form-field appearance="fill">
+          <mat-label>ที่อยู่</mat-label>
+          <input matInput formControlName="address">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>แขวง/ตำบล</mat-label>
+          <input matInput formControlName="subDistrict">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>เขต/อำเภอ</mat-label>
+          <input matInput formControlName="district">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-select formControlName="provinceName">
+            <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
+            <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_name">{{item.prov_name}}
+            </mat-option>
+          </mat-select>
+          <mat-label>
+            จังหวัด
+          </mat-label>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>รหัสไปรษณีย์</mat-label>
+          <input matInput formControlName="postalCode">
+        </mat-form-field>
+      </div>
+    </div>
+
+  </form>
+</div>

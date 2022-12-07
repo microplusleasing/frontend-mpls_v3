@@ -18,7 +18,9 @@ export const environment = {
   smsserviceallow: 0,
   carcheck: 'web-repos-uat.microplusleasing.com',
   carcheckapi: 'api-repos-uat.microplusleasing.com',
-  carcheckport: ''
+  carcheckport: '',
+
+  citizen_card_img_preload: '/assets/image/placeholder-image.png'
 };
 
 // === build UAT === 

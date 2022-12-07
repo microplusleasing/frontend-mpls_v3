@@ -45,16 +45,11 @@ interface Status {
 export class QuotationViewComponent implements OnInit {
   searchform: FormGroup;
   dataListTemp: IResQuotationView = {} as IResQuotationView;
-  // dataList: any;
-  // dataSource: any;
   pageEvent: PageEvent = new PageEvent;
   pageLength: number = 0;
   pageSize: number = 0;
   dataList: any;
   dataSource = new MatTableDataSource;
-  // pageEvent = new BehaviorSubject<PageEvent>( {} as PageEvent)
-  // pageLength = new BehaviorSubject<number>(0)
-  // pageSize = new BehaviorSubject<number>(10)
   displayedColumns: string[] = [
     'sequence',
     'dateCreate',
@@ -99,7 +94,8 @@ export class QuotationViewComponent implements OnInit {
     private masterDataService: MasterDataService,
     private fb: FormBuilder,
     private userService: UserService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private loadingService: LoadingService
   ) {
     this.searchform = this.fb.group({
       status: new FormControl(),
@@ -172,7 +168,9 @@ export class QuotationViewComponent implements OnInit {
   }
 
   async afteroninit() {
-    // const resultListQuotation = await lastValueFrom(this.quotationService.getquotationbypage(1, '', { searchidcard: '', searchname: '' }))
+
+    this.loadingService.showLoader();
+
     this.quotationService.getquotationbypage(1, '', { searchidcard: '', searchname: '', searchrefpaynum: '', searchpaystatus: '' }).subscribe({
       next: (resultListQuotation) => {
 
@@ -212,7 +210,7 @@ export class QuotationViewComponent implements OnInit {
       }, error: (err) => {
         console.log(`errr : ${err.error.message}`)
       }, complete: async () => {
-
+        this.loadingService.hideLoader();
       }
     })
 
@@ -267,6 +265,8 @@ export class QuotationViewComponent implements OnInit {
         break;
     }
 
+    this.loadingService.showLoader();
+    
     this.quotationService.getquotationbypage(
       pageno,
       searchstatus,
@@ -315,7 +315,7 @@ export class QuotationViewComponent implements OnInit {
       }, error: (err) => {
         console.log(`errr : ${err.error.message}`)
       }, complete: async () => {
-
+        this.loadingService.hideLoader()
       }
     })
 
@@ -394,6 +394,8 @@ export class QuotationViewComponent implements OnInit {
 
     const params = { searchname, searchidcard, searchrefpaynum, searchpaystatus } as ISearchQuotation
 
+    this.loadingService.showLoader()
+
     this.quotationService.getquotationbypage(1, searchStatus, params).pipe(
       map((resultListQuotation: IResQuotationView) => {
         resultListQuotation.data.map((items) => {
@@ -425,7 +427,13 @@ export class QuotationViewComponent implements OnInit {
         this.pageLength = this.dataListTemp.rowcount
         this.pageSize = this.dataListTemp.pagesize
       })
-    ).subscribe()
+    ).subscribe({next: (results) => {
+
+    }, error: (e) => {
+
+    }, complete: () => {
+      this.loadingService.hideLoader()
+    }})
   }
 
   onsearchnamechange($event: any) {

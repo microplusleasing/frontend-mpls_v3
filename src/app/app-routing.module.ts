@@ -12,6 +12,7 @@ const routes: Routes = [
   { path:'login', component: LoginComponent },
   { path:'quotation-view', component: QuotationViewComponent, canActivate: [AuthGuardService]},
   { path:'quotation-detail', component: QuotationDetailComponent, canActivate: [AuthGuardService]},
+  { path: 'quotation-detail/:id', component: QuotationDetailComponent, canActivate: [AuthGuardService] },
   { path: 'notfound', component: NotFoundComponent},
   { path: '**',   redirectTo: 'notfound', pathMatch: 'full' },
 ];

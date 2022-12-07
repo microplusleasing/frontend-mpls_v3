@@ -10,7 +10,9 @@ export const environment = {
   smsserviceallow: 1,
   carcheck: 'web-repos.microplusleasing.com', // wait for sub-domain confirm
   carcheckapi: 'api-repos.microplusleasing.com',
-  carcheckport: ''
+  carcheckport: '',
+
+  citizen_card_img_preload: '/assets/image/placeholder-image.png'
 };
 
 

@@ -11,6 +11,11 @@ import { Injectable } from '@angular/core';
 import { IResDopaStatus } from '../interface/i-res-dopa-status';
 import { IReqSaveQrMrta } from '../interface/i-req-save-qr-mrta';
 import { IResSaveQrMrta } from '../interface/i-res-save-qr-mrta';
+import { IReqOtpLog } from '../interface/i-req-otp-log';
+import { IResOtpLog } from '../interface/i-res-otp-log';
+import { IResPhonenumberValid } from '../interface/i-res-phonenumber-valid';
+import { IReqValidationPhonenumber } from '../interface/i-req-validation-phonenumber';
+import { IResValidationPhonenumber } from '../interface/i-res-validation-phonenumber';
 
 
 @Injectable({
@@ -18,7 +23,13 @@ import { IResSaveQrMrta } from '../interface/i-res-save-qr-mrta';
 })
 export class QuotationService {
 
-  dopastatus: string = '';
+  dopastatus: {
+    message: string,
+    status: boolean 
+  } = {
+    message: '',
+    status: false
+  }
 
   constructor(
     private http: HttpClient
@@ -47,7 +58,6 @@ export class QuotationService {
   }
 
   createquotation(formData: FormData) {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/quotation`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/quotation`
     return this.http.post<IResQuotationView>(url, formData)
   }
@@ -67,58 +77,50 @@ export class QuotationService {
   }
 
   updatequotationimageonlyinsert(formData: FormData) {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/updateQuotationImageonlyinsert`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/updateQuotationImageonlyinsert`
     return this.http.post<IResQuotationView>(url, formData)
   }
 
   canclequotation(quotationid: string) {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/canclequotation/${quotationid}`;
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/canclequotation/${quotationid}`;
     return this.http.get<IResBasic>(url);
   }
 
   getquotationbyid(id: string) {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/quotationbyid/${id}`;
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/quotationbyid/${id}`;
     return this.http.get<IResQuotationDetail>(url);
   }
 
 
   bypasssignature(formData: FormData) {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/bypassquotation`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/bypassquotation`
     return this.http.post<IResBasic>(url, formData)
   }
 
   bypasssignaturebychecker(formData: FormData) {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/bypassquotationbychecker`
+
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/bypassquotationbychecker`
     return this.http.post<IResBasic>(url, formData)
   }
 
   sendcardeliver(formData: FormData) {
     // === deprecate replace by sendcardeliverandconsent (19/08/2022) ===
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/attachdeliverapprove`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/attachdeliverapprove`
     return this.http.post<IResBasic>(url, formData)
   }
 
   sendcardeliverandconsent(formData: FormData) {
     // === new function replace sendcardeliver (19/08/2022) ===
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/attachdeliverapprove`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/attachdeliverapproveandconsent`
     return this.http.post<IResBasic>(url, formData)
   }
 
   getsendcardeliverbyid(quotation_id: string): Observable<IResBasicImage> {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getattachimagedeliverbyid/${quotation_id}`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getattachimagedeliverbyid/${quotation_id}`
     return this.http.get<IResBasicImage>(url)
   }
 
   getinsurancedetailbyid(applicationid: string): Observable<IResInsurance> {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getattachimagedeliverbyid/${quotation_id}`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getinsurancedetailbyid?applicationid=${applicationid}`
     return this.http.get<IResInsurance>(url)
   }
@@ -130,17 +132,38 @@ export class QuotationService {
 
 
   getdipchiptoken(): Observable<IResBasic> {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getattachimagedeliverbyid/${quotation_id}`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getdipchiptoken`
     return this.http.get<IResBasic>(url)
   }
 
 
   getdopastatusbyid(quotationid: string): Observable<IResDopaStatus> {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getattachimagedeliverbyid/${quotation_id}`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getdopastatusbyid?quotationid=${quotationid}`
     return this.http.get<IResDopaStatus>(url)
   }
+
+  MPLS_dipchip(formData: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_dipchip`
+    return this.http.post<IResBasic>(url, formData)
+  }
+
+  MPLS_check_phonevalid(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_check_phonevalid?quotationid=${quotationid}`
+    return this.http.get<IResPhonenumberValid>(url)
+  }
+
+  MPLS_create_otp_phoneno(data: IReqOtpLog) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_otp_phoneno?quotationid=${data.quotationid}&refid=${data.refid}&phone_no=${data.phone_no}`
+    return this.http.get<IResOtpLog>(url)
+  }
+
+  MPLS_validation_otp_phonenumber(data: IReqValidationPhonenumber) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_validation_otp_phonenumber?quotationid=${data.quotationid}&otp_value=${data.otp_value}&phone_no=${data.phone_no}`
+    return this.http.get<IResValidationPhonenumber>(url)
+  }
+
+
+
 
   setstatusdopa(quotationid: string) {
     this.getdopastatusbyid(quotationid).subscribe({
@@ -148,16 +171,38 @@ export class QuotationService {
 
         if (result.status == 200) {
           const resultdata = result.data[0]
-          if (resultdata.status_desc == '' || resultdata.status_desc == null) {
-            this.dopastatus = `ไม่สามารถเชื่อมต่อกับระบบฐานข้อมูลกรมการปกครองได้`
+
+          if(resultdata.status_code !== '0') {
+
+            if (resultdata.status_desc == '' || resultdata.status_desc == null) {
+              this.dopastatus = {
+                message: `❌ ไม่สามารถเชื่อมต่อกับระบบฐานข้อมูลกรมการปกครองได้`,
+                status: false
+              }
+            } else {
+              this.dopastatus = {
+                message: `❌ สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc}`,
+                status: false
+              }
+            }
           } else {
-            this.dopastatus = `สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc}`
+            // === valid citizenid card ===
+            this.dopastatus = {
+              message: `✅ สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc}`,
+              status: true
+            }
           }
         } else {
-          this.dopastatus = ``
+          this.dopastatus = {
+            message: ``,
+            status: false
+          }
         }
       }, error: (e) => {
-        this.dopastatus = ``
+        this.dopastatus = {
+          message: ``,
+          status: false
+        }
       }, complete: () => {
 
       }
@@ -165,7 +210,10 @@ export class QuotationService {
   }
 
   cleardopastatus() {
-    this.dopastatus = ``
+    this.dopastatus =  {
+      message: ``,
+      status: false
+    }
   }
 
 }

@@ -15,9 +15,13 @@ import { MainDialogComponent } from './widget/dialog/main-dialog/main-dialog.com
 import { LoginComponent } from './page/login/login.component';
 import { InformationDialogComponent } from './widget/dialog/information-dialog/information-dialog.component';
 import { JwtInterceptor } from './interceptor/jwt.interceptor';
-import { LoadingInterceptor } from './interceptor/loading.interceptor';
 import { DashboardComponent } from './page/dashboard/dashboard.component';
 import { NotFoundComponent } from './page/not-found/not-found.component';
+import { CizCardTabComponent } from './page/quotation-tab/ciz-card-tab/ciz-card-tab.component';
+import { ProductDetailTabComponent } from './page/quotation-tab/product-detail-tab/product-detail-tab.component';
+import { BasicSnackbarComponent } from './widget/snackbar/basic-snackbar/basic-snackbar.component';
+import { OtpVeifyDialogComponent } from './widget/dialog/otp-veify-dialog/otp-veify-dialog.component';
+import { NgOtpInputModule } from  'ng-otp-input';
 
 @NgModule({
   declarations: [
@@ -29,7 +33,11 @@ import { NotFoundComponent } from './page/not-found/not-found.component';
     LoginComponent,
     InformationDialogComponent,
     DashboardComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    CizCardTabComponent,
+    ProductDetailTabComponent,
+    BasicSnackbarComponent,
+    OtpVeifyDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -39,15 +47,11 @@ import { NotFoundComponent } from './page/not-found/not-found.component';
     ReactiveFormsModule,
     MaterialModule,
     HttpClientModule,
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    NgOtpInputModule
   ],
   providers: [
     FormGroupDirective, 
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: LoadingInterceptor,
-      multi: true
-    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,

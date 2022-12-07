@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MainDialogComponent } from './../widget/dialog/main-dialog/main-dialog.component';
 import { Router } from '@angular/router';
 import { AuthService } from '../service/auth/auth.service';
+import { LoadingService } from '../service/loading.service';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
@@ -21,6 +22,7 @@ export class JwtInterceptor implements HttpInterceptor {
     private authService: AuthService,
     private router: Router,
     private dialog: MatDialog,
+    private loadingService: LoadingService
   ) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -45,6 +47,7 @@ export class JwtInterceptor implements HttpInterceptor {
           console.log(`this err status : ${err.error.status}`)
           if (err.error.status === 401) {
             // redirect user to the logout page
+            this.loadingService.hideLoader()
             this.dialog.open(MainDialogComponent, {
               panelClass: 'custom-dialog-container',
               data: {

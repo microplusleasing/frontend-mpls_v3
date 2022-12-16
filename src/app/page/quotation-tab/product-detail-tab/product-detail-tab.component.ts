@@ -232,353 +232,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   async ngOnInit() {
     // === onchange field ====
 
-    // *** dealerCode ***
-    this.productForm.controls.detailForm.controls.dealerCode.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterDealer(value)),
-    ).subscribe((value: IResMasterDealerData[]) => {
-
-      const selectValue = this.dealerList.find((items: { dl_code: string }) => {
-        return items.dl_code == value[0].dl_code
-      })
-
-      if (typeof selectValue !== 'undefined') {
-        // === set text of dealer select === 
-        this.dealerSelectText = of(selectValue.dl_name);
-      }
-
-      this.productForm.controls.detailForm.controls.carModelField.setValue('');
-      this.productForm.controls.detailForm.controls.carBrandField.setValue('')
-      this.productForm.controls.detailForm.controls.insurerCodeField.setValue('')
-      this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null)
-
-      this.checkChangeMaxValuePrice();
-    })
-
-    // *** carBrand ****
-    this.productForm.controls.detailForm.controls.carBrandField.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterBrand(value)),
-    ).subscribe((value: IResMasterBrandData[]) => {
-
-      this.productForm.controls.detailForm.controls.carModelField.setValue(null)
-      this.productForm.controls.detailForm.controls.productValueField.setValue(null)
-      this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null)
-      this.productForm.controls.detailForm.controls.interestRateField.setValue(null)
-      this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null)
-      this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null)
-
-      this.maxlvtmessage$ = of('');
-
-      this.rateSelect = [];
-      this.paymentCountSelect = [];
-      const selectValue = value
-      if (selectValue != null) {
-        this.modelSelect = this.modelList.filter((items: { brand_code: any; }) => {
-          return items.brand_code == selectValue[0].brand_code
-        }
-        );
-
-        if (this.modelSelect.length !== 0) {
-          this.productForm.controls.detailForm.controls.carModelField.enable();
-          this.filterModelList = this.productForm.controls.detailForm.controls.carModelField.valueChanges.pipe(
-            startWith(''),
-            map(value => this._filterModel(value))
-          )
-
-          // === set text of brand select === 
-          this.brandSelectText = of(this.modelSelect[0].brand_name);
-        } else {
-
-          // === set child list (model) === 
-          this.modelListFilter = this.modelList.filter((items: { brand_code: string }) => {
-            return items.brand_code == selectValue[0].brand_code
-          })
-
-          this.productForm.controls.detailForm.controls.carModelField.setValue('')
-          this.productForm.controls.detailForm.controls.carModelField.disable();
-        }
-
-        // === set child list (model) === 
-        this.modelListFilter = this.modelList.filter((items: { brand_code: string }) => {
-          return items.brand_code == selectValue[0].brand_code
-        })
-
-        // === set validate Brand === 
-
-        this.productForm.controls.detailForm.controls.carModelField.setValidators(this.validateModelformat(this.modelListFilter))
-        this.productForm.controls.detailForm.controls.carModelField.setValue('')
-        this.productForm.controls.detailForm.controls.carModelField.enable()
-        this.showBrandModelLoan$ = of(false)
-
-        // === stamp car brand by code ===
-
-        const result = this.brandList.find((x: { brand_code: string; }) => x.brand_code === selectValue[0].brand_code);
-        if (result) {
-          const carBrandNameSelect = result.brand_name
-          if (carBrandNameSelect) {
-            this.productForm.controls.detailForm.controls.carBrandNameField.setValue(carBrandNameSelect)
-          }
-        }
-
-      }
-    })
-
-    // *** carModel ***
-    this.productForm.controls.detailForm.controls.carModelField.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filterModel(value)),
-    ).subscribe(async (value: IResMasterModelData[]) => {
-
-      this.productForm.controls.detailForm.controls.interestRateField.enable()
-      this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable()
-      this.productForm.controls.detailForm.controls.interestRateField.setValue(null)
-      this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null)
-      this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null)
-      this.productForm.controls.detailForm.controls.productValueField.setValue(null)
-      this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null)
-      this.productForm.controls.detailForm.controls.engineNoField.setValue(null)
-      this.productForm.controls.detailForm.controls.chassisNoField.setValue(null)
-      this.productForm.controls.detailForm.controls.runningengineNoField.setValue(null)
-      this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(null)
-      this.coverage = 0
-      this.factoryprice = 0
-
-      const selectValue = value
-      if (selectValue.length !== 0) {
-
-        // ==== get model price from model select value ===
-        let modelprice = this.modelListFilter.filter((items: { model_code: any; brand_code: any }) => {
-          return items.model_code == selectValue[0].model_code && items.brand_code == this.productForm.controls.detailForm.controls.carBrandField.value
-        })
-
-
-        /// ==== set price (productValueField) from master of model code ==== 
-        if (modelprice.length == 1) {
-          // === set text of model select === 
-          this.modelSelectText = of(modelprice[0].model);
-          const valuePrice = modelprice[0].price
-          this.productForm.controls.detailForm.controls.productValueField.setValue(valuePrice)
-          this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(valuePrice)
-
-          // === set chassis and engine to field (29/08/2022) ===
-          this.productForm.controls.detailForm.controls.engineNoField.setValue(modelprice[0].engine_no)
-          this.productForm.controls.detailForm.controls.chassisNoField.setValue(modelprice[0].chassis_no)
-
-          //=== call max lvt vaue === 
-          const resultMaxLtv = await lastValueFrom(this.masterDataService.getMaxLtv(
-            valuePrice,
-            '001',
-            '01',
-            this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
-            selectValue[0].model_code,
-            this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : ''
-          ))
-
-          console.log(`this is max ltv value : ${resultMaxLtv.data[0].maxltv}`)
-          const maxlvtnumber = (resultMaxLtv.data[0].maxltv ?? 0).toString();
-          const maxlvtsetFormat = this.numberWithCommas(resultMaxLtv.data[0].maxltv)
-          const maxlvttext = `(สูงสุด ${maxlvtsetFormat} บาท)`
-          this.maxltvValue$ = of(resultMaxLtv.data[0].maxltv)
-          this.maxlvtmessage$ = of(maxlvttext)
-          this.maxltvCurrent = resultMaxLtv.data[0].maxltv
-
-          // === set max ltv field ===
-          this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
-
-
-          // === call insurance list value === 
-          this.masterDataService.getInsurance(maxlvtnumber).subscribe((insuranceResult) => {
-            this.InsuranceListTemp = insuranceResult.data
-            this.InsuranceList = this.InsuranceListTemp
-
-            // ==== filter repeat insurance form return value ====
-            this.InsuranceList = Array.from(new Set(this.InsuranceListTemp.map((a: { insurer_code: string }) => a.insurer_code)))
-              .map(insurer_code => {
-                return this.InsuranceListTemp.find((a: { insurer_code: string }) => a.insurer_code === insurer_code)
-              })
-          })
-
-        }
-
-        if (selectValue[0].model_code) {
-          this.showPrice = true;
-          this.showchassisandengine = true
-        }
-
-
-        this.productForm.controls.detailForm.controls.interestRateField.enable()
-        this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable()
-
-        const bcSelect = this.productForm.controls.detailForm.controls.carBrandField.value
-        const bmSelect = this.productForm.controls.detailForm.controls.carModelField.value
-
-        // === get price from model select ==== 
-        let fPirce;
-        let modelPrice;
-        if (bmSelect) {
-
-          fPirce = this.modelSelect.filter((items: { brand_code: any; model_code: any }) => {
-            return items.brand_code == bcSelect && items.model_code == bmSelect
-          })
-
-
-          if (fPirce.length !== 0) {
-
-            modelPrice = fPirce[0].price;
-            console.log(`modelPrice : ${modelPrice}`)
-
-            // ==== set factory price to field ===
-            this.factoryprice = modelPrice
-
-            const valuePrice = modelprice[0].price
-
-            this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(valuePrice)
-          }
-
-        }
-
-        // ==== get Rate and PaymentCount select from service ==== 
-
-        if (bcSelect && bmSelect && modelPrice) {
-
-          this.masterDataService.getSizeModel(
-            '01',
-            bcSelect,
-            bmSelect,
-            this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
-            '001',
-            modelPrice
-          ).subscribe((result) => {
-            this.productForm.controls.detailForm.controls.sizeModelField.setValue(result.data[0].size);
-            this.masterDataService.getTerm('01', result.data[0].size).subscribe((resPayment) => {
-              this.paymentCountSelect = resPayment.data
-              this.masterDataService.getRate('01', result.data[0].size).subscribe((resRate) => {
-                this.rateSelect = resRate.data
-
-                // === set quotaion lookup data if old record ===
-
-                if (this.quotationdatatemp.data) {
-                  const quoitem = this.quotationdatatemp.data[0]
-                  this.productForm.controls.detailForm.controls.interestRateField.setValue(quoitem.cd_interest_rate ?? null)
-                  this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(quoitem.cd_payment_round_count ?? null)
-                  this.showlistInsurancePlan();
-                }
-              })
-            })
-          })
-
-        }
-
-        this.showBrandModelLoan$ = of(true);
-
-        // === stamp car model by code ===
-
-        const result = this.modelList.find((x: { model_code: string; }) => x.model_code === selectValue[0].model_code);
-        if (result) {
-          const carModelNameSelect = result.model
-          if (carModelNameSelect) {
-            this.productForm.controls.detailForm.controls.carModelNameField.setValue(carModelNameSelect)
-          }
-        }
-      }
-
-      this.checkChangeMaxValuePrice();
-    })
-
-    // *** interestRateField ***
-    this.productForm.controls.detailForm.controls.interestRateField.valueChanges.subscribe((res) => {
-      this.checkforstamppaymentvalue();
-    })
-
-    // *** paymentRoundCountValueField ***
-    this.productForm.controls.detailForm.controls.paymentRoundCountValueField.valueChanges.subscribe((res) => {
-
-      this.checkforstamppaymentvalue()
-    })
-
-    // *** loanAmountField ***
-    this.productForm.controls.detailForm.controls.loanAmountField.valueChanges.subscribe((res) => {
-      this.loanAmountFieldSubjet.next(res)
-
-      // === clear payment value (31/05/2022) === 
-      console.log('505')
-      this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
-      this.showpaymentvalue$.next(false);
-      this.paymentvalue$.next(0);
-      this.out_stand = 0
-      this.checkforstamppaymentvalue();
-    })
-
-    // *** insurerCodeField ***
-    this.productForm.controls.detailForm.controls.insurerCodeField.valueChanges.subscribe((res) => {
-      if (res) {
-        // === set Insurance Year === 
-        this.InsuranceListFilter = this.InsuranceListTemp.filter((items: { insurer_code: any; }) => {
-          return items.insurer_code == res
-        })
-
-        // ==== set name of insurer selelct field (25/05/2022) ====
-        const insurerName = this.InsuranceListFilter[0].insurer_name ? this.InsuranceListFilter[0].insurer_name : ''
-
-        this.productForm.controls.detailForm.controls.insurerNameField.setValue(insurerName)
-        this.showlistInsurancePlan();
-      } else {
-
-        this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null)
-        this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(null)
-        this.coverage = 0
-      }
-    })
-
-    // *** insuranceYearField *** 
-    this.productForm.controls.detailForm.controls.insuranceYearField.valueChanges.subscribe(async (res) => {
-      if (res) {
-
-
-        // ==== add validate point for require new calculate (29/08/2022) ==== 
-        console.log(`540`)
-        this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
-        this.showpaymentvalue$.next(false);
-
-        // === set Insurance Plan ===
-        const yearInt = res
-
-        const insureselect = this.InsuranceListFilter.filter((value: { years_insur: any }) => {
-          return value.years_insur == yearInt
-        })
-
-        const priceValue = insureselect[0].premium_insur;
-        this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(priceValue)
-        this.productForm.controls.detailForm.controls.insuranceCodeField.setValue(insureselect[0].insurance_code)
-        // this.productForm.controls.insuranceNameField.setValue(insureselect[0].insurance_name)
-        this.productForm.controls.detailForm.controls.insuranceNameField.setValue(insureselect[0].insuranceNameField + '(' + insureselect[0].insurance_code + ')')
-
-        // === set coverage total loss (29/08/2022) ====
-        const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss
-          (
-            this.productForm.controls.detailForm.controls.insuranceCodeField.value ? this.productForm.controls.detailForm.controls.insuranceCodeField.value : '',
-            this.maxltvCurrent
-          )
-        )
-        this.coverage = resultCoveragetotalloss.data[0].coverage_total_loss ? resultCoveragetotalloss.data[0].coverage_total_loss : 0
-        this.checkforstamppaymentvalue();
-
-      } else {
-        // ==== clear price and payment value when year is null (25/05/2022) === 
-        this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(null)
-        console.log('570')
-        this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
-      }
-    })
-
-    // *** isincludeloanamount ***
-    this.productForm.controls.detailForm.controls.isincludeloanamount.valueChanges.subscribe((res) => {
-      console.log('577')
-      this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
-      this.showpaymentvalue$.next(false);
-      this.checkforstamppaymentvalue();
-    })
   }
 
   ngAfterViewInit(): void {
@@ -607,30 +260,363 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
             this.dealerList = res[0].data
             // === set validate format dealer code === 
             this.productForm.controls.detailForm.controls.dealerCode.setValidators(this.validateDealerformat(this.dealerList))
-            this.filterDealerList = this.productForm.controls.detailForm.controls.dealerCode.valueChanges.pipe(
+            this.productForm.controls.detailForm.controls.dealerCode.valueChanges.pipe(
               startWith(''),
-              map(value => this._filterDealer(value)),
-            )
+              map(value => this._filterDealer(value))
+            ).subscribe(async (value: IResMasterDealerData[]) => {
+              this.filterDealerList = of(value)
+
+              const selectValue = this.dealerList.find((items: { dl_code: string }) => {
+                return items.dl_code == value[0].dl_code
+              })
+
+              if (typeof selectValue !== 'undefined') {
+                // === set text of dealer select === 
+                this.dealerSelectText = of(selectValue.dl_name);
+              }
+
+              this.productForm.controls.detailForm.controls.carModelField.setValue('');
+              this.productForm.controls.detailForm.controls.carBrandField.setValue('')
+              this.productForm.controls.detailForm.controls.insurerCodeField.setValue('')
+              this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null)
+
+              this.checkChangeMaxValuePrice();
+            })
           }
 
           // *** brand ***
           if (res[1]) {
             this.brandList = res[1].data
-            this.filterBrandList = this.productForm.controls.detailForm.controls.carBrandField.valueChanges.pipe(
+            this.productForm.controls.detailForm.controls.carBrandField.valueChanges.pipe(
               startWith(''),
               map(value => this._filterBrand(value))
-            )
+            ).subscribe(async (value: IResMasterBrandData[]) => {
+              this.filterBrandList = of(value)
+
+              this.productForm.controls.detailForm.controls.carModelField.setValue(null)
+              this.productForm.controls.detailForm.controls.productValueField.setValue(null)
+              this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null)
+              this.productForm.controls.detailForm.controls.interestRateField.setValue(null)
+              this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null)
+              this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null)
+
+              this.maxlvtmessage$ = of('');
+
+              this.rateSelect = [];
+              this.paymentCountSelect = [];
+              const selectValue = value
+              if (selectValue != null) {
+                this.modelSelect = this.modelList.filter((items: { brand_code: any; }) => {
+                  return items.brand_code == selectValue[0].brand_code
+                }
+                );
+
+                if (this.modelSelect.length !== 0) {
+                  this.productForm.controls.detailForm.controls.carModelField.enable();
+                  this.filterModelList = this.productForm.controls.detailForm.controls.carModelField.valueChanges.pipe(
+                    startWith(''),
+                    map(value => this._filterModel(value))
+                  )
+
+                  // === set text of brand select === 
+                  this.brandSelectText = of(this.modelSelect[0].brand_name);
+                } else {
+
+                  // === set child list (model) === 
+                  this.modelListFilter = this.modelList.filter((items: { brand_code: string }) => {
+                    return items.brand_code == selectValue[0].brand_code
+                  })
+
+                  this.productForm.controls.detailForm.controls.carModelField.setValue('')
+                  this.productForm.controls.detailForm.controls.carModelField.disable();
+                }
+
+                // === set child list (model) === 
+                this.modelListFilter = this.modelList.filter((items: { brand_code: string }) => {
+                  return items.brand_code == selectValue[0].brand_code
+                })
+
+                // === set validate Brand === 
+
+                this.productForm.controls.detailForm.controls.carModelField.setValidators(this.validateModelformat(this.modelListFilter))
+                this.productForm.controls.detailForm.controls.carModelField.setValue('')
+                this.productForm.controls.detailForm.controls.carModelField.enable()
+                this.showBrandModelLoan$ = of(false)
+
+                // === stamp car brand by code ===
+
+                const result = this.brandList.find((x: { brand_code: string; }) => x.brand_code === selectValue[0].brand_code);
+                if (result) {
+                  const carBrandNameSelect = result.brand_name
+                  if (carBrandNameSelect) {
+                    this.productForm.controls.detailForm.controls.carBrandNameField.setValue(carBrandNameSelect)
+                  }
+                }
+
+              }
+            })
           }
 
           // *** model ***
           if (res[2]) {
             this.modelList = res[2].data
-            this.filterModelList = this.productForm.controls.detailForm.controls.carModelField.valueChanges.pipe(
+            this.productForm.controls.detailForm.controls.carModelField.valueChanges.pipe(
               startWith(''),
               map(value => this._filterModel(value))
-            )
+            ).subscribe(async (value: IResMasterModelData[]) => {
+              this.filterModelList = of(value)
+
+              this.productForm.controls.detailForm.controls.interestRateField.enable()
+              this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable()
+              this.productForm.controls.detailForm.controls.interestRateField.setValue(null)
+              this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null)
+              this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null)
+              this.productForm.controls.detailForm.controls.productValueField.setValue(null)
+              this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null)
+              this.productForm.controls.detailForm.controls.engineNoField.setValue(null)
+              this.productForm.controls.detailForm.controls.chassisNoField.setValue(null)
+              this.productForm.controls.detailForm.controls.runningengineNoField.setValue(null)
+              this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(null)
+              this.coverage = 0
+              this.factoryprice = 0
+
+              const selectValue = value
+              if (selectValue.length !== 0) {
+
+                // ==== get model price from model select value ===
+                let modelprice = this.modelListFilter.filter((items: { model_code: any; brand_code: any }) => {
+                  return items.model_code == selectValue[0].model_code && items.brand_code == this.productForm.controls.detailForm.controls.carBrandField.value
+                })
+
+
+                /// ==== set price (productValueField) from master of model code ==== 
+                if (modelprice.length == 1) {
+                  // === set text of model select === 
+                  this.modelSelectText = of(modelprice[0].model);
+                  const valuePrice = modelprice[0].price
+                  this.productForm.controls.detailForm.controls.productValueField.setValue(valuePrice)
+                  this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(valuePrice)
+
+                  // === set chassis and engine to field (29/08/2022) ===
+                  this.productForm.controls.detailForm.controls.engineNoField.setValue(modelprice[0].engine_no)
+                  this.productForm.controls.detailForm.controls.chassisNoField.setValue(modelprice[0].chassis_no)
+
+                  //=== call max lvt vaue === 
+                  const resultMaxLtv = await lastValueFrom(this.masterDataService.getMaxLtv(
+                    valuePrice,
+                    '001',
+                    '01',
+                    this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
+                    selectValue[0].model_code,
+                    this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : ''
+                  ))
+
+                  console.log(`this is max ltv value : ${resultMaxLtv.data[0].maxltv}`)
+                  const maxlvtnumber = (resultMaxLtv.data[0].maxltv ?? 0).toString();
+                  const maxlvtsetFormat = this.numberWithCommas(resultMaxLtv.data[0].maxltv)
+                  const maxlvttext = `(สูงสุด ${maxlvtsetFormat} บาท)`
+                  this.maxltvValue$ = of(resultMaxLtv.data[0].maxltv)
+                  this.maxlvtmessage$ = of(maxlvttext)
+                  this.maxltvCurrent = resultMaxLtv.data[0].maxltv
+
+                  // === set max ltv field ===
+                  this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
+
+
+                  // === call insurance list value === 
+                  this.masterDataService.getInsurance(maxlvtnumber).subscribe((insuranceResult) => {
+                    this.InsuranceListTemp = insuranceResult.data
+                    this.InsuranceList = this.InsuranceListTemp
+
+                    // ==== filter repeat insurance form return value ====
+                    this.InsuranceList = Array.from(new Set(this.InsuranceListTemp.map((a: { insurer_code: string }) => a.insurer_code)))
+                      .map(insurer_code => {
+                        return this.InsuranceListTemp.find((a: { insurer_code: string }) => a.insurer_code === insurer_code)
+                      })
+                  })
+
+                }
+
+                if (selectValue[0].model_code) {
+                  this.showPrice = true;
+                  this.showchassisandengine = true
+                }
+
+
+                this.productForm.controls.detailForm.controls.interestRateField.enable()
+                this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable()
+
+                const bcSelect = this.productForm.controls.detailForm.controls.carBrandField.value
+                const bmSelect = this.productForm.controls.detailForm.controls.carModelField.value
+
+                // === get price from model select ==== 
+                let fPirce;
+                let modelPrice;
+                if (bmSelect) {
+
+                  fPirce = this.modelSelect.filter((items: { brand_code: any; model_code: any }) => {
+                    return items.brand_code == bcSelect && items.model_code == bmSelect
+                  })
+
+
+                  if (fPirce.length !== 0) {
+
+                    modelPrice = fPirce[0].price;
+                    console.log(`modelPrice : ${modelPrice}`)
+
+                    // ==== set factory price to field ===
+                    this.factoryprice = modelPrice
+
+                    const valuePrice = modelprice[0].price
+
+                    this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(valuePrice)
+                  }
+
+                }
+
+                // ==== get Rate and PaymentCount select from service ==== 
+
+                if (bcSelect && bmSelect && modelPrice) {
+
+                  this.masterDataService.getSizeModel(
+                    '01',
+                    bcSelect,
+                    bmSelect,
+                    this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
+                    '001',
+                    modelPrice
+                  ).subscribe((result) => {
+                    this.productForm.controls.detailForm.controls.sizeModelField.setValue(result.data[0].size);
+                    this.masterDataService.getTerm('01', result.data[0].size).subscribe((resPayment) => {
+                      this.paymentCountSelect = resPayment.data
+                      this.masterDataService.getRate('01', result.data[0].size).subscribe((resRate) => {
+                        this.rateSelect = resRate.data
+
+                        // === set quotaion lookup data if old record ===
+
+                        if (this.quotationdatatemp.data) {
+                          const quoitem = this.quotationdatatemp.data[0]
+                          this.productForm.controls.detailForm.controls.interestRateField.setValue(quoitem.cd_interest_rate ?? null)
+                          this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(quoitem.cd_payment_round_count ?? null)
+                          this.showlistInsurancePlan();
+                        }
+                      })
+                    })
+                  })
+
+                }
+
+                this.showBrandModelLoan$ = of(true);
+
+                // === stamp car model by code ===
+
+                const result = this.modelList.find((x: { model_code: string; }) => x.model_code === selectValue[0].model_code);
+                if (result) {
+                  const carModelNameSelect = result.model
+                  if (carModelNameSelect) {
+                    this.productForm.controls.detailForm.controls.carModelNameField.setValue(carModelNameSelect)
+                  }
+                }
+              }
+
+              this.checkChangeMaxValuePrice();
+            })
           }
 
+
+          // *** interestRateField ***
+          this.productForm.controls.detailForm.controls.interestRateField.valueChanges.subscribe((res) => {
+            this.checkforstamppaymentvalue();
+          })
+
+          // *** paymentRoundCountValueField ***
+          this.productForm.controls.detailForm.controls.paymentRoundCountValueField.valueChanges.subscribe((res) => {
+
+            this.checkforstamppaymentvalue()
+          })
+
+          // *** loanAmountField ***
+          this.productForm.controls.detailForm.controls.loanAmountField.valueChanges.subscribe((res) => {
+            this.loanAmountFieldSubjet.next(res)
+
+            // === clear payment value (31/05/2022) === 
+            console.log('505')
+            this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+            this.showpaymentvalue$.next(false);
+            this.paymentvalue$.next(0);
+            this.out_stand = 0
+            this.checkforstamppaymentvalue();
+          })
+
+          // *** insurerCodeField ***
+          this.productForm.controls.detailForm.controls.insurerCodeField.valueChanges.subscribe((res) => {
+            if (res) {
+              // === set Insurance Year === 
+              this.InsuranceListFilter = this.InsuranceListTemp.filter((items: { insurer_code: any; }) => {
+                return items.insurer_code == res
+              })
+
+              // ==== set name of insurer selelct field (25/05/2022) ====
+              const insurerName = this.InsuranceListFilter[0].insurer_name ? this.InsuranceListFilter[0].insurer_name : ''
+
+              this.productForm.controls.detailForm.controls.insurerNameField.setValue(insurerName)
+              this.showlistInsurancePlan();
+            } else {
+
+              this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null)
+              this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(null)
+              this.coverage = 0
+            }
+          })
+
+          // *** insuranceYearField *** 
+          this.productForm.controls.detailForm.controls.insuranceYearField.valueChanges.subscribe(async (res) => {
+            if (res) {
+
+
+              // ==== add validate point for require new calculate (29/08/2022) ==== 
+              console.log(`540`)
+              this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+              this.showpaymentvalue$.next(false);
+
+              // === set Insurance Plan ===
+              const yearInt = res
+
+              const insureselect = this.InsuranceListFilter.filter((value: { years_insur: any }) => {
+                return value.years_insur == yearInt
+              })
+
+              const priceValue = insureselect[0].premium_insur;
+              this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(priceValue)
+              this.productForm.controls.detailForm.controls.insuranceCodeField.setValue(insureselect[0].insurance_code)
+              // this.productForm.controls.insuranceNameField.setValue(insureselect[0].insurance_name)
+              this.productForm.controls.detailForm.controls.insuranceNameField.setValue(insureselect[0].insuranceNameField + '(' + insureselect[0].insurance_code + ')')
+
+              // === set coverage total loss (29/08/2022) ====
+              const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss
+                (
+                  this.productForm.controls.detailForm.controls.insuranceCodeField.value ? this.productForm.controls.detailForm.controls.insuranceCodeField.value : '',
+                  this.maxltvCurrent
+                )
+              )
+              this.coverage = resultCoveragetotalloss.data[0].coverage_total_loss ? resultCoveragetotalloss.data[0].coverage_total_loss : 0
+              this.checkforstamppaymentvalue();
+
+            } else {
+              // ==== clear price and payment value when year is null (25/05/2022) === 
+              this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(null)
+              console.log('570')
+              this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+            }
+          })
+
+          // *** isincludeloanamount ***
+          this.productForm.controls.detailForm.controls.isincludeloanamount.valueChanges.subscribe((res) => {
+            console.log('577')
+            this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+            this.showpaymentvalue$.next(false);
+            this.checkforstamppaymentvalue();
+          })
 
           // === map data with record === 
           if (quoitem.cd_app_key_id !== '' && quoitem.cd_app_key_id !== null) {
@@ -769,6 +755,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
             this.loadingService.hideLoader()
           }
 
+
         })
 
       }, error: (e) => {
@@ -843,7 +830,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       // === clear payment value when condition out match ===
       this.lockbtncalculate$.next(true)
       console.log('841')
-      this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+      this.productForm.controls.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false })
       this.paymentvalue$.next(0);
       this.out_stand = 0
       this.showpaymentvalue$.next(false)

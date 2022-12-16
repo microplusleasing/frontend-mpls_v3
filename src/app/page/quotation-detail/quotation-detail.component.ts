@@ -383,6 +383,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     const reqcreatecreditdata: IReqCreateCredit = {
       quotationid: this.quoid,
+      dealer_code: this.productdetailtab.productForm.controls.detailForm.controls.dealerCode.value ?? '',
       brand_code: this.productdetailtab.productForm.controls.detailForm.controls.carBrandField.value ?? '',
       brand_name: this.productdetailtab.productForm.controls.detailForm.controls.carModelNameField.value ?? '',
       model_code: this.productdetailtab.productForm.controls.detailForm.controls.carModelField.value ?? '',

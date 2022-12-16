@@ -18,6 +18,7 @@ export interface IReqCreateCredit {
     size_model: string;
     insurer_code: string;
     insurer_name: string;
+    dealer_code: string;
 }
 
 

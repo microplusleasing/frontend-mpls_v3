@@ -1,16 +1,17 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'; import { lastValueFrom, Observable, of } from 'rxjs';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'; 
+import { lastValueFrom, Observable, of } from 'rxjs';
 import { LoadingService } from 'src/app/service/loading.service';
 ;
 import { QuotationService } from 'src/app/service/quotation.service';
 
 @Component({
-  selector: 'app-otp-veify-dialog',
-  templateUrl: './otp-veify-dialog.component.html',
-  styleUrls: ['./otp-veify-dialog.component.scss']
+  selector: 'app-otp-verify-dialog',
+  templateUrl: './otp-verify-dialog.component.html',
+  styleUrls: ['./otp-verify-dialog.component.scss']
 })
-export class OtpVeifyDialogComponent implements OnInit {
+export class OtpVerifyDialogComponent implements OnInit {
 
   _tabindex: number = 0
   _editabletab1: boolean = true;
@@ -20,13 +21,20 @@ export class OtpVeifyDialogComponent implements OnInit {
   _validationResMsg: string = ''
   otp_validation: boolean = false;
 
+  // === variable send data back via close dialog ===
+  validsuccess: boolean = false
 
+
+  // *** step 1 ***
   phone_number = new FormControl('', Validators.required)
+  confirm_btn_click = new FormControl<boolean>(false, Validators.requiredTrue)
+
   otp_value = new FormControl('', Validators.required)
   otp_valid = new FormControl(false, Validators.required)
 
-  confirmForm = new FormGroup({
-    phone_number: this.phone_number
+  confirmForm = this.fb.group({
+    phone_number: this.phone_number,
+    confirm_btn_click: this.confirm_btn_click
   })
 
   otpactivate = this.fb.group({
@@ -49,10 +57,13 @@ export class OtpVeifyDialogComponent implements OnInit {
     private fb: FormBuilder,
     private quotationService: QuotationService,
     private loadingService: LoadingService,
-    public dialogRef: MatDialogRef<OtpVeifyDialogComponent>,
+    public dialogRef: MatDialogRef<OtpVerifyDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-
+    dialogRef.backdropClick().subscribe(() => {
+      // Close the dialog
+      dialogRef.close({phone_number: this.confirmForm.controls.phone_number.value, otp_status: this.validsuccess});
+    })
   }
 
   async ngOnInit() {
@@ -62,12 +73,20 @@ export class OtpVeifyDialogComponent implements OnInit {
 
     await lastValueFrom(this.quotationService.MPLS_check_phonevalid(this.data.quotationid)).then((res) => {
       if (res.validation) {
+
+        // *** set step 1 and step 2 valid ***
+        // *** set flag confirm button click ***
+        this.mainOTPForm.controls.confirmPhone.controls.confirm_btn_click.setValue(true)
+        // *** set step 2 valid with mock OTP value ***
+        this.mainOTPForm.controls.otpactivate.controls.otp_value.setValue('xxxx')
+
         setTimeout(() => {
           this.loadingService.hideLoader()
           this._editabletab1 = false
           this._editabletab2 = false
+          // this.mainOTPForm.controls.otpactivate.controls.otp_value.setValue('temp');
           this._tabindex = 2
-        });
+        },500);
       } else {
         this.loadingService.hideLoader()
       }
@@ -76,13 +95,16 @@ export class OtpVeifyDialogComponent implements OnInit {
       console.log(`Error : ${e.message}`)
     })
 
-
   }
 
-  verifyphoneno() {
+  createoptphonevalid() {
+
     const quotationid = this.data.quotationid
     const currentPhonenumber = this.mainOTPForm.controls.confirmPhone.controls.phone_number.value
     const refid = this.data.refid
+
+    // *** set flag confirm button click ***
+    this.mainOTPForm.controls.confirmPhone.controls.confirm_btn_click.setValue(true)
 
     this.quotationService.MPLS_create_otp_phoneno({
       quotationid: quotationid,
@@ -96,12 +118,10 @@ export class OtpVeifyDialogComponent implements OnInit {
         this._createotpResMsg = res.message
       }
     })
-
   }
 
   async activateotpphone($event: any) {
     const otpfield = this.mainOTPForm.controls.otpactivate.controls.otp_value.value
-
     if (otpfield) {
       console.log(`this is otpfield value : ${otpfield}`)
 
@@ -113,6 +133,7 @@ export class OtpVeifyDialogComponent implements OnInit {
       })).then((res) => {
         this.loadingService.hideLoader()
         if (res.status) {
+          this.validsuccess = true
           this._editabletab1 = false
           this._editabletab2 = false
           this._tabindex = 2
@@ -127,7 +148,10 @@ export class OtpVeifyDialogComponent implements OnInit {
   }
 
   closeDialog() {
-    this.dialogRef.close(true)
+    this.dialogRef.close({
+      phone_number: this.confirmForm.controls.phone_number.value,
+      otp_status: this.validsuccess
+    })
   }
 
 }

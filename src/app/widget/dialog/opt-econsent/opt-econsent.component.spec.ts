@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OtpVeifyDialogComponent } from './otp-veify-dialog.component';
+import { OptEconsentComponent } from './opt-econsent.component';
 
-describe('OtpVeifyDialogComponent', () => {
-  let component: OtpVeifyDialogComponent;
-  let fixture: ComponentFixture<OtpVeifyDialogComponent>;
+describe('OptEconsentComponent', () => {
+  let component: OptEconsentComponent;
+  let fixture: ComponentFixture<OptEconsentComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OtpVeifyDialogComponent ]
+      declarations: [ OptEconsentComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(OtpVeifyDialogComponent);
+    fixture = TestBed.createComponent(OptEconsentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

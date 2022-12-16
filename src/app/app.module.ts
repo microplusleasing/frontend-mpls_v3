@@ -20,8 +20,12 @@ import { NotFoundComponent } from './page/not-found/not-found.component';
 import { CizCardTabComponent } from './page/quotation-tab/ciz-card-tab/ciz-card-tab.component';
 import { ProductDetailTabComponent } from './page/quotation-tab/product-detail-tab/product-detail-tab.component';
 import { BasicSnackbarComponent } from './widget/snackbar/basic-snackbar/basic-snackbar.component';
-import { OtpVeifyDialogComponent } from './widget/dialog/otp-veify-dialog/otp-veify-dialog.component';
+import { OtpVerifyDialogComponent } from './widget/dialog/otp-verify-dialog/otp-verify-dialog.component';
 import { NgOtpInputModule } from  'ng-otp-input';
+import { ImageAttachComponent } from './page/quotation-tab/image-attach/image-attach.component';
+import { OptEconsentComponent } from './widget/dialog/opt-econsent/opt-econsent.component';
+import { CareerAndPurposeComponent } from './page/quotation-tab/career-and-purpose/career-and-purpose.component';
+import { ThaidateformatDirective } from './directive/thaidateformat.directive';
 
 @NgModule({
   declarations: [
@@ -37,7 +41,11 @@ import { NgOtpInputModule } from  'ng-otp-input';
     CizCardTabComponent,
     ProductDetailTabComponent,
     BasicSnackbarComponent,
-    OtpVeifyDialogComponent,
+    OtpVerifyDialogComponent,
+    ImageAttachComponent,
+    OptEconsentComponent,
+    CareerAndPurposeComponent,
+    ThaidateformatDirective,
   ],
   imports: [
     BrowserModule,

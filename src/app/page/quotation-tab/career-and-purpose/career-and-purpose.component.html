@@ -1,0 +1,24 @@
+<p>career-and-purpose works!</p>
+<div class="form-container">
+    <form [formGroup]="careerandpurposeForm">
+        <div [formGroup]="careerForm">
+            <div class="flexbox">
+
+                <mat-form-field appearance="outline">
+                    <mat-label>อาชีพหลัก</mat-label>
+                    <mat-select [formControl]="mainCareerCodeField">
+                        <mat-option [value]="undefined" disabled hidden>เลือกอาชีพหลัก</mat-option>
+                        <mat-option *ngFor="let ils of [{years_insur: '23'}]" [value]="ils.years_insur">
+                            {{ils.years_insur}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>ตำแหน่งงาน</mat-label>
+                    <input type="text" matInput [formControl]="mainCareerPositionField">
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+</div>

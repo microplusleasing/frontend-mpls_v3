@@ -16,6 +16,15 @@ import { IResOtpLog } from '../interface/i-res-otp-log';
 import { IResPhonenumberValid } from '../interface/i-res-phonenumber-valid';
 import { IReqValidationPhonenumber } from '../interface/i-req-validation-phonenumber';
 import { IResValidationPhonenumber } from '../interface/i-res-validation-phonenumber';
+import { IReqPhoneupdate } from '../interface/i-req-phoneupdate';
+import { IResPhoneUpdate } from '../interface/i-res-phone-update';
+import { IResCreateApplicationNo } from '../interface/i-res-create-application-no';
+import { IResCheckApplicationNo } from '../interface/i-res-check-application-no';
+import { IResEconsentValid } from '../interface/i-res-econsent-valid';
+import { IResValidastionEconsent } from '../interface/i-res-validastion-econsent';
+import { IReqValidationEconsent } from '../interface/i-req-validation-econsent';
+import { IResGetServerTime } from '../interface/i-res-get-server-time';
+import { IReqCreateCredit } from '../interface/i-req-create-credit';
 
 
 @Injectable({
@@ -25,11 +34,13 @@ export class QuotationService {
 
   dopastatus: {
     message: string,
-    status: boolean 
+    status: boolean
   } = {
-    message: '',
-    status: false
-  }
+      message: '',
+      status: false
+    }
+
+  phonevalidstatus: string = ''
 
   constructor(
     private http: HttpClient
@@ -147,6 +158,14 @@ export class QuotationService {
     return this.http.post<IResBasic>(url, formData)
   }
 
+  // *** update phone number when close phone validation dialog (OTP validation phone number) ***
+  MPLS_update_phone_number(data: IReqPhoneupdate) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_update_phone_number?quotationid=${data.quotationid}&phone_number=${data.phone_number}`
+    return this.http.get<IResPhoneUpdate>(url)
+  }
+
+  // *** OTP Phone ***
+
   MPLS_check_phonevalid(quotationid: string) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_check_phonevalid?quotationid=${quotationid}`
     return this.http.get<IResPhonenumberValid>(url)
@@ -162,6 +181,50 @@ export class QuotationService {
     return this.http.get<IResValidationPhonenumber>(url)
   }
 
+  // *** check before open ECONSENT dialog ***
+
+  MPLS_check_application_no(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_check_application_no?quotationid=${quotationid}`
+    return this.http.get<IResCheckApplicationNo>(url)
+  }
+
+  MPLS_gen_application_no(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_gen_application_no?quotationid=${quotationid}`
+    return this.http.get<IResCreateApplicationNo>(url)
+  }
+
+  MPLS_getservertime() {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getservertime`
+    return this.http.get<IResGetServerTime>(url)
+  }
+
+  // *** OTP ECONSENT ***
+
+  MPLS_check_econsent(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_check_econsent?quotationid=${quotationid}`
+    return this.http.get<IResEconsentValid>(url)
+  }
+
+  MPLS_create_otp_econsent(data: IReqOtpLog) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_otp_econsent?quotationid=${data.quotationid}&refid=${data.refid}&phone_no=${data.phone_no}`
+    return this.http.get<IResOtpLog>(url)
+  }
+
+  MPLS_validation_otp_econsent(formdata: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_validation_otp_econsent`
+    return this.http.post<IResValidastionEconsent>(url, formdata)
+  }
+
+  MPLS_create_or_update_credit(data: IReqCreateCredit) {
+    const fd = new FormData();
+    fd.append('item', JSON.stringify(data));
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_or_update_credit`
+    return this.http.post<IResValidastionEconsent>(url, fd)
+  }
+
+
+
+
 
 
 
@@ -172,7 +235,7 @@ export class QuotationService {
         if (result.status == 200) {
           const resultdata = result.data[0]
 
-          if(resultdata.status_code !== '0') {
+          if (resultdata.status_code !== '0') {
 
             if (resultdata.status_desc == '' || resultdata.status_desc == null) {
               this.dopastatus = {
@@ -210,7 +273,7 @@ export class QuotationService {
   }
 
   cleardopastatus() {
-    this.dopastatus =  {
+    this.dopastatus = {
       message: ``,
       status: false
     }

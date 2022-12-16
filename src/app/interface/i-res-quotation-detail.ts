@@ -11,7 +11,7 @@ export interface IResQuotationDetailData {
     title_name: string;
     first_name: string;
     last_name: string;
-    birth_date?: any;
+    birth_date?: Date;
     birth_date_text_th: string;
     birth_date_text_en: string;
     ciz_issued_date: Date;
@@ -246,6 +246,15 @@ export interface IResQuotationDetailData {
     ciz_stayed_month: number;
     ciz_maried_status: number;
     ciz_quo_stage: number;
+    quo_econsent_flag: string;
+    quo_otp_phone: string;
+    quo_otp_econsent: string;
+    otp_phone_verify: string;
+    otp_consent_verify: string;
+    quo_app_ref_no: string;
+    ciz_age?: number;
+    ciz_phone_valid_status?: string;
+    cizcard_status?: string;
 
 
 }

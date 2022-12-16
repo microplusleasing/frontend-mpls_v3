@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import * as moment from 'moment';
 import { Subject } from 'rxjs';
 import { IResMasterProvinceData } from 'src/app/interface/i-res-master-province';
 import { IResMasterTitleData } from 'src/app/interface/i-res-master-title';
 import { IUserToken, IUserTokenData } from 'src/app/interface/i-user-token';
+import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +19,10 @@ export class BaseService {
   usernamefordipchip: string = ''
 
 
-  constructor() {
+  constructor(
+    public dialog: MatDialog,
+    public _snackBar: MatSnackBar
+  ) {
     if (this.userdata) {
       const userdataObj = (JSON.parse(this.userdata) as IUserToken).data;
       const sessionUserObject = (JSON.parse(this.userdata)) as IUserToken
@@ -151,4 +157,37 @@ export class BaseService {
     return window.btoa(binary);
   }
 
+  numberWithCommas(x: number) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  openMaindialog(header: string, message: string, button_name: string) {
+    this.dialog.open(MainDialogComponent, {
+      data: {
+        header: header,
+        message: message,
+        button_name: button_name
+      }
+    }).afterClosed().subscribe((res) => {
+      // === do not thing ==
+    })
+  }
+
+  snackbarsuccess(message: string) {
+    this._snackBar.open(message, '', {
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
+      duration: 3000,
+      panelClass: 'custom-snackbar-container'
+    });
+  }
+
+  snackbarfail(message: string) {
+    this._snackBar.open(message, '', {
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
+      duration: 3000,
+      panelClass: 'fail-snackbar-container'
+    });
+  }
 }

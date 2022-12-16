@@ -4,17 +4,46 @@
         <mat-step [stepControl]="this.cizcardtab.cizForm">
             <mat-divider></mat-divider>
             <ng-template matStepLabel>ข้อมูลบัตรประชาชน</ng-template>
-            <app-ciz-card-tab [quotationReq]="quotationResult$" (dipchipRes)="recieve_dipchipData($event)">
+            <app-ciz-card-tab [quotationReq]="(quotationResult$)" (dipchipRes)="recieve_dipchipData($event)">
             </app-ciz-card-tab>
-            <div *ngIf="this.cizcardtab.cizForm.valid">
-                <div class="flex-center">
-                    <button mat-raised-button color="primary" matStepperNext type="button">Next</button>
+            <div class="flex-center">
+                <button *ngIf="this.visiblePhoneValid" mat-raised-button color="primary"
+                    (click)="onClickBtnVerifyPhone()"
+                    [disabled]="!this.cizcardtab.cizForm.controls.maincitizenForm.controls.phoneNumber.valid">ยืนยันเบอร์โทรศัพท์ลูกค้า</button><br>
+                <button mat-raised-button color="primary" matStepperNext [disabled]="!this.cizcardtab.cizForm.valid"
+                    type="button">Next</button>
+            </div>
+        </mat-step>
+
+        <mat-step [stepControl]="this.productdetailtab.productForm.controls.consentVerify">
+            <ng-template matStepLabel>ข้อมูลผลิตภัณฑ์/วงเงินสินเชื่อ</ng-template>
+            <app-product-detail-tab [quotationReq]="quotationResult$"></app-product-detail-tab>
+            <div class="flex-center">
+                <div *ngIf="verifyeconsent">
+                    <br>
+                    <span>✅ : ได้รับการยืนยันการเปิดเผยข้อมูลผ่านระบบอินเทอร์เน็ตแล้ว</span>
+                    <br>
+                </div>
+                <div *ngIf="!verifyeconsent" class="flex-center">
+                    <button mat-raised-button color="primary" (click)="onclickCreateCreditBtn()" [disabled]="this.createorupdatecreditbtnDisable">
+                        บันทึกข้อมูล
+                    </button><br>
+                    <!-- <button mat-raised-button color="primary" (click)="onclickEconsentBtn()" [disabled]="!this.productdetailtab.productForm.controls.detailForm.valid"> -->
+                    <button mat-raised-button color="primary" (click)="onclickEconsentBtn()" [disabled]="this.econsentbtnDisable">
+                        ยืนยัน Econsent
+                    </button>
                 </div>
             </div>
         </mat-step>
-        <mat-step [stepControl]="this.productdetailtab.productForm">
-            <ng-template matStepLabel>ข้อมูลผลิตภัณฑ์/วงเงินสินเชื่อ</ng-template>
-            <app-product-detail-tab [quotationReq]="quotationResult$"></app-product-detail-tab>
+
+        <mat-step>
+            <ng-template matStepLabel>อาชีพ และ รายได้</ng-template>
+            <app-career-and-purpose [quotationReq]="quotationResult$"></app-career-and-purpose>
+        </mat-step>
+
+        <mat-step>
+            <ng-template matStepLabel>เอกสารประกอบการสมัครสินเชื่อ</ng-template>
+            <app-image-attach></app-image-attach>
         </mat-step>
     </mat-stepper>
 </form>

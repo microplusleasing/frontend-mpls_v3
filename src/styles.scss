@@ -1,11 +1,28 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 
 
 .custom-snackbar-container {
-    background-color: #35A255;
-  }
-  
+  background-color: #35A255;
+}
+
+.fail-snackbar-container {
+  background-color: #fa6e5b;
+}
+
+
+/* global class for mat-dialog style use panelClass eg (panelClass: 'custom-dialog-container') */
+.custom-dialog-container .mat-dialog-container .mat-dialog-content {
+  overflow-y: hidden;
+  font-family: prompt;
+}

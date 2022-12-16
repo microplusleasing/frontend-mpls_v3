@@ -3,7 +3,7 @@
 
   {{data.message}}
   <form [formGroup]="mainOTPForm">
-    <mat-stepper labelPosition="bottom" [selectedIndex]="_tabindex" >
+    <mat-stepper labelPosition="bottom" [selectedIndex]="_tabindex" [linear]="true">
       <mat-step [stepControl]="confirmForm" [editable]="_editabletab1">
         <ng-template matStepLabel>ตรวจสอบเบอร์โทรศัพท์</ng-template>
         <div [formGroup]="confirmForm">
@@ -12,7 +12,7 @@
             <input matInput [formControl]="phone_number">
           </mat-form-field><br>
           <h3>{{_createotpResMsg}}</h3>
-          <button mat-raised-button codor="primary" (click)="verifyphoneno()">ยืนยันเบอร์โทรศัพท์ถูกต้อง</button>
+          <button mat-raised-button codor="primary" (click)="createoptphonevalid()">ยืนยันเบอร์โทรศัพท์ถูกต้อง</button>
         </div>
       </mat-step>
       <mat-step [stepControl]="otpactivate" [editable]="_editabletab2">
@@ -30,5 +30,5 @@
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <!-- <button mat-raised-button [mat-dialog-close]="true" color="primary">{{data.button_name}}</button> -->
+  <button mat-raised-button [mat-dialog-close]="true" color="primary" (click)="closeDialog()">{{data.button_name}}</button>
 </div>

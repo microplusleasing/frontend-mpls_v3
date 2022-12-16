@@ -1,85 +1,86 @@
 <div class="form-container">
   <form [formGroup]="cizForm">
-    <div class="flexbox"> 
-      <button mat-raised-button color="primary" (click)="onClickDipchipBtn()">Dipchip</button>
-    </div>
-    <div class="flex-image-header">
+    <div [formGroup]="maincitizenForm">
+      <div class="flexbox">
+        <button mat-raised-button color="primary" (click)="onClickDipchipBtn()">Dipchip</button>
+      </div>
+      <div class="flex-image-header">
         <img [src]="cizCardImage" class="img-box">
         <img [src]="cameraImage" class="img-box">
+      </div>
+      <div class="flexbox">
+        <mat-form-field appearance="fill">
+          <mat-select required [formControl]="titleName">
+            <mat-option [value]="null" disabled hidden>เลือกคำนำหน้า</mat-option>
+            <mat-option *ngFor="let item of masterTitle.data" [value]="item.title_name">{{item.title_name}}</mat-option>
+          </mat-select>
+          <mat-label>
+            คำนำหน้า
+          </mat-label>
+          <mat-error *ngIf="this.titleCode.invalid">กรุณากรอกคำนำหน้า</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>ชื่อ</mat-label>
+          <input matInput required [formControl]="firstName">
+          <mat-error *ngIf="this.firstName.invalid">กรุณากรอกชื่อ</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>นามสกุล</mat-label>
+          <input matInput required [formControl]="lastName">
+          <mat-error *ngIf="this.lastName.invalid">กรุณากรอกนามสกุล</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-select required [formControl]="gender">
+            <mat-option [value]="null" disabled hidden>เลือกคำนำหน้า</mat-option>
+            <mat-option *ngFor="let item of masterGender" [value]="item.value">{{item.name}}</mat-option>
+          </mat-select>
+          <mat-label>
+            เพศ
+          </mat-label>
+          <mat-error *ngIf="this.gender.invalid">กรุณากรอกเพศ</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>เบอร์โทรศัพท์</mat-label>
+          <input matInput required [formControl]="phoneNumber">
+          <mat-error *ngIf="this.phoneNumber.invalid">{{getErrorMessagePhone()}}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>เลขบัตรประชาชน</mat-label>
+          <input matInput required [formControl]="citizenId">
+          <mat-error *ngIf="this.citizenId.invalid">กรุณากรอกเลขบัตรประชาชน</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>วันเกิด</mat-label>
+          <input matInput required type="date" [formControl]="birthDate">
+          <mat-error *ngIf="this.birthDate.invalid">กรุณากรอกวันเกิด</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>วันที่ออกบัตร</mat-label>
+          <input matInput required type="date" [formControl]="issueDate">
+          <mat-error *ngIf="this.issueDate.invalid">กรุณากรอกวันที่ออกบัตร</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>วันบัตรหมดอายุ</mat-label>
+          <input matInput required type="date" [formControl]="expireDate">
+          <mat-error *ngIf="this.expireDate.invalid">กรุณากรอกวันบัตรหมดอายุ</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>สถานที่ออกบัตร</mat-label>
+          <input matInput required [formControl]="issuePlace">
+          <mat-error *ngIf="this.issuePlace.invalid">กรุณากรอกสถานที่ออกบัตร</mat-error>
+        </mat-form-field>
+
+      </div>
     </div>
-    <div class="flexbox">
-      <mat-form-field appearance="fill">
-        <mat-select required formControlName="titleName">
-          <mat-option [value]="null" disabled hidden>เลือกคำนำหน้า</mat-option>
-          <mat-option *ngFor="let item of masterTitle.data" [value]="item.title_name">{{item.title_name}}</mat-option>
-        </mat-select>
-        <mat-label>
-          คำนำหน้า
-        </mat-label>
-        <mat-error *ngIf="this.titleCode.invalid">กรุณากรอกคำนำหน้า</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>ชื่อ</mat-label>
-        <input matInput required formControlName="firstName">
-        <mat-error *ngIf="this.firstName.invalid">กรุณากรอกชื่อ</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>นามสกุล</mat-label>
-        <input matInput required formControlName="lastName">
-        <mat-error *ngIf="this.lastName.invalid">กรุณากรอกนามสกุล</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-select required formControlName="gender">
-          <mat-option [value]="null" disabled hidden>เลือกคำนำหน้า</mat-option>
-          <mat-option *ngFor="let item of masterGender" [value]="item.value">{{item.name}}</mat-option>
-        </mat-select>
-        <mat-label>
-          เพศ
-        </mat-label>
-        <mat-error *ngIf="this.gender.invalid">กรุณากรอกเพศ</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>เบอร์โทรศัพท์</mat-label>
-        <input matInput required formControlName="phoneNumber">
-        <mat-error *ngIf="this.phoneNumber.invalid">กรุณากรอกเบอร์โทรศัพท์</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>เลขบัตรประชาชน</mat-label>
-        <input matInput required formControlName="citizenId">
-        <mat-error *ngIf="this.citizenId.invalid">กรุณากรอกเลขบัตรประชาชน</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>วันเกิด</mat-label>
-        <input matInput required type="date" formControlName="birthDate">
-        <mat-error *ngIf="this.birthDate.invalid">กรุณากรอกวันเกิด</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>วันที่ออกบัตร</mat-label>
-        <input matInput required type="date" formControlName="issueDate">
-        <mat-error *ngIf="this.issueDate.invalid">กรุณากรอกวันที่ออกบัตร</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>วันบัตรหมดอายุ</mat-label>
-        <input matInput required type="date" formControlName="expireDate">
-        <mat-error *ngIf="this.expireDate.invalid">กรุณากรอกวันบัตรหมดอายุ</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>สถานที่ออกบัตร</mat-label>
-        <input matInput required formControlName="issuePlace">
-        <mat-error *ngIf="this.issuePlace.invalid">กรุณากรอกสถานที่ออกบัตร</mat-error>
-      </mat-form-field>
-
-    </div>
-
     <mat-divider></mat-divider>
 
     <div class="header-left">
@@ -89,24 +90,24 @@
     <div class="flexbox">
       <mat-form-field appearance="fill">
         <mat-label>ที่อยู่</mat-label>
-        <input matInput required formControlName="address">
+        <input matInput required [formControl]="address">
         <mat-error *ngIf="this.address.invalid">กรุณากรอกที่อยู่</mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>แขวง/ตำบล</mat-label>
-        <input matInput required formControlName="subDistrict">
+        <input matInput required [formControl]="subDistrict">
         <mat-error *ngIf="this.subDistrict.invalid">กรุณากรอก แขวง/ตำบล</mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>เขต/อำเภอ</mat-label>
-        <input matInput required formControlName="district">
+        <input matInput required [formControl]="district">
         <mat-error *ngIf="this.district.invalid">กรุณากรอก เขต/อำเภอ</mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
-        <mat-select required formControlName="provinceName">
+        <mat-select required [formControl]="provinceName">
           <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
           <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_name">{{item.prov_name}}</mat-option>
         </mat-select>
@@ -118,7 +119,7 @@
 
       <mat-form-field appearance="fill">
         <mat-label>รหัสไปรษณีย์</mat-label>
-        <input matInput required formControlName="postalCode">
+        <input matInput required [formControl]="postalCode">
         <mat-error *ngIf="this.postalCode.invalid">กรุณากรอกรหัสไปรษณีย์</mat-error>
       </mat-form-field>
 
@@ -127,28 +128,28 @@
     <mat-divider></mat-divider>
 
     <!-- ที่อยู่ปัจจุบัน -->
-    <div formGroupName="livingAddress">
+    <div [formGroup]="livingAddress">
       <div class="header-left">
         ที่อยู่ปัจจุบัน
       </div>
       <div class="flexbox">
         <mat-form-field appearance="fill">
           <mat-label>ที่อยู่</mat-label>
-          <input matInput formControlName="address">
+          <input matInput [formControl]="_l_address">
         </mat-form-field>
 
         <mat-form-field appearance="fill">
           <mat-label>แขวง/ตำบล</mat-label>
-          <input matInput formControlName="subDistrict">
+          <input matInput [formControl]="_l_subDistrict">
         </mat-form-field>
 
         <mat-form-field appearance="fill">
           <mat-label>เขต/อำเภอ</mat-label>
-          <input matInput formControlName="district">
+          <input matInput [formControl]="_l_district">
         </mat-form-field>
 
         <mat-form-field appearance="fill">
-          <mat-select formControlName="provinceName">
+          <mat-select [formControl]="_l_provinceName">
             <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
             <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_name">{{item.prov_name}}
             </mat-option>
@@ -166,14 +167,20 @@
     </div>
     <div class="flex-center">
       <!-- age valid -->
-      <mat-error *ngIf="cizForm.controls['age'].hasError('min')">❌ : อายุไม่ผ่านเกณฑ์ในการอนุมัติออกรถ (ไม่ต่ำกว่า 20 ปี)</mat-error>
-      <span *ngIf="cizForm.controls['age'].valid">✅ : ผ่านเกณฑ์ในการอนุมัติออกรถ (ไม่ต่ำกว่า 20 ปี)</span>
+      <mat-error *ngIf="cizForm.controls.maincitizenForm.controls.age.hasError('min')">❌ :
+        อายุไม่ผ่านเกณฑ์ในการอนุมัติออกรถ (ไม่ต่ำกว่า 20
+        ปี)</mat-error>
+      <span *ngIf="cizForm.controls.maincitizenForm.controls.age.valid">✅ : ผ่านเกณฑ์ในการอนุมัติออกรถ (ไม่ต่ำกว่า 20
+        ปี)</span>
       <!-- dopa valid -->
       <span style="color:red">{{this.quotationService.dopastatus.message}}</span>
+      <!-- phone valid -->
+      <span> {{this.phonevalidstatus}}</span>
     </div>
 
-    <div class="flex-center">
-      <button mat-raised-button color="primary" (click)="onClickBtnVerifyPhone()" [disabled]="!this.cizForm.valid">ยินยันเบอร์โทรศัพท์ลูกค้า</button>
-    </div>
+    <!-- <div class="flex-center">
+      <button mat-raised-button color="primary" (click)="onClickBtnVerifyPhone()"
+        [disabled]="!this.cizForm.valid">ยืนยันเบอร์โทรศัพท์ลูกค้า</button>
+    </div> -->
   </form>
 </div>

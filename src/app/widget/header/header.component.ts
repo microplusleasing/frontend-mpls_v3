@@ -123,4 +123,8 @@ export class HeaderComponent implements OnInit {
   godashboard() {
     this.router.navigate([''])
   }
+
+  goquotationview() {
+    this.router.navigate(['/quotation-view'])
+  }
 }

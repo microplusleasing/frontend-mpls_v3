@@ -32,6 +32,8 @@ import { IResCarcheckStatus } from '../interface/i-res-carcheck-status';
 import { IResMariedStatus } from '../interface/i-res-maried-status';
 import { IResHouseType } from '../interface/i-res-house-type';
 import { IResHouseOwnerType } from '../interface/i-res-house-owner-type';
+import { IResMasterBrand } from '../interface/i-res-master-brand';
+import { IResMasterModel } from '../interface/i-res-master-model';
 
 
 
@@ -213,6 +215,16 @@ export class MasterDataService {
   gethouseownertype(): Observable<IResHouseOwnerType> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getHouseOwnerType`
     return this.http.get<IResHouseOwnerType>(url)
+  }
+
+  MPLS_getbrand(): Observable<IResMasterBrand> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getbrand`
+    return this.http.get<IResMasterBrand>(url)
+  }
+
+  MPLS_getmodel(): Observable<IResMasterModel> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getmodel`
+    return this.http.get<IResMasterModel>(url)
   }
 
 

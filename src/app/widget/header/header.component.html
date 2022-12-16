@@ -42,6 +42,10 @@
       <span *ngIf="false" style="font-size: 14px;">{{username}}</span>
       <span class="example-spacer"></span>
       <button mat-icon-button class="example-icon favorite-icon small-icon"
+        aria-label="Example icon-button with heart icon" (click)="goquotationview()">
+        <mat-icon>toc</mat-icon>
+      </button>
+      <button mat-icon-button class="example-icon favorite-icon small-icon"
         aria-label="Example icon-button with heart icon" (click)="godashboard()">
         <mat-icon>home</mat-icon>
       </button>

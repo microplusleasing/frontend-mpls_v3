@@ -617,143 +617,195 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
             this.showpaymentvalue$.next(false);
             this.checkforstamppaymentvalue();
           })
+            // ==== clone ====
+            // === *** already quo_key_app_id (recent) *** ===
+            if (quoitem.quo_key_app_id && quoitem.cd_payment_value) {
+              if (this.countload == 0) {
 
-          // === map data with record === 
-          if (quoitem.cd_app_key_id !== '' && quoitem.cd_app_key_id !== null) {
-            // === map value ===
+                // ==== show all condition validtor === 
+                this.showPrice = true;
+                this.showBrandModelLoan$ = of(true);
+                this.showInsuranceSelect$ = of(true);
+                // === load and call master data ===
 
-            this.loadingService.showLoader()
+                // === parameter for call api master === 
+                const qcarbrand = quoitem.cd_brand_code ?? '';
+                const qcarbrandname = quoitem.cd_brand_name ?? '';
+                const qcarmodelcode = quoitem.cd_model_code ?? '';
+                const qcarmodelname = quoitem.cd_model_name ?? '';
+                const qcolor = quoitem.cd_color_name ?? ''
+                const qcarmodel = quoitem.cd_model_code ?? '';
+                const qsizemodel = quoitem.cd_size_model ?? '';
+                const qfactoryprice = quoitem.cd_factory_price ?? null
+                const qrate = quoitem.cd_interest_rate ?? null;
+                const qterm = quoitem.cd_payment_round_count ?? null;
+                const qisincludealoneamount = quoitem.cd_is_include_loanamount ? true : false;
+                const qloanamount = quoitem.cd_loan_amount ?? null
+                const qinsureplanpricevalue = quoitem.cd_insurance_plan_price ?? null
+                const qinsurercode = quoitem.cd_insurer_code ?? '';
+                const qinsurername = quoitem.cd_insurer_name ?? '';
+                const qinsurancecode = quoitem.cd_insurance_code ?? '';
+                const qinsurancename = quoitem.cd_insurance_name ?? '';
+                const qinsuranceyear = quoitem.cd_insurance_year ?? null;
+                const qinsuranceplan = quoitem.cd_insurance_plan_price ?? null;
+                const qpaymentvalue = quoitem.cd_payment_value ?? null;
+                const qslcode = quoitem.sl_code ?? '20220003'; // default seller code when null 
 
-            this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code)
-            // *** (set dealer code againt back) ***
+                // === new field value form total-loss phase (29/08/2022) === 
+                const qcoveragetotalloss = quoitem.cd_coverage_total_loss // === still didn't use becasue effect old record === 
+                const qmaxltv = quoitem.cd_max_ltv
+                const qpriceincludevat = quoitem.cd_price_include_vat
+                const qenginenumber = quoitem.cd_engine_number
+                const qchassisnumber = quoitem.cd_chassis_number
+                const qenginenorunning = quoitem.cd_engine_no_running
+                const qchassisnorunning = quoitem.cd_chassis_no_running
 
-            // *** map brand ***
-            this.productForm.controls.detailForm.controls.carModelField.setValue(quoitem.cd_brand_code ?? '')
+                // === add parameter for change getinsurance from factory_price to max_ltv (24/08/2022) === 
+                const qdealercode = quoitem.sl_code
 
-            // *** map model ***
-            this.productForm.controls.detailForm.controls.carModelField.setValue(quoitem.cd_model_code ?? '')
+                // === unlock field === 
+                if (qrate) this.productForm.controls.detailForm.controls.interestRateField.enable();
+                if (qterm) this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable();
+                // if (qinsuranceplan) this.productForm.controls.detailForm.controls.inssurancePlanPriceField.enable();
 
-            // *** set other field value ***
-            if (
-              quoitem.cd_factory_price &&
-              quoitem.cd_brand_code &&
-              quoitem.cd_model_code &&
-              quoitem.cd_payment_round_count &&
-              quoitem.cd_size_model &&
-              quoitem.cd_loan_amount &&
-              quoitem.cd_insurance_plan_price &&
-              quoitem.cd_interest_rate
-            ) {
-              const resultSizeMaster = await lastValueFrom(this.masterDataService.getSizeModel(`01`, quoitem.cd_brand_code, quoitem.cd_model_code, quoitem.sl_code, '001', quoitem.cd_factory_price))
-              const resultRateMaster = await lastValueFrom(this.masterDataService.getRate(`01`, quoitem.cd_size_model));
-              // const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsuranceold(qfactoryprice));
+                this.productForm.controls.detailForm.controls.carModelField.setValue(quoitem.cd_model_code ?? '')
 
-              // ==== change parameter for get insurance from factory_price to max_ltv (24/08/2022) ===
-              const resultMaxLtv = await lastValueFrom(this.masterDataService.getMaxLtv(
-                quoitem.cd_factory_price,
-                '001',
-                '01',
-                quoitem.cd_brand_code,
-                quoitem.cd_model_code,
-                quoitem.sl_code
-              ))
-              this.maxltvCurrent = resultMaxLtv.data[0].maxltv
+                if (qfactoryprice && qcarbrand && qcarmodel && qterm && qsizemodel && qloanamount && qinsureplanpricevalue && qrate) {
+                  // const resultSizeMaster = await lastValueFrom(this.masterDataService.getSizeModel(`01`, qcarbrand, qcarmodel, qslcode, '001', qfactoryprice))
+                  const resultRateMaster = await lastValueFrom(this.masterDataService.getRate(`01`, qsizemodel));
+                  // const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsuranceold(qfactoryprice));
 
-              // === set max ltv field (29/08/2022) ===
+                  // ==== change parameter for get insurance from factory_price to max_ltv (24/08/2022) ===
+                  const resultMaxLtv = await lastValueFrom(this.masterDataService.getMaxLtv(
+                    qfactoryprice,
+                    '001',
+                    '01',
+                    qcarbrand,
+                    qcarmodelcode,
+                    qdealercode
+                  ))
+                  this.maxltvCurrent = resultMaxLtv.data[0].maxltv
+                  // === set max ltv field (29/08/2022) ===
+                  this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
 
-              this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
+                  const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsurance((resultMaxLtv.data[0].maxltv.toString())));
 
-              const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsurance((resultMaxLtv.data[0].maxltv.toString())));
+                  const resultTerm = await lastValueFrom(this.masterDataService.getTerm(`01`, qsizemodel))
+                  let netfinance;
+                  if (qisincludealoneamount) {
+                    netfinance = qloanamount + qinsureplanpricevalue
+                  } else {
+                    netfinance = qloanamount
+                  }
 
-              const resultTerm = await lastValueFrom(this.masterDataService.getTerm(`01`, quoitem.cd_size_model))
-              let netfinance;
-              if (quoitem.cd_is_include_loanamount ? true : false) {
-                netfinance = quoitem.cd_loan_amount + quoitem.cd_insurance_plan_price
-              } else {
-                netfinance = quoitem.cd_loan_amount
+                  // === stop trigger bypass loading screen (27/10/2022) ===
+                  this.loadingService.hideLoader
+
+
+                  // === map api with return value ====
+                  this.brandList = res[1].data
+                  this.modelList = res[2].data
+                  this.modelListFilter = this.modelList.filter((items: { brand_code: any; }) => {
+                    return items.brand_code == qcarbrand
+                  })
+                  this.rateSelect = resultRateMaster.data
+                  this.paymentCountSelect = resultTerm.data
+                  this.InsuranceListTemp = resultInsuranceMaster.data
+                  this.InsuranceList = Array.from(new Set(resultInsuranceMaster.data.map((a: { insurer_code: string }) => a.insurer_code)))
+                    .map(insurer_code => {
+                      return resultInsuranceMaster.data.find((a: { insurer_code: string }) => a.insurer_code === insurer_code)
+                    })
+                  this.InsuranceListFilter = this.InsuranceListTemp.filter((items: { insurer_code: any; }) => {
+                    return items.insurer_code == qinsurercode
+                  })
+
+                  // // === stamp dealer code ==== 
+                  // const sessionData = this.userSessionQuotation
+                  // // === checker ===
+                  // if (sessionData.channal == 'checker') {
+                  //   if (quoitem.sl_code) {
+                  //     this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code);
+                  //   }
+                  // } else {
+                  //   // === store ==== 
+                  //   if (this.userSessionQuotation.SELLER_ID) {
+                  //     this.productForm.controls.detailForm.controls.dealerCode.setValue(this.userSessionQuotation.SELLER_ID);
+                  //     this.productForm.controls.detailForm.controls.dealerCode.disable();
+                  //   }
+                  // }
+                  // === stamp value to field ==== 
+                  this.productForm.controls.detailForm.controls.dealerCode.setValue(qdealercode)
+                  this.productForm.controls.detailForm.controls.carBrandField.setValue(qcarbrand);
+                  this.productForm.controls.detailForm.controls.carBrandNameField.setValue(qcarbrandname);
+                  this.productForm.controls.detailForm.controls.carModelField.setValue(qcarmodelcode);
+                  this.productForm.controls.detailForm.controls.carModelNameField.setValue(qcarmodelname);
+                  this.productForm.controls.detailForm.controls.carColorField.setValue(qcolor);
+                  this.productForm.controls.detailForm.controls.sizeModelField.setValue(qsizemodel);
+                  this.productForm.controls.detailForm.controls.loanAmountField.setValue(qloanamount);
+                  // this.productForm.controls.detailForm.controls.productValueField.setValue();
+                  // this.productForm.controls.detailForm.controls.downPaymentField.setValue();
+                  this.productForm.controls.detailForm.controls.interestRateField.setValue(qrate);
+                  this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(qterm);
+                  // === insurer code and name set (25/05/2022) === 
+                  this.productForm.controls.detailForm.controls.insurerCodeField.setValue(qinsurercode);
+                  this.productForm.controls.detailForm.controls.insurerNameField.setValue(qinsurername);
+                  this.productForm.controls.detailForm.controls.insuranceCodeField.setValue(qinsurancecode);
+                  this.productForm.controls.detailForm.controls.insuranceNameField.setValue(qinsurancename);
+                  this.productForm.controls.detailForm.controls.insuranceYearField.setValue(qinsuranceyear)
+                  this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(qinsuranceplan);
+                  this.productForm.controls.detailForm.controls.isincludeloanamount.setValue(qisincludealoneamount);
+                  this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(qfactoryprice);
+                  this.productForm.controls.detailForm.controls.paymentValueField.setValue(qpaymentvalue);
+                  // === for show coverage (24/08/2022) ===
+                  // this.coverage = qfactoryprice;
+                  // === new coverage total loss from DB function (29/08/2022) ===
+                  const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss(qinsurancecode, (resultMaxLtv.data[0].maxltv)))
+                  this.coverage = resultCoveragetotalloss.data[0].coverage_total_loss ? resultCoveragetotalloss.data[0].coverage_total_loss : 0
+                  this.factoryprice = qfactoryprice
+
+
+                  // === stamp new field form total-loss phase to field (29/08/2022) ===
+                  this.coverage = qcoveragetotalloss
+                  this.productForm.controls.detailForm.controls.maxltvField.setValue(qmaxltv)
+                  this.productForm.controls.detailForm.controls.engineNoField.setValue(qenginenumber)
+                  this.productForm.controls.detailForm.controls.chassisNoField.setValue(qchassisnumber)
+                  this.productForm.controls.detailForm.controls.runningengineNoField.setValue(qenginenorunning)
+                  this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(qchassisnorunning)
+                  this.productForm.controls.detailForm.controls.priceincludevatField.setValue(qpriceincludevat)
+
+
+                  // === finish stamp data === 
+
+                  // === show paymentvalue (30/05/2022) ===
+                  if (
+                    this.productForm.controls.detailForm.controls.factoryPriceValueField.value &&
+                    this.productForm.controls.detailForm.controls.interestRateField.value &&
+                    this.productForm.controls.detailForm.controls.paymentRoundCountValueField.value &&
+                    this.productForm.controls.detailForm.controls.loanAmountField.value
+                  ) {
+                    this.lockbtncalculate$.next(false)
+                    this.onbtnpaymentcalculate();
+                  }
+                  else {
+                    // === clear payment value when condition out match ===
+                    this.lockbtncalculate$.next(true)
+                    this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+                    this.paymentvalue$.next(0);
+                    this.out_stand = 0
+                    this.showpaymentvalue$.next(false)
+                  }
+
+                  // this.loadFinish = true;
+
+                }
+                this.countload++
               }
 
-              const resultPaymentValue = await lastValueFrom(this.masterDataService.getPaymentValue(netfinance, quoitem.cd_payment_round_count, quoitem.cd_interest_rate))
-
-
-              this.rateSelect = resultRateMaster.data
-              this.paymentCountSelect = resultTerm.data
-              this.InsuranceListTemp = resultInsuranceMaster.data
-              this.InsuranceList = Array.from(new Set(resultInsuranceMaster.data.map((a: { insurer_code: string }) => a.insurer_code)))
-                .map(insurer_code => {
-                  return resultInsuranceMaster.data.find((a: { insurer_code: string }) => a.insurer_code === insurer_code)
-                })
-              this.InsuranceListFilter = this.InsuranceListTemp.filter((items: { insurer_code: any; }) => {
-                return items.insurer_code == quoitem.cd_insurer_code
-              })
-
-              // === stamp value to field ==== 
-
-              this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code);
-              this.productForm.controls.detailForm.controls.carBrandField.setValue(quoitem.cd_brand_code);
-              this.productForm.controls.detailForm.controls.carBrandNameField.setValue(quoitem.cd_brand_name ?? '');
-              this.productForm.controls.detailForm.controls.carModelField.setValue(quoitem.cd_model_code);
-              this.productForm.controls.detailForm.controls.carModelNameField.setValue(quoitem.cd_model_name ?? '');
-              this.productForm.controls.detailForm.controls.carColorField.setValue(quoitem.cd_color_name ?? '');
-              this.productForm.controls.detailForm.controls.sizeModelField.setValue(quoitem.cd_size_model ?? '');
-              this.productForm.controls.detailForm.controls.loanAmountField.setValue(quoitem.cd_loan_amount);
-              this.productForm.controls.detailForm.controls.interestRateField.setValue(quoitem.cd_interest_rate);
-              this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(quoitem.cd_payment_round_count);
-              this.productForm.controls.detailForm.controls.insurerCodeField.setValue(quoitem.cd_insurer_code ?? '');
-              this.productForm.controls.detailForm.controls.insurerNameField.setValue(quoitem.cd_insurer_name ?? '');
-              this.productForm.controls.detailForm.controls.insuranceCodeField.setValue(quoitem.cd_insurance_code ?? '');
-              this.productForm.controls.detailForm.controls.insuranceNameField.setValue(quoitem.cd_insurance_name ?? '');
-              this.productForm.controls.detailForm.controls.insuranceYearField.setValue(quoitem.cd_insurance_year ?? null);
-              this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(quoitem.cd_insurance_plan_price);
-              this.productForm.controls.detailForm.controls.isincludeloanamount.setValue(quoitem.cd_is_include_loanamount ? true : false);
-              this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(quoitem.cd_factory_price);
-              this.productForm.controls.detailForm.controls.paymentValueField.setValue(quoitem.cd_payment_value ?? null);
-
-
-              // === for show coverage (24/08/2022) ===
-              // this.coverage = qfactoryprice;
-              // === new coverage total loss from DB function (29/08/2022) ===
-              const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss((quoitem.cd_insurance_code ?? ''), (resultMaxLtv.data[0].maxltv)))
-              this.coverage = resultCoveragetotalloss.data[0].coverage_total_loss ? resultCoveragetotalloss.data[0].coverage_total_loss : 0
-              this.factoryprice = quoitem.cd_factory_price
-
-
-              // === stamp new field form total-loss phase to field (29/08/2022) ===
-
-              this.productForm.controls.detailForm.controls.maxltvField.setValue(quoitem.cd_max_ltv);
-              this.productForm.controls.detailForm.controls.engineNoField.setValue(quoitem.cd_engine_number);
-              this.productForm.controls.detailForm.controls.chassisNoField.setValue(quoitem.cd_chassis_number);
-              this.productForm.controls.detailForm.controls.runningengineNoField.setValue(quoitem.cd_engine_no_running);
-              this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(quoitem.cd_chassis_no_running);
-              this.productForm.controls.detailForm.controls.priceincludevatField.setValue(quoitem.cd_price_include_vat);
-
-
-              // === finish stamp data === 
-
-              // === show paymentvalue (30/05/2022) ===
-              if (
-                this.productForm.controls.detailForm.controls.factoryPriceValueField &&
-                this.productForm.controls.detailForm.controls.interestRateField &&
-                this.productForm.controls.detailForm.controls.paymentRoundCountValueField &&
-                this.productForm.controls.detailForm.controls.loanAmountField
-              ) {
-                this.lockbtncalculate$.next(false)
-                this.onbtnpaymentcalculate();
-              }
-              else {
-                // === clear payment value when condition out match ===
-                this.lockbtncalculate$.next(true)
-                console.log('756')
-                this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
-                this.paymentvalue$.next(0);
-                this.out_stand = 0
-                this.showpaymentvalue$.next(false)
-              }
+              // ==== add warning alert about interestrate 1.39 (add-on 02/08/2022) ====
 
             }
-
             this.loadingService.hideLoader()
-          }
+          
 
 
         })

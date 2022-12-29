@@ -9,6 +9,7 @@
                     <mat-dialog-content class="mat-typography" style="max-height: 19em;">
                         <div>
                             <html id="econsentelement">
+
                             <body>
                                 <div class="flex-center">
                                     <img style="max-width: 80px;" src="./../../../../assets/image/Logo1.png">
@@ -36,7 +37,9 @@
                                     {{data.phone_number}}</p><br>
                                 <p>ประเภทสินเชื่อ เช่าซื้อ</p><br>
                                 <p>หมายเลขอ้างอิง {{data.application_no}}</p><br>
-                                <p>วันเวลาที่ทำรายการความยินยอมในการเปิดเผยข้อมูล {{data.currentDate !== null ? (data.currentDate | thaidate: 'main'): ''}} {{data.currentDate !== null ? (data.currentDate | date: 'HH:mm:ss'): ''}} ช่องทางที่ทำรายการ
+                                <p>วันเวลาที่ทำรายการความยินยอมในการเปิดเผยข้อมูล {{data.currentDate !== null ?
+                                    (data.currentDate | thaidate: 'main'): ''}} {{data.currentDate !== null ?
+                                    (data.currentDate | date: 'HH:mm:ss'): ''}} ช่องทางที่ทำรายการ
                                     MPLUS
                                 </p><br>
                                 <p>ความยินยอมนี้จัดทำขึ้นด้วยความสมัครใจของข้าพเจ้าและส่งผ่านระบบอินเทอร์เน็ตให้แก่
@@ -77,7 +80,8 @@
                             {{item.label}}
                         </mat-radio-button>
                     </mat-radio-group>
-                    <button mat-raised-button color="primary" [disabled]="!this.confirmEconsentForm.controls.econsentvalue.valid"
+                    <button mat-raised-button color="primary"
+                        [disabled]="!this.confirmEconsentForm.controls.econsentvalue.valid"
                         (click)="onClickAcceptEconsent()">ยืนยันรายการ</button>
                 </div>
             </mat-step>

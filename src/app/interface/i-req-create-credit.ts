@@ -11,6 +11,7 @@ export interface IReqCreateCredit {
     payment_value: number | null;
     payment_round_count: number | null;
     insurance_code: string;
+    insurance_name: string;
     insurance_year: number | null;
     insurance_plan_price: number | null;
     is_include_loanamount: number | null;
@@ -18,6 +19,13 @@ export interface IReqCreateCredit {
     size_model: string;
     insurer_code: string;
     insurer_name: string;
+    coverage_total_loss: number | null;
+    max_ltv: number | null;
+    price_include_vat: number | null;
+    engine_number: string;
+    chassis_number: string;
+    engine_no_running: string;
+    chassis_no_running: string;
     dealer_code: string;
 }
 

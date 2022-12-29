@@ -245,6 +245,8 @@ export interface IResQuotationDetailData {
     ciz_stayed_year: number;
     ciz_stayed_month: number;
     ciz_maried_status: number;
+
+    // == addon MPLS ===
     ciz_quo_stage: number;
     quo_econsent_flag: string;
     quo_otp_phone: string;
@@ -255,6 +257,7 @@ export interface IResQuotationDetailData {
     ciz_age?: number;
     ciz_phone_valid_status?: string;
     cizcard_status?: string;
+    quo_dopa_status: string;
 
 
 }

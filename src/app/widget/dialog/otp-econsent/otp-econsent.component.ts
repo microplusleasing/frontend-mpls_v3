@@ -13,11 +13,11 @@ export interface econsentValue {
 }
 
 @Component({
-  selector: 'app-opt-econsent',
-  templateUrl: './opt-econsent.component.html',
-  styleUrls: ['./opt-econsent.component.scss']
+  selector: 'app-otp-econsent',
+  templateUrl: './otp-econsent.component.html',
+  styleUrls: ['./otp-econsent.component.scss']
 })
-export class OptEconsentComponent implements OnInit {
+export class OtpEconsentComponent implements OnInit {
 
   _tabindex: number = 0
   _editabletab1: boolean = true;
@@ -26,6 +26,12 @@ export class OptEconsentComponent implements OnInit {
   _createotpResMsg: string = ''
   _validationResMsg: string = ''
   otp_validation: boolean = false;
+
+  econsent_valid_status: boolean = false
+
+  econsentimageblob: (Blob | null) = null;
+
+
 
   // === variable send data back via close dialog ===
   validsuccess: boolean = false
@@ -68,13 +74,15 @@ export class OptEconsentComponent implements OnInit {
     otpvalidation: this.otpvalidation
   })
 
+  
+
 
 
   constructor(
     private fb: FormBuilder,
     private quotationService: QuotationService,
     private loadingService: LoadingService,
-    public dialogRef: MatDialogRef<OptEconsentComponent>,
+    public dialogRef: MatDialogRef<OtpEconsentComponent>,
     @Inject(MAT_DIALOG_DATA) public data: IDialogEconsentOtpOpen
   ) {
 
@@ -84,7 +92,7 @@ export class OptEconsentComponent implements OnInit {
 
     dialogRef.backdropClick().subscribe(() => {
       // Close the dialog
-      dialogRef.close({ status: 'xxxxx', data: 'xxxx' });
+      dialogRef.close({ status: this.econsent_valid_status, data: '' });
     })
 
   }
@@ -127,10 +135,26 @@ export class OptEconsentComponent implements OnInit {
       quotationid: quotationid,
       refid: refid,
       phone_no: quophoneno
-    }).subscribe((res) => {
+    }).subscribe(async (res) => {
       console.log(`res otp Data : ${JSON.stringify(res)}`)
       if (res.status == 200) {
-        this._tabindex = 1
+        const divfortest = document.getElementById('econsentelement');
+
+        if (divfortest) {
+          const imageblob = await htmlToImage.toBlob(divfortest, {
+            quality: 1,
+            style: { 
+              background: 'white'
+            },
+          })
+
+          this.econsentimageblob = imageblob
+          this._tabindex = 1
+        } else {
+          this.loadingService.hideLoader()
+          console.log('imageblob is null')
+        }
+
       } else {
         this._createotpResMsg = res.message
       }
@@ -145,32 +169,27 @@ export class OptEconsentComponent implements OnInit {
       console.log(`this is otpfield value : ${otpfield}`)
 
       this.loadingService.showLoader()
-      const divfortest = document.getElementById('econsentelement');
 
-      if (divfortest) {
-        const imageblob = await htmlToImage.toBlob(divfortest, {
-          quality: 1,
-          style: { background: 'white' },
-        })
 
         let fd = new FormData();
 
         let itemobj = {
-          quotationid: '',
-          otp_value: '',
-          phone_no: '',
+          quotationid: this.data.quotationid,
+          otp_value: otpfield,
+          phone_no: this.data.phone_number,
         }
 
         const itemString = JSON.stringify(itemobj)
 
-        if (imageblob) {
+        if (this.econsentimageblob) {
           fd.append('item', itemString)
-          fd.append("blob", imageblob, 'econsentblob');
+          fd.append("econsentimage", this.econsentimageblob);
 
           await lastValueFrom(this.quotationService.MPLS_validation_otp_econsent(fd)).then((res) => {
             this.loadingService.hideLoader()
             if (res.status) {
               // *** save econst image to db (oracle) ***
+              this.econsent_valid_status = true
               this.validsuccess = true
               this._editabletab1 = false
               this._editabletab2 = false
@@ -183,12 +202,11 @@ export class OptEconsentComponent implements OnInit {
             console.log(`Error when Validation Phone.NO : ${e.message}`)
           })
         } else {
+          this.loadingService.hideLoader()
           console.log('imageblob is null')
         }
 
-      } else {
-        console.log(`ไม่พบ element ในการบันทึกรูป jpeg`)
-      }
+      
     }
   }
 
@@ -220,8 +238,8 @@ export class OptEconsentComponent implements OnInit {
 
   closeDialog() {
     this.dialogRef.close({
-      status: 'xxx',
-      data: 'xxx'
+      status: this.econsent_valid_status,
+      data: this.econsent_valid_status ? 'success' : 'fail'
     })
   }
 

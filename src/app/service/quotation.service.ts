@@ -25,6 +25,7 @@ import { IResValidastionEconsent } from '../interface/i-res-validastion-econsent
 import { IReqValidationEconsent } from '../interface/i-req-validation-econsent';
 import { IResGetServerTime } from '../interface/i-res-get-server-time';
 import { IReqCreateCredit } from '../interface/i-req-create-credit';
+import { IResCreateOrUpdateCitizenInfoData } from '../interface/i-res-create-or-update-citizen-info-data';
 
 
 @Injectable({
@@ -34,11 +35,13 @@ export class QuotationService {
 
   dopastatus: {
     message: string,
+    messageheader: string,
     status: boolean
   } = {
-      message: '',
-      status: false
-    }
+    message: '',
+    status: false,
+    messageheader: ''
+  }
 
   phonevalidstatus: string = ''
 
@@ -158,6 +161,17 @@ export class QuotationService {
     return this.http.post<IResBasic>(url, formData)
   }
 
+  MPLS_create_or_update_citizendata(formData: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_or_update_citizendata`
+    return this.http.post<IResCreateOrUpdateCitizenInfoData>(url, formData)
+  }
+
+  // *** update cancle status (quo_status = '3') ***
+  MPLS_cancle_quotation(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_cancle_quotation?quotationid=${quotationid}`
+    return this.http.get<IResBasic>(url)
+
+  }
   // *** update phone number when close phone validation dialog (OTP validation phone number) ***
   MPLS_update_phone_number(data: IReqPhoneupdate) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_update_phone_number?quotationid=${data.quotationid}&phone_number=${data.phone_number}`
@@ -237,14 +251,16 @@ export class QuotationService {
 
           if (resultdata.status_code !== '0') {
 
-            if (resultdata.status_desc == '' || resultdata.status_desc == null) {
+            if (resultdata.status_desc == '' || resultdata.status_desc == null || resultdata.status_desc == '500') {
               this.dopastatus = {
                 message: `❌ ไม่สามารถเชื่อมต่อกับระบบฐานข้อมูลกรมการปกครองได้`,
+                messageheader: `ไม่สามารถเชื่อมต่อกับระบบฐานข้อมูลกรมการปกครองได้`,
                 status: false
               }
             } else {
               this.dopastatus = {
-                message: `❌ สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc}`,
+                message: `❌ สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc ? resultdata.status_desc : ''}`,
+                messageheader: `สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc ? resultdata.status_desc : ''}`,
                 status: false
               }
             }
@@ -252,18 +268,21 @@ export class QuotationService {
             // === valid citizenid card ===
             this.dopastatus = {
               message: `✅ สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc}`,
+              messageheader: '',
               status: true
             }
           }
         } else {
           this.dopastatus = {
             message: ``,
+            messageheader: ``,
             status: false
           }
         }
       }, error: (e) => {
         this.dopastatus = {
           message: ``,
+          messageheader: ``,
           status: false
         }
       }, complete: () => {
@@ -275,6 +294,7 @@ export class QuotationService {
   cleardopastatus() {
     this.dopastatus = {
       message: ``,
+      messageheader: ``,
       status: false
     }
   }

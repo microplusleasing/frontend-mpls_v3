@@ -2,17 +2,21 @@
   <form [formGroup]="cizForm">
     <div [formGroup]="maincitizenForm">
       <div class="flexbox">
-        <button mat-raised-button color="primary" (click)="onClickDipchipBtn()">Dipchip</button>
+        <button mat-raised-button color="primary" (click)="onClickDipchipBtn()"
+          *ngIf="this.showdipchipbtn">Dipchip</button>
       </div>
       <div class="flex-image-header">
-        <img [src]="cizCardImage" class="img-box">
+        <div>
+          <img [src]="cizCardImage" class="img-box"><br>
+          <span style="color: red;">{{this.quotationService.dopastatus.messageheader}}</span>
+        </div>
         <img [src]="cameraImage" class="img-box">
       </div>
       <div class="flexbox">
-        <mat-form-field appearance="fill">
-          <mat-select required [formControl]="titleName">
+        <mat-form-field appearance="outline">
+          <mat-select required [formControl]="titleCode">
             <mat-option [value]="null" disabled hidden>เลือกคำนำหน้า</mat-option>
-            <mat-option *ngFor="let item of masterTitle.data" [value]="item.title_name">{{item.title_name}}</mat-option>
+            <mat-option *ngFor="let item of masterTitle.data" [value]="item.title_id">{{item.title_name}}</mat-option>
           </mat-select>
           <mat-label>
             คำนำหน้า
@@ -20,19 +24,19 @@
           <mat-error *ngIf="this.titleCode.invalid">กรุณากรอกคำนำหน้า</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <mat-label>ชื่อ</mat-label>
           <input matInput required [formControl]="firstName">
           <mat-error *ngIf="this.firstName.invalid">กรุณากรอกชื่อ</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <mat-label>นามสกุล</mat-label>
           <input matInput required [formControl]="lastName">
           <mat-error *ngIf="this.lastName.invalid">กรุณากรอกนามสกุล</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <mat-select required [formControl]="gender">
             <mat-option [value]="null" disabled hidden>เลือกคำนำหน้า</mat-option>
             <mat-option *ngFor="let item of masterGender" [value]="item.value">{{item.name}}</mat-option>
@@ -43,37 +47,31 @@
           <mat-error *ngIf="this.gender.invalid">กรุณากรอกเพศ</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
-          <mat-label>เบอร์โทรศัพท์</mat-label>
-          <input matInput required [formControl]="phoneNumber">
-          <mat-error *ngIf="this.phoneNumber.invalid">{{getErrorMessagePhone()}}</mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <mat-label>เลขบัตรประชาชน</mat-label>
           <input matInput required [formControl]="citizenId">
           <mat-error *ngIf="this.citizenId.invalid">กรุณากรอกเลขบัตรประชาชน</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <mat-label>วันเกิด</mat-label>
           <input matInput required type="date" [formControl]="birthDate">
           <mat-error *ngIf="this.birthDate.invalid">กรุณากรอกวันเกิด</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <mat-label>วันที่ออกบัตร</mat-label>
           <input matInput required type="date" [formControl]="issueDate">
           <mat-error *ngIf="this.issueDate.invalid">กรุณากรอกวันที่ออกบัตร</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <mat-label>วันบัตรหมดอายุ</mat-label>
           <input matInput required type="date" [formControl]="expireDate">
           <mat-error *ngIf="this.expireDate.invalid">กรุณากรอกวันบัตรหมดอายุ</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <mat-label>สถานที่ออกบัตร</mat-label>
           <input matInput required [formControl]="issuePlace">
           <mat-error *ngIf="this.issuePlace.invalid">กรุณากรอกสถานที่ออกบัตร</mat-error>
@@ -88,40 +86,137 @@
     </div>
 
     <div class="flexbox">
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="outline">
         <mat-label>ที่อยู่</mat-label>
         <input matInput required [formControl]="address">
         <mat-error *ngIf="this.address.invalid">กรุณากรอกที่อยู่</mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="outline">
         <mat-label>แขวง/ตำบล</mat-label>
         <input matInput required [formControl]="subDistrict">
         <mat-error *ngIf="this.subDistrict.invalid">กรุณากรอก แขวง/ตำบล</mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="outline">
         <mat-label>เขต/อำเภอ</mat-label>
         <input matInput required [formControl]="district">
         <mat-error *ngIf="this.district.invalid">กรุณากรอก เขต/อำเภอ</mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="fill">
-        <mat-select required [formControl]="provinceName">
+      <mat-form-field appearance="outline">
+        <mat-select required [formControl]="provinceCode">
           <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
-          <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_name">{{item.prov_name}}</mat-option>
+          <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_code">{{item.prov_name}}</mat-option>
         </mat-select>
         <mat-label>
           จังหวัด
         </mat-label>
-        <mat-error *ngIf="this.provinceName.invalid">กรุณากรอกจังหวัด</mat-error>
+        <mat-error *ngIf="this.provinceCode.invalid">กรุณากรอกจังหวัด</mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="outline">
         <mat-label>รหัสไปรษณีย์</mat-label>
         <input matInput required [formControl]="postalCode">
         <mat-error *ngIf="this.postalCode.invalid">กรุณากรอกรหัสไปรษณีย์</mat-error>
       </mat-form-field>
+
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- ข้อมูลทั่วไป -->
+    <div [formGroup]="generalinfoForm">
+      <div class="header-left">
+        ข้อมูลส่วนบุคคล
+      </div>
+
+      <div class="flexbox">
+        <!-- เบอร์โทรศัพท์ -->
+
+        <mat-form-field appearance="outline">
+          <mat-label>เบอร์โทรศัพท์</mat-label>
+          <input matInput required [formControl]="phoneNumber">
+          <mat-error *ngIf="this.phoneNumber.invalid">{{getErrorMessagePhone()}}</mat-error>
+        </mat-form-field>
+
+        <!-- Email -->
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput [formControl]="email">
+          <mat-error *ngIf="email?.invalid && email.errors?.['required']">กรุณากรอก Email</mat-error>
+          <mat-error *ngIf="email?.invalid && email.errors?.['email']">กรุณากรอก Email ที่ถูกต้อง</mat-error>
+        </mat-form-field>
+
+        <!-- สถานภาพ -->
+        <mat-form-field appearance="outline">
+          <mat-label>สถานภาพ</mat-label>
+          <mat-select [formControl]="mariedStatus">
+            <mat-option [value]="undefined" disabled hidden>เลือกสถานภาพ</mat-option>
+            <mat-option *ngFor="let mmd of masterMariedStatus.data" [value]="mmd.code">
+              {{mmd.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="mariedStatus?.invalid && mariedStatus.errors?.['required']">กรุณาเลือกสถานภาพ</mat-error>
+        </mat-form-field>
+
+        <!-- ชื่อเล่น -->
+
+        <mat-form-field appearance="outline">
+          <mat-label>ชื่อเล่น</mat-label>
+          <input matInput [formControl]="nickName">
+          <mat-error *ngIf="nickName?.invalid && nickName.errors?.['required']">กรุณากรอกชื่อเล่น</mat-error>
+        </mat-form-field>
+
+        <!-- ลักษณะที่พักอาศัย -->
+
+        <mat-form-field appearance="outline">
+          <mat-label>ลักษณะที่พักอาศัย</mat-label>
+          <mat-select [formControl]="houseType">
+            <mat-option [value]="undefined" disabled hidden>เลือกลักษณะที่พักอาศัย</mat-option>
+            <mat-option *ngFor="let ht of masterHouseType.data" [value]="ht.code">
+              {{ht.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="houseType?.invalid && houseType.errors?.['required']">เลือกลักษณะที่พักอาศัย</mat-error>
+          <!-- <input matInput [formControl]="houseType"> -->
+        </mat-form-field>
+
+        <!-- จำนวนปีที่พักอาศัย -->
+
+        <mat-form-field appearance="outline">
+          <mat-label>จำนวนปีที่พักอาศัย</mat-label>
+          <input matInput [formControl]="stayedYear" type="number">
+          <mat-error *ngIf="stayedYear?.invalid && stayedYear.errors?.['required']">กรอกจำนวนปีที่พักอาศัย</mat-error>
+          <mat-error *ngIf="stayedYear?.invalid && stayedYear.errors?.['pattern']">ระบุจำนวนระหว่าง 0-99</mat-error>
+        </mat-form-field>
+
+        <!-- จำนวนเดือนที่พักอาศัย -->
+
+        <mat-form-field appearance="outline">
+          <mat-label>จำนวนเดือนที่พักอาศัย</mat-label>
+          <input matInput [formControl]="stayedMonth" type="number">
+          <mat-error
+            *ngIf="stayedMonth?.invalid && stayedMonth.errors?.['required']">กรอกจำนวนเดิอนที่พักอาศัย</mat-error>
+          <mat-error *ngIf="stayedMonth?.invalid && stayedMonth.errors?.['pattern']">ระบุจำนวนระหว่าง 0-12</mat-error>
+        </mat-form-field>
+
+        <!-- กรรมสิทธิ์ที่พักอาศัย -->
+
+        <mat-form-field appearance="outline">
+          <mat-label>กรรมสิทธิ์ที่พักอาศัย</mat-label>
+          <mat-select [formControl]="houseOwnerType">
+            <mat-option [value]="undefined" disabled hidden>เลือกกรรมสิทธิ์ที่พักอาศัย</mat-option>
+            <mat-option *ngFor="let hot of masterHouseOwnerType.data" [value]="hot.status_code">
+              {{hot.status_name}}
+            </mat-option>
+          </mat-select>
+          <mat-error
+            *ngIf="houseOwnerType?.invalid && houseOwnerType.errors?.['required']">เลือกกรรมสิทธิ์ที่พักอาศัย</mat-error>
+        </mat-form-field>
+
+      </div>
 
     </div>
 
@@ -132,26 +227,30 @@
       <div class="header-left">
         ที่อยู่ปัจจุบัน
       </div>
+      <button class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('living')">
+        <mat-icon>file_upload</mat-icon>
+        ใช้ที่อยู่เดียวกับบัตรปชช.
+      </button>
       <div class="flexbox">
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline" style="width: 90%;">
           <mat-label>ที่อยู่</mat-label>
-          <input matInput [formControl]="_l_address">
+          <textarea matInput [formControl]="_l_address" [rows]="1"></textarea>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <mat-label>แขวง/ตำบล</mat-label>
           <input matInput [formControl]="_l_subDistrict">
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <mat-label>เขต/อำเภอ</mat-label>
           <input matInput [formControl]="_l_district">
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
-          <mat-select [formControl]="_l_provinceName">
+        <mat-form-field appearance="outline">
+          <mat-select [formControl]="_l_provinceCode">
             <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
-            <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_name">{{item.prov_name}}
+            <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_code">{{item.prov_name}}
             </mat-option>
           </mat-select>
           <mat-label>
@@ -159,9 +258,183 @@
           </mat-label>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="outline">
           <mat-label>รหัสไปรษณีย์</mat-label>
-          <input matInput formControlName="postalCode">
+          <input matInput [formControl]="_l_postalCode">
+        </mat-form-field>
+      </div>
+
+      <button mat-raised-button color="primary" (click)="opengooglemap()">เปิด Google map</button>
+
+      <div class="flexbox">
+        <mat-form-field appearance="outline" style="width: 50vh">
+          <mat-label>Latitude, Lontitude</mat-label>
+          <input matInput [formControl]="_l_lalon">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Latitude</mat-label>
+          <input matInput [formControl]="_l_latitude">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Longitude</mat-label>
+          <input matInput [formControl]="_l_longitude">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- ที่อยู่ส่งจดหมาย -->
+    <div [formGroup]="contactAddress">
+      <div class="header-left">
+        ที่อยู่ส่งจดหมาย
+      </div>
+      <button class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('contact')">
+        <mat-icon>file_upload</mat-icon>
+        ใช้ที่อยู่เดียวกับบัตรปชช.
+      </button>
+      <button class="button-mapping" mat-raised-button color="primary" (click)="samelivinAddress('contact')">
+        <mat-icon>file_upload</mat-icon>
+        ใช้ที่อยู่เดียวกับที่อยู่ปัจจุบัน
+      </button>
+      <div class="flexbox">
+        <mat-form-field appearance="outline" style="width: 90%;">
+          <mat-label>ที่อยู่</mat-label>
+          <textarea matInput [formControl]="_c_address" [rows]="1"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>แขวง/ตำบล</mat-label>
+          <input matInput [formControl]="_c_subDistrict">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>เขต/อำเภอ</mat-label>
+          <input matInput [formControl]="_c_district">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-select [formControl]="_c_provinceCode">
+            <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
+            <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_code">{{item.prov_name}}
+            </mat-option>
+          </mat-select>
+          <mat-label>
+            จังหวัด
+          </mat-label>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>รหัสไปรษณีย์</mat-label>
+          <input matInput [formControl]="_c_postalCode">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- ที่อยู่ตามทะเบียนบ้าน -->
+    <div [formGroup]="houseRegisAddress">
+      <div class="header-left">
+        ที่อยู่ตามทะเบียนบ้าน
+      </div>
+      <button class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('houseregis')">
+        <mat-icon>file_upload</mat-icon>
+        ใช้ที่อยู่เดียวกับบัตรปชช.
+      </button>
+      <button class="button-mapping" mat-raised-button color="primary" (click)="samelivinAddress('houseregis')">
+        <mat-icon>file_upload</mat-icon>
+        ใช้ที่อยู่เดียวกับที่อยู่ปัจจุบัน
+      </button>
+      <button class="button-mapping" mat-raised-button color="primary" (click)="samecontactAddress('houseregis')">
+        <mat-icon>file_upload</mat-icon>
+        ใช้ที่อยู่เดียวกับที่อยู่ส่งจดหมาย
+      </button>
+      <div class="flexbox">
+        <mat-form-field appearance="outline" style="width: 90%;">
+          <mat-label>ที่อยู่</mat-label>
+          <textarea matInput [formControl]="_h_address" [rows]="1"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>แขวง/ตำบล</mat-label>
+          <input matInput [formControl]="_h_subDistrict">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>เขต/อำเภอ</mat-label>
+          <input matInput [formControl]="_h_district">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-select [formControl]="_h_provinceCode">
+            <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
+            <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_code">{{item.prov_name}}
+            </mat-option>
+          </mat-select>
+          <mat-label>
+            จังหวัด
+          </mat-label>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>รหัสไปรษณีย์</mat-label>
+          <input matInput [formControl]="_h_postalCode">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- ที่อยู่ที่ทำงาน -->
+    <div [formGroup]="workAddress">
+      <div class="header-left">
+        ที่อยู่ที่ทำงาน
+      </div>
+      <button class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('work')">
+        <mat-icon>file_upload</mat-icon>
+        ใช้ที่อยู่เดียวกับบัตรปชช.
+      </button>
+      <button class="button-mapping" mat-raised-button color="primary" (click)="samelivinAddress('work')">
+        <mat-icon>file_upload</mat-icon>
+        ใช้ที่อยู่เดียวกับที่อยู่ปัจจุบัน
+      </button>
+      <button class="button-mapping" mat-raised-button color="primary" (click)="samecontactAddress('work')">
+        <mat-icon>file_upload</mat-icon>
+        ใช้ที่อยู่เดียวกับที่อยู่ส่งจดหมาย
+      </button>
+      <div class="flexbox">
+        <mat-form-field appearance="outline" style="width: 90%;">
+          <mat-label>ที่อยู่</mat-label>
+          <textarea matInput [formControl]="_w_address" type="textarea" [rows]="1"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>แขวง/ตำบล</mat-label>
+          <input matInput [formControl]="_w_subDistrict">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>เขต/อำเภอ</mat-label>
+          <input matInput [formControl]="_w_district">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-select [formControl]="_w_provinceCode">
+            <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
+            <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_code">{{item.prov_name}}
+            </mat-option>
+          </mat-select>
+          <mat-label>
+            จังหวัด
+          </mat-label>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>รหัสไปรษณีย์</mat-label>
+          <input matInput [formControl]="_w_postalCode">
         </mat-form-field>
       </div>
     </div>
@@ -173,7 +446,7 @@
       <span *ngIf="cizForm.controls.maincitizenForm.controls.age.valid">✅ : ผ่านเกณฑ์ในการอนุมัติออกรถ (ไม่ต่ำกว่า 20
         ปี)</span>
       <!-- dopa valid -->
-      <span style="color:red">{{this.quotationService.dopastatus.message}}</span>
+      <span>{{this.quotationService.dopastatus.message}}</span>
       <!-- phone valid -->
       <span> {{this.phonevalidstatus}}</span>
     </div>

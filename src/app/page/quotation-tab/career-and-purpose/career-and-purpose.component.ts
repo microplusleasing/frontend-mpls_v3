@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { IResQuotationDetail } from 'src/app/interface/i-res-quotation-detail';
+import { IResQuotationDetail, IResQuotationDetailData } from 'src/app/interface/i-res-quotation-detail';
 
 @Component({
   selector: 'app-career-and-purpose',
@@ -12,10 +13,20 @@ export class CareerAndPurposeComponent implements OnInit {
 
   @Input() quotationReq = {} as Observable<IResQuotationDetail>;
 
-  field1 = new FormControl('')
-  field2 = new FormControl('')
-  field3 = new FormControl('')
-  field4 = new FormControl('')
+
+  panelOpenState = false;
+  panelOpenState2 = false;
+  showSubCareer: boolean = false;
+  isRepresentative: boolean = false;
+  isotherDriver: boolean = false;
+  isotherResontobuy: boolean = false;
+  isnotbuyforyourself: boolean = false;
+  quotationresultData = {} as IResQuotationDetail;
+  quoitem = {} as IResQuotationDetailData
+  occupationMasterList: any;
+  finishLoad: boolean = false;
+  countload: number = 0;
+  is_edit: boolean = true;
 
   // *** career form ***
   mainCareerNameField = new FormControl()
@@ -187,12 +198,20 @@ export class CareerAndPurposeComponent implements OnInit {
   })
 
   constructor(
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private dialog: MatDialog
   ) {
 
   }
 
   ngOnInit(): void {
+    this.careerandpurposeForm.controls.careerForm.controls.isSubCareerField.valueChanges.subscribe((value) => {
+      (value == 1) ? this.showSubCareer = true : this.showSubCareer = false
+    })
+  }
+
+  onStageChageFormStepper() {
+
   }
 
 }

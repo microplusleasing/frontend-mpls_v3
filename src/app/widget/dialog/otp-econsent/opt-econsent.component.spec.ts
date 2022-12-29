@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OptEconsentComponent } from './opt-econsent.component';
+import { OptEconsentComponent } from './otp-econsent.component';
 
 describe('OptEconsentComponent', () => {
   let component: OptEconsentComponent;

@@ -137,6 +137,14 @@
                     </mat-form-field>
                 </div>
 
+                <div  *ngIf="false">
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>ราคาโรงงาน</mat-label>
+                        <input matInput formControlName="productValueField" type="number">
+                    </mat-form-field>
+                </div>
+
                 <div *ngIf="showPrice">
                     <mat-form-field appearance="outline">
                         <mat-label>ประกัน</mat-label>
@@ -210,7 +218,7 @@
                         <input formControlName="paymentValueField" type="number" class="form-control" [required]="true">
                     </div>
                 </div>
-                <mat-error *ngIf="detailForm.controls['paymentValueField'].hasError('required')">
+                <mat-error *ngIf="warningMsgPaymentValueField">
                     เลือกเงื่อนไขเพื่อคำนวณค่างวด
                 </mat-error>
                 <div *ngIf="(showpaymentvalue$ | async)">

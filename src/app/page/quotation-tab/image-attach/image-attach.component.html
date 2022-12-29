@@ -1,1 +1,30 @@
-<p>image-attach works!</p>
+<div class="card-container">
+  <div class="card">
+    <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
+      <mat-form-field>
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category">
+          <mat-option *ngFor="let category of categories" [value]="category.value">
+            {{ category.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <input type="file" accept="image/*" (change)="onFileChange($event)" #fileInput>
+      <input type="hidden" #hiddenInput>
+
+
+      <button mat-raised-button type="submit">Upload</button>
+    </form>
+  </div>
+</div>
+
+
+  <mat-expansion-panel *ngFor="let image of uploadedImages" (opened)="onPanelOpen(image)" class="card">
+    <mat-expansion-panel-header>
+      {{ image.name }} ({{ image.type }})
+    </mat-expansion-panel-header>
+    <img [src]="image.urlsanitizer" [alt]="'ha'">
+    <button mat-button (click)="deleteImage(image)">Delete</button>
+  </mat-expansion-panel>
+

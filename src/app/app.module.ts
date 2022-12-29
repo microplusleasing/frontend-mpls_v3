@@ -23,7 +23,7 @@ import { BasicSnackbarComponent } from './widget/snackbar/basic-snackbar/basic-s
 import { OtpVerifyDialogComponent } from './widget/dialog/otp-verify-dialog/otp-verify-dialog.component';
 import { NgOtpInputModule } from  'ng-otp-input';
 import { ImageAttachComponent } from './page/quotation-tab/image-attach/image-attach.component';
-import { OptEconsentComponent } from './widget/dialog/opt-econsent/opt-econsent.component';
+import { OtpEconsentComponent } from './widget/dialog/otp-econsent/otp-econsent.component';
 import { CareerAndPurposeComponent } from './page/quotation-tab/career-and-purpose/career-and-purpose.component';
 import { ThaidateformatDirective } from './directive/thaidateformat.directive';
 
@@ -43,7 +43,7 @@ import { ThaidateformatDirective } from './directive/thaidateformat.directive';
     BasicSnackbarComponent,
     OtpVerifyDialogComponent,
     ImageAttachComponent,
-    OptEconsentComponent,
+    OtpEconsentComponent,
     CareerAndPurposeComponent,
     ThaidateformatDirective,
   ],

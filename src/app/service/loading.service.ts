@@ -9,6 +9,7 @@ export class  LoadingService {
   loadingAction$ = this.loadingSubject.asObservable();
 
   showLoader() {
+    console.log(window.location.pathname);
     this.loadingSubject.next(true);
   }
 

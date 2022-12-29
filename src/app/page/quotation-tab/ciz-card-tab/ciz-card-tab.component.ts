@@ -2,6 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnIni
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { combineLatest, debounceTime, lastValueFrom, map, Observable, of, Subject } from 'rxjs';
 import { IReqFlagDipchip } from 'src/app/interface/i-req-flag-dipchip';
@@ -16,6 +17,7 @@ import { DipchipService } from 'src/app/service/dipchip.service';
 import { LoadingService } from 'src/app/service/loading.service';
 import { MasterDataService } from 'src/app/service/master.service';
 import { QuotationService } from 'src/app/service/quotation.service';
+import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 import { BasicSnackbarComponent } from 'src/app/widget/snackbar/basic-snackbar/basic-snackbar.component';
 import { environment } from 'src/environments/environment';
 
@@ -31,6 +33,9 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
   quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
   phonevalidstatus: string = ''
+  quotationid: string = ''
+  showdipchipbtn: boolean = false
+
 
   // === variable master variable ===
   masterTitle: IResMasterTitle = {} as IResMasterTitle
@@ -51,73 +56,75 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   // === MPLS_QUOTATION ===
   testinvalid = new FormControl('', Validators.required)
   uploadImg = new FormControl({ value: '', disabled: true })
-  titleCode = new FormControl('', Validators.required)
-  titleName = new FormControl('', Validators.required) // not show 
+  titleCode = new FormControl<string | undefined>('', Validators.required)
+  titleName = new FormControl<string | undefined>('', Validators.required) // not show 
   firstName = new FormControl('', Validators.required)
   lastName = new FormControl('', Validators.required)
   gender = new FormControl<number | null>(null, Validators.required)
-  phoneNumber = new FormControl<string>('', [
-    Validators.required,
-    Validators.pattern('^[0-9]{9,10}$')
-  ])
   // email = new FormControl('', Validators.required)
   citizenId = new FormControl('', [Validators.required, Validators.pattern('^[0-9]{13}$')])
   birthDate = new FormControl<string | null>(null, Validators.required)
   issueDate = new FormControl<string | null>(null, Validators.required)
   expireDate = new FormControl<string | null>(null, Validators.required)
   issuePlace = new FormControl('', Validators.required)
-  mariedStatus = new FormControl('', Validators.required)
-
-  // nickName = new FormControl('', Validators.required)
-  // houseType = new FormControl('', Validators.required)
-  // stayedYear = new FormControl('', [Validators.required, Validators.pattern('^(0?[0-9]|[1-9][0-9])$')])
-  // stayedMonth = new FormControl('', [Validators.required, Validators.pattern('^(0?[0-9]|1[012])$')])
-  // houseOwnerType = new FormControl('', Validators.required)
 
   address = new FormControl('', Validators.required)
   subDistrict = new FormControl('', Validators.required)
   district = new FormControl('', Validators.required)
-  provinceName = new FormControl('', Validators.required)
-  provinceCode = new FormControl('', Validators.required) // not show
+  provinceName = new FormControl<string | undefined>('', Validators.required)
+  provinceCode = new FormControl<string | undefined>('', Validators.required) // not show
   postalCode = new FormControl('', Validators.required)
 
-  _address = new FormControl('')
-  _subDistrict = new FormControl('')
-  _district = new FormControl('')
-  _provinceName = new FormControl('')
-  _provinceCode = new FormControl('') // not show
-  _postalCode = new FormControl('', Validators.pattern('^[0-9]{5}$'))
+  // === ข้อมูลทั่วไป ===
+  phoneNumber = new FormControl<string>('', [
+    Validators.required,
+    Validators.pattern('^[0-9]{9,10}$')
+  ])
+  email = new FormControl('', [
+    Validators.required,
+    Validators.email
+  ])
+  mariedStatus = new FormControl<number | null>(null, Validators.required)
+  nickName = new FormControl<string>('', Validators.required)
+  houseType = new FormControl<number | null>(null, Validators.required)
+  stayedYear = new FormControl<number | null>(null, [Validators.required, Validators.pattern('^(0?[0-9]|[1-9][0-9])$')])
+  stayedMonth = new FormControl<number | null>(null, [Validators.required, Validators.pattern('^(0?[0-9]|1[012])$')])
+  houseOwnerType = new FormControl<number | null>(null, Validators.required)
+
 
   // livingAddress 
   _l_address = new FormControl('')
   _l_subDistrict = new FormControl('')
   _l_district = new FormControl('')
-  _l_provinceName = new FormControl('')
-  _l_provinceCode = new FormControl('') // not show
+  _l_provinceName = new FormControl<string | undefined>('')
+  _l_provinceCode = new FormControl<string | undefined>('') // not show
   _l_postalCode = new FormControl('', Validators.pattern('^[0-9]{5}$'))
+  _l_lalon = new FormControl('')
+  _l_latitude = new FormControl('')
+  _l_longitude = new FormControl('')
 
   // contactAddress 
   _c_address = new FormControl('')
   _c_subDistrict = new FormControl('')
   _c_district = new FormControl('')
-  _c_provinceName = new FormControl('')
-  _c_provinceCode = new FormControl('') // not show
+  _c_provinceName = new FormControl<string | undefined>('')
+  _c_provinceCode = new FormControl<string | undefined>('') // not show
   _c_postalCode = new FormControl('', Validators.pattern('^[0-9]{5}$'))
 
   // houseRegisAddress 
   _h_address = new FormControl('')
   _h_subDistrict = new FormControl('')
   _h_district = new FormControl('')
-  _h_provinceName = new FormControl('')
-  _h_provinceCode = new FormControl('') // not show
+  _h_provinceName = new FormControl<string | undefined>('')
+  _h_provinceCode = new FormControl<string | undefined>('') // not show
   _h_postalCode = new FormControl('', Validators.pattern('^[0-9]{5}$'))
 
   // livingAddress 
   _w_address = new FormControl('')
   _w_subDistrict = new FormControl('')
   _w_district = new FormControl('')
-  _w_provinceName = new FormControl('')
-  _w_provinceCode = new FormControl('') // not show
+  _w_provinceName = new FormControl<string | undefined>('')
+  _w_provinceCode = new FormControl<string | undefined>('') // not show
   _w_postalCode = new FormControl('', Validators.pattern('^[0-9]{5}$'))
 
   lalon = new FormControl('')
@@ -131,15 +138,14 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
   maincitizenForm = this.fb.group({
     age: this.age,
-    phonevalid: this.phoneValid,
-    uploadImg: this.uploadImg,
+    // phonevalid: this.phoneValid,
+    // uploadImg: this.uploadImg,
     titleCode: this.titleCode,
     gender: this.gender,
     titleName: this.titleName,
     firstName: this.firstName,
     lastName: this.lastName,
     citizenId: this.citizenId,
-    phoneNumber: this.phoneNumber,
     // email: this.email,
     address: this.address,
     subDistrict: this.subDistrict,
@@ -159,33 +165,45 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     issuePlace: this.issuePlace,
   })
 
+  generalinfoForm = this.fb.group({
+    phoneNumber: this.phoneNumber,
+    email: this.email,
+    mariedStatus: this.mariedStatus,
+    nickName: this.nickName,
+    houseType: this.houseType,
+    stayedYear: this.stayedYear,
+    stayedMonth: this.stayedMonth,
+    houseOwnerType: this.houseOwnerType
+
+  })
+
   livingAddress = this.fb.group({
     address: this._l_address,
     subDistrict: this._l_subDistrict,
     district: this._l_district,
-    provinceCode: this._l_provinceName,
-    provinceName: this._l_provinceCode,
-    lalon: this.lalon,
-    la: this.la,
-    lon: this.lon,
+    provinceCode: this._l_provinceCode,
+    provinceName: this._l_provinceName,
     postalCode: this._l_postalCode,
+    lalon: this._l_lalon,
+    la: this._l_latitude,
+    lon: this._l_longitude
   })
 
   contactAddress = this.fb.group({
     address: this._c_address,
     subDistrict: this._c_subDistrict,
     district: this._c_district,
-    provinceCode: this._c_provinceName,
-    provinceName: this._c_provinceCode,
-    postalCode: this._postalCode,
+    provinceCode: this._c_provinceCode,
+    provinceName: this._c_provinceName,
+    postalCode: this._c_postalCode,
   })
 
   houseRegisAddress = this.fb.group({
     address: this._h_address,
     subDistrict: this._h_subDistrict,
     district: this._h_district,
-    provinceCode: this._h_provinceName,
-    provinceName: this._h_provinceCode,
+    provinceCode: this._h_provinceCode,
+    provinceName: this._h_provinceName,
     postalCode: this._h_postalCode,
   })
 
@@ -193,22 +211,25 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     address: this._w_address,
     subDistrict: this._w_subDistrict,
     district: this._w_district,
-    provinceCode: this._w_provinceName,
-    provinceName: this._w_provinceCode,
+    provinceCode: this._w_provinceCode,
+    provinceName: this._w_provinceName,
     postalCode: this._w_postalCode,
   })
 
   cizForm = this.fb.group({
     maincitizenForm: this.maincitizenForm,
+    generalinfoForm: this.generalinfoForm,
     livingAddress: this.livingAddress,
     contactAddress: this.contactAddress,
     houseRegisAddress: this.houseRegisAddress,
-    workAddress: this.workAddress
+    workAddress: this.workAddress,
+    phonevalid: this.phoneValid
   });
 
   constructor(
     private fb: FormBuilder,
     private cdRef: ChangeDetectorRef,
+    private router: Router,
     public quotationService: QuotationService,
     private loadingService: LoadingService,
     private masterDataService: MasterDataService,
@@ -218,14 +239,10 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   ) {
     super(dialog, _snackBar)
 
-    this.cizForm.controls.maincitizenForm.controls.titleName.valueChanges.subscribe((value) => {
-      const titleSelect = this.masterTitle.data.find((res) => { return value == res.title_name })
-      this.cizForm.controls.maincitizenForm.controls.titleCode.setValue(titleSelect?.title_id ? titleSelect?.title_id : '')
-    })
-
     this.cizForm.controls.maincitizenForm.controls.provinceName.valueChanges.subscribe((value) => {
       const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
       this.cizForm.controls.maincitizenForm.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
+
     })
 
     this.cizForm.controls.livingAddress.controls.provinceName.valueChanges.subscribe((value) => {
@@ -247,6 +264,18 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
       this.cizForm.controls.workAddress.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
     })
+
+    this.cizForm.controls.livingAddress.controls.lalon.valueChanges.subscribe((value) => {
+      const lalonStr = value;
+      if (lalonStr) {
+        let rpString = lalonStr.replace(/[\(\)|\s]/g, "");
+        let spitStr = rpString.split(",");
+        if (spitStr.length > 1) {
+          this.cizForm.controls.livingAddress.controls.la.setValue(spitStr[0])
+          this.cizForm.controls.livingAddress.controls.lon.setValue(spitStr[1])
+        }
+      }
+    })
     this.cizForm.controls.maincitizenForm.controls.birthDate.valueChanges.pipe(
       debounceTime(1500)
     ).subscribe({
@@ -259,6 +288,49 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
             const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
             // == set age to form field ==
             this.cizForm.controls.maincitizenForm.controls.age.setValue(agecalcualte.data[0].age_year)
+
+
+            this.quotationReq.subscribe((value) => {
+              if (value.data && value.data[0].ciz_age && value.data[0].ciz_age < 20) {
+                // code to execute if value.data[0].ciz_age is less than 20 (no valid)
+                this.quotationService.MPLS_cancle_quotation(value.data[0].quo_key_app_id).subscribe((response) => {
+                  if (response.status == 200) {
+
+                    // === Warning dialog and navigate dashboard ===
+                    this.dialog.open(MainDialogComponent, {
+                      panelClass: 'custom-dialog-container',
+                      data: {
+                        header: 'ไม่สามารถทำรายการได้',
+                        message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
+                        button_name: 'ปิด'
+                      }
+                    }).afterClosed().subscribe(result => {
+                      // === redirect to home page === 
+                      this.router.navigate(['/quotation-view']);
+                    });
+                  } else {
+                    this.snackbarfail(`Error : ${response.message}`)
+                  }
+                })
+              } else {
+                // code to execute if value.data[0].ciz_age is not less than 20 
+                // === case that new case (no quo_key_app_id) ====
+                if (agecalcualte.data[0].age_year < 20) {
+                  // === กรณีอายุไม่ถึง 20 ปี และไม่มี quo_key_app_id ====
+                  this.dialog.open(MainDialogComponent, {
+                    panelClass: `custom-dialog-container`,
+                    data: {
+                      header: `ไม่สามารถทำรายการได้`,
+                      message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
+                      button_name: `ปิด`
+                    }
+                  }).afterClosed().subscribe((result) => {
+                    // === redirect to home page === 
+                    this.router.navigate(['/quotation-view'])
+                  })
+                }
+              }
+            });
           }
         }
       }, error: (e) => {
@@ -272,11 +344,11 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   }
 
   getErrorMessagePhone() {
-    if (this.cizForm.controls.maincitizenForm.controls.phoneNumber.hasError('required')) {
+    if (this.cizForm.controls.generalinfoForm.controls.phoneNumber.hasError('required')) {
       return 'กรุณากรอกเบอร์โทรศัพท์';
     }
 
-    return this.cizForm.controls.maincitizenForm.controls.phoneNumber.hasError('pattern') ? 'กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง' : '';
+    return this.cizForm.controls.generalinfoForm.controls.phoneNumber.hasError('pattern') ? 'กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง' : '';
   }
 
 
@@ -286,31 +358,58 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
   ngOnInit(): void {
 
+    this.loadingService.showLoader()
     this.quotationReq.subscribe({
       next: (res) => {
-        // *** set phone valid status *** 
+        // *** set phone valid status ***
+
+        // === ปลดล๊อค form เมื่อมี record อยู่แล้ว ===
+        this.loadingService.hideLoader()
         if (res.data) {
+          this.showdipchipbtn = false;
           if (res.data.length !== 0) {
 
             const quodata = res.data[0]
 
-            // *** check and trigger field phone number on form field ***
-            if(quodata.phone_number == '') {
-              this.cizForm.controls.maincitizenForm.controls.phoneNumber.markAllAsTouched()
+            // *** กำหนดค่า quotationid ในหน้า ciz-card-tab ***
+            this.quotationid = quodata.quo_key_app_id
+
+            // *** ล๊อค field เบอร์โทรศัพท์ที่ได้ทำการ verify แล้ว (OTP_PHONE_VERIFY = 'Y') ***
+            if (quodata.otp_phone_verify == 'Y') {
+              this.cizForm.controls.generalinfoForm.controls.phoneNumber.disable()
             }
+
+            // *** check and trigger field phone number on form field ***
+            if (quodata.phone_number == '') {
+              this.cizForm.controls.generalinfoForm.controls.phoneNumber.markAllAsTouched()
+            }
+
             // *** set phone valid status text ***
             if (quodata.quo_key_app_id !== '') {
+
               if (quodata.ciz_phone_valid_status == 'Y') {
                 this.phonevalidstatus = `✅ : ได้รับการยืนยันเบอร์โทรศัพท์แล้ว`
               } else {
                 this.phonevalidstatus = `❌ : ยังไม่ได้รับการยืนยันเบอร์โทรศัพท์`
               }
             }
+
+
+            // *** ล๊อคฟิวส์พวกข้อมูลบนบัตรประชาชนไม่ให้แก้ไขกรณี case มาจากการ dipchip (dipchip_uuid is not null || dipchip_uuid !== '')
+
+            // if(quodata.dipchip_uuid !== '' && quodata.dipchip_uuid !== null) {
+            //   this.cizForm.controls.maincitizenForm.disable()
+            // }
+
           }
+        } else {
+          this.showdipchipbtn = true;
         }
       }, error: (e) => {
+        this.loadingService.hideLoader()
         console.log(`Error on get observable quotation result : ${e.messgae}`)
       }, complete: () => {
+        this.loadingService.hideLoader()
         console.log(`complete observe !`)
       }
     })
@@ -332,8 +431,30 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
         this.masterMariedStatus = resultMaster[2]
         this.masterHouseType = resultMaster[3]
         this.masterHouseOwnerType = resultMaster[4]
-
         this.quotationdatatemp = resultMaster[5]
+
+        this.cizForm.disable();
+
+        // === manage form diable , enable here ===
+
+        // *** ล๊อคฟิวส์พวกข้อมูลบนบัตรประชาชนไม่ให้แก้ไขกรณี case มาจากการ dipchip (dipchip_uuid is not null || dipchip_uuid !== '')
+        this.quotationReq.subscribe((res) => {
+          if (res && res.data && Array.isArray(res.data)) {
+            const quodata = res.data[0]
+            if (quodata.quo_key_app_id !== null && quodata.quo_key_app_id !== '') {
+              // === contain quo_key_app_id ===
+              this.cizForm.enable()
+
+              if (quodata.dipchip_uuid !== '' && quodata.dipchip_uuid !== null) {
+                this.cizForm.controls.maincitizenForm.disable()
+              }
+            }
+
+            if (quodata.ciz_phone_valid_status == 'Y') {
+              this.cizForm.controls.generalinfoForm.controls.phoneNumber.disable()
+            }
+          }
+        })
 
         if (this.quotationdatatemp.status == 200) {
           this.setquotationdata();
@@ -356,26 +477,33 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     this.cizForm.controls.maincitizenForm.controls.firstName.setValue(quoitem.first_name ?? '')
     this.cizForm.controls.maincitizenForm.controls.lastName.setValue(quoitem.last_name ?? '')
     this.cizForm.controls.maincitizenForm.controls.citizenId.setValue(quoitem.idcard_num ?? '')
-    this.cizForm.controls.maincitizenForm.controls.phoneNumber.setValue(quoitem.phone_number ?? '')
+    this.cizForm.controls.generalinfoForm.controls.phoneNumber.setValue(quoitem.phone_number ?? '')
     // this.cizForm.controls.maincitizenForm.controls.email.setValue(quoitem.email ?? '')
     this.cizForm.controls.maincitizenForm.controls.address.setValue(quoitem.ciz_address ?? '')
     this.cizForm.controls.maincitizenForm.controls.subDistrict.setValue(quoitem.ciz_sub_district ?? '')
     this.cizForm.controls.maincitizenForm.controls.district.setValue(quoitem.ciz_district ?? '')
     this.cizForm.controls.maincitizenForm.controls.gender.setValue(quoitem.ciz_gender ?? null)
-    this.cizForm.controls.maincitizenForm.controls.provinceName.setValue(quoitem.ciz_province_name ?? '')
     this.cizForm.controls.maincitizenForm.controls.provinceCode.setValue(quoitem.ciz_province_code ?? '')
+    this.cizForm.controls.maincitizenForm.controls.provinceName.setValue(this.mapProvinceNameById((quoitem.ciz_province_code ?? ''), this.masterProvince.data))
+    // this.cizForm.controls.maincitizenForm.controls.provinceName.setValue(quoitem.ciz_province_name ?? '')
     this.cizForm.controls.maincitizenForm.controls.postalCode.setValue(quoitem.ciz_postal_code ?? '')
-    this.cizForm.controls.maincitizenForm.controls.provinceCode.setValue(quoitem.ciz_province_code ?? null)
-    this.cizForm.controls.maincitizenForm.controls.titleName.setValue(quoitem.title_name ?? null)
+    // this.cizForm.controls.maincitizenForm.controls.provinceCode.setValue(quoitem.ciz_province_code ?? null)
+    this.cizForm.controls.maincitizenForm.controls.titleCode.setValue(quoitem.title_code ?? '')
+    this.cizForm.controls.maincitizenForm.controls.titleName.setValue(this.mapTitleNameById((quoitem.title_code ?? ''), this.masterTitle.data))
     this.cizForm.controls.maincitizenForm.controls.issuePlace.setValue(quoitem.ciz_issued_place ?? null)
 
-    // === set new 6 field (stay year, stay month , nickname, marie status, house type, house owner type) (15/11/2022) ===
-    // this.cizForm.controls.maincitizenForm.controls.nickName.setValue(quoitem.ciz_nickname)
-    // this.cizForm.controls.maincitizenForm.controls.mariedStatus.setValue(quoitem.ciz_maried_status)
-    // this.cizForm.controls.maincitizenForm.controls.houseType.setValue(quoitem.ciz_house_type)
-    // this.cizForm.controls.maincitizenForm.controls.stayedMonth.setValue(quoitem.ciz_stayed_month)
-    // this.cizForm.controls.maincitizenForm.controls.stayedYear.setValue(quoitem.ciz_stayed_year)
-    // this.cizForm.controls.maincitizenForm.controls.houseOwnerType.setValue(quoitem.ciz_house_owner_type)
+    // === generalinfo ===
+    this.cizForm.controls.generalinfoForm.controls.email.setValue(quoitem.email)
+    this.cizForm.controls.generalinfoForm.controls.phoneNumber.setValue(quoitem.phone_number)
+
+
+
+    this.cizForm.controls.generalinfoForm.controls.nickName.setValue(quoitem.ciz_nickname)
+    this.cizForm.controls.generalinfoForm.controls.mariedStatus.setValue(quoitem.ciz_maried_status)
+    this.cizForm.controls.generalinfoForm.controls.houseType.setValue(quoitem.ciz_house_type)
+    this.cizForm.controls.generalinfoForm.controls.stayedMonth.setValue(quoitem.ciz_stayed_month)
+    this.cizForm.controls.generalinfoForm.controls.stayedYear.setValue(quoitem.ciz_stayed_year)
+    this.cizForm.controls.generalinfoForm.controls.houseOwnerType.setValue(quoitem.ciz_house_owner_type)
 
     // this.informationForm.get('uploadImg')?.setValue(quoitem.ciz_upload)
     // ==== not show ==== 
@@ -426,7 +554,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
 
     this.cizForm.controls.maincitizenForm.controls.age.setValue(quoitem.ciz_age ?? null)
-    this.cizForm.controls.maincitizenForm.controls.phonevalid.setValue(quoitem.ciz_phone_valid_status == 'Y' ? true : false)
+    this.cizForm.controls.phonevalid.setValue(quoitem.ciz_phone_valid_status == 'Y' ? true : false)
 
     // === set image from dipchip to src (03/10/2022) === 
 
@@ -437,7 +565,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       this.cizCardImage = loadimage
     }
 
-    this.cizForm.controls.maincitizenForm.controls.phoneNumber.markAllAsTouched()
+    this.cizForm.controls.generalinfoForm.controls.phoneNumber.markAllAsTouched()
 
   }
 
@@ -461,7 +589,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
           this.cizCardImage_string = dipchipdata.PERSONAL_IMAGE
 
           this.cizForm.controls.maincitizenForm.controls.titleName.setValue(dipchipdata.PERSONAL_THAI_BEGIN_NAME)
-          this.cizForm.controls.maincitizenForm.controls.titleCode.setValue(this.mapTitleNameById(dipchipdata.PERSONAL_THAI_BEGIN_NAME, this.masterTitle.data))
+          this.cizForm.controls.maincitizenForm.controls.titleCode.setValue(this.mapTitleIdByname(dipchipdata.PERSONAL_THAI_BEGIN_NAME, this.masterTitle.data))
           this.cizForm.controls.maincitizenForm.controls.firstName.setValue(dipchipdata.PERSONAL_THAI_NAME);
           this.cizForm.controls.maincitizenForm.controls.lastName.setValue(dipchipdata.PERSONAL_THAI_SURNAME);
           this.cizForm.controls.maincitizenForm.controls.citizenId.setValue(dipchipdata.PERSONAL_ID);
@@ -469,7 +597,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
           this.cizForm.controls.maincitizenForm.controls.subDistrict.setValue(dipchipdata.SUB_DISTRICT);
           this.cizForm.controls.maincitizenForm.controls.district.setValue(dipchipdata.DISTRICT);
           this.cizForm.controls.maincitizenForm.controls.provinceName.setValue(dipchipdata.PROVINCE);
-          this.cizForm.controls.maincitizenForm.controls.provinceCode.setValue(this.mapProvinceNameById(dipchipdata.PROVINCE, this.masterProvince.data));
+          this.cizForm.controls.maincitizenForm.controls.provinceCode.setValue(this.mapProvinceIdByName(dipchipdata.PROVINCE, this.masterProvince.data));
           this.cizForm.controls.maincitizenForm.controls.postalCode.setValue(dipchipdata.POST_CODE ? dipchipdata.POST_CODE : '');
           this.cizForm.controls.maincitizenForm.controls.issuePlace.setValue(dipchipdata.ISSUE_LOCATION);
           this.cizForm.controls.maincitizenForm.controls.gender.setValue(+(dipchipdata.PERSONAL_GENDER))
@@ -489,7 +617,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
           if (dipchipdata.PERSONAL_BIRTHDAY) {
             const formatbirthdatenew = moment(birthDateFormat).format('DD/MM/YYYY')
             if (formatbirthdatenew) {
-              
+
               const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
               // == set age to form field ==
               this.cizForm.controls.maincitizenForm.controls.age.setValue(agecalcualte.data[0].age_year)
@@ -514,39 +642,115 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                 if (countround == 1) {
                   this.onClickDipchipBtn();
                 }
+
               }, error: (e) => {
 
               }
             })
+          } else if (result.message == 'Not found!') {
+
+            this.snackbarfail(`ไม่พบข้อมูล DIPCHIP : ${result.message}`)
+            this.showdipchipbtn = false
+            this.cizForm.enable()
           }
         } else {
           // === do not handle ====
         }
       }, error: (e) => {
-        // === error === 
+        // === error ===
       }, complete: () => {
         this.loadingService.hideLoader()
       }
     })
   }
 
-  // onClickBtnVerifyPhone() {
+  sameCitizenAddress(type: string) {
+    if (type == 'living') {
 
-  //   // == ตรวจ
-  //   this.dialog.open(OtpVeifyDialogComponent, {
-  //     panelClass: 'custom-dialog-header',
-  //     width: `80%`,
-  //     height: `90%`,
-  //     data: {
-  //       header: `หน้ายืนยันเบอร์โทรศัพท์`,
-  //       message: `ของคุณ ...`,
-  //       quotationid: this.quotationdatatemp.data[0].quo_key_app_id,
-  //       phone_number: this.cizForm.controls.maincitizenForm.controls.phoneNumber.value,
-  //       refid: `${this.quotationdatatemp.data[0].quo_app_ref_no}`,
-  //       button_name: `ตกลง`
-  //     }
-  //   }).afterClosed().subscribe(res => {
-  //     // === do something ===
-  //   })
-  // }
+      this.cizForm.controls.livingAddress.controls.address.setValue(this.cizForm.controls.maincitizenForm.controls.address.value)
+      this.cizForm.controls.livingAddress.controls.subDistrict.setValue(this.cizForm.controls.maincitizenForm.controls.subDistrict.value)
+      this.cizForm.controls.livingAddress.controls.district.setValue(this.cizForm.controls.maincitizenForm.controls.district.value)
+      this.cizForm.controls.livingAddress.controls.provinceCode.setValue(this.cizForm.controls.maincitizenForm.controls.provinceCode.value)
+      this.cizForm.controls.livingAddress.controls.postalCode.setValue(this.cizForm.controls.maincitizenForm.controls.postalCode.value)
+
+    } else if (type == 'contact') {
+      this.cizForm.controls.contactAddress.controls.address.setValue(this.cizForm.controls.maincitizenForm.controls.address.value)
+      this.cizForm.controls.contactAddress.controls.subDistrict.setValue(this.cizForm.controls.maincitizenForm.controls.subDistrict.value)
+      this.cizForm.controls.contactAddress.controls.district.setValue(this.cizForm.controls.maincitizenForm.controls.district.value)
+      this.cizForm.controls.contactAddress.controls.provinceCode.setValue(this.cizForm.controls.maincitizenForm.controls.provinceCode.value)
+      this.cizForm.controls.contactAddress.controls.postalCode.setValue(this.cizForm.controls.maincitizenForm.controls.postalCode.value)
+    } else if (type == 'work') {
+      this.cizForm.controls.workAddress.controls.address.setValue(this.cizForm.controls.maincitizenForm.controls.address.value)
+      this.cizForm.controls.workAddress.controls.subDistrict.setValue(this.cizForm.controls.maincitizenForm.controls.subDistrict.value)
+      this.cizForm.controls.workAddress.controls.district.setValue(this.cizForm.controls.maincitizenForm.controls.district.value)
+      this.cizForm.controls.workAddress.controls.provinceCode.setValue(this.cizForm.controls.maincitizenForm.controls.provinceCode.value)
+      this.cizForm.controls.workAddress.controls.postalCode.setValue(this.cizForm.controls.maincitizenForm.controls.postalCode.value)
+    } else if (type == 'houseregis') {
+      this.cizForm.controls.houseRegisAddress.controls.address.setValue(this.cizForm.controls.maincitizenForm.controls.address.value)
+      this.cizForm.controls.houseRegisAddress.controls.subDistrict.setValue(this.cizForm.controls.maincitizenForm.controls.subDistrict.value)
+      this.cizForm.controls.houseRegisAddress.controls.district.setValue(this.cizForm.controls.maincitizenForm.controls.district.value)
+      this.cizForm.controls.houseRegisAddress.controls.provinceCode.setValue(this.cizForm.controls.maincitizenForm.controls.provinceCode.value)
+      this.cizForm.controls.houseRegisAddress.controls.postalCode.setValue(this.cizForm.controls.maincitizenForm.controls.postalCode.value)
+    }
+    this.cizForm.markAsDirty();
+  }
+  samelivinAddress(type: string) {
+    if (type == 'contact') {
+      this.cizForm.controls.contactAddress.controls.address.setValue(this.cizForm.controls.livingAddress.controls.address.value)
+      this.cizForm.controls.contactAddress.controls.subDistrict.setValue(this.cizForm.controls.livingAddress.controls.subDistrict.value)
+      this.cizForm.controls.contactAddress.controls.district.setValue(this.cizForm.controls.livingAddress.controls.district.value)
+      this.cizForm.controls.contactAddress.controls.provinceCode.setValue(this.cizForm.controls.livingAddress.controls.provinceCode.value)
+      this.cizForm.controls.contactAddress.controls.postalCode.setValue(this.cizForm.controls.livingAddress.controls.postalCode.value)
+    } else if (type == 'work') {
+      this.cizForm.controls.workAddress.controls.address.setValue(this.cizForm.controls.livingAddress.controls.address.value)
+      this.cizForm.controls.workAddress.controls.subDistrict.setValue(this.cizForm.controls.livingAddress.controls.subDistrict.value)
+      this.cizForm.controls.workAddress.controls.district.setValue(this.cizForm.controls.livingAddress.controls.district.value)
+      this.cizForm.controls.workAddress.controls.provinceCode.setValue(this.cizForm.controls.livingAddress.controls.provinceCode.value)
+      this.cizForm.controls.workAddress.controls.postalCode.setValue(this.cizForm.controls.livingAddress.controls.postalCode.value)
+    } else if (type == 'houseregis') {
+      this.cizForm.controls.houseRegisAddress.controls.address.setValue(this.cizForm.controls.livingAddress.controls.address.value)
+      this.cizForm.controls.houseRegisAddress.controls.subDistrict.setValue(this.cizForm.controls.livingAddress.controls.subDistrict.value)
+      this.cizForm.controls.houseRegisAddress.controls.district.setValue(this.cizForm.controls.livingAddress.controls.district.value)
+      this.cizForm.controls.houseRegisAddress.controls.provinceCode.setValue(this.cizForm.controls.livingAddress.controls.provinceCode.value)
+      this.cizForm.controls.houseRegisAddress.controls.postalCode.setValue(this.cizForm.controls.livingAddress.controls.postalCode.value)
+    }
+    this.cizForm.markAsDirty();
+  }
+
+  samecontactAddress(type: string) {
+    if (type == 'work') {
+      this.cizForm.controls.workAddress.controls.address.setValue(this.cizForm.controls.contactAddress.controls.address.value)
+      this.cizForm.controls.workAddress.controls.subDistrict.setValue(this.cizForm.controls.contactAddress.controls.subDistrict.value)
+      this.cizForm.controls.workAddress.controls.district.setValue(this.cizForm.controls.contactAddress.controls.district.value)
+      this.cizForm.controls.workAddress.controls.provinceCode.setValue(this.cizForm.controls.contactAddress.controls.provinceCode.value)
+      this.cizForm.controls.workAddress.controls.postalCode.setValue(this.cizForm.controls.contactAddress.controls.postalCode.value)
+    }
+    if (type == 'houseregis') {
+      this.cizForm.controls.houseRegisAddress.controls.address.setValue(this.cizForm.controls.contactAddress.controls.address.value)
+      this.cizForm.controls.houseRegisAddress.controls.subDistrict.setValue(this.cizForm.controls.contactAddress.controls.subDistrict.value)
+      this.cizForm.controls.houseRegisAddress.controls.district.setValue(this.cizForm.controls.contactAddress.controls.district.value)
+      this.cizForm.controls.houseRegisAddress.controls.provinceCode.setValue(this.cizForm.controls.contactAddress.controls.provinceCode.value)
+      this.cizForm.controls.houseRegisAddress.controls.postalCode.setValue(this.cizForm.controls.contactAddress.controls.postalCode.value)
+    }
+    this.cizForm.markAsDirty();
+  }
+
+  opengooglemap() {
+    const subdistrictValue = this.cizForm.controls.livingAddress.controls.subDistrict.value;
+    const districtValue = this.cizForm.controls.livingAddress.controls.district.value;
+    const postalCodeValue = this.cizForm.controls.livingAddress.controls.postalCode.value;
+
+    let provinceValue = ''
+    const provicneSelect = this.masterProvince.data.filter((items: ({ prov_code: string })) => {
+      return items.prov_code = this.cizForm.controls.livingAddress.controls.provinceCode.value ? this.cizForm.controls.livingAddress.controls.provinceCode.value : ''
+    })
+    if (provicneSelect) {
+      provinceValue = provicneSelect[0].prov_name
+    }
+
+
+    const url = `https://www.google.co.th/maps/search/${subdistrictValue}+${districtValue}+${provinceValue}+${postalCodeValue}`
+
+    window.open(url, "_blank");
+  }
 }

@@ -95,6 +95,18 @@ export class BaseService {
   }
 
   mapProvinceNameById(pResult: string, pMaster: IResMasterProvinceData[]): string {
+    const select = pMaster.filter((items: ({ prov_code: string })) => {
+      return items.prov_code == pResult
+    })
+
+    if (select.length !== 0) {
+      return select[0].prov_name
+    } else {
+      return ''
+    }
+  }
+
+  mapProvinceIdByName(pResult: string, pMaster: IResMasterProvinceData[]): string {
     const select = pMaster.filter((items: ({ prov_name: string })) => {
       return items.prov_name == pResult
     })
@@ -107,6 +119,17 @@ export class BaseService {
   }
 
   mapTitleNameById(pResult: string, pMaster: IResMasterTitleData[]) {
+    const select = pMaster.filter((items: ({ title_id: string })) => {
+      return items.title_id == pResult
+    })
+    if (select.length !== 0) {
+      return select[0].title_name
+    } else {
+      return ''
+    }
+  }
+
+  mapTitleIdByname(pResult: string, pMaster: IResMasterTitleData[]) {
     const select = pMaster.filter((items: ({ title_name: string })) => {
       return items.title_name == pResult
     })

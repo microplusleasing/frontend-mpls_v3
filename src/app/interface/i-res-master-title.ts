@@ -1,5 +1,3 @@
-export interface IResMasterTitle {
-}
 export interface IResMasterTitleData {
     title_id: string;
     title_name: string;

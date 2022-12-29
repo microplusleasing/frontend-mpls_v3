@@ -17,13 +17,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 import { ProductDetailTabComponent } from '../quotation-tab/product-detail-tab/product-detail-tab.component';
 import { MatStepper } from '@angular/material/stepper';
-import { OptEconsentComponent } from 'src/app/widget/dialog/opt-econsent/opt-econsent.component';
+import { OtpEconsentComponent } from 'src/app/widget/dialog/otp-econsent/otp-econsent.component';
 import { OtpVerifyDialogComponent } from 'src/app/widget/dialog/otp-verify-dialog/otp-verify-dialog.component';
 import { IResBasic } from 'src/app/interface/i-res-basic';
 import { IResPhoneUpdate } from 'src/app/interface/i-res-phone-update';
 import { IDialogPhoneValidClose } from 'src/app/interface/i-dialog-phone-valid-close';
 import { IDialogEconsentOtpOpen } from 'src/app/interface/i-dialog-econsent-otp-open';
 import { IReqCreateCredit } from 'src/app/interface/i-req-create-credit';
+import { IDialogEconsentValidClose } from 'src/app/interface/i-dialog-econsent-valid-close';
+import { CareerAndPurposeComponent } from '../quotation-tab/career-and-purpose/career-and-purpose.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -32,10 +35,14 @@ import { IReqCreateCredit } from 'src/app/interface/i-req-create-credit';
 })
 export class QuotationDetailComponent extends BaseService implements OnInit {
 
+
+  @ViewChild('stepper') stepper!: MatStepper
   // === lay out ===
   // ** stepper **
   stepperOrientation: Observable<StepperOrientation>;
-  isLinear: boolean = true;
+  isLinear: boolean = false;
+
+  checkdipchipvalid: boolean = false;
 
   quoForm: FormGroup;
   quotationkeyid: string;
@@ -44,13 +51,17 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   quoid: string = ''
   visiblePhoneValid: boolean = true
   verifyeconsent: boolean = false
+  createorupdatecitizendataDisable: boolean = true
   createorupdatecreditbtnDisable: boolean = true
   econsentbtnDisable: boolean = true // === use with buttn econsent btn disable (step 2)
+
+  canclequest: boolean = false // === case cancle (quo_status = "3") ====
 
 
   @ViewChild(CizCardTabComponent) cizcardtab: CizCardTabComponent = new CizCardTabComponent(
     this.fb,
     this.cd,
+    this.router,
     this.quotationService,
     this.loadingService,
     this.masterDataService,
@@ -68,6 +79,11 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this._snackBar
   )
 
+  @ViewChild(CareerAndPurposeComponent) careerandpurposetab: CareerAndPurposeComponent = new CareerAndPurposeComponent(
+    this.fb,
+    this.dialog
+  )
+
 
   constructor(
     private fb: FormBuilder,
@@ -78,11 +94,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     private masterDataService: MasterDataService,
     private dipchipService: DipchipService,
     private actRoute: ActivatedRoute,
-    private quotationService: QuotationService,
+    public quotationService: QuotationService,
     public override dialog: MatDialog,
     public override _snackBar: MatSnackBar,
   ) {
     super(dialog, _snackBar)
+
     this.quoForm = this.fb.group({
       cizform: this.cizcardtab.cizForm,
       productForm: this.productdetailtab.productForm
@@ -115,16 +132,18 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         if (res.data.length !== 0) {
           const quoitem = res.data[0]
 
+          // *** tab 2 ***
           if (quoitem.otp_consent_verify == 'Y') {
+            this.productdetailtab.productForm.controls.consentVerify.setValue(true)
             this.verifyeconsent = true
-          }
-
-          if (quoitem.ciz_phone_valid_status == 'Y') {
-            this.visiblePhoneValid = false
           }
 
           if (quoitem.cd_app_key_id !== '' && quoitem.cd_app_key_id !== null) {
             this.econsentbtnDisable = false
+          }
+
+          if (quoitem.quo_status == 3) {
+            this.canclequest = true
           }
 
         }
@@ -137,11 +156,87 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   // *** etc subscribe form ****
   ngAfterViewInit() {
 
-    this.productdetailtab.detailForm.valueChanges.subscribe(value => {
-      if (this.productdetailtab.productForm.controls.detailForm.valid) {
-        this.econsentbtnDisable = false
-        this.createorupdatecreditbtnDisable = false
+    this.stepper.selectedIndex = 0;
+
+    this.cizcardtab.cizForm.valueChanges.subscribe((res) => {
+
+      //  ==== เงื่อนไขแสดงปุ่มบันทึกใน tab 1 (ข้อมูลบัตรประชาชน) ===
+
+      if (this.quotationResult$.value && this.quotationResult$.value.data && this.quotationResult$.value.data[0]) {
+        if (this.quotationResult$.value.data[0].dipchip_uuid !== '' && this.quotationResult$.value.data[0].dipchip_uuid !== null) {
+          this.checkdipchipvalid = true;
+        } else {
+          this.checkdipchipvalid = (
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.age.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.titleCode.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.gender.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.firstName.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.lastName.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.citizenId.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.address.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.subDistrict.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.district.valid &&
+            // this.cizcardtab.cizForm.controls.maincitizenForm.controls.provinceName.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.provinceCode.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.postalCode.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.issueDate.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.expireDate.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.birthDate.valid &&
+            this.cizcardtab.cizForm.controls.maincitizenForm.controls.issuePlace.valid
+          );
+        }
+      } else {
+        this.checkdipchipvalid = (
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.age.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.titleCode.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.gender.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.firstName.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.lastName.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.citizenId.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.address.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.subDistrict.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.district.valid &&
+          // this.cizcardtab.cizForm.controls.maincitizenForm.controls.provinceName.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.provinceCode.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.postalCode.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.issueDate.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.expireDate.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.birthDate.valid &&
+          this.cizcardtab.cizForm.controls.maincitizenForm.controls.issuePlace.valid
+        );
       }
+
+      if (
+        // true
+        this.checkdipchipvalid &&
+        this.cizcardtab.cizForm.controls.generalinfoForm.valid &&
+        this.cizcardtab.cizForm.controls.livingAddress.valid &&
+        this.cizcardtab.cizForm.controls.contactAddress.valid &&
+        this.cizcardtab.cizForm.controls.houseRegisAddress.valid &&
+        this.cizcardtab.cizForm.controls.workAddress.valid
+      ) {
+        this.createorupdatecitizendataDisable = false
+      } else {
+        this.createorupdatecitizendataDisable = true
+      }
+    })
+
+
+    this.productdetailtab.detailForm.valueChanges.subscribe(value => {
+
+      // if (this.cizcardtab.cizForm.controls.)
+
+      //  ==== เงื่อนไขแสดงปุ่มบันทึกใน tab 2 (ข้อมูลผลืตภัณฑ์/วงเงินสินเชื่อ)
+
+      if (this.productdetailtab.productForm.controls.detailForm.valid) {
+        // this.econsentbtnDisable = false
+        this.createorupdatecreditbtnDisable = false
+        this.cd.detectChanges()
+      } else {
+        this.createorupdatecreditbtnDisable = true
+        this.cd.detectChanges()
+      }
+
     });
   }
 
@@ -172,7 +267,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
       }
     } else {
-
+      /// === disable field if quoid is null === 
+      // this.cizcardtab.cizForm.controls.maincitizenForm.disable()
     }
 
   }
@@ -190,8 +286,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
 
 
-  changeStage($event: StepperSelectionEvent) {
+  async changeStage($event: StepperSelectionEvent) {
     const stage = $event.selectedIndex
+    const previousStage = $event.previouslySelectedIndex
 
     switch (stage) {
       case 0:
@@ -199,10 +296,26 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         break;
       case 1: {
         // *** Product deatail ***
-        this.productdetailtab.onStageChageFormStepper()
+        // this.cizcardtab.cizForm.valid ? this.productdetailtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+
+        if (this.cizcardtab.cizForm.valid) {
+          const savecitizensuccess = await this.manualsaveonchangestep()
+          if (savecitizensuccess) {
+            this.productdetailtab.onStageChageFormStepper()
+          } else {
+            this.openDialogStep(`บันทึกข้อมูลไม่สำเร็จ`, `ไม่สามารถบันทึกข้อมูลในหน้า 'ข้อมูลบัตรประชาชนได้'`, `ปิด`, previousStage)
+          }
+        } else {
+          this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+        }
+
       }
         break;
-
+      case 2: {
+        // *** career and purpose ***
+        this.verifyeconsent ? this.careerandpurposetab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+      }
+        break;
       default:
         break;
     }
@@ -225,6 +338,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             if (value.number == 200) {
               this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
 
+              // ==== ปลดล๊อค form เมื่อ dipchip สำเร็จ ====
+              this.cizcardtab.cizForm.enable()
+
               const queryParams: Params = { id: dchk.refId };
 
               await this.router.navigate(
@@ -240,6 +356,28 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               this.quotationService.setstatusdopa(dchk.refId)
 
               this.afteroninit();
+            }
+          })
+        } else {
+          // === handle error when STATUS_CODE dipchip is '500' or null ====
+          this.dipchipService.updatedipchipflag({
+            token: '',
+            username: this.usernamefordipchip,
+            fromBody: $event.uuid
+          }).subscribe(async (value) => {
+            console.log(`flag success : ${JSON.stringify(value)}`)
+
+            // === set router id ===
+            if (value.number == 200) {
+              this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
+
+              // === status false (STATUS_CODE from dopa is null or 500 ) ===
+              this.snackbarfail(`ไม่พบข้อมูล DIPCHIP : ${dchk.message}`)
+              this.cizcardtab.showdipchipbtn = false
+              this.cizcardtab.cizForm.enable()
+              // this.cizcardtab.cizCardImage_string = ''
+              // this.cizcardtab.cizCardImage = `${environment.citizen_card_img_preload}`
+              // this.cizcardtab.cizForm.reset()
             }
           })
         }
@@ -288,12 +426,234 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     try {
       const resultCreateQEconsent = await lastValueFrom(this.quotationService.MPLS_dipchip(fd))
 
-      return (resultCreateQEconsent.status == 200) ? { status: true, refId: resultCreateQEconsent.data[0].quo_key_app_id } : { status: false, refId: '' }
+      return (resultCreateQEconsent.status == 200) ? { status: true, refId: resultCreateQEconsent.data[0].quo_key_app_id, message: '' } : { status: false, refId: '', message: resultCreateQEconsent.message }
 
     } catch (e: any) {
       console.log(`error create e-consent quotation : ${e.message}`)
-      return { status: false, refid: '' }
+      return { status: false, refid: '', message: '' }
     }
+  }
+
+  async onclickSavecitizendata() {
+
+    // บันทึกค่าข้อมูลที่วไปเกี่ยวกับลูกค้า 
+    // (MPLS_QUOTATION, MPSL_LIVING_PLACE, MPLS_HOUSE_REGIS_PLACE, MPLS_CONTACT_PLACE, MPLS_WORK_PLACE)
+
+    this.loadingService.showLoader()
+    const ciz_form = this.cizcardtab.cizForm
+    const quoid = this.actRoute.snapshot.queryParamMap.get('id') ?? ''
+
+    let quotationdata = {
+
+      quotationid: quoid ? quoid : '',
+
+      age: ciz_form.controls.maincitizenForm.controls.age.value ? ciz_form.controls.maincitizenForm.controls.age.value : '',
+      titleCode: ciz_form.controls.maincitizenForm.controls.titleCode.value ? ciz_form.controls.maincitizenForm.controls.titleCode.value : '',
+      titleName: ciz_form.controls.maincitizenForm.controls.titleCode.value ? this.mapTitleNameById(ciz_form.controls.maincitizenForm.controls.titleCode.value ?? '', this.cizcardtab.masterTitle.data) : '',
+      firstName: ciz_form.controls.maincitizenForm.controls.firstName.value ? ciz_form.controls.maincitizenForm.controls.firstName.value : '',
+      lastName: ciz_form.controls.maincitizenForm.controls.lastName.value ? ciz_form.controls.maincitizenForm.controls.lastName.value : '',
+      gender: ciz_form.controls.maincitizenForm.controls.gender.value ? ciz_form.controls.maincitizenForm.controls.gender.value : '',
+      citizenId: ciz_form.controls.maincitizenForm.controls.citizenId.value ? ciz_form.controls.maincitizenForm.controls.citizenId.value : '',
+      birthDate: ciz_form.controls.maincitizenForm.controls.birthDate.value ? ciz_form.controls.maincitizenForm.controls.birthDate.value : '',
+      issueDate: ciz_form.controls.maincitizenForm.controls.issueDate.value ? ciz_form.controls.maincitizenForm.controls.issueDate.value : '',
+      expireDate: ciz_form.controls.maincitizenForm.controls.expireDate.value ? ciz_form.controls.maincitizenForm.controls.expireDate.value : '',
+      issuePlace: ciz_form.controls.maincitizenForm.controls.issuePlace.value ? ciz_form.controls.maincitizenForm.controls.issuePlace.value : '',
+
+      email: ciz_form.controls.generalinfoForm.controls.email.value ? ciz_form.controls.generalinfoForm.controls.email.value : '',
+      phone_number: ciz_form.controls.generalinfoForm.controls.phoneNumber.value ? ciz_form.controls.generalinfoForm.controls.phoneNumber.value : '',
+      nick_name: ciz_form.controls.generalinfoForm.controls.nickName.value ? ciz_form.controls.generalinfoForm.controls.nickName.value : '',
+      maried_status: ciz_form.controls.generalinfoForm.controls.mariedStatus.value ? ciz_form.controls.generalinfoForm.controls.mariedStatus.value : '',
+      house_type: ciz_form.controls.generalinfoForm.controls.houseType.value ? ciz_form.controls.generalinfoForm.controls.houseType.value : '',
+      stayed_month: ciz_form.controls.generalinfoForm.controls.stayedMonth.value ? ciz_form.controls.generalinfoForm.controls.stayedMonth.value : 0,
+      stayed_year: ciz_form.controls.generalinfoForm.controls.stayedYear.value ? ciz_form.controls.generalinfoForm.controls.stayedYear.value : 0,
+      house_owner_type: ciz_form.controls.generalinfoForm.controls.houseOwnerType.value ? ciz_form.controls.generalinfoForm.controls.houseOwnerType.value : '',
+
+      address: ciz_form.controls.maincitizenForm.controls.address.value ? ciz_form.controls.maincitizenForm.controls.address.value : '',
+      subDistrict: ciz_form.controls.maincitizenForm.controls.subDistrict.value ? ciz_form.controls.maincitizenForm.controls.subDistrict.value : '',
+      district: ciz_form.controls.maincitizenForm.controls.district.value ? ciz_form.controls.maincitizenForm.controls.district.value : '',
+      provinceCode: ciz_form.controls.maincitizenForm.controls.provinceCode.value ? ciz_form.controls.maincitizenForm.controls.provinceCode.value : '',
+      provinceName: ciz_form.controls.maincitizenForm.controls.provinceCode.value ? this.mapProvinceNameById(ciz_form.controls.maincitizenForm.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : '',
+      postalCode: ciz_form.controls.maincitizenForm.controls.postalCode.value ? ciz_form.controls.maincitizenForm.controls.postalCode.value : '',
+
+      liv_address: ciz_form.controls.livingAddress.controls.address.value ? ciz_form.controls.livingAddress.controls.address.value : '',
+      liv_sub_district: ciz_form.controls.livingAddress.controls.subDistrict.value ? ciz_form.controls.livingAddress.controls.subDistrict.value : '',
+      liv_district: ciz_form.controls.livingAddress.controls.district.value ? ciz_form.controls.livingAddress.controls.district.value : '',
+      liv_province_name: ciz_form.controls.livingAddress.controls.provinceName.value ? ciz_form.controls.livingAddress.controls.provinceName.value : '',
+      liv_province_code: ciz_form.controls.livingAddress.controls.provinceCode.value ? ciz_form.controls.livingAddress.controls.provinceCode.value : '',
+      liv_postal_code: ciz_form.controls.livingAddress.controls.postalCode.value ? ciz_form.controls.livingAddress.controls.postalCode.value : '',
+      liv_la: ciz_form.controls.livingAddress.controls.la.value ? ciz_form.controls.livingAddress.controls.la.value : '',
+      liv_lon: ciz_form.controls.livingAddress.controls.lon.value ? ciz_form.controls.livingAddress.controls.lon.value : '',
+      liv_lalon: ciz_form.controls.livingAddress.controls.lalon.value ? ciz_form.controls.livingAddress.controls.lalon.value : '',
+
+      cont_address: ciz_form.controls.contactAddress.controls.address.value ? ciz_form.controls.contactAddress.controls.address.value : '',
+      cont_sub_district: ciz_form.controls.contactAddress.controls.subDistrict.value ? ciz_form.controls.contactAddress.controls.subDistrict.value : '',
+      cont_district: ciz_form.controls.contactAddress.controls.district.value ? ciz_form.controls.contactAddress.controls.district.value : '',
+      cont_province_name: ciz_form.controls.contactAddress.controls.provinceName.value ? ciz_form.controls.contactAddress.controls.provinceName.value : '',
+      cont_province_code: ciz_form.controls.contactAddress.controls.provinceCode.value ? ciz_form.controls.contactAddress.controls.provinceCode.value : '',
+      cont_postal_code: ciz_form.controls.contactAddress.controls.postalCode.value ? ciz_form.controls.contactAddress.controls.postalCode.value : '',
+
+      hrp_address: ciz_form.controls.houseRegisAddress.controls.address.value ? ciz_form.controls.houseRegisAddress.controls.address.value : '',
+      hrp_sub_district: ciz_form.controls.houseRegisAddress.controls.subDistrict.value ? ciz_form.controls.houseRegisAddress.controls.subDistrict.value : '',
+      hrp_district: ciz_form.controls.houseRegisAddress.controls.district.value ? ciz_form.controls.houseRegisAddress.controls.district.value : '',
+      hrp_province_name: ciz_form.controls.houseRegisAddress.controls.provinceName.value ? ciz_form.controls.houseRegisAddress.controls.provinceName.value : '',
+      hrp_province_code: ciz_form.controls.houseRegisAddress.controls.provinceCode.value ? ciz_form.controls.houseRegisAddress.controls.provinceCode.value : '',
+      hrp_postal_code: ciz_form.controls.houseRegisAddress.controls.postalCode.value ? ciz_form.controls.houseRegisAddress.controls.postalCode.value : '',
+
+      work_address: ciz_form.controls.workAddress.controls.address.value ? ciz_form.controls.workAddress.controls.address.value : '',
+      work_sub_district: ciz_form.controls.workAddress.controls.subDistrict.value ? ciz_form.controls.workAddress.controls.subDistrict.value : '',
+      work_district: ciz_form.controls.workAddress.controls.district.value ? ciz_form.controls.workAddress.controls.district.value : '',
+      work_province_name: ciz_form.controls.workAddress.controls.provinceName.value ? ciz_form.controls.workAddress.controls.provinceName.value : '',
+      work_province_code: ciz_form.controls.workAddress.controls.provinceCode.value ? ciz_form.controls.workAddress.controls.provinceCode.value : '',
+      work_postal_code: ciz_form.controls.workAddress.controls.postalCode.value ? ciz_form.controls.workAddress.controls.postalCode.value : '',
+
+    }
+
+    const itemString = JSON.stringify(quotationdata)
+
+    let fd = new FormData();
+    fd.append('item', itemString)
+
+
+    try {
+      const resultCreateQEconsent = await lastValueFrom(this.quotationService.MPLS_create_or_update_citizendata(fd))
+
+      this.loadingService.hideLoader()
+
+      if (resultCreateQEconsent.status == 200) {
+        this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
+
+        const queryParams: Params = { id: resultCreateQEconsent.data.quotationid };
+
+        await this.router.navigate(
+          [],
+          {
+            relativeTo: this.actRoute,
+            queryParams: queryParams,
+            queryParamsHandling: 'merge', // remove to replace all query params by provided
+          }
+        )
+
+        this.afteroninit();
+
+      } else {
+        // --- handle fail update citizen info data ---
+      }
+
+    } catch (e: any) {
+      this.loadingService.hideLoader
+      console.log(`error create e-consent quotation : ${e.message}`)
+    }
+
+  }
+
+  async manualsaveonchangestep() {
+
+    // บันทึกค่าข้อมูลที่วไปเกี่ยวกับลูกค้า 
+    // (MPLS_QUOTATION, MPSL_LIVING_PLACE, MPLS_HOUSE_REGIS_PLACE, MPLS_CONTACT_PLACE, MPLS_WORK_PLACE)
+
+    this.loadingService.showLoader()
+    const ciz_form = this.cizcardtab.cizForm
+    const quoid = this.actRoute.snapshot.queryParamMap.get('id') ?? ''
+
+    const provnameValue = ciz_form.controls.maincitizenForm.controls.provinceCode.value ? this.mapProvinceNameById(ciz_form.controls.maincitizenForm.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : ''
+    const liv_provnameValue = ciz_form.controls.livingAddress.controls.provinceCode.value ? this.mapProvinceNameById(ciz_form.controls.livingAddress.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : ''
+    const cont_provnameValue = ciz_form.controls.contactAddress.controls.provinceCode.value ? this.mapProvinceNameById(ciz_form.controls.contactAddress.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : ''
+    const hrp_provnameValue = ciz_form.controls.houseRegisAddress.controls.provinceCode.value ? this.mapProvinceNameById(ciz_form.controls.houseRegisAddress.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : ''
+    const work_provnameValue = ciz_form.controls.workAddress.controls.provinceCode.value ? this.mapProvinceNameById(ciz_form.controls.workAddress.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : ''
+  
+
+    let quotationdata = {
+
+      quotationid: quoid ? quoid : '',
+
+      age: ciz_form.controls.maincitizenForm.controls.age.value ? ciz_form.controls.maincitizenForm.controls.age.value : '',
+      titleCode: ciz_form.controls.maincitizenForm.controls.titleCode.value ? ciz_form.controls.maincitizenForm.controls.titleCode.value : '',
+      titleName: ciz_form.controls.maincitizenForm.controls.titleCode.value ? this.mapTitleNameById(ciz_form.controls.maincitizenForm.controls.titleCode.value ?? '', this.cizcardtab.masterTitle.data) : '',
+      firstName: ciz_form.controls.maincitizenForm.controls.firstName.value ? ciz_form.controls.maincitizenForm.controls.firstName.value : '',
+      lastName: ciz_form.controls.maincitizenForm.controls.lastName.value ? ciz_form.controls.maincitizenForm.controls.lastName.value : '',
+      gender: ciz_form.controls.maincitizenForm.controls.gender.value ? ciz_form.controls.maincitizenForm.controls.gender.value : '',
+      citizenId: ciz_form.controls.maincitizenForm.controls.citizenId.value ? ciz_form.controls.maincitizenForm.controls.citizenId.value : '',
+      birthDate: ciz_form.controls.maincitizenForm.controls.birthDate.value ? ciz_form.controls.maincitizenForm.controls.birthDate.value : '',
+      issueDate: ciz_form.controls.maincitizenForm.controls.issueDate.value ? ciz_form.controls.maincitizenForm.controls.issueDate.value : '',
+      expireDate: ciz_form.controls.maincitizenForm.controls.expireDate.value ? ciz_form.controls.maincitizenForm.controls.expireDate.value : '',
+      issuePlace: ciz_form.controls.maincitizenForm.controls.issuePlace.value ? ciz_form.controls.maincitizenForm.controls.issuePlace.value : '',
+
+      email: ciz_form.controls.generalinfoForm.controls.email.value ? ciz_form.controls.generalinfoForm.controls.email.value : '',
+      phone_number: ciz_form.controls.generalinfoForm.controls.phoneNumber.value ? ciz_form.controls.generalinfoForm.controls.phoneNumber.value : '',
+      nick_name: ciz_form.controls.generalinfoForm.controls.nickName.value ? ciz_form.controls.generalinfoForm.controls.nickName.value : '',
+      maried_status: ciz_form.controls.generalinfoForm.controls.mariedStatus.value ? ciz_form.controls.generalinfoForm.controls.mariedStatus.value : '',
+      house_type: ciz_form.controls.generalinfoForm.controls.houseType.value ? ciz_form.controls.generalinfoForm.controls.houseType.value : '',
+      stayed_month: ciz_form.controls.generalinfoForm.controls.stayedMonth.value ? ciz_form.controls.generalinfoForm.controls.stayedMonth.value : 0,
+      stayed_year: ciz_form.controls.generalinfoForm.controls.stayedYear.value ? ciz_form.controls.generalinfoForm.controls.stayedYear.value : 0,
+      house_owner_type: ciz_form.controls.generalinfoForm.controls.houseOwnerType.value ? ciz_form.controls.generalinfoForm.controls.houseOwnerType.value : '',
+
+      address: ciz_form.controls.maincitizenForm.controls.address.value ? ciz_form.controls.maincitizenForm.controls.address.value : '',
+      subDistrict: ciz_form.controls.maincitizenForm.controls.subDistrict.value ? ciz_form.controls.maincitizenForm.controls.subDistrict.value : '',
+      district: ciz_form.controls.maincitizenForm.controls.district.value ? ciz_form.controls.maincitizenForm.controls.district.value : '',
+      provinceCode: ciz_form.controls.maincitizenForm.controls.provinceCode.value ? ciz_form.controls.maincitizenForm.controls.provinceCode.value : '',
+      provinceName: provnameValue,
+      postalCode: ciz_form.controls.maincitizenForm.controls.postalCode.value ? ciz_form.controls.maincitizenForm.controls.postalCode.value : '',
+
+      liv_address: ciz_form.controls.livingAddress.controls.address.value ? ciz_form.controls.livingAddress.controls.address.value : '',
+      liv_sub_district: ciz_form.controls.livingAddress.controls.subDistrict.value ? ciz_form.controls.livingAddress.controls.subDistrict.value : '',
+      liv_district: ciz_form.controls.livingAddress.controls.district.value ? ciz_form.controls.livingAddress.controls.district.value : '',
+      liv_province_code: ciz_form.controls.livingAddress.controls.provinceCode.value ? ciz_form.controls.livingAddress.controls.provinceCode.value : '',
+      liv_province_name: liv_provnameValue,
+      liv_postal_code: ciz_form.controls.livingAddress.controls.postalCode.value ? ciz_form.controls.livingAddress.controls.postalCode.value : '',
+      liv_la: ciz_form.controls.livingAddress.controls.la.value ? ciz_form.controls.livingAddress.controls.la.value : '',
+      liv_lon: ciz_form.controls.livingAddress.controls.lon.value ? ciz_form.controls.livingAddress.controls.lon.value : '',
+      liv_lalon: ciz_form.controls.livingAddress.controls.lalon.value ? ciz_form.controls.livingAddress.controls.lalon.value : '',
+
+      cont_address: ciz_form.controls.contactAddress.controls.address.value ? ciz_form.controls.contactAddress.controls.address.value : '',
+      cont_sub_district: ciz_form.controls.contactAddress.controls.subDistrict.value ? ciz_form.controls.contactAddress.controls.subDistrict.value : '',
+      cont_district: ciz_form.controls.contactAddress.controls.district.value ? ciz_form.controls.contactAddress.controls.district.value : '',
+      cont_province_code: ciz_form.controls.contactAddress.controls.provinceCode.value ? ciz_form.controls.contactAddress.controls.provinceCode.value : '',
+      cont_province_name: cont_provnameValue,
+      cont_postal_code: ciz_form.controls.contactAddress.controls.postalCode.value ? ciz_form.controls.contactAddress.controls.postalCode.value : '',
+
+      hrp_address: ciz_form.controls.houseRegisAddress.controls.address.value ? ciz_form.controls.houseRegisAddress.controls.address.value : '',
+      hrp_sub_district: ciz_form.controls.houseRegisAddress.controls.subDistrict.value ? ciz_form.controls.houseRegisAddress.controls.subDistrict.value : '',
+      hrp_district: ciz_form.controls.houseRegisAddress.controls.district.value ? ciz_form.controls.houseRegisAddress.controls.district.value : '',
+      hrp_province_code: ciz_form.controls.houseRegisAddress.controls.provinceCode.value ? ciz_form.controls.houseRegisAddress.controls.provinceCode.value : '',
+      hrp_province_name: hrp_provnameValue,
+      hrp_postal_code: ciz_form.controls.houseRegisAddress.controls.postalCode.value ? ciz_form.controls.houseRegisAddress.controls.postalCode.value : '',
+
+      work_address: ciz_form.controls.workAddress.controls.address.value ? ciz_form.controls.workAddress.controls.address.value : '',
+      work_sub_district: ciz_form.controls.workAddress.controls.subDistrict.value ? ciz_form.controls.workAddress.controls.subDistrict.value : '',
+      work_district: ciz_form.controls.workAddress.controls.district.value ? ciz_form.controls.workAddress.controls.district.value : '',
+      work_province_code: ciz_form.controls.workAddress.controls.provinceCode.value ? ciz_form.controls.workAddress.controls.provinceCode.value : '',
+      work_province_name: work_provnameValue,
+      work_postal_code: ciz_form.controls.workAddress.controls.postalCode.value ? ciz_form.controls.workAddress.controls.postalCode.value : '',
+
+    }
+
+    const itemString = JSON.stringify(quotationdata)
+
+    let fd = new FormData();
+    fd.append('item', itemString)
+
+
+    try {
+      const resultCreateQEconsent = await lastValueFrom(this.quotationService.MPLS_create_or_update_citizendata(fd))
+
+      this.loadingService.hideLoader()
+
+      if (resultCreateQEconsent.status == 200) {
+        this.snackbarsuccess(`บันทึกข้อมูลหน้า 'ข้อมูลบัตรประชาชน' สำเร็จ` );
+
+        return true
+
+      } else {
+        // --- handle fail update citizen info data ---
+        return false
+      }
+
+    } catch (e: any) {
+      this.loadingService.hideLoader
+      console.log(`error create e-consent quotation : ${e.message}`)
+      return false
+    }
+
   }
 
   async onClickBtnVerifyPhone() {
@@ -304,7 +664,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     // ==== กรณี field phone_number บนหน้า form มีการแก้ไข ให้ save record ก่อนค่อยเปิดหน้าออก OTP (open dialog OtpVerifyDialogComponent)
 
-    const isDirty = this.cizcardtab.cizForm.controls.maincitizenForm.controls.phoneNumber.dirty
+    const isDirty = this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.dirty
     const quoid = this.actRoute.snapshot.queryParamMap.get('id') ?? ''
 
 
@@ -314,7 +674,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       updatePhoneresult = await lastValueFrom(this.quotationService.MPLS_update_phone_number(
         {
           quotationid: quoid,
-          phone_number: this.cizcardtab.cizForm.controls.maincitizenForm.controls.phoneNumber.value ?? ''
+          phone_number: this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.value ?? ''
         }
       ))
     }
@@ -329,16 +689,24 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           header: `หน้ายืนยันเบอร์โทรศัพท์`,
           message: `ของคุณ ...`,
           quotationid: this.quotationResult$.value.data[0].quo_key_app_id,
-          phone_number: this.cizcardtab.cizForm.controls.maincitizenForm.controls.phoneNumber.value,
+          phone_number: this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.value,
           refid: `${this.quotationResult$.value.data[0].quo_app_ref_no}`,
           button_name: `ปิด`
         }
       }).afterClosed().subscribe((resdialog: IDialogPhoneValidClose) => {
 
+
         // === check if phone number change ===
-        const currentPhonenumber = this.cizcardtab.cizForm.controls.maincitizenForm.controls.phoneNumber.value
+        const currentPhonenumber = this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.value
         const newphonenumber = resdialog.phone_number
         const validstatus = resdialog.otp_status
+
+        if (validstatus) {
+          this.cizcardtab.cizForm.controls.phonevalid.setValue(true)
+          this.cizcardtab.phonevalidstatus = `✅ : ได้รับการยืนยันเบอร์โทรศัพท์แล้ว`
+          this.visiblePhoneValid = false
+          this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.disable()
+        }
 
         if (currentPhonenumber !== newphonenumber) {
 
@@ -349,12 +717,19 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             }).subscribe((res) => {
 
               if (res.status) {
-                this.cizcardtab.cizForm.controls.maincitizenForm.controls.phoneNumber.setValue(newphonenumber)
+
                 this._snackBar.open('อัพเดทเบอร์โทรศัพท์สำเร็จ', '', {
                   horizontalPosition: 'end',
                   verticalPosition: 'bottom',
                   duration: 3000,
                   panelClass: 'custom-snackbar-container'
+                })
+
+                this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.setValue(newphonenumber)
+
+                // === update quotationResult$ === 
+                this.quotationService.getquotationbyid(quoid).subscribe((result) => {
+                  this.quotationResult$.next(result)
                 })
 
               } else {
@@ -364,10 +739,6 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           }
 
         }
-        // === update quotationResult$ === 
-        this.quotationService.getquotationbyid(quoid).subscribe((result) => {
-          this.quotationResult$.next(result)
-        })
       })
 
     } else {
@@ -385,7 +756,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       quotationid: this.quoid,
       dealer_code: this.productdetailtab.productForm.controls.detailForm.controls.dealerCode.value ?? '',
       brand_code: this.productdetailtab.productForm.controls.detailForm.controls.carBrandField.value ?? '',
-      brand_name: this.productdetailtab.productForm.controls.detailForm.controls.carModelNameField.value ?? '',
+      brand_name: this.productdetailtab.productForm.controls.detailForm.controls.carBrandNameField.value ?? '',
       model_code: this.productdetailtab.productForm.controls.detailForm.controls.carModelField.value ?? '',
       model_name: this.productdetailtab.productForm.controls.detailForm.controls.carModelNameField.value ?? '',
       color_name: this.productdetailtab.productForm.controls.detailForm.controls.carColorField.value ?? '',
@@ -394,6 +765,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       interest_rate: this.productdetailtab.productForm.controls.detailForm.controls.interestRateField.value,
       payment_value: this.productdetailtab.productForm.controls.detailForm.controls.paymentValueField.value,
       payment_round_count: this.productdetailtab.productForm.controls.detailForm.controls.paymentRoundCountValueField.value,
+      insurance_name: this.productdetailtab.productForm.controls.detailForm.controls.insuranceNameField.value ?? '',
       insurance_code: this.productdetailtab.productForm.controls.detailForm.controls.insuranceCodeField.value ?? '',
       insurance_year: this.productdetailtab.productForm.controls.detailForm.controls.insuranceYearField.value,
       insurance_plan_price: this.productdetailtab.productForm.controls.detailForm.controls.insurancePlanPriceField.value,
@@ -402,11 +774,19 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       size_model: this.productdetailtab.productForm.controls.detailForm.controls.sizeModelField.value,
       insurer_code: this.productdetailtab.productForm.controls.detailForm.controls.insurerCodeField.value ?? '',
       insurer_name: this.productdetailtab.productForm.controls.detailForm.controls.insurerNameField.value ?? '',
+      coverage_total_loss: this.productdetailtab.coverage ? this.productdetailtab.coverage : null, // ทุนประกัน
+      max_ltv: this.productdetailtab.productForm.controls.detailForm.controls.maxltvField.value ? this.productdetailtab.productForm.controls.detailForm.controls.maxltvField.value : null, // Max LTV
+      price_include_vat: this.productdetailtab.productForm.controls.detailForm.controls.priceincludevatField.value ? this.productdetailtab.productForm.controls.detailForm.controls.priceincludevatField.value : 0,
+      engine_number: this.productdetailtab.productForm.controls.detailForm.controls.engineNoField.value ? this.productdetailtab.productForm.controls.detailForm.controls.engineNoField.value : null,
+      chassis_number: this.productdetailtab.productForm.controls.detailForm.controls.chassisNoField.value ? this.productdetailtab.productForm.controls.detailForm.controls.chassisNoField.value : null,
+      engine_no_running: this.productdetailtab.productForm.controls.detailForm.controls.runningengineNoField.value ? this.productdetailtab.productForm.controls.detailForm.controls.runningengineNoField.value : null,
+      chassis_no_running: this.productdetailtab.productForm.controls.detailForm.controls.runningchassisNoField.value ? this.productdetailtab.productForm.controls.detailForm.controls.runningchassisNoField.value : null,
     }
 
     const reqcreatecredit = await lastValueFrom(this.quotationService.MPLS_create_or_update_credit(reqcreatecreditdata))
 
-    if(reqcreatecredit.status == true) {
+    if (reqcreatecredit.status == true) {
+      this.econsentbtnDisable = false
       this.snackbarsuccess(`${reqcreatecredit.message}`)
     } else {
       this.snackbarfail(`${reqcreatecredit.message}`)
@@ -452,7 +832,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     if (app_no !== '' && currentDate) {
 
-      const quotationid = this.quotationkeyid
+      const quotationid = this.actRoute.snapshot.queryParamMap.get('id') ?? ''
 
       const senddata: IDialogEconsentOtpOpen = {
         header: `หน้ายืนยันการยินยอมเปิดเผยข้อมูล`,
@@ -464,16 +844,20 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         birthdate: this.quotationResult$.value.data[0].birth_date ? this.quotationResult$.value.data[0].birth_date : null,
         currentDate: currentDate,
         application_no: app_no ?? '-',
-        phone_number: this.cizcardtab.cizForm.controls.maincitizenForm.controls.phoneNumber.value ?? '-',
+        phone_number: this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.value ?? '-',
         refid: app_no ?? '-',
         button_name: `ตกลง`
       }
-      this.dialog.open(OptEconsentComponent, {
+      this.dialog.open(OtpEconsentComponent, {
         width: `65%`,
         height: `90%`,
         data: senddata
-      }).afterClosed().subscribe(res => {
-        // === do something ===
+      }).afterClosed().subscribe((reseconsentdialog: IDialogEconsentValidClose) => {
+
+        if (reseconsentdialog.status == true) {
+          this.productdetailtab.productForm.controls.consentVerify.setValue(true)
+          this.verifyeconsent = true
+        }
       })
     } else {
       // === no application num value ===
@@ -482,5 +866,19 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
 
   }
+
+  openDialogStep(header: string, message: string, buttonName: string, previousStage: number) {
+    this.dialog.open(MainDialogComponent, {
+      maxWidth: '500px',
+      data: {
+        header: header,
+        message: message,
+        button_name: buttonName
+      }
+    }).afterClosed().subscribe((res) => {
+      this.stepper.selectedIndex = previousStage;
+    })
+  }
+
 }
 

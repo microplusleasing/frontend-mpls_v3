@@ -6,12 +6,24 @@
             <ng-template matStepLabel>ข้อมูลบัตรประชาชน</ng-template>
             <app-ciz-card-tab [quotationReq]="(quotationResult$)" (dipchipRes)="recieve_dipchipData($event)">
             </app-ciz-card-tab>
-            <div class="flex-center">
-                <button *ngIf="this.visiblePhoneValid" mat-raised-button color="primary"
-                    (click)="onClickBtnVerifyPhone()"
-                    [disabled]="!this.cizcardtab.cizForm.controls.maincitizenForm.controls.phoneNumber.valid">ยืนยันเบอร์โทรศัพท์ลูกค้า</button><br>
-                <button mat-raised-button color="primary" matStepperNext [disabled]="!this.cizcardtab.cizForm.valid"
-                    type="button">Next</button>
+            <div class="flex-center" *ngIf="!canclequest">
+                    <div *ngIf="false">
+                        <button mat-raised-button color="primary" (click)="onclickSavecitizendata()" 
+                            [disabled]="this.createorupdatecitizendataDisable">
+                            บันทึกข้อมูล
+                        </button>
+                    </div>
+                    <br>
+                    <button *ngIf="this.visiblePhoneValid" mat-raised-button color="primary"
+                        (click)="onClickBtnVerifyPhone()"
+                        [disabled]="!(this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.valid)">
+                        ยืนยันเบอร์โทรศัพท์ลูกค้า
+                    </button>
+                    <br>
+                    <button mat-raised-button color="primary" matStepperNext [disabled]="!this.cizcardtab.cizForm.valid"
+                        type="button">
+                        Next
+                    </button>
             </div>
         </mat-step>
 

@@ -13,7 +13,7 @@ import { QuotationService } from 'src/app/service/quotation.service';
 import { IResQuotationDetail } from 'src/app/interface/i-res-quotation-detail';
 import { IReqFlagDipchip } from 'src/app/interface/i-req-flag-dipchip';
 import { BaseService } from 'src/app/service/base/base.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 import { ProductDetailTabComponent } from '../quotation-tab/product-detail-tab/product-detail-tab.component';
 import { MatStepper } from '@angular/material/stepper';
@@ -27,6 +27,9 @@ import { IReqCreateCredit } from 'src/app/interface/i-req-create-credit';
 import { IDialogEconsentValidClose } from 'src/app/interface/i-dialog-econsent-valid-close';
 import { CareerAndPurposeComponent } from '../quotation-tab/career-and-purpose/career-and-purpose.component';
 import { environment } from 'src/environments/environment';
+import { FaceValidDialogComponent } from 'src/app/widget/dialog/face-valid-dialog/face-valid-dialog.component';
+import { IDialogFaceValidClose } from 'src/app/interface/i-dialog-face-valid-close';
+import { ScrollStrategyOptions } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -42,14 +45,13 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   stepperOrientation: Observable<StepperOrientation>;
   isLinear: boolean = false;
 
-  checkdipchipvalid: boolean = false;
-
   quoForm: FormGroup;
   quotationkeyid: string;
   queryParams: ParamMap;
   quotationResult$: BehaviorSubject<IResQuotationDetail> = new BehaviorSubject<IResQuotationDetail>({} as IResQuotationDetail)
   quoid: string = ''
   visiblePhoneValid: boolean = true
+  disablePhoneValidbtn: boolean = true
   verifyeconsent: boolean = false
   createorupdatecitizendataDisable: boolean = true
   createorupdatecreditbtnDisable: boolean = true
@@ -76,7 +78,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.masterDataService,
     this.loadingService,
     this.dialog,
-    this._snackBar
+    this._snackBar,
+    this.breakpointObserver
   )
 
   @ViewChild(CareerAndPurposeComponent) careerandpurposetab: CareerAndPurposeComponent = new CareerAndPurposeComponent(
@@ -96,6 +99,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     private actRoute: ActivatedRoute,
     public quotationService: QuotationService,
     public override dialog: MatDialog,
+    private readonly sso: ScrollStrategyOptions,
     public override _snackBar: MatSnackBar,
   ) {
     super(dialog, _snackBar)
@@ -146,6 +150,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             this.canclequest = true
           }
 
+          if (quoitem.quo_key_app_id && quoitem.ciz_phone_valid_status !== 'Y' && this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.valid) {
+            this.disablePhoneValidbtn = false
+          } else {
+            this.disablePhoneValidbtn = true
+          }
+
         }
       }
     })
@@ -161,54 +171,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.cizcardtab.cizForm.valueChanges.subscribe((res) => {
 
       //  ==== เงื่อนไขแสดงปุ่มบันทึกใน tab 1 (ข้อมูลบัตรประชาชน) ===
-
-      if (this.quotationResult$.value && this.quotationResult$.value.data && this.quotationResult$.value.data[0]) {
-        if (this.quotationResult$.value.data[0].dipchip_uuid !== '' && this.quotationResult$.value.data[0].dipchip_uuid !== null) {
-          this.checkdipchipvalid = true;
-        } else {
-          this.checkdipchipvalid = (
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.age.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.titleCode.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.gender.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.firstName.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.lastName.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.citizenId.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.address.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.subDistrict.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.district.valid &&
-            // this.cizcardtab.cizForm.controls.maincitizenForm.controls.provinceName.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.provinceCode.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.postalCode.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.issueDate.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.expireDate.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.birthDate.valid &&
-            this.cizcardtab.cizForm.controls.maincitizenForm.controls.issuePlace.valid
-          );
-        }
-      } else {
-        this.checkdipchipvalid = (
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.age.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.titleCode.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.gender.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.firstName.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.lastName.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.citizenId.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.address.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.subDistrict.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.district.valid &&
-          // this.cizcardtab.cizForm.controls.maincitizenForm.controls.provinceName.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.provinceCode.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.postalCode.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.issueDate.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.expireDate.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.birthDate.valid &&
-          this.cizcardtab.cizForm.controls.maincitizenForm.controls.issuePlace.valid
-        );
-      }
-
       if (
-        // true
-        this.checkdipchipvalid &&
         this.cizcardtab.cizForm.controls.generalinfoForm.valid &&
         this.cizcardtab.cizForm.controls.livingAddress.valid &&
         this.cizcardtab.cizForm.controls.contactAddress.valid &&
@@ -219,6 +182,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       } else {
         this.createorupdatecitizendataDisable = true
       }
+
     })
 
 
@@ -323,6 +287,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   }
 
   recieve_dipchipData($event: IReqFlagDipchip) {
+    // === กดปุ่ม Dipchip ===
     if ($event.status) {
 
       this.createquotationdopa('1', $event.uuid).then((dchk) => {
@@ -378,10 +343,73 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               // this.cizcardtab.cizCardImage_string = ''
               // this.cizcardtab.cizCardImage = `${environment.citizen_card_img_preload}`
               // this.cizcardtab.cizForm.reset()
+              const returnCreateNoneconsent = await this.createquotationdopanoneconsent($event.uuid)
+              if (returnCreateNoneconsent.status) {
+                // ==== ปลดล๊อค form เมื่อ dipchip สำเร็จ ====
+                this.cizcardtab.cizForm.enable()
+
+                const queryParams: Params = { id: returnCreateNoneconsent.refId };
+
+                await this.router.navigate(
+                  [],
+                  {
+                    relativeTo: this.actRoute,
+                    queryParams: queryParams,
+                    queryParamsHandling: 'merge', // remove to replace all query params by provided
+                  }
+                );
+                // === add dopa status (11/11/2022) === 
+
+                this.quotationService.setstatusdopa(dchk.refId)
+
+                this.afteroninit();
+              } else {
+                this.snackbarfail('สร้างรายการ quotation ไม่สำเร็จ (non-econsent)')
+              }
             }
           })
         }
       })
+    }
+  }
+
+  recieve_phonenumber() {
+    if (this.quotationResult$.value && this.quotationResult$.value.data) {
+      const quoitem = this.quotationResult$.value.data[0]
+      if (quoitem.quo_key_app_id && quoitem.ciz_phone_valid_status !== 'Y' && this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.valid) {
+        this.disablePhoneValidbtn = false
+      } else {
+        this.disablePhoneValidbtn = true
+      }
+    }
+  }
+
+  recieve_dialogfacevalid() {
+
+    // === คลิกปุ่ม เปรียบเทียบใบหน้า ===
+
+    if (!this.cizcardtab.cizForm.dirty) {
+      if (this.quoid) {
+        this.dialog.open(FaceValidDialogComponent, {
+          width: `80%`,
+          height: `90%`,
+          data: {
+            quotationid: `${this.quoid}`,
+          }
+        }).afterClosed().subscribe((resfacevaliddilaog: IDialogFaceValidClose) => {
+
+          if (resfacevaliddilaog.settextstatus == true) {
+            // this.cizcardtab.cizForm.controls.facevalid.setValue(true);
+            this.cizcardtab.facevalidstatus = `✅ ได้รับการยืนยันใบหน้าบุคคลแล้ว`
+            this.cizcardtab.cizForm.controls.facecompareValid.setValue(true);
+            this.cizcardtab.cizForm.updateValueAndValidity();
+          }
+        })
+      } else {
+        this.snackbarfail(`ไม่พบเลข quotation id ที่จะทำรายการ`)
+      }
+    } else {
+      this.snackbarfail(`มีการแก้ไขข้อมูลบนหน้ากรอกข้อมูล กรุณาบันทึกก่อน`)
     }
   }
 
@@ -432,6 +460,55 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       console.log(`error create e-consent quotation : ${e.message}`)
       return { status: false, refid: '', message: '' }
     }
+
+  }
+
+  async createquotationdopanoneconsent(uuid: string) {
+
+    // === *** API เส้นนี้จะถูกเรียกกรณี DIPCHIP แล้วมีข้อมูล DIPCHIP แต่ไม่มี record ของ DOPA หรือ สร้างข้อมูลในขั้นตอน MPLS_DIPCHIP ไม่สำเร็จ *** ===
+
+
+    const ciz_form = this.cizcardtab.cizForm
+
+    let quotationdata = {
+
+      age: ciz_form.controls.maincitizenForm.controls.age.value ? ciz_form.controls.maincitizenForm.controls.age.value : '',
+      titleCode: ciz_form.controls.maincitizenForm.controls.titleCode.value ? ciz_form.controls.maincitizenForm.controls.titleCode.value : '',
+      titleName: ciz_form.controls.maincitizenForm.controls.titleName.value ? ciz_form.controls.maincitizenForm.controls.titleName.value : '',
+      firstName: ciz_form.controls.maincitizenForm.controls.firstName.value ? ciz_form.controls.maincitizenForm.controls.firstName.value : '',
+      lastName: ciz_form.controls.maincitizenForm.controls.lastName.value ? ciz_form.controls.maincitizenForm.controls.lastName.value : '',
+      gender: ciz_form.controls.maincitizenForm.controls.gender.value ? ciz_form.controls.maincitizenForm.controls.gender.value : '',
+      citizenId: ciz_form.controls.maincitizenForm.controls.citizenId.value ? ciz_form.controls.maincitizenForm.controls.citizenId.value : '',
+      birthDate: ciz_form.controls.maincitizenForm.controls.birthDate.value ? ciz_form.controls.maincitizenForm.controls.birthDate.value : '',
+      issueDate: ciz_form.controls.maincitizenForm.controls.issueDate.value ? ciz_form.controls.maincitizenForm.controls.issueDate.value : '',
+      expireDate: ciz_form.controls.maincitizenForm.controls.expireDate.value ? ciz_form.controls.maincitizenForm.controls.expireDate.value : '',
+      issuePlace: ciz_form.controls.maincitizenForm.controls.issuePlace.value ? ciz_form.controls.maincitizenForm.controls.issuePlace.value : '',
+
+      address: ciz_form.controls.maincitizenForm.controls.address.value ? ciz_form.controls.maincitizenForm.controls.address.value : '',
+      subDistrict: ciz_form.controls.maincitizenForm.controls.subDistrict.value ? ciz_form.controls.maincitizenForm.controls.subDistrict.value : '',
+      district: ciz_form.controls.maincitizenForm.controls.district.value ? ciz_form.controls.maincitizenForm.controls.district.value : '',
+      provinceName: ciz_form.controls.maincitizenForm.controls.provinceName.value ? ciz_form.controls.maincitizenForm.controls.provinceName.value : '',
+      provinceCode: ciz_form.controls.maincitizenForm.controls.provinceCode.value ? ciz_form.controls.maincitizenForm.controls.provinceCode.value : '',
+      postalCode: ciz_form.controls.maincitizenForm.controls.postalCode.value ? ciz_form.controls.maincitizenForm.controls.postalCode.value : '',
+      dipchipuuid: uuid ? uuid : '',
+      cizcardImage: this.cizcardtab.cizCardImage_string ? this.cizcardtab.cizCardImage_string : ''
+    }
+
+    const itemString = JSON.stringify(quotationdata)
+
+    let fd = new FormData();
+    fd.append('item', itemString)
+
+
+    try {
+      const resultCreateQEconsent = await lastValueFrom(this.quotationService.MPLS_dipchipnoneconsent(fd))
+
+      return (resultCreateQEconsent.status == 200) ? { status: true, refId: resultCreateQEconsent.data[0].quo_key_app_id, message: '' } : { status: false, refId: '', message: resultCreateQEconsent.message }
+
+    } catch (e: any) {
+      console.log(`error create e-consent quotation : ${e.message}`)
+      return { status: false, refid: '', message: '' }
+    }
   }
 
   async onclickSavecitizendata() {
@@ -474,12 +551,13 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       provinceCode: ciz_form.controls.maincitizenForm.controls.provinceCode.value ? ciz_form.controls.maincitizenForm.controls.provinceCode.value : '',
       provinceName: ciz_form.controls.maincitizenForm.controls.provinceCode.value ? this.mapProvinceNameById(ciz_form.controls.maincitizenForm.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : '',
       postalCode: ciz_form.controls.maincitizenForm.controls.postalCode.value ? ciz_form.controls.maincitizenForm.controls.postalCode.value : '',
+      cizcardImage: this.cizcardtab.cizCardImage_string ? this.cizcardtab.cizCardImage_string : '',
 
       liv_address: ciz_form.controls.livingAddress.controls.address.value ? ciz_form.controls.livingAddress.controls.address.value : '',
       liv_sub_district: ciz_form.controls.livingAddress.controls.subDistrict.value ? ciz_form.controls.livingAddress.controls.subDistrict.value : '',
       liv_district: ciz_form.controls.livingAddress.controls.district.value ? ciz_form.controls.livingAddress.controls.district.value : '',
-      liv_province_name: ciz_form.controls.livingAddress.controls.provinceName.value ? ciz_form.controls.livingAddress.controls.provinceName.value : '',
       liv_province_code: ciz_form.controls.livingAddress.controls.provinceCode.value ? ciz_form.controls.livingAddress.controls.provinceCode.value : '',
+      liv_province_name: ciz_form.controls.livingAddress.controls.provinceName.value ? this.mapProvinceNameById(ciz_form.controls.livingAddress.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : '',
       liv_postal_code: ciz_form.controls.livingAddress.controls.postalCode.value ? ciz_form.controls.livingAddress.controls.postalCode.value : '',
       liv_la: ciz_form.controls.livingAddress.controls.la.value ? ciz_form.controls.livingAddress.controls.la.value : '',
       liv_lon: ciz_form.controls.livingAddress.controls.lon.value ? ciz_form.controls.livingAddress.controls.lon.value : '',
@@ -488,22 +566,22 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       cont_address: ciz_form.controls.contactAddress.controls.address.value ? ciz_form.controls.contactAddress.controls.address.value : '',
       cont_sub_district: ciz_form.controls.contactAddress.controls.subDistrict.value ? ciz_form.controls.contactAddress.controls.subDistrict.value : '',
       cont_district: ciz_form.controls.contactAddress.controls.district.value ? ciz_form.controls.contactAddress.controls.district.value : '',
-      cont_province_name: ciz_form.controls.contactAddress.controls.provinceName.value ? ciz_form.controls.contactAddress.controls.provinceName.value : '',
       cont_province_code: ciz_form.controls.contactAddress.controls.provinceCode.value ? ciz_form.controls.contactAddress.controls.provinceCode.value : '',
+      cont_province_name: ciz_form.controls.contactAddress.controls.provinceName.value ? this.mapProvinceNameById(ciz_form.controls.contactAddress.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : '',
       cont_postal_code: ciz_form.controls.contactAddress.controls.postalCode.value ? ciz_form.controls.contactAddress.controls.postalCode.value : '',
 
       hrp_address: ciz_form.controls.houseRegisAddress.controls.address.value ? ciz_form.controls.houseRegisAddress.controls.address.value : '',
       hrp_sub_district: ciz_form.controls.houseRegisAddress.controls.subDistrict.value ? ciz_form.controls.houseRegisAddress.controls.subDistrict.value : '',
       hrp_district: ciz_form.controls.houseRegisAddress.controls.district.value ? ciz_form.controls.houseRegisAddress.controls.district.value : '',
-      hrp_province_name: ciz_form.controls.houseRegisAddress.controls.provinceName.value ? ciz_form.controls.houseRegisAddress.controls.provinceName.value : '',
       hrp_province_code: ciz_form.controls.houseRegisAddress.controls.provinceCode.value ? ciz_form.controls.houseRegisAddress.controls.provinceCode.value : '',
+      hrp_province_name: ciz_form.controls.houseRegisAddress.controls.provinceName.value ? this.mapProvinceNameById(ciz_form.controls.houseRegisAddress.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : '',
       hrp_postal_code: ciz_form.controls.houseRegisAddress.controls.postalCode.value ? ciz_form.controls.houseRegisAddress.controls.postalCode.value : '',
 
       work_address: ciz_form.controls.workAddress.controls.address.value ? ciz_form.controls.workAddress.controls.address.value : '',
       work_sub_district: ciz_form.controls.workAddress.controls.subDistrict.value ? ciz_form.controls.workAddress.controls.subDistrict.value : '',
       work_district: ciz_form.controls.workAddress.controls.district.value ? ciz_form.controls.workAddress.controls.district.value : '',
-      work_province_name: ciz_form.controls.workAddress.controls.provinceName.value ? ciz_form.controls.workAddress.controls.provinceName.value : '',
       work_province_code: ciz_form.controls.workAddress.controls.provinceCode.value ? ciz_form.controls.workAddress.controls.provinceCode.value : '',
+      work_province_name: ciz_form.controls.workAddress.controls.provinceName.value ? this.mapProvinceNameById(ciz_form.controls.workAddress.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : '',
       work_postal_code: ciz_form.controls.workAddress.controls.postalCode.value ? ciz_form.controls.workAddress.controls.postalCode.value : '',
 
     }
@@ -560,7 +638,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     const cont_provnameValue = ciz_form.controls.contactAddress.controls.provinceCode.value ? this.mapProvinceNameById(ciz_form.controls.contactAddress.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : ''
     const hrp_provnameValue = ciz_form.controls.houseRegisAddress.controls.provinceCode.value ? this.mapProvinceNameById(ciz_form.controls.houseRegisAddress.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : ''
     const work_provnameValue = ciz_form.controls.workAddress.controls.provinceCode.value ? this.mapProvinceNameById(ciz_form.controls.workAddress.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : ''
-  
+
 
     let quotationdata = {
 
@@ -639,7 +717,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       this.loadingService.hideLoader()
 
       if (resultCreateQEconsent.status == 200) {
-        this.snackbarsuccess(`บันทึกข้อมูลหน้า 'ข้อมูลบัตรประชาชน' สำเร็จ` );
+        this.snackbarsuccess(`บันทึกข้อมูลหน้า 'ข้อมูลบัตรประชาชน' สำเร็จ`);
 
         return true
 
@@ -664,88 +742,95 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     // ==== กรณี field phone_number บนหน้า form มีการแก้ไข ให้ save record ก่อนค่อยเปิดหน้าออก OTP (open dialog OtpVerifyDialogComponent)
 
-    const isDirty = this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.dirty
-    const quoid = this.actRoute.snapshot.queryParamMap.get('id') ?? ''
+    if (!this.cizcardtab.cizForm.dirty) {
+      if (this.quoid) {
+        const isDirty = this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.dirty
+        const quoid = this.actRoute.snapshot.queryParamMap.get('id') ?? ''
 
 
-    let updatePhoneresult = {} as IResPhoneUpdate
+        let updatePhoneresult = {} as IResPhoneUpdate
 
-    if (isDirty) {
-      updatePhoneresult = await lastValueFrom(this.quotationService.MPLS_update_phone_number(
-        {
-          quotationid: quoid,
-          phone_number: this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.value ?? ''
-        }
-      ))
-    }
-
-    if (updatePhoneresult.status == true || !isDirty) {
-      this.dialog.open(OtpVerifyDialogComponent, {
-        disableClose: true,
-        panelClass: 'custom-dialog-header',
-        width: `80%`,
-        height: `90%`,
-        data: {
-          header: `หน้ายืนยันเบอร์โทรศัพท์`,
-          message: `ของคุณ ...`,
-          quotationid: this.quotationResult$.value.data[0].quo_key_app_id,
-          phone_number: this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.value,
-          refid: `${this.quotationResult$.value.data[0].quo_app_ref_no}`,
-          button_name: `ปิด`
-        }
-      }).afterClosed().subscribe((resdialog: IDialogPhoneValidClose) => {
-
-
-        // === check if phone number change ===
-        const currentPhonenumber = this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.value
-        const newphonenumber = resdialog.phone_number
-        const validstatus = resdialog.otp_status
-
-        if (validstatus) {
-          this.cizcardtab.cizForm.controls.phonevalid.setValue(true)
-          this.cizcardtab.phonevalidstatus = `✅ : ได้รับการยืนยันเบอร์โทรศัพท์แล้ว`
-          this.visiblePhoneValid = false
-          this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.disable()
-        }
-
-        if (currentPhonenumber !== newphonenumber) {
-
-          if (newphonenumber) {
-            this.quotationService.MPLS_update_phone_number({
+        if (isDirty) {
+          updatePhoneresult = await lastValueFrom(this.quotationService.MPLS_update_phone_number(
+            {
               quotationid: quoid,
-              phone_number: newphonenumber
-            }).subscribe((res) => {
-
-              if (res.status) {
-
-                this._snackBar.open('อัพเดทเบอร์โทรศัพท์สำเร็จ', '', {
-                  horizontalPosition: 'end',
-                  verticalPosition: 'bottom',
-                  duration: 3000,
-                  panelClass: 'custom-snackbar-container'
-                })
-
-                this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.setValue(newphonenumber)
-
-                // === update quotationResult$ === 
-                this.quotationService.getquotationbyid(quoid).subscribe((result) => {
-                  this.quotationResult$.next(result)
-                })
-
-              } else {
-
-              }
-            })
-          }
-
+              phone_number: this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.value ?? ''
+            }
+          ))
         }
-      })
 
+        if (updatePhoneresult.status == true || !isDirty) {
+          this.dialog.open(OtpVerifyDialogComponent, {
+            disableClose: true,
+            panelClass: 'custom-dialog-header',
+            width: `80%`,
+            height: `90%`,
+            data: {
+              header: `หน้ายืนยันเบอร์โทรศัพท์`,
+              message: `ของคุณ ...`,
+              quotationid: this.quotationResult$.value.data[0].quo_key_app_id,
+              phone_number: this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.value,
+              refid: `${this.quotationResult$.value.data[0].quo_app_ref_no}`,
+              button_name: `ปิด`
+            }
+          }).afterClosed().subscribe((resdialog: IDialogPhoneValidClose) => {
+
+
+            // === check if phone number change ===
+            const currentPhonenumber = this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.value
+            const newphonenumber = resdialog.phone_number
+            const validstatus = resdialog.otp_status
+
+            if (validstatus) {
+              this.cizcardtab.cizForm.controls.phonevalid.setValue(true)
+              this.cizcardtab.phonevalidstatus = `✅ : ได้รับการยืนยันเบอร์โทรศัพท์แล้ว`
+              this.visiblePhoneValid = false
+              this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.disable()
+            }
+
+            if (currentPhonenumber !== newphonenumber) {
+
+              if (newphonenumber) {
+                this.quotationService.MPLS_update_phone_number({
+                  quotationid: quoid,
+                  phone_number: newphonenumber
+                }).subscribe((res) => {
+
+                  if (res.status) {
+
+                    this._snackBar.open('อัพเดทเบอร์โทรศัพท์สำเร็จ', '', {
+                      horizontalPosition: 'end',
+                      verticalPosition: 'bottom',
+                      duration: 3000,
+                      panelClass: 'custom-snackbar-container'
+                    })
+
+                    this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.setValue(newphonenumber)
+
+                    // === update quotationResult$ === 
+                    this.quotationService.getquotationbyid(quoid).subscribe((result) => {
+                      this.quotationResult$.next(result)
+                    })
+
+                  } else {
+
+                  }
+                })
+              }
+
+            }
+          })
+
+        } else {
+          // === update phone number fail === 
+          this.openMaindialog('ผิดพลาด', 'ไม่สามารถระบุรายการอัพเดทเบอร์โทรศัพท์ได้', 'OK')
+        }
+      } else {
+        this.snackbarfail(`ไม่พบเลข quotation id ที่จะทำรายการ`)
+      }
     } else {
-      // === update phone number fail === 
-      this.openMaindialog('ผิดพลาด', 'ไม่สามารถอัพเดทเบอร์โทรศัพท์ได้', 'OK')
+      this.snackbarfail(`มีการแก้ไขข้อมูลบนหน้ากรอกข้อมูล กรุณาบันทึกก่อน`)
     }
-
 
   }
 
@@ -764,7 +849,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       product_value: this.productdetailtab.productForm.controls.detailForm.controls.productValueField.value ?? null,
       interest_rate: this.productdetailtab.productForm.controls.detailForm.controls.interestRateField.value,
       payment_value: this.productdetailtab.productForm.controls.detailForm.controls.paymentValueField.value,
-      payment_round_count: this.productdetailtab.productForm.controls.detailForm.controls.paymentRoundCountValueField.value,
+      payment_round_count: this.productdetailtab.productForm.controls.detailForm.controls.paymentRoundCountValueField.value ?? null,
       insurance_name: this.productdetailtab.productForm.controls.detailForm.controls.insuranceNameField.value ?? '',
       insurance_code: this.productdetailtab.productForm.controls.detailForm.controls.insuranceCodeField.value ?? '',
       insurance_year: this.productdetailtab.productForm.controls.detailForm.controls.insuranceYearField.value,
@@ -787,6 +872,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     if (reqcreatecredit.status == true) {
       this.econsentbtnDisable = false
+      this.cizcardtab.cizForm.markAsPristine();
       this.snackbarsuccess(`${reqcreatecredit.message}`)
     } else {
       this.snackbarfail(`${reqcreatecredit.message}`)
@@ -799,6 +885,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     // กรอกข้อมูลในหน้า product ให้ครบถึงจะกดปุ่มได้ 
     // จำเป็นต้องมีค่า cd_app_key_id ก่อน (ได้ค่าจากการกดปุ่มบันทึก (call fn onclickCreateCreditBtn()))
     // สร้างรายการ relate กับ MPLS_qquotation (MPLS_CREDIT) (เช็คสถานะว่ามี record อยู่แล้วหรอืเปล่า ถ้ามีไม่อนุญาตให้สร้าง) 
+    // - ถ้า quo_dopa_status เป็น 'Y' ให้ popup หน้า validate econsent 
+    // - ถ้าเป็น 'N' ให้ Skip ไปหน้า อาชีพและรายได้
 
     // === Create credit success  (first time click) === 
 
@@ -848,10 +936,13 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         refid: app_no ?? '-',
         button_name: `ตกลง`
       }
+
+
       this.dialog.open(OtpEconsentComponent, {
-        width: `65%`,
-        height: `90%`,
-        data: senddata
+        width: `100%`,
+        height: `100%`,
+        data: senddata,
+        scrollStrategy: this.sso.noop()
       }).afterClosed().subscribe((reseconsentdialog: IDialogEconsentValidClose) => {
 
         if (reseconsentdialog.status == true) {

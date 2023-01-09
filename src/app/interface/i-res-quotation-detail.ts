@@ -258,6 +258,7 @@ export interface IResQuotationDetailData {
     ciz_phone_valid_status?: string;
     cizcard_status?: string;
     quo_dopa_status: string;
+    quo_face_compare_verify: string;
 
 
 }

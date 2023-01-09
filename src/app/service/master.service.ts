@@ -74,6 +74,11 @@ export class MasterDataService {
     return this.http.get<IResMasterTerm>(url)
   }
 
+  getTermNew(pro_code: string, size_model: string, rate: number, net_finance: number): Observable<IResMasterTerm> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getTermNew?pro_code=${pro_code}&size_model=${size_model}&rate=${rate}&net_finance=${net_finance}`
+    return this.http.get<IResMasterTerm>(url)
+  }
+
   getImageType(): Observable<IResMasterImageType> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterImageType`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MasterImageType`

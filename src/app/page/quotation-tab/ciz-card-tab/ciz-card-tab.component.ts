@@ -17,6 +17,7 @@ import { DipchipService } from 'src/app/service/dipchip.service';
 import { LoadingService } from 'src/app/service/loading.service';
 import { MasterDataService } from 'src/app/service/master.service';
 import { QuotationService } from 'src/app/service/quotation.service';
+import { FaceValidDialogComponent } from 'src/app/widget/dialog/face-valid-dialog/face-valid-dialog.component';
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 import { BasicSnackbarComponent } from 'src/app/widget/snackbar/basic-snackbar/basic-snackbar.component';
 import { environment } from 'src/environments/environment';
@@ -30,9 +31,12 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
   @Input() quotationReq = {} as Observable<IResQuotationDetail>;
   @Output() dipchipRes = new EventEmitter<IReqFlagDipchip>();
+  @Output() facevalid = new EventEmitter();
+  @Output() phonenumbervalue = new EventEmitter();
 
   quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
   phonevalidstatus: string = ''
+  facevalidstatus: string = ''
   quotationid: string = ''
   showdipchipbtn: boolean = false
 
@@ -73,7 +77,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   district = new FormControl('', Validators.required)
   provinceName = new FormControl<string | undefined>('', Validators.required)
   provinceCode = new FormControl<string | undefined>('', Validators.required) // not show
-  postalCode = new FormControl('', Validators.required)
+  postalCode = new FormControl('', Validators.pattern('^[0-9]{5}$'))
 
   // === ข้อมูลทั่วไป ===
   phoneNumber = new FormControl<string>('', [
@@ -127,6 +131,9 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   _w_provinceCode = new FormControl<string | undefined>('') // not show
   _w_postalCode = new FormControl('', Validators.pattern('^[0-9]{5}$'))
 
+  // === face comparison verify ===
+  face_valid = new FormControl<boolean | null>(null, Validators.requiredTrue)
+
   lalon = new FormControl('')
   la = new FormControl('')
   lon = new FormControl('')
@@ -134,6 +141,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   // ** age valid ** 
   age = new FormControl<Number | null>(null, [Validators.min(20), Validators.required]) // === under 20 years age can't create quotation ===
   phoneValid = new FormControl<boolean>(false, Validators.requiredTrue) /// ==== Validator OTP phone status ====
+  facecompareValid = new FormControl<boolean>(false, Validators.requiredTrue) /// ==== face vertify dialog ====
   // *** waiting dopa status check ***
 
   maincitizenForm = this.fb.group({
@@ -223,7 +231,8 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     contactAddress: this.contactAddress,
     houseRegisAddress: this.houseRegisAddress,
     workAddress: this.workAddress,
-    phonevalid: this.phoneValid
+    phonevalid: this.phoneValid,
+    facecompareValid: this.facecompareValid
   });
 
   constructor(
@@ -276,6 +285,11 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
         }
       }
     })
+
+    this.cizForm.controls.generalinfoForm.controls.phoneNumber.valueChanges.subscribe((value) => {
+      this.phonenumbervalue.emit()
+    })
+
     this.cizForm.controls.maincitizenForm.controls.birthDate.valueChanges.pipe(
       debounceTime(1500)
     ).subscribe({
@@ -392,6 +406,12 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
               } else {
                 this.phonevalidstatus = `❌ : ยังไม่ได้รับการยืนยันเบอร์โทรศัพท์`
               }
+
+              if (quodata.quo_face_compare_verify !== '' && quodata.quo_face_compare_verify !== null) {
+                this.facevalidstatus = `✅ : ทำการตรวจสอบใบหน้าคนเรียบร้อย`
+              } else {
+                this.facevalidstatus = `❌ : รอทำการตรวจสอบใบหน้าคน`
+              }
             }
 
 
@@ -445,9 +465,13 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
               // === contain quo_key_app_id ===
               this.cizForm.enable()
 
-              if (quodata.dipchip_uuid !== '' && quodata.dipchip_uuid !== null) {
-                this.cizForm.controls.maincitizenForm.disable()
-              }
+              // if (quodata.dipchip_uuid !== '' && quodata.dipchip_uuid !== null) {
+              //   this.cizForm.controls.maincitizenForm.disable()
+              // }
+
+
+              // === *** เงื่อนไขใหม่ ถ้าหากมีข้อมูล dipchip ไม่ว่าจะมี dopa หรือ ไม่มี ให้ lock field พวกข้อมูลบัตรประชาชน *** ===
+              this.cizForm.controls.maincitizenForm.disable() // === set on 03/01/2023 ===
             }
 
             if (quodata.ciz_phone_valid_status == 'Y') {
@@ -526,6 +550,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     this.cizForm.controls.livingAddress.controls.subDistrict.setValue(quoitem.lvp_sub_district ?? '')
     this.cizForm.controls.livingAddress.controls.district.setValue(quoitem.lvp_district ?? '')
     this.cizForm.controls.livingAddress.controls.provinceCode.setValue(quoitem.lvp_province_code ?? '')
+    this.cizForm.controls.livingAddress.controls.provinceName.setValue(this.mapProvinceNameById((quoitem.lvp_province_code ?? ''), this.masterProvince.data))
     this.cizForm.controls.livingAddress.controls.postalCode.setValue(quoitem.lvp_postal_code ?? '')
     this.cizForm.controls.livingAddress.controls.la.setValue(quoitem.lvp_latitude ?? '')
     this.cizForm.controls.livingAddress.controls.lon.setValue(quoitem.lvp_londtiude ?? '')
@@ -536,6 +561,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     this.cizForm.controls.contactAddress.controls.subDistrict.setValue(quoitem.ctp_sub_district ?? '')
     this.cizForm.controls.contactAddress.controls.district.setValue(quoitem.ctp_district ?? '')
     this.cizForm.controls.contactAddress.controls.provinceCode.setValue(quoitem.ctp_province_code ?? '')
+    this.cizForm.controls.contactAddress.controls.provinceName.setValue(this.mapProvinceNameById((quoitem.ctp_province_code ?? ''), this.masterProvince.data))
     this.cizForm.controls.contactAddress.controls.postalCode.setValue(quoitem.ctp_postal_code ?? '')
 
     // === set houseRegisAddressForm ===
@@ -543,6 +569,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     this.cizForm.controls.houseRegisAddress.controls.subDistrict.setValue(quoitem.hrp_sub_district ?? '')
     this.cizForm.controls.houseRegisAddress.controls.district.setValue(quoitem.hrp_district ?? '')
     this.cizForm.controls.houseRegisAddress.controls.provinceCode.setValue(quoitem.hrp_province_code ?? '')
+    this.cizForm.controls.houseRegisAddress.controls.provinceName.setValue(this.mapProvinceNameById((quoitem.hrp_province_code ?? ''), this.masterProvince.data))
     this.cizForm.controls.houseRegisAddress.controls.postalCode.setValue(quoitem.hrp_postal_code ?? '')
 
     // === set workAddressForm ===
@@ -550,11 +577,14 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     this.cizForm.controls.workAddress.controls.subDistrict.setValue(quoitem.wp_sub_district ?? '')
     this.cizForm.controls.workAddress.controls.district.setValue(quoitem.wp_district ?? '')
     this.cizForm.controls.workAddress.controls.provinceCode.setValue(quoitem.wp_province_code ?? '')
+    this.cizForm.controls.workAddress.controls.provinceName.setValue(this.mapProvinceNameById((quoitem.wp_province_code ?? ''), this.masterProvince.data))
     this.cizForm.controls.workAddress.controls.postalCode.setValue(quoitem.wp_postal_code ?? '')
 
 
     this.cizForm.controls.maincitizenForm.controls.age.setValue(quoitem.ciz_age ?? null)
     this.cizForm.controls.phonevalid.setValue(quoitem.ciz_phone_valid_status == 'Y' ? true : false)
+    this.cizForm.controls.facecompareValid.setValue(quoitem.quo_face_compare_verify ? true : false)
+    // this.cizForm.controls.facevalid.setValue(quoitem.quo_face_compare_verify == 'Y' ? true : false)
 
     // === set image from dipchip to src (03/10/2022) === 
 
@@ -564,6 +594,8 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
       this.cizCardImage = loadimage
     }
+
+    this.cizForm.markAsPristine();
 
     this.cizForm.controls.generalinfoForm.controls.phoneNumber.markAllAsTouched()
 
@@ -662,6 +694,10 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
         this.loadingService.hideLoader()
       }
     })
+  }
+
+  onClickFacecompareBtn() {
+    this.facevalid.emit();
   }
 
   sameCitizenAddress(type: string) {

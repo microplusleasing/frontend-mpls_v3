@@ -4,10 +4,10 @@
         <mat-step [stepControl]="this.cizcardtab.cizForm">
             <mat-divider></mat-divider>
             <ng-template matStepLabel>ข้อมูลบัตรประชาชน</ng-template>
-            <app-ciz-card-tab [quotationReq]="(quotationResult$)" (dipchipRes)="recieve_dipchipData($event)">
+            <app-ciz-card-tab [quotationReq]="(quotationResult$)" (dipchipRes)="recieve_dipchipData($event)" (facevalid)="recieve_dialogfacevalid()" (phonenumbervalue)="recieve_phonenumber()">
             </app-ciz-card-tab>
             <div class="flex-center" *ngIf="!canclequest">
-                    <div *ngIf="false">
+                    <div>
                         <button mat-raised-button color="primary" (click)="onclickSavecitizendata()" 
                             [disabled]="this.createorupdatecitizendataDisable">
                             บันทึกข้อมูล
@@ -16,7 +16,8 @@
                     <br>
                     <button *ngIf="this.visiblePhoneValid" mat-raised-button color="primary"
                         (click)="onClickBtnVerifyPhone()"
-                        [disabled]="!(this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.valid)">
+                        [disabled]="disablePhoneValidbtn">
+                        <!-- [disabled]="!(this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.valid)"> -->
                         ยืนยันเบอร์โทรศัพท์ลูกค้า
                     </button>
                     <br>
@@ -42,7 +43,7 @@
                     </button><br>
                     <!-- <button mat-raised-button color="primary" (click)="onclickEconsentBtn()" [disabled]="!this.productdetailtab.productForm.controls.detailForm.valid"> -->
                     <button mat-raised-button color="primary" (click)="onclickEconsentBtn()" [disabled]="this.econsentbtnDisable">
-                        ยืนยัน Econsent
+                        ยืนยันการสมัคร
                     </button>
                 </div>
             </div>

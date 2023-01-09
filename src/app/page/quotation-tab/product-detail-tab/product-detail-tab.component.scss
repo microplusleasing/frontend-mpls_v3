@@ -4,7 +4,7 @@
   
   .form-container .mat-form-field {
     width: 220px;
-    width: auto;
+    width: 100%;
   }
   
   .form-container form {
@@ -12,7 +12,7 @@
   }
   
   .form-container form>* {
-    margin: 5px 0;
+    margin: 10px 0;
   }
   
   .form-container .mat-radio-button {

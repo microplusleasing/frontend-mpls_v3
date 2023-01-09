@@ -26,6 +26,10 @@ import { IReqValidationEconsent } from '../interface/i-req-validation-econsent';
 import { IResGetServerTime } from '../interface/i-res-get-server-time';
 import { IReqCreateCredit } from '../interface/i-req-create-credit';
 import { IResCreateOrUpdateCitizenInfoData } from '../interface/i-res-create-or-update-citizen-info-data';
+import { IResImageFaceCompare } from '../interface/i-res-image-face-compare';
+import { IResCheckFaceValid } from '../interface/i-res-check-face-valid';
+import { IResFaceValidStamp } from '../interface/i-res-face-valid-stamp';
+import { IResDopaValidStatus } from '../interface/i-res-dopa-valid-status';
 
 
 @Injectable({
@@ -42,6 +46,8 @@ export class QuotationService {
     status: false,
     messageheader: ''
   }
+
+  dopavalidstatus: string[] = [];
 
   phonevalidstatus: string = ''
 
@@ -161,9 +167,19 @@ export class QuotationService {
     return this.http.post<IResBasic>(url, formData)
   }
 
+  MPLS_dipchipnoneconsent(formData: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_dipchipnoneconsent`
+    return this.http.post<IResBasic>(url, formData)
+  }
+
   MPLS_create_or_update_citizendata(formData: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_or_update_citizendata`
     return this.http.post<IResCreateOrUpdateCitizenInfoData>(url, formData)
+  }
+
+  MPLS_upload_customer_face(formData: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_upload_customer_face`
+    return this.http.post<IResBasic>(url, formData)
   }
 
   // *** update cancle status (quo_status = '3') ***
@@ -223,33 +239,60 @@ export class QuotationService {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_otp_econsent?quotationid=${data.quotationid}&refid=${data.refid}&phone_no=${data.phone_no}`
     return this.http.get<IResOtpLog>(url)
   }
-
+  
   MPLS_validation_otp_econsent(formdata: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_validation_otp_econsent`
     return this.http.post<IResValidastionEconsent>(url, formdata)
   }
-
+  
   MPLS_create_or_update_credit(data: IReqCreateCredit) {
     const fd = new FormData();
     fd.append('item', JSON.stringify(data));
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_or_update_credit`
     return this.http.post<IResValidastionEconsent>(url, fd)
   }
+  
+  MPLS_getimagetocompareiapp(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimagetocompareiapp?quotationid=${quotationid}`
+    return this.http.get<IResImageFaceCompare>(url)
+  }
 
+  MPLS_is_check_face_valid(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_is_check_face_valid?quotationid=${quotationid}`
+    return this.http.get<IResCheckFaceValid>(url)
+  }
 
+  MPLS_stamp_check_face_valid(quotationid: string, reason: string, status: string, is_dipchip: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_stamp_check_face_valid?quotationid=${quotationid}&reason=${reason}&status=${status}&is_dipchip=${is_dipchip}`
+    return this.http.get<IResFaceValidStamp>(url)
+  }
+
+  MPLS_get_dopa_valid_status() {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_get_dopa_valid_status`
+    return this.http.get<IResDopaValidStatus>(url)
+  }
 
 
 
 
 
   setstatusdopa(quotationid: string) {
+
+    // === check master dopa valid status have data === 
+    if(this.dopavalidstatus.length == 0) {
+      this.MPLS_get_dopa_valid_status().subscribe((res) => {
+        this.dopavalidstatus = res.data.status_code
+      })
+    }
+    
     this.getdopastatusbyid(quotationid).subscribe({
       next: (result) => {
 
         if (result.status == 200) {
           const resultdata = result.data[0]
 
-          if (resultdata.status_code !== '0') {
+          // if (resultdata.status_code !== '0') {
+          if (!(this.dopavalidstatus.includes(resultdata.status_code))) {
 
             if (resultdata.status_desc == '' || resultdata.status_desc == null || resultdata.status_desc == '500') {
               this.dopastatus = {
@@ -267,8 +310,8 @@ export class QuotationService {
           } else {
             // === valid citizenid card ===
             this.dopastatus = {
-              message: `✅ สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc}`,
-              messageheader: '',
+              message: `✅ สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc ? resultdata.status_desc : '-'}`,
+              messageheader: `✅ สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc ? resultdata.status_desc : '-'}`,
               status: true
             }
           }

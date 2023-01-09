@@ -8,9 +8,9 @@
       <div class="flex-image-header">
         <div>
           <img [src]="cizCardImage" class="img-box"><br>
-          <span style="color: red;">{{this.quotationService.dopastatus.messageheader}}</span>
+          <span style="color: red;">{{this.quotationService.dopastatus.messageheader}}</span><br>
+          <button mat-raised-button color="primary" (click)="onClickFacecompareBtn()">เปรียบเทียบใบหน้า</button>
         </div>
-        <img [src]="cameraImage" class="img-box">
       </div>
       <div class="flexbox">
         <mat-form-field appearance="outline">
@@ -118,7 +118,8 @@
       <mat-form-field appearance="outline">
         <mat-label>รหัสไปรษณีย์</mat-label>
         <input matInput required [formControl]="postalCode">
-        <mat-error *ngIf="this.postalCode.invalid">กรุณากรอกรหัสไปรษณีย์</mat-error>
+        <mat-error *ngIf="postalCode?.invalid && postalCode.errors?.['required']">กรุณากรอกรหัสไปรษณีย์</mat-error>
+        <mat-error *ngIf="postalCode?.invalid && postalCode.errors?.['pattern']">กรุณากรอกรหัสไปรษณีย์ให้ถูกต้อง</mat-error>
       </mat-form-field>
 
     </div>
@@ -446,8 +447,9 @@
       <span *ngIf="cizForm.controls.maincitizenForm.controls.age.valid">✅ : ผ่านเกณฑ์ในการอนุมัติออกรถ (ไม่ต่ำกว่า 20
         ปี)</span>
       <!-- dopa valid -->
-      <span>{{this.quotationService.dopastatus.message}}</span>
+      <!-- <span>{{this.quotationService.dopastatus.message}}</span> -->
       <!-- phone valid -->
+      <span> {{this.facevalidstatus}}</span>
       <span> {{this.phonevalidstatus}}</span>
     </div>
 

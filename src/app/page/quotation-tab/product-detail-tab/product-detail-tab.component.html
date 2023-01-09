@@ -4,6 +4,103 @@
 <div class="form-container">
     <form [formGroup]="productForm">
         <div [formGroup]="detailForm">
+            <ng-container *ngIf="cardLayout | async as layout">
+                <mat-grid-list [cols]="layout.columns" [rowHeight]="'100px'">
+                    <mat-grid-tile [colspan]="layout.list.maxcols">
+                        <mat-form-field appearance="outline">
+                            <mat-label>รหัสร้านค้า</mat-label>
+                            <input type="text" placeholder="กรอกรหัสร้านค้า" aria-label="Number" matInput
+                                formControlName="dealerCode" [matAutocomplete]="autoDealer">
+                            <mat-autocomplete autoActiveFirstOption #autoDealer="matAutocomplete">
+                                <mat-option matNativeControl required *ngFor="let fdl of filterDealerList | async"
+                                    [value]="fdl.dl_code">
+                                    {{fdl.dl_name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <mat-error *ngIf="detailForm.controls['dealerCode'].hasError('required')">
+                                กรอกรหัสร้านค้า
+                            </mat-error>
+                            <mat-error *ngIf="detailForm.controls['dealerCode'].hasError('wrongFormatDealer')">
+                                กรอกรหัสร้านค้าให้ถูกต้อง
+                            </mat-error>
+                            <mat-hint>{{(dealerSelectText | async)}}</mat-hint>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols4">
+                        <mat-form-field appearance="outline">
+                            <mat-label>ยี่ห้อ</mat-label>
+                            <input type="text" placeholder="กรอกยี่ห้อ" aria-label="Number" matInput
+                                formControlName="carBrandField" [matAutocomplete]="autoBrand" [required]="true">
+                            <mat-autocomplete autoActiveFirstOption #autoBrand="matAutocomplete">
+                                <mat-option matNativeControl required *ngFor="let fbl of filterBrandList | async"
+                                    [value]="fbl.brand_code">
+                                    {{fbl.brand_name}}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <mat-error *ngIf="detailForm.controls['carBrandField'].hasError('required')">
+                                กรอกรหัสยี่ห้อ
+                            </mat-error>
+                            <mat-error *ngIf="detailForm.controls['carBrandField'].hasError('wrongFormatBrand')">
+                                กรอกรหัสยี่ห้อรถให้ถูกต้อง
+                            </mat-error>
+                            <mat-hint class="hint-color">{{(brandSelectText | async)}}</mat-hint>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols4">
+                        <mat-form-field appearance="outline">
+                            <mat-label>รุ่น</mat-label>
+                            <input type="text" placeholder="กรอกรหัสโมเดล" aria-label="Number" matInput
+                                formControlName="carModelField" [matAutocomplete]="autoModel" [required]="true">
+                            <mat-autocomplete autoActiveFirstOption #autoModel="matAutocomplete">
+                                <mat-option matNativeControl required *ngFor="let fml of filterModelList | async"
+                                    [value]="fml.model_code">
+                                    {{fml.model}}
+                                </mat-option>
+                            </mat-autocomplete>
+                            <mat-error *ngIf="detailForm.controls['carModelField'].hasError('required')">
+                                กรอกรหัสรุ่นรถ
+                            </mat-error>
+                            <mat-error *ngIf="detailForm.controls['carModelField'].hasError('wrongFormatModel')">
+                                กรอกรหัสรุ่นรถให้ถูกต้อง
+                            </mat-error>
+                            <mat-hint class="hint-color">{{(modelSelectText | async)}}</mat-hint>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols4">
+                        <mat-form-field appearance="outline">
+                            <mat-label>สี</mat-label>
+                            <input type="text" matInput placeholder="สีรถ" formControlName="carColorField">
+                        </mat-form-field>
+                    </mat-grid-tile>
+
+                    <mat-grid-tile [colspan]="layout.list.cols3" *ngIf="showchassisandengine">
+                            <mat-form-field appearance="outline">
+                                <mat-label>เลขเครื่อง</mat-label>
+                                <input type="text" matInput placeholder="เลขเครื่อง" formControlName="engineNoField">
+                            </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols3">
+                        <mat-form-field appearance="outline">
+                            <mat-label>เลขเครื่อง (running)</mat-label>
+                            <input type="text" matInput placeholder="เลขเครื่อง2"
+                                formControlName="runningengineNoField">
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols3" *ngIf="showchassisandengine">
+                            <mat-form-field appearance="outline">
+                                <mat-label>เลขถัง</mat-label>
+                                <input type="text" matInput placeholder="เลขถัง" formControlName="chassisNoField">
+                            </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols3">
+                        <mat-form-field appearance="outline">
+                            <mat-label>เลขถัง (running)</mat-label>
+                            <input type="text" matInput placeholder="เลขถัง" formControlName="runningchassisNoField">
+                        </mat-form-field>
+                    </mat-grid-tile>
+                </mat-grid-list>
+            </ng-container>
+            <!-- End of Grid list -->
             <div class="flexbox">
                 <mat-form-field appearance="outline">
                     <mat-label>รหัสร้านค้า</mat-label>
@@ -66,6 +163,7 @@
                     <mat-label>สี</mat-label>
                     <input type="text" matInput placeholder="สีรถ" formControlName="carColorField">
                 </mat-form-field>
+
                 <!-- casssic and engine no -->
                 <div *ngIf="showchassisandengine">
                     <mat-form-field appearance="outline">
@@ -117,6 +215,9 @@
                                 {{pms.term}}
                             </mat-option>
                         </mat-select>
+                        <mat-error *ngIf="this.paymentCountSelect.length == 0">
+                            เลือกเงื่อนไขอื่นก่อน
+                        </mat-error>
                         <mat-error *ngIf="detailForm.controls['paymentRoundCountValueField'].hasError('required')">
                             เลือกจำนวนงวด
                         </mat-error>
@@ -137,7 +238,7 @@
                     </mat-form-field>
                 </div>
 
-                <div  *ngIf="false">
+                <div *ngIf="false">
 
                     <mat-form-field appearance="outline">
                         <mat-label>ราคาโรงงาน</mat-label>

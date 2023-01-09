@@ -1,0 +1,81 @@
+<div [formGroup]="facevalidform">
+    <div style="margin-top: 1em;">
+        <span>{{this.errmsg}}</span>
+    </div>
+    <div class="flex-image-header">
+        <div>
+            <div style="text-align: center;">
+                ภาพจาก dipchip
+            </div>
+            <br>
+            <div class="sp1em imgbox">
+                <img style="max-height: 400px;" [src]="this.imageurl1">
+            </div>
+        </div>
+        <div>
+            <div>
+                <div style="text-align: center;">
+                    ภาพหน้าลูกค้า
+                    <br>
+                    <div class="sp1em imgbox">
+                        <img style="max-height: 400px;" [src]="this.imageurl2">
+                    </div><br>
+                    <div *ngIf="showuploadfaceimage && !isfacevalid && !ismanual">
+
+                        <button mat-raised-button color="primary" class="button-upload" (click)="takefile.click();">
+                            <mat-icon>photo_camera</mat-icon>
+                            ถ่ายรูปหน้าลูกค้า
+                        </button>
+                    </div>
+                    <br>
+                    <input #takefile (change)="attachfaceimage($event)" type="file" accept="image/jpeg"
+                        capture="environment" style="visibility: hidden;" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-center" style="margin-top: 1em;">
+
+        <div style="margin-top: 1em;">
+            <span>ยืนยันบุคคลเดียวกัน</span>
+        </div>
+
+        <div style="margin-top: 1em;" *ngIf="!ismanual">
+            <mat-radio-group [formControl]='result' color="primary">
+                <mat-radio-button value="Y">ตรงกัน</mat-radio-button>
+                <mat-radio-button value="N">ไม่ตรงกัน</mat-radio-button>
+            </mat-radio-group>
+        </div>
+
+        <div style="margin-top: 1em;" *ngIf="!ismanual">
+            <mat-form-field appearance="fill" style="width: 400px;">
+                <mat-label>เหตุผล</mat-label>
+                <textarea matInput [formControl]="reason"></textarea>
+                <mat-error *ngIf="facevalidform.controls.reason.hasError('required')"> กรุณาระบุเหตุผลในกรณีเลือก ไม่ยืนยันเป็นบุคคลเดียวกัน</mat-error>
+            </mat-form-field>
+
+            <div *ngIf="false">
+                <button mat-raised-button color="primary" (click)="onfacevalid()"
+                    [disabled]="!this.facevalidform.valid">Compare Face</button>
+            </div>
+        </div>
+
+        <div *ngIf="ismanual">
+            <div style="margin-top: 1em;">
+                <mat-label>ยืนยืนเป็นเคส Manual : </mat-label>
+                <mat-checkbox [formControl]='verifymanual' color='primary' class="example-margin">ยืนยัน</mat-checkbox>
+            </div>
+            <mat-hint>*เลือกสำหรับกรณีเป็นรายการที่ไม่ได้ผ่านทาง DIPCHIP (กรอกข้อมูลด้วยตัวเอง)</mat-hint>
+        </div>
+
+        <div style="margin-top: 1em;">
+            <div *ngIf="!isfacevalid">
+                <button mat-raised-button color="primary" (click)="onfacevalidmanual()"
+                    [disabled]="!this.facevalidform.valid">ยืนยันข้อมูล</button>
+            </div>
+        </div>
+
+
+    </div>
+</div>

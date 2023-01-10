@@ -273,7 +273,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   }
 
 
-  onStageChageFormStepper() {
+  async onStageChageFormStepper() {
     // this.loadingService.showLoader()
     if (this.countload == 0) {
       // this.loadingService.showLoader()
@@ -645,7 +645,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 if (res) {
 
                   // ==== add validate point for require new calculate (29/08/2022) ==== 
-                  console.log(`540`)
+                  console.log(`648 (insuranceYearField.valueChange: res: ${res})`)
                   this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
                   this.showpaymentvalue$.next(false);
 
@@ -676,14 +676,14 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 } else {
                   // ==== clear price and payment value when year is null (25/05/2022) === 
                   this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(null)
-                  console.log('570')
+                  console.log('679 : (insuranceYearField.valueChange) no res')
                   this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
                 }
               })
 
               // *** isincludeloanamount ***
               this.productForm.controls.detailForm.controls.isincludeloanamount.valueChanges.subscribe((res) => {
-                console.log('577')
+                console.log('686 : (isincludeloanamount.valueChange)')
                 this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
                 this.showpaymentvalue$.next(false);
                 console.log(`chagne isincludeloanamount`)
@@ -812,11 +812,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   //   }
                   // }
                   // === stamp value to field ==== 
-                  this.productForm.controls.detailForm.controls.dealerCode.setValue(qdealercode, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.carBrandField.setValue(qcarbrand, { emitEvent: false });
-                  this.productForm.controls.detailForm.controls.carBrandNameField.setValue(qcarbrandname, { emitEvent: false });
-                  this.productForm.controls.detailForm.controls.carModelField.setValue(qcarmodelcode, { emitEvent: false });
-                  this.productForm.controls.detailForm.controls.carModelNameField.setValue(qcarmodelname, { emitEvent: false });
+                  this.productForm.controls.detailForm.controls.dealerCode.setValue(qdealercode)
+                  this.productForm.controls.detailForm.controls.carBrandField.setValue(qcarbrand);
+                  this.productForm.controls.detailForm.controls.carBrandNameField.setValue(qcarbrandname);
+                  this.productForm.controls.detailForm.controls.carModelField.setValue(qcarmodelcode);
+                  this.productForm.controls.detailForm.controls.carModelNameField.setValue(qcarmodelname);
                   this.productForm.controls.detailForm.controls.carColorField.setValue(qcolor, { emitEvent: false });
                   this.productForm.controls.detailForm.controls.sizeModelField.setValue(qsizemodel, { emitEvent: false });
                   this.productForm.controls.detailForm.controls.loanAmountField.setValue(qloanamount, { emitEvent: false });
@@ -867,8 +867,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   ) {
                     this.lockbtncalculate$.next(false)
                     this.showpaymentvalue$.next(true)
-                    this.checkvalidpaymentCount();
-                    // this.onbtnpaymentcalculate();
+                    await  this.checkvalidpaymentCount();
+                    await this.onbtnpaymentcalculate();
                   }
                   else {
                     // === clear payment value when condition out match ===
@@ -972,7 +972,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     else {
       // === clear payment value when condition out match ===
       this.lockbtncalculate$.next(true)
-      console.log('841')
+      console.log('975')
       this.productForm.controls.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false })
       this.paymentvalue$.next(0);
       this.out_stand = 0
@@ -980,11 +980,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     }
   }
 
-  checkvalidpaymentCount() {
+  async checkvalidpaymentCount() {
     // console.log(`trigger 2`)
     // this.carselectForm.get('paymentRoundCountValueField')?.setValue(undefined);
     this.loadingService.showLoader()
-    this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(undefined, { emitEvent: false })
+    // this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(undefined, { emitEvent: false })
     if (
       this.productForm.controls.detailForm.controls.interestRateField.value && // อัตราดอกเบี้ย
       this.productForm.controls.detailForm.controls.loanAmountField.value && // ยอดกู้
@@ -1001,7 +1001,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       const paymentvalue = this.productForm.controls.detailForm.controls.loanAmountField.value
       const insuranceplan = (this.productForm.controls.detailForm.controls.insurancePlanPriceField.value ?? 0)
 
-      if (isincludeloanamount) {
+      if (isincludeloanamount) {  
         netfinance = paymentvalue + insuranceplan
       } else {
         netfinance = paymentvalue
@@ -1014,14 +1014,13 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
         this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable();
 
         // === case have app_no ===
+        this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null)
         this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(this.quotationdatatemp.data[0].cd_payment_round_count)
 
         // === lock when have application_no ===
         if (this.quotationdatatemp.data[0].application_num) {
           // this.productForm.controls.detailForm.controls.paymentRoundCountValueField.disable();
         }
-
-        this.onbtnpaymentcalculate();
 
       })
     } else {
@@ -1030,7 +1029,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     }
   }
 
-  onbtnpaymentcalculate() {
+  async onbtnpaymentcalculate() {
     // === create net finance
 
     const test = this.productForm.valid;
@@ -1053,7 +1052,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       this.productForm.controls.detailForm.controls.interestRateField.value ? this.productForm.controls.detailForm.controls.interestRateField.value : 0
     ).subscribe((result) => {
       if (result.data[0].value) {
-        console.log(`872`)
+        console.log(`1056`)
         this.productForm.controls.detailForm.controls.paymentValueField.setValue(result.data[0].value ? result.data[0].value : null)
 
         // === set payment value text ===

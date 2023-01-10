@@ -1,11 +1,13 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogContent, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MatDialogContent, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { lastValueFrom, Observable, of } from 'rxjs';
 import { IDialogEconsentOtpOpen } from 'src/app/interface/i-dialog-econsent-otp-open';
 import { LoadingService } from 'src/app/service/loading.service';
 import { QuotationService } from 'src/app/service/quotation.service';
 import * as htmlToImage from 'html-to-image';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export interface econsentValue {
   value: boolean;
@@ -19,7 +21,7 @@ export interface econsentValue {
 })
 export class OtpEconsentComponent implements OnInit {
 
-
+  _countconfirmask: number = 0
   _countscrollbottom: number = 0
   _tabindex: number = 0
   _editabletab1: boolean = true;
@@ -85,6 +87,8 @@ export class OtpEconsentComponent implements OnInit {
     private quotationService: QuotationService,
     private loadingService: LoadingService,
     public dialogRef: MatDialogRef<OtpEconsentComponent>,
+    public dialog: MatDialog,
+    public _snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: IDialogEconsentOtpOpen
   ) {
 
@@ -143,51 +147,90 @@ export class OtpEconsentComponent implements OnInit {
 
     if (acceptvalue) {
       // === accept ===
+      const quotationid = this.data.quotationid
+      const quophoneno = this.data.phone_number
+      const refid = this.data.refid
+
+      this.mainOTPForm.controls.confirmEconsentForm.controls.confirm_btn_click.setValue(true)
+
+      this.quotationService.MPLS_create_otp_econsent({
+        quotationid: quotationid,
+        refid: refid,
+        phone_no: quophoneno
+      }).subscribe(async (res) => {
+        console.log(`res otp Data : ${JSON.stringify(res)}`)
+        if (res.status == 200) {
+          const divfortest = document.getElementById('econsentelement');
+
+          if (divfortest) {
+            const imageblob = await htmlToImage.toBlob(divfortest, {
+              quality: 1,
+              style: {
+                background: 'white'
+              },
+            })
+
+            this.econsentimageblob = imageblob
+            this._tabindex = 1
+          } else {
+            this.loadingService.hideLoader()
+            console.log('imageblob is null')
+          }
+
+        } else {
+          this._createotpResMsg = res.message
+        }
+      })
     } else {
       // === not accept ===
+      const quotationid = this.data.quotationid
 
-      // === ask agiant (ถ้าชัว skip to หน้า อาชีพและรายได้ (flag case non-econsent), if ไม่ชัวปิดหน้าต่างให้เลือกใหม่) ===
-
+      if (this._countconfirmask == 0) {
+        // === ask agiant (ถ้าชัว skip to หน้า อาชีพและรายได้ (flag case non-econsent), if ไม่ชัวปิดหน้าต่างให้เลือกใหม่) ===
+        this.dialog.open(ConfirmDialogComponent, {
+          width: 'auto',
+          height: 'auto',
+        }).afterClosed().subscribe((value) => {
+          if (value) {
+            // === ไม่แน่ใจ : ให้กรอกแล้วกดใหม่ ====
+            this._countconfirmask++
+          } else {
+            // === ไม่ยืนยอมแน่นอน : ปิด dialog แล้วทำการ flag data (non-econsent) ===
+            // this.dialogRef.close({ status: this.econsent_valid_status, data: '' });
+            this.quotationService.MPLS_validation_otp_econsent_non(quotationid).subscribe((res_non) => {
+              if (res_non.status) {
+                // === success update flag econsent ====
+                this.econsent_valid_status = true
+                this.dialogRef.close({ status: this.econsent_valid_status, data: '' });
+              } else {
+                // === fail to update flag econsent ==== 
+                this.snackbarfail(`ไม่สามารถทำรายการได้ : ${res_non.message}`)
+              }
+            })
+          }
+        })
+      } else {
+        // ==== ไม่ยินยอม -> ไม่แน่ใจ -> ไม่ยินยอม ===
+        // *** ปิดหน้า OTP แล้วทำการ flag data (non-econsent) ===
+        // this.dialogRef.close({ status: this.econsent_valid_status, data: '' });
+        this.quotationService.MPLS_validation_otp_econsent_non(quotationid).subscribe((res_non) => {
+          if (res_non.status) {
+            // === success update flag econsent ====
+            this.econsent_valid_status = true
+            this.dialogRef.close({ status: this.econsent_valid_status, data: '' });
+          } else {
+            // === fail to update flag econsent ==== 
+            this.snackbarfail(`ไม่สามารถทำรายการได้ : ${res_non.message}`)
+          }
+        })
+      }
     }
 
-    const quotationid = this.data.quotationid
-    const quophoneno = this.data.phone_number
-    const refid = this.data.refid
-
-    this.mainOTPForm.controls.confirmEconsentForm.controls.confirm_btn_click.setValue(true)
-
-    this.quotationService.MPLS_create_otp_econsent({
-      quotationid: quotationid,
-      refid: refid,
-      phone_no: quophoneno
-    }).subscribe(async (res) => {
-      console.log(`res otp Data : ${JSON.stringify(res)}`)
-      if (res.status == 200) {
-        const divfortest = document.getElementById('econsentelement');
-
-        if (divfortest) {
-          const imageblob = await htmlToImage.toBlob(divfortest, {
-            quality: 1,
-            style: {
-              background: 'white'
-            },
-          })
-
-          this.econsentimageblob = imageblob
-          this._tabindex = 1
-        } else {
-          this.loadingService.hideLoader()
-          console.log('imageblob is null')
-        }
-
-      } else {
-        this._createotpResMsg = res.message
-      }
-    })
   }
 
 
   async activateotpeconsent($event: any) {
+
     const otpfield = this.mainOTPForm.controls.otpactivate.controls.otp_value.value
 
     if (otpfield) {
@@ -201,7 +244,7 @@ export class OtpEconsentComponent implements OnInit {
       let itemobj = {
         quotationid: this.data.quotationid,
         otp_value: otpfield,
-        phone_no: this.data.phone_number,
+        phone_no: this.data.phone_number
       }
 
       const itemString = JSON.stringify(itemobj)
@@ -218,7 +261,11 @@ export class OtpEconsentComponent implements OnInit {
             this.validsuccess = true
             this._editabletab1 = false
             this._editabletab2 = false
-            this._tabindex = 2
+            // this._tabindex = 2
+            this.dialogRef.close({
+              status: this.econsent_valid_status,
+              data: this.econsent_valid_status ? 'success' : 'fail'
+            })
           } else {
             this._validationResMsg = res.message
           }
@@ -240,6 +287,24 @@ export class OtpEconsentComponent implements OnInit {
       status: this.econsent_valid_status,
       data: this.econsent_valid_status ? 'success' : 'fail'
     })
+  }
+
+  snackbarsuccess(message: string) {
+    this._snackBar.open(message, '', {
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
+      duration: 3000,
+      panelClass: 'custom-snackbar-container'
+    });
+  }
+
+  snackbarfail(message: string) {
+    this._snackBar.open(message, '', {
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
+      duration: 3000,
+      panelClass: 'fail-snackbar-container'
+    });
   }
 
 }

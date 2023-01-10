@@ -137,7 +137,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           const quoitem = res.data[0]
 
           // *** tab 2 ***
-          if (quoitem.otp_consent_verify == 'Y') {
+          if (quoitem.otp_consent_verify == 'Y' || quoitem.otp_consent_verify == 'N') {
+            // === may be check 'N' too === 
             this.productdetailtab.productForm.controls.consentVerify.setValue(true)
             this.verifyeconsent = true
           }
@@ -261,13 +262,14 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       case 1: {
         // *** Product deatail ***
         // this.cizcardtab.cizForm.valid ? this.productdetailtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
-
         if (this.cizcardtab.cizForm.valid) {
-          const savecitizensuccess = await this.manualsaveonchangestep()
-          if (savecitizensuccess) {
-            this.productdetailtab.onStageChageFormStepper()
-          } else {
-            this.openDialogStep(`บันทึกข้อมูลไม่สำเร็จ`, `ไม่สามารถบันทึกข้อมูลในหน้า 'ข้อมูลบัตรประชาชนได้'`, `ปิด`, previousStage)
+          if (previousStage == 0) {
+            const savecitizensuccess = await this.manualsaveonchangestep()
+            if (savecitizensuccess) {
+              this.productdetailtab.onStageChageFormStepper()
+            } else {
+              this.openDialogStep(`บันทึกข้อมูลไม่สำเร็จ`, `ไม่สามารถบันทึกข้อมูลในหน้า 'ข้อมูลบัตรประชาชนได้'`, `ปิด`, previousStage)
+            }
           }
         } else {
           this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
@@ -946,6 +948,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       }).afterClosed().subscribe((reseconsentdialog: IDialogEconsentValidClose) => {
 
         if (reseconsentdialog.status == true) {
+          this.snackbarsuccess('ทำรายการสำเร็จ')
           this.productdetailtab.productForm.controls.consentVerify.setValue(true)
           this.verifyeconsent = true
         }

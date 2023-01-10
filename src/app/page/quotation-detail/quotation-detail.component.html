@@ -37,10 +37,12 @@
                     <span>✅ : ได้รับการยืนยันการเปิดเผยข้อมูลผ่านระบบอินเทอร์เน็ตแล้ว</span>
                     <br>
                 </div>
-                <div *ngIf="!verifyeconsent" class="flex-center">
+                <div class="flex-center">
                     <button mat-raised-button color="primary" (click)="onclickCreateCreditBtn()" [disabled]="this.createorupdatecreditbtnDisable">
                         บันทึกข้อมูล
                     </button><br>
+                </div>
+                <div *ngIf="!verifyeconsent" class="flex-center">
                     <!-- <button mat-raised-button color="primary" (click)="onclickEconsentBtn()" [disabled]="!this.productdetailtab.productForm.controls.detailForm.valid"> -->
                     <button mat-raised-button color="primary" (click)="onclickEconsentBtn()" [disabled]="this.econsentbtnDisable">
                         ยืนยันการสมัคร

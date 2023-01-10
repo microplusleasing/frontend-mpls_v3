@@ -239,6 +239,11 @@ export class QuotationService {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_otp_econsent?quotationid=${data.quotationid}&refid=${data.refid}&phone_no=${data.phone_no}`
     return this.http.get<IResOtpLog>(url)
   }
+
+  MPLS_validation_otp_econsent_non(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_validation_otp_econsent_non?quotationid=${quotationid}`
+    return this.http.get<IResValidastionEconsent>(url)
+  }
   
   MPLS_validation_otp_econsent(formdata: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_validation_otp_econsent`

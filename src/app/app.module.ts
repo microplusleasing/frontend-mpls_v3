@@ -27,6 +27,7 @@ import { OtpEconsentComponent } from './widget/dialog/otp-econsent/otp-econsent.
 import { CareerAndPurposeComponent } from './page/quotation-tab/career-and-purpose/career-and-purpose.component';
 import { ThaidateformatDirective } from './directive/thaidateformat.directive';
 import { FaceValidDialogComponent } from './widget/dialog/face-valid-dialog/face-valid-dialog.component';
+import { ConfirmDialogComponent } from './widget/dialog/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { FaceValidDialogComponent } from './widget/dialog/face-valid-dialog/face
     CareerAndPurposeComponent,
     ThaidateformatDirective,
     FaceValidDialogComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,

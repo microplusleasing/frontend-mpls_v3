@@ -169,13 +169,13 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
         if (matches) {
           return {
             columns: 12,
-            list: { maxcols: 12, cols4: 4, cols3: 3, cols2: 2, col: 1}
+            list: { maxcols: 12, cols4: 4, cols3: 3, cols2: 2, col: 1 }
           };
         }
 
         return {
           columns: 1,
-          list: { maxcols: 1, cols4: 1, cols3: 1, cols2: 1, col: 1}
+          list: { maxcols: 1, cols4: 1, cols3: 1, cols2: 1, col: 1 }
         };
       })
     );
@@ -319,12 +319,12 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     this.dealerSelectText = of(selectValue.dl_name);
                   }
 
-                  this.productForm.controls.detailForm.controls.carModelField.setValue('');
-                  this.productForm.controls.detailForm.controls.carBrandField.setValue('')
-                  this.productForm.controls.detailForm.controls.insurerCodeField.setValue('')
-                  this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null)
+                  this.productForm.controls.detailForm.controls.carModelField.setValue('', { emitEvent: false });
+                  this.productForm.controls.detailForm.controls.carBrandField.setValue('', { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.insurerCodeField.setValue('', { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false })
 
-                  this.checkChangeMaxValuePrice();
+                  // this.checkChangeMaxValuePrice();
                 })
               }
 
@@ -337,12 +337,12 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 ).subscribe(async (value: IResMasterBrandData[]) => {
                   this.filterBrandList = of(value)
 
-                  this.productForm.controls.detailForm.controls.carModelField.setValue(null)
-                  this.productForm.controls.detailForm.controls.productValueField.setValue(null)
-                  this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null)
-                  this.productForm.controls.detailForm.controls.interestRateField.setValue(null)
-                  this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null)
-                  this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null)
+                  this.productForm.controls.detailForm.controls.carModelField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.productValueField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.interestRateField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null, { emitEvent: false })
 
                   this.maxlvtmessage$ = of('');
 
@@ -356,7 +356,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     );
 
                     if (this.modelSelect.length !== 0) {
-                      this.productForm.controls.detailForm.controls.carModelField.enable();
+                      this.productForm.controls.detailForm.controls.carModelField.enable({ emitEvent: false });
                       this.filterModelList = this.productForm.controls.detailForm.controls.carModelField.valueChanges.pipe(
                         startWith(''),
                         map(value => this._filterModel(value))
@@ -384,7 +384,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                     this.productForm.controls.detailForm.controls.carModelField.setValidators(this.validateModelformat(this.modelListFilter))
                     this.productForm.controls.detailForm.controls.carModelField.setValue('')
-                    this.productForm.controls.detailForm.controls.carModelField.enable()
+                    this.productForm.controls.detailForm.controls.carModelField.enable({ emitEvent: false })
                     this.showBrandModelLoan$ = of(false)
 
                     // === stamp car brand by code ===
@@ -411,15 +411,15 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.filterModelList = of(value)
 
                   this.productForm.controls.detailForm.controls.interestRateField.enable()
-                  this.productForm.controls.detailForm.controls.interestRateField.setValue(null)
-                  this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null)
-                  this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null)
-                  this.productForm.controls.detailForm.controls.productValueField.setValue(null)
-                  this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null)
-                  this.productForm.controls.detailForm.controls.engineNoField.setValue(null)
-                  this.productForm.controls.detailForm.controls.chassisNoField.setValue(null)
-                  this.productForm.controls.detailForm.controls.runningengineNoField.setValue(null)
-                  this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(null)
+                  this.productForm.controls.detailForm.controls.interestRateField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.productValueField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.engineNoField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.chassisNoField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.runningengineNoField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(null, { emitEvent: false })
                   this.coverage = 0
                   this.factoryprice = 0
 
@@ -486,8 +486,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     }
 
 
-                    this.productForm.controls.detailForm.controls.interestRateField.enable()
-                    this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable()
+                    this.productForm.controls.detailForm.controls.interestRateField.enable({ emitEvent: false })
+                    this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable({ emitEvent: false })
 
                     const bcSelect = this.productForm.controls.detailForm.controls.carBrandField.value
                     const bmSelect = this.productForm.controls.detailForm.controls.carModelField.value
@@ -554,8 +554,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                           // === set quotaion lookup data if old record ===
                           if (this.quotationdatatemp.data) {
                             const quoitem = this.quotationdatatemp.data[0]
-                            this.productForm.controls.detailForm.controls.interestRateField.setValue(quoitem.cd_interest_rate ?? null)
-                            this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(quoitem.cd_payment_round_count ?? null)
+                            this.productForm.controls.detailForm.controls.interestRateField.setValue((quoitem.cd_interest_rate ? quoitem.cd_interest_rate : null), { emitEvent: false })
+                            this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(quoitem.cd_payment_round_count ? quoitem.cd_payment_round_count : null, { emitEvent: false })
                             this.showlistInsurancePlan();
                           }
                         })
@@ -592,11 +592,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
               // *** paymentRoundCountValueField ***
               this.productForm.controls.detailForm.controls.paymentRoundCountValueField.valueChanges.subscribe((res) => {
-
-                // console.log(`paymentCountSelect : ${JSON.stringify(this.paymentCountSelect)}`)
-                // console.log(`pmv : ${res}`)
-                // console.log(`type : ${typeof (res)}`)
-
                 this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
                 this.showpaymentvalue$.next(false);
                 this.paymentvalue$.next(0);
@@ -693,18 +688,25 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
 
               // ==== new check MPLS record already exits ====
+
+              // *** check for stamp record data to form ====
               if (!recordExists) {
 
+                // === no record exist ===
               } else {
+
+                // === already have record (have quo_key_app_id) ===
 
                 // ==== show all condition validtor === 
                 this.showPrice = true;
+                this.showchassisandengine = true
                 this.showBrandModelLoan$ = of(true);
                 this.showInsuranceSelect$ = of(true);
                 // === load and call master data ===
 
+
                 // === parameter for call api master === 
-                const qcarbrand = quoitem.cd_brand_code ?? '';
+                const qcarbrandcode = quoitem.cd_brand_code ?? '';
                 const qcarbrandname = quoitem.cd_brand_name ?? '';
                 const qcarmodelcode = quoitem.cd_model_code ?? '';
                 const qcarmodelname = quoitem.cd_model_name ?? '';
@@ -733,27 +735,28 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 const qchassisnumber = quoitem.cd_chassis_number
                 const qenginenorunning = quoitem.cd_engine_no_running
                 const qchassisnorunning = quoitem.cd_chassis_no_running
-
                 // === add parameter for change getinsurance from factory_price to max_ltv (24/08/2022) === 
                 const qdealercode = quoitem.sl_code
 
                 // === unlock field === 
-                if (qrate) this.productForm.controls.detailForm.controls.interestRateField.enable();
+                if (qrate) this.productForm.controls.detailForm.controls.interestRateField.enable({ emitEvent: false });
                 // if (qterm) this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable();
                 // if (qinsuranceplan) this.productForm.controls.detailForm.controls.inssurancePlanPriceField.enable();
 
                 this.productForm.controls.detailForm.controls.carModelField.setValue(quoitem.cd_model_code ?? '', { emitEvent: false })
 
-                if (qfactoryprice && qcarbrand && qcarmodel && qterm && qsizemodel && qloanamount && qinsureplanpricevalue && qrate) {
+                if (qfactoryprice && qcarbrandcode && qcarmodel && qterm && qsizemodel && qloanamount && qinsureplanpricevalue && qrate) {
+
 
                   const resultRateMaster = await lastValueFrom(this.masterDataService.getRate(`01`, qsizemodel));
 
                   // ==== change parameter for get insurance from factory_price to max_ltv (24/08/2022) ===
+
                   const resultMaxLtv = await lastValueFrom(this.masterDataService.getMaxLtv(
                     qfactoryprice,
                     '001',
                     '01',
-                    qcarbrand,
+                    qcarbrandcode,
                     qcarmodelcode,
                     qdealercode
                   ))
@@ -779,13 +782,54 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // === stop trigger bypass loading screen (27/10/2022) ===
                   this.loadingService.hideLoader
 
+                  // ***==== Car Brand ====***
 
                   // === map api with return value ====
                   this.brandList = res[1].data
                   this.modelList = res[2].data
+
+
+                  // === set model select 
+                  this.modelSelect = this.modelList.filter((items: { brand_code: any; }) => {
+                    return items.brand_code == qcarbrandcode
+                  });
+
+                  // === set text of brand select === 
+                  this.brandSelectText = of(this.modelSelect[0].brand_name);
+
+                  // === set child list (model) === 
                   this.modelListFilter = this.modelList.filter((items: { brand_code: any; }) => {
-                    return items.brand_code == qcarbrand
+                    return items.brand_code == qcarbrandcode
                   })
+
+                  // === set validate Brand (auto data stamp on this.quotationdatatemp) === 
+                  this.productForm.controls.detailForm.controls.carModelField.setValidators(this.validateModelformat(this.modelListFilter))
+                  // this.productForm.controls.detailForm.controls.carModelField.setValue('')
+                  // this.productForm.controls.detailForm.controls.carModelField.enable({ emitEvent: false })
+
+                  this.productForm.controls.detailForm.controls.carBrandNameField.setValue(qcarbrandcode, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.carBrandField.setValue(qcarbrandcode, { emitEvent: false });
+
+                  // ***==== Car Model ====***
+
+                  // ==== get model price from model select value ===
+                  let modelprice = this.modelListFilter.filter((items: { model_code: any; brand_code: any }) => {
+                    return items.model_code == qcarmodelcode && items.brand_code == this.productForm.controls.detailForm.controls.carBrandField.value
+                  })
+                  if (modelprice.length == 1) {
+                    // === set text of model select === 
+                    this.modelSelectText = of(modelprice[0].model);
+                    const valuePrice = modelprice[0].price
+                    this.productForm.controls.detailForm.controls.productValueField.setValue(valuePrice, { emitEvent: false })
+                    this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(valuePrice, { emitEvent: false })
+
+                    // === set chassis and engine to field (29/08/2022) ===
+                    this.productForm.controls.detailForm.controls.engineNoField.setValue(modelprice[0].engine_no, { emitEvent: false })
+                    this.productForm.controls.detailForm.controls.chassisNoField.setValue(modelprice[0].chassis_no, { emitEvent: false })
+
+                  }
+                  // ***===================***
+
                   this.rateSelect = resultRateMaster.data
                   this.paymentCountSelect = resultTerm.data
                   this.InsuranceListTemp = resultInsuranceMaster.data
@@ -811,12 +855,13 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   //     this.productForm.controls.detailForm.controls.dealerCode.disable();
                   //   }
                   // }
+
                   // === stamp value to field ==== 
-                  this.productForm.controls.detailForm.controls.dealerCode.setValue(qdealercode)
-                  this.productForm.controls.detailForm.controls.carBrandField.setValue(qcarbrand);
-                  this.productForm.controls.detailForm.controls.carBrandNameField.setValue(qcarbrandname);
-                  this.productForm.controls.detailForm.controls.carModelField.setValue(qcarmodelcode);
-                  this.productForm.controls.detailForm.controls.carModelNameField.setValue(qcarmodelname);
+                  this.productForm.controls.detailForm.controls.dealerCode.setValue(qdealercode, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.carBrandField.setValue(qcarbrandcode, { emitEvent: false });
+                  this.productForm.controls.detailForm.controls.carBrandNameField.setValue(qcarbrandname, { emitEvent: false });
+                  this.productForm.controls.detailForm.controls.carModelField.setValue(qcarmodelcode, { emitEvent: false });
+                  this.productForm.controls.detailForm.controls.carModelNameField.setValue(qcarmodelname, { emitEvent: false });
                   this.productForm.controls.detailForm.controls.carColorField.setValue(qcolor, { emitEvent: false });
                   this.productForm.controls.detailForm.controls.sizeModelField.setValue(qsizemodel, { emitEvent: false });
                   this.productForm.controls.detailForm.controls.loanAmountField.setValue(qloanamount, { emitEvent: false });
@@ -832,7 +877,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.productForm.controls.detailForm.controls.insuranceYearField.setValue(qinsuranceyear, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(qinsuranceplan, { emitEvent: false });
                   this.productForm.controls.detailForm.controls.isincludeloanamount.setValue(qisincludealoneamount, { emitEvent: false });
-                  this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(qfactoryprice, { emitEvent: false });
+                  // this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(qfactoryprice, { emitEvent: false });
                   this.productForm.controls.detailForm.controls.paymentValueField.setValue(qpaymentvalue, { emitEvent: false });
                   // === for show coverage (24/08/2022) ===
                   // this.coverage = qfactoryprice;
@@ -845,8 +890,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // === stamp new field form total-loss phase to field (29/08/2022) ===
                   this.coverage = qcoveragetotalloss
                   this.productForm.controls.detailForm.controls.maxltvField.setValue(qmaxltv, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.engineNoField.setValue(qenginenumber, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.chassisNoField.setValue(qchassisnumber, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.engineNoField.setValue(qenginenumber, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.chassisNoField.setValue(qchassisnumber, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.runningengineNoField.setValue(qenginenorunning, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(qchassisnorunning, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.priceincludevatField.setValue(qpriceincludevat, { emitEvent: false })
@@ -855,10 +900,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // === finish stamp data === 
 
                   // === show paymentvalue (30/05/2022) ===
-                  console.log(`log all valid \n factoryPriceValueField : ${this.productForm.controls.detailForm.controls.factoryPriceValueField.value} \n 
-                  interestRateField : ${this.productForm.controls.detailForm.controls.interestRateField.value} \n
-                  paymentRoundCountValueField : ${this.productForm.controls.detailForm.controls.paymentRoundCountValueField.value} \n
-                  loanAmountField : ${this.productForm.controls.detailForm.controls.loanAmountField.value} \n`)
                   if (
                     this.productForm.controls.detailForm.controls.factoryPriceValueField.value &&
                     this.productForm.controls.detailForm.controls.interestRateField.value &&
@@ -867,8 +908,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   ) {
                     this.lockbtncalculate$.next(false)
                     this.showpaymentvalue$.next(true)
-                    await  this.checkvalidpaymentCount();
-                    await this.onbtnpaymentcalculate();
+                    this.checkvalidpaymentandpaymentcalculateauto();
                   }
                   else {
                     // === clear payment value when condition out match ===
@@ -882,6 +922,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   // this.loadFinish = true;
 
+                } else {
+                  console.log(`mission parameter to show all detail`)
                 }
 
                 // ==== add warning alert about interestrate 1.39 (add-on 02/08/2022) ====
@@ -909,43 +951,42 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     }
   }
 
-  async checkChangeMaxValuePrice() {
-    console.log('checkchange')
-    if (
-      this.productForm.controls.detailForm.controls.carBrandField.value &&
-      this.productForm.controls.detailForm.controls.carModelField.value &&
-      this.productForm.controls.detailForm.controls.dealerCode.value
-    ) {
-      const cbcode = this.productForm.controls.detailForm.controls.carBrandField.value
-      const cmcode = this.productForm.controls.detailForm.controls.carModelField.value
-      const dlcode = this.productForm.controls.detailForm.controls.dealerCode.value
-      let modelprice = this.modelList.filter((items: { model_code: any; brand_code: any }) => {
-        return items.model_code == cmcode && items.brand_code == cbcode
-      })
+  // async checkChangeMaxValuePrice() {
+  //   if (
+  //     this.productForm.controls.detailForm.controls.carBrandField.value &&
+  //     this.productForm.controls.detailForm.controls.carModelField.value &&
+  //     this.productForm.controls.detailForm.controls.dealerCode.value
+  //   ) {
+  //     const cbcode = this.productForm.controls.detailForm.controls.carBrandField.value
+  //     const cmcode = this.productForm.controls.detailForm.controls.carModelField.value
+  //     const dlcode = this.productForm.controls.detailForm.controls.dealerCode.value
+  //     let modelprice = this.modelList.filter((items: { model_code: any; brand_code: any }) => {
+  //       return items.model_code == cmcode && items.brand_code == cbcode
+  //     })
 
-      /// ==== set price (productValueField) from master of model code ==== 
-      if (modelprice.length == 1) {
-        const valuePrice = modelprice[0].price
-        const resultMaxValue = await lastValueFrom(this.masterDataService.getMaxLtv(
-          valuePrice,
-          '001',
-          '01',
-          cbcode,
-          cmcode,
-          dlcode
-        ))
+  //     /// ==== set price (productValueField) from master of model code ==== 
+  //     if (modelprice.length == 1) {
+  //       const valuePrice = modelprice[0].price
+  //       const resultMaxValue = await lastValueFrom(this.masterDataService.getMaxLtv(
+  //         valuePrice,
+  //         '001',
+  //         '01',
+  //         cbcode,
+  //         cmcode,
+  //         dlcode
+  //       ))
 
-        if (resultMaxValue) {
-          console.log(`this is max ltv value : ${resultMaxValue.data[0].maxltv}`)
-          const maxlvtnumber = (resultMaxValue.data[0].maxltv ?? 0).toString();
-          const maxlvtsetFormat = this.numberWithCommas(resultMaxValue.data[0].maxltv)
-          const maxlvttext = `(สูงสุด ${maxlvtsetFormat} บาท)`
-          this.maxltvValue$ = of(resultMaxValue.data[0].maxltv)
-          this.maxlvtmessage$ = of(maxlvttext)
-        }
-      }
-    }
-  }
+  //       if (resultMaxValue) {
+  //         console.log(`this is max ltv value : ${resultMaxValue.data[0].maxltv}`)
+  //         const maxlvtnumber = (resultMaxValue.data[0].maxltv ?? 0).toString();
+  //         const maxlvtsetFormat = this.numberWithCommas(resultMaxValue.data[0].maxltv)
+  //         const maxlvttext = `(สูงสุด ${maxlvtsetFormat} บาท)`
+  //         this.maxltvValue$ = of(resultMaxValue.data[0].maxltv)
+  //         this.maxlvtmessage$ = of(maxlvttext)
+  //       }
+  //     }
+  //   }
+  // }
 
   showlistInsurancePlan() {
     const modelValue = this.productForm.controls.detailForm.controls.carModelField.value
@@ -1001,7 +1042,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       const paymentvalue = this.productForm.controls.detailForm.controls.loanAmountField.value
       const insuranceplan = (this.productForm.controls.detailForm.controls.insurancePlanPriceField.value ?? 0)
 
-      if (isincludeloanamount) {  
+      if (isincludeloanamount) {
         netfinance = paymentvalue + insuranceplan
       } else {
         netfinance = paymentvalue
@@ -1011,11 +1052,22 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
         this.loadingService.hideLoader()
 
         this.paymentCountSelect = resPayment.data
-        this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable();
+        this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable({ emitEvent: false });
 
-        // === case have app_no ===
-        this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null)
-        this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(this.quotationdatatemp.data[0].cd_payment_round_count)
+        // === check payment count round value is include in parameter GetTermNew ====
+
+        const currentPaymentRoundCountValue = this.detailForm.controls.paymentRoundCountValueField.value ?? null
+
+        if (currentPaymentRoundCountValue) {
+
+          if (resPayment.data.some((d) => d.term === currentPaymentRoundCountValue)) {
+            this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(this.quotationdatatemp.data[0].cd_payment_round_count, { emitEvent: false })
+          } else {
+            this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
+          }
+        } else {
+          this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
+        }
 
         // === lock when have application_no ===
         if (this.quotationdatatemp.data[0].application_num) {
@@ -1066,6 +1118,95 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
         // === handle get payment value error ==== 
       }
     })
+
+  }
+
+  async checkvalidpaymentandpaymentcalculateauto() {
+
+    this.loadingService.showLoader()
+    // this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(undefined, { emitEvent: false })
+    if (
+      this.productForm.controls.detailForm.controls.interestRateField.value && // อัตราดอกเบี้ย
+      this.productForm.controls.detailForm.controls.loanAmountField.value && // ยอดกู้
+      this.productForm.controls.detailForm.controls.insuranceYearField.value  // จำนวนปี (ประกัน)
+      //this.productForm.controls.detailForm.controls.isincludeloanamount.value // รวมยอดกู้
+    ) {
+      const size_model = this.productForm.controls.detailForm.controls.sizeModelField.value ? this.productForm.controls.detailForm.controls.sizeModelField.value : ''
+      const rate = this.productForm.controls.detailForm.controls.interestRateField.value
+
+
+      // === create net_finance ===
+      let netfinance;
+      const isincludeloanamount = this.productForm.controls.detailForm.controls.isincludeloanamount.value
+      const paymentvalue = this.productForm.controls.detailForm.controls.loanAmountField.value
+      const insuranceplan = (this.productForm.controls.detailForm.controls.insurancePlanPriceField.value ?? 0)
+
+      if (isincludeloanamount) {
+        netfinance = paymentvalue + insuranceplan
+      } else {
+        netfinance = paymentvalue
+      }
+      this.masterDataService.getTermNew('01', size_model, rate, netfinance).subscribe((resPayment) => {
+        // === manage data here ===
+        this.loadingService.hideLoader()
+
+        this.paymentCountSelect = resPayment.data
+        this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable({ emitEvent: false });
+
+        if (this.quotationdatatemp.data[0].cd_payment_round_count) {
+          this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue((this.quotationdatatemp.data[0].cd_payment_round_count ? this.quotationdatatemp.data[0].cd_payment_round_count : null), { emitEvent: false })
+        }
+
+        // === lock when have application_no ===
+        // === cancle on 09/01/2023 ==
+        // if (this.quotationdatatemp.data[0].application_num) {
+        //  this.productForm.controls.detailForm.controls.paymentRoundCountValueField.disable();
+        // }
+
+      })
+    } else {
+      this.loadingService.hideLoader()
+      this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(undefined, { emitEvent: false });
+    }
+
+
+    // =========== calcualte payment ================
+    if (this.productForm.controls.detailForm.controls.isincludeloanamount.value) {
+      let loanValue = this.productForm.controls.detailForm.controls.loanAmountField.value ?? 0
+      loanValue = 1 * loanValue
+      this.paymentshowvalue = loanValue
+      let insureValue = this.productForm.controls.detailForm.controls.insurancePlanPriceField.value ?? 0
+      insureValue = 1 * (+insureValue)
+      this.biaprakan = insureValue
+      this.netfinance = loanValue + insureValue
+    } else {
+      this.netfinance = this.productForm.controls.detailForm.controls.loanAmountField.value ?? 0
+    }
+
+    // === get payment Value ===
+    this.masterDataService.getPaymentValue(
+      this.netfinance,
+      this.productForm.controls.detailForm.controls.paymentRoundCountValueField.value ? this.productForm.controls.detailForm.controls.paymentRoundCountValueField.value : 0,
+      this.productForm.controls.detailForm.controls.interestRateField.value ? this.productForm.controls.detailForm.controls.interestRateField.value : 0
+    ).subscribe((result) => {
+      if (result.data[0].value) {
+        console.log(`1056`)
+        this.productForm.controls.detailForm.controls.paymentValueField.setValue(result.data[0].value ? result.data[0].value : null)
+
+        // === set payment value text ===
+        this.showpaymentvalue$.next(true)
+        this.paymentvalue$.next(result.data[0].value)
+
+        // === build out_stand (22/09/2022) ===
+        const out_stand_value = (result.data[0].value) * (this.productForm.controls.detailForm.controls.paymentRoundCountValueField.value ? this.productForm.controls.detailForm.controls.paymentRoundCountValueField.value : 0)
+        this.out_stand = out_stand_value
+      } else {
+        // === handle get payment value error ==== 
+      }
+    })
+
+
+
 
   }
 

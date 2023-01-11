@@ -1,6 +1,6 @@
-<p>product-detail-tab works!</p>
-
-<h2>form status is {{productForm.valid}}</h2>
+<!-- <p>product-detail-tab works!</p> -->
+<!-- 
+<h2>form status is {{productForm.valid}}</h2> -->
 <div class="form-container">
     <form [formGroup]="productForm">
         <div [formGroup]="detailForm">
@@ -115,7 +115,7 @@
                                 </mat-option>
                             </mat-select>
                             <mat-error *ngIf="detailForm.controls['interestRateField'].hasError('required')">
-                                เลือกอัตราดอกเบี้ย
+                                เลือกอัตราดอกเบี้ย 
                             </mat-error>
                         </mat-form-field>
                     </mat-grid-tile>

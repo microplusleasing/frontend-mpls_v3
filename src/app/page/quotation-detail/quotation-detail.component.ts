@@ -279,7 +279,11 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         break;
       case 2: {
         // *** career and purpose ***
-        this.verifyeconsent ? this.careerandpurposetab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+        if (this.cizcardtab.cizForm.valid) {
+          this.verifyeconsent ? this.careerandpurposetab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+        } else {
+          this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+        }
       }
         break;
       default:
@@ -892,71 +896,102 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     // === Create credit success  (first time click) === 
 
-    let resChkAppNum = await lastValueFrom(this.quotationService.MPLS_check_application_no(this.actRoute.snapshot.queryParamMap.get('id') ?? ''))
+    const dopastatus = this.quotationResult$.value.data[0].quo_dopa_status
 
-    let app_no = resChkAppNum.data[0].application_no
+    if (dopastatus == 'Y') {
 
-    if (app_no == '') {
-      // *** gen application num ***
+      // ==== เคสที่ dopa status เป็น 'Y' สามารถทำรายการ e-consent ได้ ===
 
-      const resultgenappno = await lastValueFrom(this.quotationService.MPLS_gen_application_no(this.actRoute.snapshot.queryParamMap.get('id') ?? ''))
+      let resChkAppNum = await lastValueFrom(this.quotationService.MPLS_check_application_no(this.actRoute.snapshot.queryParamMap.get('id') ?? ''))
 
-      if (resultgenappno.status == 200) {
-        // *** create application num success *** 
-        app_no = resultgenappno.data[0].application_no
-      } else {
-        console.log(`fail to gen application num : ${resultgenappno.message}`)
-      }
-    }
+      let app_no = resChkAppNum.data[0].application_no
 
-    // *** get time from server ***
+      if (app_no == '') {
+        // *** gen application num ***
 
-    let currentDate: Date | null = null
+        const resultgenappno = await lastValueFrom(this.quotationService.MPLS_gen_application_no(this.actRoute.snapshot.queryParamMap.get('id') ?? ''))
 
-    const resultgetcurrentDate = await lastValueFrom(this.quotationService.MPLS_getservertime())
-
-    if (resultgetcurrentDate.status == 200) {
-      // *** get server time success ***
-      currentDate = resultgetcurrentDate.date
-    }
-
-    if (app_no !== '' && currentDate) {
-
-      const quotationid = this.actRoute.snapshot.queryParamMap.get('id') ?? ''
-
-      const senddata: IDialogEconsentOtpOpen = {
-        header: `หน้ายืนยันการยินยอมเปิดเผยข้อมูล`,
-        message: `ของคุณ ...`,
-        quotationid: quotationid,
-        firstname: this.quotationResult$.value.data[0].first_name ?? '-',
-        lastname: this.quotationResult$.value.data[0].last_name ?? '-',
-        citizenid: this.quotationResult$.value.data[0].idcard_num ?? '-',
-        birthdate: this.quotationResult$.value.data[0].birth_date ? this.quotationResult$.value.data[0].birth_date : null,
-        currentDate: currentDate,
-        application_no: app_no ?? '-',
-        phone_number: this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.value ?? '-',
-        refid: app_no ?? '-',
-        button_name: `ตกลง`
-      }
-
-
-      this.dialog.open(OtpEconsentComponent, {
-        width: `100%`,
-        height: `100%`,
-        data: senddata,
-        scrollStrategy: this.sso.noop()
-      }).afterClosed().subscribe((reseconsentdialog: IDialogEconsentValidClose) => {
-
-        if (reseconsentdialog.status == true) {
-          this.snackbarsuccess('ทำรายการสำเร็จ')
-          this.productdetailtab.productForm.controls.consentVerify.setValue(true)
-          this.verifyeconsent = true
+        if (resultgenappno.status == 200) {
+          // *** create applic ation num success *** 
+          app_no = resultgenappno.data[0].application_no
+        } else {
+          console.log(`fail to gen application num : ${resultgenappno.message}`)
         }
-      })
+      }
+
+      // *** get time from server ***
+
+      let currentDate: Date | null = null
+
+      const resultgetcurrentDate = await lastValueFrom(this.quotationService.MPLS_getservertime())
+
+      if (resultgetcurrentDate.status == 200) {
+        // *** get server time success ***
+        currentDate = resultgetcurrentDate.date
+      }
+
+      if (app_no !== '' && currentDate) {
+
+        const quotationid = this.actRoute.snapshot.queryParamMap.get('id') ?? ''
+
+        const senddata: IDialogEconsentOtpOpen = {
+          header: `หน้ายืนยันการยินยอมเปิดเผยข้อมูล`,
+          message: `ของคุณ ...`,
+          quotationid: quotationid,
+          firstname: this.quotationResult$.value.data[0].first_name ?? '-',
+          lastname: this.quotationResult$.value.data[0].last_name ?? '-',
+          citizenid: this.quotationResult$.value.data[0].idcard_num ?? '-',
+          birthdate: this.quotationResult$.value.data[0].birth_date ? this.quotationResult$.value.data[0].birth_date : null,
+          currentDate: currentDate,
+          application_no: app_no ?? '-',
+          phone_number: this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.value ?? '-',
+          refid: app_no ?? '-',
+          button_name: `ตกลง`
+        }
+
+
+        this.dialog.open(OtpEconsentComponent, {
+          width: `100%`,
+          height: `100%`,
+          data: senddata,
+          scrollStrategy: this.sso.noop()
+        }).afterClosed().subscribe((reseconsentdialog: IDialogEconsentValidClose) => {
+
+          if (reseconsentdialog.status == true) {
+            this.snackbarsuccess('ทำรายการสำเร็จ')
+            this.productdetailtab.productForm.controls.consentVerify.setValue(true)
+            this.verifyeconsent = true
+          }
+        })
+      } else {
+        // === no application num value ===
+        this.openMaindialog('ผิดพลาด', 'ไม่พบเลข application no', 'OK')
+      }
+    } else if (dopastatus == 'N') {
+      // === กรณี dopa status เป็น 'N' ไม่สามารถทำรายการ e-consent ได้ (auto flag non e-consent) ===
+      if (this.quoid !== null || this.quoid !== '') {
+        this.quotationService.MPLS_validation_otp_econsent_non(this.quoid).subscribe({
+          next: (res_non) => {
+            if (res_non.status) {
+              // === success update flag econsent ====
+              this.snackbarsuccess('ทำรายการสำเร็จ')
+              this.productdetailtab.productForm.controls.consentVerify.setValue(true)
+              this.verifyeconsent = true
+            } else {
+              // === fail to update flag econsent ==== 
+              this.snackbarfail(`ไม่สามารถทำรายการได้ : ${res_non.message}`)
+            }
+          }, error: (e) => {
+            console.error(e)
+          }, complete: () => {
+            console.log(`complete trigger flag non e-consent`)
+          }
+        })
+      }
     } else {
-      // === no application num value ===
-      this.openMaindialog('ผิดพลาด', 'ไม่พบเลข application no', 'OK')
+      // === do nothing === 
     }
+
 
 
   }

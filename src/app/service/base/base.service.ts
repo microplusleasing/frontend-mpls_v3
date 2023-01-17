@@ -180,6 +180,24 @@ export class BaseService {
     return window.btoa(binary);
   }
 
+  _arrayBufferToJpeg(buffer: ArrayBuffer): string {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return 'data:image/jpeg;base64,' + btoa(binary);
+  }
+
+  async _base64toblob(base64image: string) {
+    const base64Data = base64image;
+    // const base64 = await fetch(base64Data);
+    const base64Response = await fetch(`${base64Data}`);
+    const blob = await base64Response.blob();
+    return blob
+  }
+
+
   numberWithCommas(x: number) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }

@@ -34,6 +34,7 @@ import { IResHouseType } from '../interface/i-res-house-type';
 import { IResHouseOwnerType } from '../interface/i-res-house-owner-type';
 import { IResMasterBrand } from '../interface/i-res-master-brand';
 import { IResMasterModel } from '../interface/i-res-master-model';
+import { IResImageTypeAttach } from '../interface/i-res-image-type-attach';
 
 
 
@@ -83,6 +84,12 @@ export class MasterDataService {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterImageType`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MasterImageType`
     return this.http.get<IResMasterImageType>(url)
+  }
+
+  getImageTypeAttach(): Observable<IResImageTypeAttach> {
+    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterImageType`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getImageTypeAttach`
+    return this.http.get<IResImageTypeAttach>(url)
   }
 
   getTitle(): Observable<IResMasterTitle> {

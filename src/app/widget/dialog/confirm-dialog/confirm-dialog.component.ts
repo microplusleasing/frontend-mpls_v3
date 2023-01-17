@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { IDialogConfirmEconsent } from 'src/app/interface/i-dialog-confirm-econsent';
 
 @Component({
   selector: 'app-confirm-dialog',
@@ -6,8 +8,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./confirm-dialog.component.scss']
 })
 export class ConfirmDialogComponent implements OnInit {
-
-  constructor() { }
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: IDialogConfirmEconsent
+  ) { }
 
   ngOnInit(): void {
   }

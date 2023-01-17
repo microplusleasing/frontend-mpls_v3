@@ -1,6 +1,7 @@
 <!-- <h1 mat-dialog-title>Dialog Title</h1> -->
-<div mat-dialog-content>
-  <p>เรียน ... ... ท่านยืนยันที่จะ "ไม่ยินยอมเปิดเผยข้อมูล" ใช่หรือไม่</p>
+<div mat-dialog-content style="text-align: center;">
+  <p>เรียนคุณ {{data.firstname}}&nbsp;{{data.lastname}}</p><br>
+  <p> ท่านยืนยันที่จะ "ไม่ยินยอมเปิดเผยข้อมูล" ใช่หรือไม่</p>
 </div>
 <div mat-dialog-actions align="center">
   <button mat-button [mat-dialog-close]="false" cdkFocusInitial>ใช่</button>

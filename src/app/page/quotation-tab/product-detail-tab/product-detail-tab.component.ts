@@ -169,13 +169,13 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
         if (matches) {
           return {
             columns: 12,
-            list: { maxcols: 12, cols4: 4, cols3: 3, cols2: 2, col: 1 }
+            list: { maxcols: 12, cols6: 6, cols4: 4, cols3: 3, cols2: 2, col: 1 }
           };
         }
 
         return {
           columns: 1,
-          list: { maxcols: 1, cols4: 1, cols3: 1, cols2: 1, col: 1 }
+          list: { maxcols: 1, cols6: 1, cols4: 1, cols3: 1, cols2: 1, col: 1 }
         };
       })
     );

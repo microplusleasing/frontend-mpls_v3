@@ -2,6 +2,15 @@
   margin-bottom: 20px;
 }
 
+.form-container .mat-form-field {
+  width: 220px;
+  width: 100%;
+}
+
+.mat-radio-button ~ .mat-radio-button {
+  margin-left: 16px;
+}
+
 .flexbox {
   display: flex;
   gap: 10px 10px;

@@ -1,8 +1,22 @@
 
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Observable } from 'rxjs';
+import { IResImageTypeAttachData } from 'src/app/interface/i-res-image-type-attach';
+import { IResQuotationDetail } from 'src/app/interface/i-res-quotation-detail';
+import { BaseService } from 'src/app/service/base/base.service';
+import { LoadingService } from 'src/app/service/loading.service';
+import { MasterDataService } from 'src/app/service/master.service';
+import imageCompression from 'browser-image-compression';
+import { QuotationService } from 'src/app/service/quotation.service';
+import { ImageDialogComponent } from 'src/app/widget/dialog/image-dialog/image-dialog.component';
+import { IImageAttachUpload } from 'src/app/interface/i-image-attach-upload';
+import { IResImageAttachData } from 'src/app/interface/i-res-image-attach';
 
 
 @Component({
@@ -10,94 +24,438 @@ import { DomSanitizer } from '@angular/platform-browser';
   templateUrl: './image-attach.component.html',
   styleUrls: ['./image-attach.component.scss']
 })
-export class ImageAttachComponent implements OnInit {
-  categories = [
-    { value: 'category1', label: 'Category 1' },
-    { value: 'category2', label: 'Category 2' },
-    { value: 'category3', label: 'Category 3' },
-    { value: 'category4', label: 'Category 4' },
-    { value: 'category5', label: 'Category 5' }
-  ];
-  categoriestemp = [
-    { value: 'category1', label: 'Category 1' },
-    { value: 'category2', label: 'Category 2' },
-    { value: 'category3', label: 'Category 3' },
-    { value: 'category4', label: 'Category 4' },
-    { value: 'category5', label: 'Category 5' }
-  ];
+export class ImageAttachComponent extends BaseService implements OnInit {
+  @Input() quotationReq = {} as Observable<IResQuotationDetail>;
+
+  quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
+
+  temp_master_categories: IResImageTypeAttachData[] = [];
+  categories: IResImageTypeAttachData[] = [];
+  recent_image_data: IResImageAttachData[] = [];
+  countload: number = 0;
+  currentTypeSelect = {} as IResImageTypeAttachData
+  disableUploadBtn: boolean = true
 
   @ViewChild('hiddenInput') hiddenInput: ElementRef;
   @ViewChild('fileInput') fileInput: ElementRef;
-  uploadedImages: any[] = [];
+  @ViewChild('fileInputEdit') fileInputEdit: ElementRef;
+  uploadedImages: IImageAttachUpload[] = [];
+  cureentimagecreatecode: string = ''
+  currentimageeditcode: string = ''
 
   selectImage: string = ''
 
   category = new FormControl('', Validators.required)
   image = new FormControl('', Validators.required)
 
-  uploadForm = this.formBuilder.group({
+  uploadForm = this.fb.group({
     category: this.category,
     image: this.image
   });
 
   constructor(
-    private formBuilder: FormBuilder,
-    private sanitizer: DomSanitizer) {
-      this.hiddenInput = new ElementRef(null);
+    private fb: FormBuilder,
+    private masterDataService: MasterDataService,
+    private quotationService: QuotationService,
+    private loadingService: LoadingService,
+    public override dialog: MatDialog,
+    public override _snackBar: MatSnackBar,
+    private breakpointObserver: BreakpointObserver,
+    private sanitizer: DomSanitizer
+  ) {
+    super(dialog, _snackBar)
+    this.hiddenInput = new ElementRef(null);
     this.fileInput = new ElementRef(null);
+    this.fileInputEdit = new ElementRef(null);
   }
 
   ngOnInit() {
+
   }
 
-  
+  onStageChageFormStepper() {
 
-  onSubmit() {
+    if (this.countload == 0) {
+
+      this.quotationReq.subscribe({
+        next: (resquo) => {
+          this.loadingService.showLoader();
+          this.quotationdatatemp = resquo
+          const checkquoitem = this.quotationdatatemp.data
+          if (checkquoitem) {
+
+            const quoitem = this.quotationdatatemp.data[0]
+            const recordExists = ''
+
+            // === call parameter data ===
+            this.masterDataService.getImageTypeAttach().subscribe({
+              next: (res_image_type) => {
+                // === success get master paremeter data ===
+                this.loadingService.hideLoader();
+                this.countload++
+                this.categories = res_image_type.data
+                this.temp_master_categories = res_image_type.data
+                this.loadingService.showLoader()
+                // this.quotationService.MPLS_getimagefilebyid(`90c26a14-e0d9-47df-8caf-310ac411a64e`).subscribe({
+                this.quotationService.MPLS_getimagefilebyid(this.quotationdatatemp.data[0].quo_key_app_id).subscribe({
+                  next: (recent_image) => {
+                    this.loadingService.hideLoader()
+
+                    // === set exist image data to variable === 
+                    this.recent_image_data = recent_image.data
+
+                    // === remove image type that already exist in select list ===
+                    this.categories = res_image_type.data.filter((item) => { return !(recent_image.data.some((recImage) => recImage.image_code === item.image_code)) })
+
+                    // === create uploadImage photo ===
+                    if (recent_image.data && recent_image.data.length !== 0) {
+                      recent_image.data.forEach(async (item) => {
+                        const imageStr = this._arrayBufferToJpeg(item.image_file.data)
+                        this.uploadedImages.push({
+                          name: item.image_name ?? '',
+                          image_code: item.image_code ?? '',
+                          image_header: this.temp_master_categories.find((m_image) => m_image.image_code == item.image_code)?.image_header ?? '',
+                          image_field_name: item.image_name ?? '',
+                          urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
+                          src: imageStr
+                        })
+                      })
+                    }
+
+
+                  }, error: (e) => {
+                    this.loadingService.hideLoader()
+                    this.snackbarfail(`ไม่สามารถโหลดรายการไฟล์แนบได้ ${e.message ? e.message : 'No return message'}`)
+                    console.log(`error :  ${e.message ? e.message : 'No return message'}`)
+                  }, complete: () => {
+                    console.log(`complete getb image file by id `)
+                  }
+                })
+
+                // === value Change ===
+                this.uploadForm.valueChanges.subscribe((value) => {
+                  if (this.uploadForm.valid) {
+                    this.disableUploadBtn = false
+                  } else {
+                    this.disableUploadBtn = true
+                  }
+                })
+
+
+                this.uploadForm.controls.category.valueChanges.subscribe((value) => {
+                  const cselect = this.categories.find((item) => { return item.image_code == value })
+                  if (cselect) {
+                    this.currentTypeSelect = cselect
+                  }
+                })
+
+
+                // *** check for stamp record data to form ***
+                if (!recordExists) {
+                  // === no record exist ===
+                } else {
+
+                }
+
+                // ===== End ======
+
+              }, error: (e) => {
+                this.loadingService.hideLoader()
+                console.log(`Error dution call master Occupation data : ${e.message ? e.message : 'No return message'}`)
+              }, complete: () => {
+                console.log(`complete call master Occupation`)
+              }
+            })
+          } else {
+            this.loadingService.hideLoader()
+            console.log(`this record is still no exits`)
+          }
+        }, error: (err) => {
+          this.loadingService.hideLoader()
+          this.snackbarfail(`${err.message}`)
+        }, complete: () => {
+          this.loadingService.showLoader();
+        }
+      })
+    }
+
+  }
+
+
+
+  uploadImage() {
     // Get the base64 encoded image data from the form control
     const fileimage = this.uploadForm.controls.image.value ?? '';
-  
+
     // Create an image element and set its src attribute to a data: URI containing the base64 encoded image data
     const img = document.createElement('img');
     // img.src = `data:image/jpeg;base64,${fileimage}`;
     img.src = `${fileimage}`;
-  
-    // Use the onload event of the image to read the data URL and add the image to the uploadedImages array
-    img.onload = () => {
-      this.uploadedImages.push({
-        name: this.uploadForm.controls.category.value ?? '',
-        urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(img.src),
-        src: img.src
-      });
 
-      // remove category type out from list when is used to upload 
-      this.categories = this.categories.filter(category => category.value !== this.uploadForm.controls.category.value);
+    // === check type of image (create, upload) ====
+    // let imagetype = this.checkImageType(this.currentTypeSelect.image_code, this.recent_image_data)
+
+
+    // Use the onload event of the image to read the data URL and add the image to the uploadedImages array
+    img.onload = async () => {
+
+      // === call api create here === 
+
+      const recentSelect = this.categories.find((item) => { return item.image_code == this.uploadForm.controls.category.value ?? '' })
+
+
+      let quotationdata = {
+        quotationid: this.quotationdatatemp.data[0].quo_key_app_id ?? '',
+        image_code: this.uploadForm.controls.category.value ?? '',
+        image_name: recentSelect ? recentSelect.client_field_name : '',
+      }
+      const itemString = JSON.stringify(quotationdata)
+      let fd = new FormData();
+      fd.append('item', itemString)
+      fd.append('image_file', await this._base64toblob(fileimage))
+      this.quotationService.MPLS_create_image_attach_file(fd).subscribe({
+        next: (res_image_create) => {
+          if (res_image_create.status == 200) {
+            this.snackbarsuccess(`ทำรายการสำเร็จ : ${res_image_create.message ? res_image_create.message : 'No return message'}`)
+            // === handle image variable next when success === 
+            this.uploadedImages.push({
+              name: this.uploadForm.controls.category.value ?? '',
+              image_code: this.uploadForm.controls.category.value ?? '',
+              image_header: this.currentTypeSelect.image_header ?? '',
+              image_field_name: this.currentTypeSelect.client_field_name ?? '',
+              urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(img.src),
+              src: img.src
+            });
+
+            // remove category type out from list when is used to upload 
+            this.categories = this.categories.filter(category => category.image_code !== this.uploadForm.controls.category.value);
+
+            // === sort UploadedImage ===
+            this.uploadedImages.sort((a, b) => {
+              return parseInt(a.image_code) - parseInt(b.image_code);
+            });
+
+            // === clear all value in form ===
+            this.selectImage = ''
+            this.uploadForm.reset()
+            console.log(`uploadImage: ${this.uploadedImages}`)
+          } else {
+            this.snackbarfail(`ทำรายการไม่สำเร็จ : ${res_image_create.message ? res_image_create.message : 'No return message'}`)
+          }
+        }, error: (e) => {
+          console.log(JSON.stringify(e))
+        }, complete: () => {
+          console.log(`complete trigger`)
+        }
+      })
     };
   }
 
-  onFileChange(event: any) {
+  async onFileChange(event: any) {
     // Create a FileReader object
-    const reader = new FileReader();
-  
-    // Use the onload event of the FileReader to store the data URL in a variable
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        this.selectImage = reader.result;
-        this.uploadForm.controls.image.setValue(this.selectImage);
-        this.hiddenInput.nativeElement.value = event.target.files[0].name;
-        this.fileInput.nativeElement.value = null;
-      }
-    };
-  
-    // Read the data URL of the selected file
-    reader.readAsDataURL(event.target.files[0]);
+
+    const imageFile = event.target.files[0];
+    const options = {
+      maxSizeMB: 2,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true
+    }
+
+    try {
+
+      const compressedFile = await imageCompression(imageFile, options);
+      const reader = new FileReader();
+
+      // Convert the Blob to a base64-encoded image URL
+      reader.readAsDataURL(compressedFile);
+
+      // Use the onload event of the FileReader to store the data URL in a variable
+      reader.onload = async () => {
+        if (typeof reader.result === 'string') {
+          this.selectImage = reader.result;
+          this.uploadForm.controls.image.setValue(this.selectImage);
+          this.hiddenInput.nativeElement.value = event.target.files[0].name;
+          this.fileInput.nativeElement.value = null;
+
+        }
+      };
+
+      // Read the data URL of the selected file
+      reader.readAsDataURL(event.target.files[0]);
+
+    } catch (e: any) {
+      console.log(`Error when compress image : ${e.message ? e.message : 'No message return'}`)
+    }
   }
 
   onPanelOpen(image: any) {
     console.log(`Expansion panel opened for image: ${image.name}`);
   }
 
+  updateImage(image: any) {
+
+    // == set currentimageeditcode to use in next fn (onFileChangeEdit) ==
+    const selectimage = this.uploadedImages.find(img => img == image);
+
+    if (selectimage) {
+      this.currentimageeditcode = selectimage.image_code
+      this.fileInputEdit.nativeElement.click();
+    }
+
+  }
+
+  async onFileChangeEdit(event: any) {
+
+    // === work with fn updateImage for get image_code that edit === 
+    const imageFile = event.target.files[0];
+    const options = {
+      maxSizeMB: 2,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true
+    }
+
+    try {
+
+      const compressedFile = await imageCompression(imageFile, options);
+      const reader = new FileReader();
+
+      // Convert the Blob to a base64-encoded image URL
+      reader.readAsDataURL(compressedFile);
+
+      // Use the onload event of the FileReader to store the data URL in a variable
+      reader.onload = async () => {
+        if (typeof reader.result === 'string') {
+
+          const imagesrc = reader.result
+
+          this.uploadedImages = this.uploadedImages.map(img => {
+            if (img.image_code === this.currentimageeditcode) {
+              return {
+                ...img,
+                urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imagesrc),
+                src: imagesrc
+              }
+            }
+            return img;
+          });
+
+          // === call api update here ===
+
+          const imageheader = this.temp_master_categories.find((value) => {
+            if (value.image_code == this.currentimageeditcode) {
+              return { ...value }
+            } else {
+              return
+            }
+          })
+
+          if (imageheader) {
+
+            let quotationdata = {
+              quotationid: this.quotationdatatemp.data[0].quo_key_app_id ?? '',
+              image_code: imageheader.image_code,
+              client_field_name: imageheader.client_field_name
+            }
+            const itemString = JSON.stringify(quotationdata)
+            let fd = new FormData();
+            fd.append('item', itemString)
+            fd.append('image_file', await this._base64toblob(reader.result))
+            this.quotationService.MPLS_update_image_attach_file(fd).subscribe({
+              next: (res_image_update) => {
+                if (res_image_update.status == 200) {
+                  this.snackbarsuccess(`ทำรายการสำเร็จ : ${res_image_update.message ? res_image_update.message : 'No return message'}`)
+                  // === handle image variable next when success === 
+                } else {
+                  this.snackbarfail(`ทำรายการไม่สำเร็จ : ${res_image_update.message ? res_image_update.message : 'No return message'}`)
+                }
+              }, error: (e) => {
+                console.log(JSON.stringify(e))
+              }, complete: () => {
+                console.log(`complete trigger`)
+              }
+            })
+          } else {
+            console.log(`not found recent image code edit`)
+          }
+
+        }
+      };
+
+      // Read the data URL of the selected file
+      reader.readAsDataURL(event.target.files[0]);
+
+    } catch (e: any) {
+      console.log(`Error when compress image : ${e.message ? e.message : 'No message return'}`)
+    }
+  }
+
   deleteImage(image: any) {
-    this.uploadedImages = this.uploadedImages.filter(img => img !== image);
-    this.categories.push({value: this.uploadForm.controls.category.value ?? '', label: this.uploadForm.controls.category.value ?? ''})
+    this.loadingService.showLoader()
+    let quotationdata = {
+      quotationid: this.quotationdatatemp.data[0].quo_key_app_id ?? '',
+      image_code: image.image_code ?? ''
+    }
+
+    const itemString = JSON.stringify(quotationdata)
+    let fd = new FormData();
+    fd.append('item', itemString)
+
+    this.quotationService.MPLS_delete_image_attach_file(fd).subscribe({
+      next: (res_delete_image) => {
+
+        if (res_delete_image.status == 200) {
+          this.snackbarsuccess(`ทำรายการสำเร็จ : ${res_delete_image.message ? res_delete_image.message : 'No return message'}`)
+          // === handle image attach next when delete success ===
+          this.uploadedImages = this.uploadedImages.filter(img => img !== image);
+          this.categories.push
+            ({
+              image_header: image.image_header ?? '',
+              image_code: image.image_code ?? '',
+              client_field_name: image.image_field_name ?? ''
+            })
+          this.categories.sort((a, b) => {
+            return parseInt(a.image_code) - parseInt(b.image_code);
+          });
+        } else {
+          // Fail or Error 
+          this.snackbarfail(`ทำรายการไม่สำเร็จ : ${res_delete_image.message ? res_delete_image.message : 'No return message'}`)
+        }
+
+      }, error: (e) => {
+        this.loadingService.hideLoader()
+        console.log(`Error : ${e.messsage ? e.message : 'No return message'}`)
+      }, complete: () => {
+        this.loadingService.hideLoader()
+      }
+    })
+  }
+
+  openimagedialog(image: any) {
+    const imageselect = this.uploadedImages.filter(img => img == image)
+
+    if (imageselect) {
+      this.dialog.open(ImageDialogComponent, {
+        data: {
+          header: '',
+          message: '',
+          imageurl: imageselect[0].src,
+          button_name: 'Ok'
+        }
+      }).afterClosed().subscribe(result => {
+        // === do nothing ==
+      });
+    }
+  }
+
+
+  checkImageType(image_code: string, recent_image_list: IResImageAttachData[]): string {
+    // === check with exist image from api MPLS_getimagefilebyid === 
+    let imagetype = ''
+
+    const imagetypechk = recent_image_list.find(item => item.image_code == image_code)
+
+    imagetype = imagetypechk ? 'edit' : 'create';
+
+    return imagetype
   }
 }

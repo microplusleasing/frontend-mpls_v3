@@ -28,6 +28,7 @@ import { CareerAndPurposeComponent } from './page/quotation-tab/career-and-purpo
 import { ThaidateformatDirective } from './directive/thaidateformat.directive';
 import { FaceValidDialogComponent } from './widget/dialog/face-valid-dialog/face-valid-dialog.component';
 import { ConfirmDialogComponent } from './widget/dialog/confirm-dialog/confirm-dialog.component';
+import { ImageDialogComponent } from './widget/dialog/image-dialog/image-dialog.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { ConfirmDialogComponent } from './widget/dialog/confirm-dialog/confirm-d
     ThaidateformatDirective,
     FaceValidDialogComponent,
     ConfirmDialogComponent,
+    ImageDialogComponent,
   ],
   imports: [
     BrowserModule,

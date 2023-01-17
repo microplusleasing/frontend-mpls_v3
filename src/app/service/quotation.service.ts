@@ -30,6 +30,12 @@ import { IResImageFaceCompare } from '../interface/i-res-image-face-compare';
 import { IResCheckFaceValid } from '../interface/i-res-check-face-valid';
 import { IResFaceValidStamp } from '../interface/i-res-face-valid-stamp';
 import { IResDopaValidStatus } from '../interface/i-res-dopa-valid-status';
+import { IReqCreateCareerAndPurpose } from '../interface/i-req-create-career-and-purpose';
+import { IResMainBooleanAndMessage } from '../interface/i-res-main-boolean-and-message';
+import { IResImageAttach } from '../interface/i-res-image-attach';
+import { IResCreateImageAttach } from '../interface/i-res-create-image-attach';
+import { IResUpdateImageAttach } from '../interface/i-res-update-image-attach';
+import { IResDeleteImageAttach } from '../interface/i-res-delete-image-attach';
 
 
 @Injectable({
@@ -42,10 +48,10 @@ export class QuotationService {
     messageheader: string,
     status: boolean
   } = {
-    message: '',
-    status: false,
-    messageheader: ''
-  }
+      message: '',
+      status: false,
+      messageheader: ''
+    }
 
   dopavalidstatus: string[] = [];
 
@@ -244,19 +250,46 @@ export class QuotationService {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_validation_otp_econsent_non?quotationid=${quotationid}`
     return this.http.get<IResValidastionEconsent>(url)
   }
-  
+
   MPLS_validation_otp_econsent(formdata: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_validation_otp_econsent`
     return this.http.post<IResValidastionEconsent>(url, formdata)
   }
-  
+
   MPLS_create_or_update_credit(data: IReqCreateCredit) {
     const fd = new FormData();
     fd.append('item', JSON.stringify(data));
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_or_update_credit`
-    return this.http.post<IResValidastionEconsent>(url, fd)
+    return this.http.post<IResMainBooleanAndMessage>(url, fd)
   }
-  
+
+  MPLS_create_or_update_careerandpurpose(data: IReqCreateCareerAndPurpose) {
+    const fd = new FormData();
+    fd.append('item', JSON.stringify(data));
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_or_update_careerandpurpose`
+    return this.http.post<IResMainBooleanAndMessage>(url, fd)
+  }
+
+  MPLS_getimagefilebyid(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimagefilebyid?quotationid=${quotationid}`
+    return this.http.get<IResImageAttach>(url)
+  }
+
+  MPLS_create_image_attach_file(fd: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_image_attach_file`
+    return this.http.post<IResCreateImageAttach>(url, fd)
+  }
+
+  MPLS_update_image_attach_file(fd: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_update_image_attach_file`
+    return this.http.post<IResUpdateImageAttach>(url, fd)
+  }
+
+  MPLS_delete_image_attach_file(fd: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_delete_image_attach_file`
+    return this.http.post<IResDeleteImageAttach>(url, fd)
+  }
+
   MPLS_getimagetocompareiapp(quotationid: string) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimagetocompareiapp?quotationid=${quotationid}`
     return this.http.get<IResImageFaceCompare>(url)
@@ -284,12 +317,12 @@ export class QuotationService {
   setstatusdopa(quotationid: string) {
 
     // === check master dopa valid status have data === 
-    if(this.dopavalidstatus.length == 0) {
+    if (this.dopavalidstatus.length == 0) {
       this.MPLS_get_dopa_valid_status().subscribe((res) => {
         this.dopavalidstatus = res.data.status_code
       })
     }
-    
+
     this.getdopastatusbyid(quotationid).subscribe({
       next: (result) => {
 

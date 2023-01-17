@@ -190,6 +190,10 @@ export class OtpEconsentComponent implements OnInit {
         this.dialog.open(ConfirmDialogComponent, {
           width: 'auto',
           height: 'auto',
+          data: {
+            firstname: `${this.data.firstname}`,
+            lastname: `${this.data.lastname}`
+          }
         }).afterClosed().subscribe((value) => {
           if (value) {
             // === ไม่แน่ใจ : ให้กรอกแล้วกดใหม่ ====

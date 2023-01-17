@@ -5,7 +5,7 @@
     <form [formGroup]="productForm">
         <div [formGroup]="detailForm">
             <ng-container *ngIf="cardLayout | async as layout">
-                <mat-grid-list [cols]="layout.columns" [rowHeight]="'100px'">
+                <mat-grid-list [cols]="layout.columns" [rowHeight]="'90px'">
                     <mat-grid-tile [colspan]="layout.list.maxcols">
                         <mat-form-field appearance="outline">
                             <mat-label>รหัสร้านค้า</mat-label>

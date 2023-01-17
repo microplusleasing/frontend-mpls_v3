@@ -30,6 +30,8 @@ import { environment } from 'src/environments/environment';
 import { FaceValidDialogComponent } from 'src/app/widget/dialog/face-valid-dialog/face-valid-dialog.component';
 import { IDialogFaceValidClose } from 'src/app/interface/i-dialog-face-valid-close';
 import { ScrollStrategyOptions } from '@angular/cdk/overlay';
+import { ImageAttachComponent } from '../quotation-tab/image-attach/image-attach.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -53,8 +55,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   visiblePhoneValid: boolean = true
   disablePhoneValidbtn: boolean = true
   verifyeconsent: boolean = false
+  verifycareerandpurpose: boolean = false
   createorupdatecitizendataDisable: boolean = true
   createorupdatecreditbtnDisable: boolean = true
+  createorupdatecareerandPurposebtnDisable: boolean = true
   econsentbtnDisable: boolean = true // === use with buttn econsent btn disable (step 2)
 
   canclequest: boolean = false // === case cancle (quo_status = "3") ====
@@ -84,7 +88,22 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
   @ViewChild(CareerAndPurposeComponent) careerandpurposetab: CareerAndPurposeComponent = new CareerAndPurposeComponent(
     this.fb,
-    this.dialog
+    this.masterDataService,
+    this.loadingService,
+    this.dialog,
+    this._snackBar,
+    this.breakpointObserver
+  )
+
+  @ViewChild(ImageAttachComponent) imageattachtab: ImageAttachComponent = new ImageAttachComponent(
+    this.fb,
+    this.masterDataService,
+    this.quotationService,
+    this.loadingService,
+    this.dialog,
+    this._snackBar,
+    this.breakpointObserver,
+    this.sanitizer
   )
 
 
@@ -97,6 +116,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     private masterDataService: MasterDataService,
     private dipchipService: DipchipService,
     private actRoute: ActivatedRoute,
+    private sanitizer: DomSanitizer,
     public quotationService: QuotationService,
     public override dialog: MatDialog,
     private readonly sso: ScrollStrategyOptions,
@@ -157,6 +177,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             this.disablePhoneValidbtn = true
           }
 
+          // *** tab 3 *** (career and purpose) 
+          if (quoitem.cr_app_key_id !== '' && quoitem.cr_app_key_id !== null && quoitem.pp_app_key_id !== '' && quoitem.pp_app_key_id !== null) {
+            this.careerandpurposetab.careerandpurposeForm.controls.verifyCareerandpurpose.setValue(true)
+            this.verifycareerandpurpose = true
+          }
+
         }
       }
     })
@@ -189,8 +215,6 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     this.productdetailtab.detailForm.valueChanges.subscribe(value => {
 
-      // if (this.cizcardtab.cizForm.controls.)
-
       //  ==== เงื่อนไขแสดงปุ่มบันทึกใน tab 2 (ข้อมูลผลืตภัณฑ์/วงเงินสินเชื่อ)
 
       if (this.productdetailtab.productForm.controls.detailForm.valid) {
@@ -202,7 +226,20 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         this.cd.detectChanges()
       }
 
-    });
+    })
+
+    this.careerandpurposetab.careerandpurposeForm.valueChanges.subscribe((careerandpurpose) => {
+
+      //  ==== เงื่อนไขแสดงปุ่มบันทึกใน tab 2 (ข้อมูลผลืตภัณฑ์/วงเงินสินเชื่อ)
+      if (this.careerandpurposetab.careerandpurposeForm.controls.careerForm.valid && this.careerandpurposetab.careerandpurposeForm.controls.purposeForm.valid) {
+        this.createorupdatecareerandPurposebtnDisable = false
+        this.cd.detectChanges()
+      } else {
+        this.createorupdatecareerandPurposebtnDisable = true
+        this.cd.detectChanges()
+      }
+    })
+
   }
 
   async afteroninit() {
@@ -270,6 +307,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             } else {
               this.openDialogStep(`บันทึกข้อมูลไม่สำเร็จ`, `ไม่สามารถบันทึกข้อมูลในหน้า 'ข้อมูลบัตรประชาชนได้'`, `ปิด`, previousStage)
             }
+          } else {
+            this.productdetailtab.onStageChageFormStepper()
           }
         } else {
           this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
@@ -286,8 +325,19 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         }
       }
         break;
-      default:
+
+      case 3: {
+        // *** attach image file ***
+        // this.imageattachtab.onStageChageFormStepper()
+        if (this.cizcardtab.cizForm.valid) {
+          (this.verifyeconsent && this.verifycareerandpurpose) ? this.imageattachtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+        } else {
+          this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+        }
+      }
         break;
+        default:
+          break;
     }
 
   }
@@ -841,7 +891,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   }
 
   async onclickCreateCreditBtn() {
-    // *** save credit ***
+    // *** create or save credit ***
 
     const reqcreatecreditdata: IReqCreateCredit = {
       quotationid: this.quoid,
@@ -992,6 +1042,82 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       // === do nothing === 
     }
 
+
+
+  }
+
+  async onclickCreateCareerandPurposeBtn() {
+    // *** create or save career and purpose record ***
+    const career_form = this.careerandpurposetab.careerandpurposeForm.controls.careerForm.controls
+    const purpose_form = this.careerandpurposetab.careerandpurposeForm.controls.purposeForm.controls
+
+    const reqcreateorupdatecareerandpurpose: any = {
+      quotationid: this.quoid,
+      // === Career Path ===
+      main_career_code: this.careerandpurposetab.careerandpurposeForm.controls.careerForm.controls.mainCareerCodeField.value ? career_form.mainCareerCodeField.value : '', // career form (stamp via code , sync master data)
+      main_career_name: career_form.mainCareerNameField.value ? career_form.mainCareerNameField.value : '',
+      main_department: career_form.mainCareerDepartmentField.value ? career_form.mainCareerDepartmentField.value : '',
+      main_experience_month: career_form.mainCareerExperienceMonthField.value ? career_form.mainCareerExperienceMonthField.value : null,
+      main_experience_year: career_form.mainCareerExperienceYearsField.value ? career_form.mainCareerExperienceYearsField.value : null,
+      main_leader_name: career_form.mainCareerLeaderNameField.value ? career_form.mainCareerLeaderNameField.value : '',
+      main_position: career_form.mainCareerPositionField.value ? career_form.mainCareerPositionField.value : '',
+      main_salary_per_day: career_form.mainCareerSalaryPerDayField.value ? career_form.mainCareerSalaryPerDayField.value : null,
+      main_salary_per_month: career_form.mainCareerSalaryPerMonthField.value ? career_form.mainCareerSalaryPerMonthField.value : null,
+      main_work_per_week: career_form.mainCareerWorkPerWeekField.value ? career_form.mainCareerWorkPerWeekField.value : null,
+      main_workplace_name: career_form.mainCareerWorkplace.value ? career_form.mainCareerWorkplace.value : '',
+      is_sub_career: career_form.isSubCareerField.value ? 1 : 0,
+      sub_career_code: career_form.subCareerCodeField.value ? career_form.subCareerCodeField.value : '', // career form (stamp via code , sync master data)
+      sub_career_name: career_form.subCareerNameField.value ? career_form.subCareerNameField.value : '',
+      sub_department: career_form.subCareerDepartmentField.value ? career_form.subCareerDepartmentField.value : '',
+      sub_experience_month: career_form.subCareerExperienceMonthField.value ? career_form.subCareerExperienceMonthField.value : null,
+      sub_experience_year: career_form.subCareerExperienceYearsField.value ? career_form.subCareerExperienceYearsField.value : null,
+      sub_leader_name: career_form.subCareerLeaderNameField.value ? career_form.subCareerLeaderNameField.value : '',
+      sub_position: career_form.subCareerPositionField.value ? career_form.subCareerPositionField.value : '',
+      sub_salary_per_day: career_form.subCareerSalaryPerDayField.value ? career_form.subCareerSalaryPerDayField.value : null,
+      sub_salary_per_month: career_form.subCareerSalaryPerMonthField.value ? career_form.subCareerSalaryPerMonthField.value : null,
+      sub_work_per_week: career_form.subCareerWorkPerWeekField.value ? career_form.subCareerWorkPerWeekField.value : null,
+      sub_workplace_name: career_form.subCareerWorkplace.value ? career_form.subCareerWorkplace.value : '',
+      // === purpose Path ===
+      car_user: purpose_form.carUser.value ? purpose_form.carUser.value : '', // career form (stamp via code , sync master data)
+      car_user_citizen_id: purpose_form.carUserCitizenid.value ? purpose_form.carUserCitizenid.value : '',
+      car_user_district: purpose_form.carUserDistrict.value ? purpose_form.carUserDistrict.value : '',
+      car_user_floor: purpose_form.carUserFloor.value ? purpose_form.carUserFloor.value : '',
+      car_user_home_name: purpose_form.carUserHomeName.value ? purpose_form.carUserHomeName.value : '',
+      car_user_home_no: purpose_form.carUserHomeNo.value ? purpose_form.carUserHomeNo.value : '',
+      car_user_moo: purpose_form.carUserMoo.value ? purpose_form.carUserMoo.value : '',
+      car_user_name: purpose_form.carUserName.value ? purpose_form.carUserName.value : '',
+      car_user_name_2: purpose_form.carUserName2.value ? purpose_form.carUserName2.value : '',
+      car_user_phone_no: purpose_form.carUserPhoneNo.value ? purpose_form.carUserPhoneNo.value : '',
+      car_user_postal_code: purpose_form.carUserPostalCode.value ? purpose_form.carUserPostalCode.value : '',
+      car_user_province_code: purpose_form.carUserProvinceCode.value ? purpose_form.carUserProvinceCode.value : '',
+      car_user_province_name: purpose_form.carUserProvinceName.value ? purpose_form.carUserProvinceName.value : '',
+      car_user_relation: purpose_form.carUserRelation.value ? purpose_form.carUserRelation.value : '',
+      car_user_road: purpose_form.carUserRoad.value ? purpose_form.carUserRoad.value : '',
+      car_user_room_no: purpose_form.carUserRoomNo.value ? purpose_form.carUserRoomNo.value : '',
+      car_user_soi: purpose_form.carUserSoi.value ? purpose_form.carUserSoi.value : '',
+      car_user_sub_district: purpose_form.carUserSubDistrict.value ? purpose_form.carUserSubDistrict.value : '',
+      first_referral_fullname: purpose_form.firstReferralFullName.value ? purpose_form.firstReferralFullName.value : '',
+      first_referral_phone_no: purpose_form.firstReferralPhoneNo.value ? purpose_form.firstReferralPhoneNo.value : '',
+      first_referral_relation: purpose_form.firstReferralRelation.value ? purpose_form.firstReferralRelation.value : '',
+      purpose_buy: purpose_form.purposeBuy.value ? purpose_form.purposeBuy.value : '', // purpose form (รหัสคำนำหน้า)
+      purpose_buy_name: purpose_form.purposeBuyName.value ? purpose_form.purposeBuyName.value : '',
+      reason_buy: purpose_form.reasonBuy.value ? purpose_form.reasonBuy.value : '', // purpose form (select code of Reason (sync with master data))
+      reason_buy_etc: purpose_form.reasonBuyEtc.value ? purpose_form.reasonBuyEtc.value : '',
+      second_referral_fullname: purpose_form.secondReferralFullName.value ? purpose_form.secondReferralFullName.value : '',
+      second_referral_phone_no: purpose_form.secondReferralPhoneNo.value ? purpose_form.secondReferralPhoneNo.value : '',
+      second_referral_relation: purpose_form.secondReferralRelation.value ? purpose_form.secondReferralRelation.value : ''
+    }
+
+    const reqcreatorupdatecareerandpurpose = await lastValueFrom(this.quotationService.MPLS_create_or_update_careerandpurpose(reqcreateorupdatecareerandpurpose))
+
+    if (reqcreatorupdatecareerandpurpose.status) {
+      // === create or update success === 
+      this.verifycareerandpurpose = true
+      this.careerandpurposetab.careerandpurposeForm.controls.verifyCareerandpurpose.setValue(true)
+      this.snackbarsuccess(`ทำรายการสำเร็จ : ${reqcreatorupdatecareerandpurpose.message}`)
+    } else {
+      this.snackbarfail(`ทำรายการไม่สำเร็จ : ${reqcreatorupdatecareerandpurpose.message ? reqcreatorupdatecareerandpurpose.message : 'No return message'}`)
+    }
 
 
   }

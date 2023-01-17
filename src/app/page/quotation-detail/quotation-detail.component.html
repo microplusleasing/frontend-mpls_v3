@@ -52,14 +52,21 @@
             </div>
         </mat-step>
 
-        <mat-step>
+        <mat-step [stepControl]="this.careerandpurposetab.careerandpurposeForm.controls.verifyCareerandpurpose">
             <ng-template matStepLabel>อาชีพ และ รายได้</ng-template>
             <app-career-and-purpose [quotationReq]="quotationResult$"></app-career-and-purpose>
+            <div class="flex-center">
+                <div class="flex-center">
+                    <button mat-raised-button color="primary" (click)="onclickCreateCareerandPurposeBtn()" [disabled]="this.createorupdatecareerandPurposebtnDisable">
+                        บันทึกข้อมูล
+                    </button>
+                </div>
+            </div>
         </mat-step>
 
         <mat-step>
             <ng-template matStepLabel>เอกสารประกอบการสมัครสินเชื่อ</ng-template>
-            <app-image-attach></app-image-attach>
+            <app-image-attach [quotationReq]="quotationResult$"></app-image-attach>
         </mat-step>
     </mat-stepper>
 </form>

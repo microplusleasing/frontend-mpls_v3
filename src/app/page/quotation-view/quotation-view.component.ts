@@ -1,7 +1,7 @@
 import { IResQuotationView, IResQuotationViewData } from './../../interface/i-res-quotation-view';
 import { IUserToken } from './../../interface/i-user-token';
 import { ISearchQuotation } from './../../interface/i-search-quotation';
-import { FormBuilder, FormGroup, FormControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl, ValidationErrors, ValidatorFn, Validators, AbstractControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/service/auth/auth.service';
@@ -16,21 +16,35 @@ import { MasterDataService } from 'src/app/service/master.service';
 import { UserService } from 'src/app/service/auth/user.service';
 import { IResMasterQuoatationStatusData } from 'src/app/interface/i-res-master-quoatation-status';
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 export const atLeastOne = (validator: ValidatorFn, controls: string[] = []) => (
   group: FormGroup,
 ): ValidationErrors | null => {
-  if (!controls) {
-    controls = Object.keys(group.controls)
+  if (!controls.length) {
+    controls = Object.keys(group.controls);
   }
 
-  const hasAtLeastOne = group && group.controls && controls
-    .some(k => !validator(group.controls[k]));
+  const hasAtLeastOne = controls.some(k => !validator(group.controls[k]));
 
   return hasAtLeastOne ? null : {
     atLeastOne: true,
   };
 };
+
+// export const atLeastOne = (validator: ValidatorFn, controls: string[] = []) => (
+//   group: AbstractControl | null,
+// ): ValidationErrors | null => {
+//   if (!group) {
+//     return null;
+//   }
+//   const hasAtLeastOne = controls.some(k => !validator(group));
+//   return hasAtLeastOne ? null : {
+//     atLeastOne: true,
+//   };
+// };
+
+
 
 interface Status {
   value: string;
@@ -43,7 +57,6 @@ interface Status {
   styleUrls: ['./quotation-view.component.scss']
 })
 export class QuotationViewComponent implements OnInit {
-  searchform: FormGroup;
   dataListTemp: IResQuotationView = {} as IResQuotationView;
   pageEvent: PageEvent = new PageEvent;
   pageLength: number = 0;
@@ -87,6 +100,38 @@ export class QuotationViewComponent implements OnInit {
   paystatus: string = '';
   pageno: number = 1;
 
+  status_field = new FormControl()
+  customername_field = new FormControl('', [Validators.minLength(2)])
+  customeridcard_field = new FormControl('', Validators.pattern(`^(?:[0-9]{13}|)$`))
+  refpaynum_field = new FormControl('')
+  paystatus_field = new FormControl('')
+
+  searchform = this.fb.group({
+    status: this.status_field,
+    customername: this.customername_field,
+    customeridcard: this.customeridcard_field,
+    refpaynum: this.refpaynum_field,
+    paystatus: this.paystatus_field
+  }, { validator: atLeastOne(Validators.required, ['customername', 'customeridcard', 'status', 'refpaynum', 'paystatus']) })
+
+  cardLayout = this.breakpointObserver
+    .observe('(min-width: 800px)')
+    .pipe(
+      map(({ matches }) => {
+        if (matches) {
+          return {
+            columns: 12,
+            list: { maxcols: 12, cols6: 6, cols4: 4, cols3: 3, cols2: 2, col: 1 }
+          };
+        }
+
+        return {
+          columns: 1,
+          list: { maxcols: 1, cols6: 1, cols4: 1, cols3: 1, cols2: 1, col: 1 }
+        };
+      })
+    );
+
   constructor(
     private quotationService: QuotationService,
     private router: Router,
@@ -95,31 +140,24 @@ export class QuotationViewComponent implements OnInit {
     private fb: FormBuilder,
     private userService: UserService,
     private route: ActivatedRoute,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private breakpointObserver: BreakpointObserver
   ) {
-    this.searchform = this.fb.group({
-      status: new FormControl(),
-      customername: new FormControl('', [Validators.minLength(2)]),
-      customeridcard: new FormControl('', Validators.pattern(`^(?:[0-9]{13}|)$`)),
-      refpaynum: new FormControl(''),
-      paystatus: new FormControl(''),
-    }, { validator: atLeastOne(Validators.required, ['customername', 'customeridcard', 'status', 'refpaynum', 'paystatus']) })
-
 
     this.searchform.get('status')?.valueChanges.subscribe((value) => {
       this.quostatus = value
       this.maprouteparam()
     })
     this.searchform.get('customername')?.valueChanges.subscribe((value) => {
-      this.customername = value
+      this.customername = value ?? ''
       this.maprouteparam()
     })
     this.searchform.get('customeridcard')?.valueChanges.subscribe((value) => {
-      this.idcardnum = value
+      this.idcardnum = value ?? ''
       this.maprouteparam()
     })
     this.searchform.get('refpaynum')?.valueChanges.subscribe((value) => {
-      this.refpayno = value
+      this.refpayno = value ?? ''
       this.maprouteparam()
     })
     this.searchform.get('status')?.valueChanges.subscribe((value) => {
@@ -127,7 +165,7 @@ export class QuotationViewComponent implements OnInit {
       this.maprouteparam()
     })
     this.searchform.get('paystatus')?.valueChanges.subscribe((value) => {
-      this.paystatus = value
+      this.paystatus = value ?? ''
       this.maprouteparam()
     })
 
@@ -143,7 +181,6 @@ export class QuotationViewComponent implements OnInit {
   }
 
   async ngOnInit() {
-
     // === check query params (10/10/2022) === 
     if (this.customername || this.idcardnum || this.quostatus || this.refpayno || this.paystatus || this.pageno) {
 
@@ -266,7 +303,7 @@ export class QuotationViewComponent implements OnInit {
     }
 
     this.loadingService.showLoader();
-    
+
     this.quotationService.getquotationbypage(
       pageno,
       searchstatus,
@@ -374,7 +411,7 @@ export class QuotationViewComponent implements OnInit {
     const searchname = this.searchform.get('customername')?.value ? this.searchform.get('customername')?.value : ''
     const searchidcard = this.searchform.get('customeridcard')?.value ? this.searchform.get('customeridcard')?.value : ''
     const searchrefpaynum = this.searchform.get('refpaynum')?.value ? this.searchform.get('refpaynum')?.value : ''
-    const searchpaystatus = this.searchform.get('paystatus')?.value ? this.buildstrforpaystatus(this.searchform.get('paystatus')?.value) : ''
+    const searchpaystatus = this.searchform.get('paystatus')?.value ? this.buildstrforpaystatus(this.searchform.get('paystatus')?.value ?? '') : ''
     let searchStatus = this.searchform.get('status')?.value ? this.searchform.get('status')?.value : ''
 
     // === create status of new and all status ==== 
@@ -427,13 +464,15 @@ export class QuotationViewComponent implements OnInit {
         this.pageLength = this.dataListTemp.rowcount
         this.pageSize = this.dataListTemp.pagesize
       })
-    ).subscribe({next: (results) => {
+    ).subscribe({
+      next: (results) => {
 
-    }, error: (e) => {
+      }, error: (e) => {
 
-    }, complete: () => {
-      this.loadingService.hideLoader()
-    }})
+      }, complete: () => {
+        this.loadingService.hideLoader()
+      }
+    })
   }
 
   onsearchnamechange($event: any) {
@@ -509,10 +548,10 @@ export class QuotationViewComponent implements OnInit {
 
     this.quotationService.getquotationbypage(page, searchStatus,
       {
-        searchidcard: this.searchform.get(`customeridcard`)?.value,
-        searchname: this.searchform.get('customername')?.value,
-        searchrefpaynum: this.searchform.get('refpaynum')?.value,
-        searchpaystatus: this.searchform.get('paystatus')?.value ? this.buildstrforpaystatus(this.searchform.get('paystatus')?.value) : ''
+        searchidcard: this.searchform.get(`customeridcard`)?.value ?? '',
+        searchname: this.searchform.get('customername')?.value ?? '',
+        searchrefpaynum: this.searchform.get('refpaynum')?.value ?? '',
+        searchpaystatus: this.searchform.get('paystatus')?.value ? this.buildstrforpaystatus(this.searchform.get('paystatus')?.value ?? '') : ''
       }).pipe(
         map((result: IResQuotationView) => {
           // this.dataSource = new MatTableDataSource(result.data);

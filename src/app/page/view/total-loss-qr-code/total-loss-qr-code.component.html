@@ -1,0 +1,46 @@
+<div class="cardarea" *ngIf="showqr">
+    <div class="flexpos" style="margin-top: 2em">
+        <div></div>
+        <div>
+            <h3>คิวอาร์โค้ดสำหรับค่าประกัน TOTAL LOSS ขายเงินสด</h3>
+        </div>
+        <div></div>
+    </div>
+    <div class="flexpos" style="margin-top: 1em;">
+        <div></div>
+        <div style="text-align: center;">
+            <img [src]="(image_qr$ | async)" style="margin-top: 0.5em; margin-right: 0.2em; width: 75%">
+        </div>
+        <div></div>
+    </div>
+    <div class="flexpos" style="margin-top: 2em;">
+        <div></div>
+        <div>
+            <!-- <img [src]="(image_barcode$ | async)" class="barcode"><br> -->
+            <p style="font-size: 15px; display: block;
+                text-align: center;">
+                คุณ&nbsp;{{this.first_name_txt}}&nbsp;{{this.last_name_txt}}<br><br>
+                ค่างวด :&nbsp;{{(this.item_price | number)}} บาท
+            </p>
+
+        </div>
+        <div></div>
+    </div>
+    <div class="flexpos">
+        <div></div>
+        <div>
+            <p style="font-size: 10px; color:red;">ชำระผ่านโมบายแบงค์กิ้ง ไม่เสียค่าธรรมเนียม ชำระผ่าน 7/11
+                ค่าบริการตามที่กำหนด</p>
+        </div>
+        <div></div>
+    </div>
+</div>
+<div *ngIf="!showqr">
+    <div class="flexpos" style="margin-top: 2em;">
+        <div></div>
+        <div style="font-size: 16px;">
+            <h2>ระบบขัดข้อง ไม่สามารถดู QR ชำระเงินล่วงหน้าได้ในขณะนี้</h2>
+        </div>
+        <div></div>
+    </div>
+</div>

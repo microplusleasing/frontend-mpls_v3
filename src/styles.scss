@@ -1,15 +1,51 @@
 /* You can add global styles to this file, and also import other style files */
 
+@font-face {
+  font-family: Prompt;
+  src: url('assets/fonts/Prompt-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+:root,
+.container,
+.container .row,
+.container .row h1,
+.container .row h2,
+.container .row h3,
+.container .row h4,
+h1,
+h2,
+h3,
+h4,
+div {
+  font-family: Prompt;
+}
+
+// * angular material *
+.mat-raised-button,
+.mat-select,
+.mat-option-text,
+.mat-menu-item,
+.mat-grid-tile h1,
+.mat-dialog-content h1,
+.mat-dialog-container h1,
+.mat-radio-label-content,
+.mat-expansion-panel-header,
+.mat-card h1,
+.mat-card h2,
+.mat-dialog-title h1,
+.mat-dialog-title h2,
+.mat-h2, .mat-title, .mat-typography h2,
+.mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button {
+  font-family: Prompt;
+}
+
 html,
 body {
   height: 100%;
-}
-
-body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
 }
-
 
 
 .custom-snackbar-container {
@@ -20,9 +56,14 @@ body {
   background-color: #fa6e5b;
 }
 
-
 /* global class for mat-dialog style use panelClass eg (panelClass: 'custom-dialog-container') */
-.custom-dialog-container .mat-dialog-container .mat-dialog-content {
+.custom-dialog-container .mat-dialog-container .mat-dialog-content,
+.mat-header-cell,
+.mat-cell {
   overflow-y: hidden;
-  font-family: prompt;
+  font-family: Prompt;
+}
+
+.sp1em {
+  margin: 1em;
 }

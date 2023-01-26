@@ -27,6 +27,7 @@ export interface IReqCreateCredit {
     engine_no_running: string;
     chassis_no_running: string;
     dealer_code: string;
+    checker_id: string;
 }
 
 

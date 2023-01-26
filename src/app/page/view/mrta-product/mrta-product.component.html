@@ -1,0 +1,79 @@
+<form [formGroup]="mrtaForm">
+
+    <!-- <input formControlName="value1" (change)="checkvalue()"><br>
+    <input formControlName="value2" (change)="checkvalue()"><br>
+    <input formControlName="value3" (change)="checkvalue()"> -->
+
+
+    <!-- <div style="color: red">
+      <h1>*** ระบบยังไม่เปิดให้ใช้งานระบบนี้ ห้ามกรอกรายการ *** </h1><br>
+    </div> -->
+
+    <div *ngIf="valuevalid" class="row">
+
+        <h2>ประกัน MRTA</h2><br>
+        <div>
+            <button *ngIf="showseller" [disabled]="!showgenQRbtn" mat-raised-button color="primary"
+                (click)="onclickgenqrpayment()">สร้าง QR
+                ชำระเงิน</button>
+        </div>
+        <div>
+            <mat-form-field appearance="outline" style="margin-right: 1em;">
+                <mat-label>ประกัน MRTA</mat-label>
+                <mat-select formControlName="mrtafieldValue" (valueChange)="onchagemrtainsurance($event)">
+                    <mat-option [value]="undefined" disabled hidden>ระบุจำนวนงวด</mat-option>
+                    <mat-option *ngFor="let mrta of mrtainsurancedata" [value]="mrta.insurance_code">
+                        {{mrta.insurer_name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <!-- เลือกปี -->
+            <mat-form-field appearance="outline" style="margin-right: 1em;">
+                <mat-label>จำนวนปี</mat-label>
+                <mat-select formControlName="mrtayearfieldValue" (valueChange)="onchangemrtayearinsurance($event)">
+                    <mat-option [value]="undefined" disabled hidden>ระบุจำนวนปี</mat-option>
+                    <mat-option *ngFor="let mrta of mrtainsurancedatayear" [value]="mrta.years_insur">
+                        {{mrta.years_insur}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field *ngIf="showseller" appearance="outline" style="width: 80%;">
+                <mat-label>พนักงานขาย</mat-label>
+                <input type="text" placeholder="กรอกรหัสพนักงานขาย" aria-label="Number" matInput
+                    formControlName="mrtasellerfieldValue" [matAutocomplete]="autoDealer"
+                    (ngModelChange)="onChangeSeller($event)">
+                <mat-autocomplete autoActiveFirstOption #autoDealer="matAutocomplete">
+                    <mat-option matNativeControl required *ngFor="let seller of filterSellerList | async"
+                        [value]="seller.emp_id">
+                        {{seller.fullname}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-error *ngIf="this.mrtaForm.get('mrtasellerfieldValue')?.hasError('required')">
+                    กรอกรหัสพนักงานขาย
+                </mat-error>
+                <mat-error *ngIf="this.mrtaForm.get('mrtasellerfieldValue')?.hasError('wrongFormatSeller')">
+                    กรอกรหัสพนักงานขายให้ถูกต้อง
+                </mat-error>
+                <mat-hint class="hint-color">
+                    <h2>{{SellerSelectText }}</h2>
+                </mat-hint>
+            </mat-form-field>
+        </div>
+        <div *ngIf="showmrtapayment" style="margin-top: 1.5em;">
+            <div>
+                <mat-card style="background-color: lightgray; width: 100%;">
+                    <mat-card-content>
+                        <p class="h2" style="color: #3f51b5;"> ค่างวด MRTA: {{(paymentvalue | number)}} บาท</p>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="!valuevalid" class="row">
+        <div class="col-md-12 center">
+            <h1>{{textshow}}</h1>
+        </div>
+    </div>
+</form>

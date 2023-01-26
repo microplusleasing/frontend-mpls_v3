@@ -34,11 +34,16 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   @Output() facevalid = new EventEmitter();
   @Output() phonenumbervalue = new EventEmitter();
 
+
+  @Output() ciz_age = new EventEmitter<number>();
+  @Output() ciz_gender = new EventEmitter<number>();
+
   quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
   phonevalidstatus: string = ''
   facevalidstatus: string = ''
   quotationid: string = ''
   showdipchipbtn: boolean = false
+  lockallbtn: boolean = false
 
 
   // === variable master variable ===
@@ -64,7 +69,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   titleName = new FormControl<string | undefined>('', Validators.required) // not show 
   firstName = new FormControl('', Validators.required)
   lastName = new FormControl('', Validators.required)
-  gender = new FormControl<number | null>(null, Validators.required)
+  gender = new FormControl<number | null | undefined>(null, Validators.required)
   // email = new FormControl('', Validators.required)
   citizenId = new FormControl('', [Validators.required, Validators.pattern('^[0-9]{13}$')])
   birthDate = new FormControl<string | null>(null, Validators.required)
@@ -290,6 +295,12 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       this.phonenumbervalue.emit()
     })
 
+
+    this.cizForm.controls.maincitizenForm.controls.gender.valueChanges.subscribe((value) => {
+      this.ciz_gender.emit(value ?? undefined)
+    })
+
+    // === emit age inside birthdate valuechange ===
     this.cizForm.controls.maincitizenForm.controls.birthDate.valueChanges.pipe(
       debounceTime(1500)
     ).subscribe({
@@ -327,21 +338,27 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                   }
                 })
               } else {
-                // code to execute if value.data[0].ciz_age is not less than 20 
-                // === case that new case (no quo_key_app_id) ====
-                if (agecalcualte.data[0].age_year < 20) {
-                  // === กรณีอายุไม่ถึง 20 ปี และไม่มี quo_key_app_id ====
-                  this.dialog.open(MainDialogComponent, {
-                    panelClass: `custom-dialog-container`,
-                    data: {
-                      header: `ไม่สามารถทำรายการได้`,
-                      message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
-                      button_name: `ปิด`
-                    }
-                  }).afterClosed().subscribe((result) => {
-                    // === redirect to home page === 
-                    this.router.navigate(['/quotation-view'])
-                  })
+
+                if (agecalcualte.data.length !== 0) {
+                  this.ciz_age.emit(agecalcualte.data[0].age_year)
+
+                  // code to execute if value.data[0].ciz_age is not less than 20 
+                  // === case that new case (no quo_key_app_id) ====
+                  if (agecalcualte.data[0].age_year < 20) {
+                    // === กรณีอายุไม่ถึง 20 ปี และไม่มี quo_key_app_id ====
+                    this.dialog.open(MainDialogComponent, {
+                      panelClass: `custom-dialog-container`,
+                      data: {
+                        header: `ไม่สามารถทำรายการได้`,
+                        message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
+                        button_name: `ปิด`
+                      }
+                    }).afterClosed().subscribe((result) => {
+                      // === redirect to home page === 
+                      this.router.navigate(['/quotation-view'])
+                    })
+                  } else { }
+
                 }
               }
             });
@@ -368,6 +385,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
   ngAfterViewInit(): void {
     this.cdRef.detectChanges();
+
   }
 
   ngOnInit(): void {
@@ -434,7 +452,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       }
     })
 
-    this.loadingService.showLoader()
+
     combineLatest([
       this.masterDataService.getTitle(),
       this.masterDataService.getProvice(),
@@ -599,6 +617,12 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
     this.cizForm.controls.generalinfoForm.controls.phoneNumber.markAllAsTouched()
 
+    // === check lock form when quo_status = 1 (lock all field) 
+    if (quoitem.quo_status == 1) {
+      this.cizForm.disable()
+      this.lockallbtn = true
+    }
+
   }
 
 
@@ -612,7 +636,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       fromBody: ''
     }).subscribe({
       next: async (result) => {
-
+        this.loadingService.hideLoader()
         if (result.number == 200) {
 
           const dipchipdata = result.data[0]
@@ -690,6 +714,8 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
         }
       }, error: (e) => {
         // === error ===
+        this.loadingService.hideLoader()
+        this.snackbarfail(`Error : ${e.message ? e.message : 'No return message'}`)
       }, complete: () => {
         this.loadingService.hideLoader()
       }

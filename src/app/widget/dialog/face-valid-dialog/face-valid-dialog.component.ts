@@ -246,14 +246,18 @@ export class FaceValidDialogComponent implements OnInit {
   async onfacevalidmanual() {
     // === creat log face compare and update MPLS_QUOTATION (QUO_FACE_COMPARE_VERIFY) ====
 
-    const is_dipchip = this.facevalidform.controls.verifymanual.value ? 'N' : 'Y'
+    let dataForm = {
+      quotationid: this.data.quotationid,
+      reason: this.facevalidform.controls.reason.value ? this.facevalidform.controls.reason.value : '',
+      result: this.facevalidform.controls.result.value ? this.facevalidform.controls.result.value : '',
+      is_dipchip: this.facevalidform.controls.verifymanual.value ? 'N' : 'Y'
+    }
+
+    const dataitems = JSON.stringify(dataForm)
+    let fd = new FormData();
+    fd.append('items', dataitems)
     this.loadingService.showLoader()
-    this.quotationService.MPLS_stamp_check_face_valid(
-      this.data.quotationid,
-      this.facevalidform.controls.reason.value ? this.facevalidform.controls.reason.value : '',
-      this.facevalidform.controls.result.value ? this.facevalidform.controls.result.value : '',
-      is_dipchip
-    ).subscribe({
+    this.quotationService.MPLS_stamp_check_face_valid(fd).subscribe({
       next: (result) => {
 
         if (result.status == 200) {

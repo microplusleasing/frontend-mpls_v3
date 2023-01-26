@@ -1,0 +1,29 @@
+<mat-tab-group dynamicHeight [(selectedIndex)]="consentTabIndex">
+    <mat-tab label="PDPA">
+        <ng-template mat-tab-label>
+            <div>PDPA</div>
+        </ng-template>
+        <mat-card>
+            <app-personal-disclosure-consent [quotationReq]="quotationReq" (someEvent)="onNextStep()"
+                (personalDisclosureValid)="recieve_personaldisclosurevalid($event)
+                ">
+            </app-personal-disclosure-consent>
+        </mat-card>
+    </mat-tab>
+
+    <mat-tab label="ยินยอมรับเอกสารอิเล็กทรอนิกส์" [disabled]="epaperTabDisable">
+    <!-- <mat-tab label="ยินยอมรับเอกสารอิเล็กทรอนิกส์"> -->
+        <app-e-paper-consent [quotationReq]="quotationReq" (someEvent)="onNextStep()"
+            (epaperConsentValid)="recieve_epaperconsentvalid($event)">
+        </app-e-paper-consent>
+    </mat-tab>
+
+    <mat-tab label="ลงลายมือชื่อใบสมัคร" [disabled]="signatureTabDisable">
+    <!-- <mat-tab label="ลงลายมือชื่อใบสมัคร"> -->
+        <app-signature-consent [quotationReq]="quotationReq"></app-signature-consent>
+        <div class="center-position">
+            <!-- <button mat-raised-button color="primary" [disabled]="!signatureForm.valid">สร้างใบคำขอ</button> -->
+            <button mat-raised-button color="primary" [disabled]="!this.signaturetab.signatureForm.valid" (click)="createConsentBtn()">สร้างใบคำขอ</button>
+        </div>
+    </mat-tab>
+</mat-tab-group>

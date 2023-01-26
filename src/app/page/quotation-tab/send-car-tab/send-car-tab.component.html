@@ -1,0 +1,248 @@
+<form [formGroup]="sendcarForm">
+    <div class="container">
+        <!-- <div class="row" *ngIf="(showpage$ | async)"> -->
+        <div class="row">
+
+            <div style="text-align: center;">
+                <h1>ลายเซ็นต์ร้านค้า</h1>
+                <br>
+            </div>
+            <div class="center-position" [hidden]="!(allowedit$ | async)">
+                <div class="signature-pad-container">
+                    <canvas #signaturePad id="signature-pad" width="700" height="200"></canvas>
+                    <br>
+                    <div class="clear-btn-container">
+                        <button mat-raised-button color="primary" (click)="clearCanvas()"
+                            style="margin-bottom: 1em;">เซ็นต์ใหม่</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="center-position" [hidden]="(allowedit$ | async)">
+                <img class="sigframe" style="width: 800px; height: 200px;" [src]="(dealerSigImage | async)" />
+            </div>
+
+            <div class="center-position">
+                <mat-form-field appearance="outline" style="width: 80%; min-width: 300px;">
+                    <mat-label>ชื่อ</mat-label>
+                    <input matInput required [formControl]="dealerName">
+                    <mat-error *ngIf="this.dealerName.invalid">กรอกชื่อ</mat-error>
+                </mat-form-field>
+            </div>
+            <!-- add on 18/08/2022 for loyalty consent  -->
+
+            <div class="col-md-12 mt-4">
+                <mat-tab-group dynamicHeight [(selectedIndex)]="consentTabIndex"
+                    (selectedTabChange)="tabChange($event)">
+                    <mat-tab label="แนบรูปภาพส่งมอบรถ">
+                        <ng-template mat-tab-label>
+                            <mat-icon *ngIf="!(chKformloyaltyvalid$ | async)" class="example-tab-icon">assignment_ind
+                            </mat-icon>
+                            <mat-icon *ngIf="(chKformloyaltyvalid$ | async)" class="example-tab-icon success-icon">
+                                how_to_reg
+                            </mat-icon>
+                            <div *ngIf="(chekisWidRes$ | async)!">
+                                แนบรูปภาพส่งมอบรถ
+                            </div>
+                        </ng-template>
+
+                        <!-- แนบรูปภาพส่งมอบรถ -->
+                        <div class="col-md-12 mt-4">
+                            <mat-card class="matchildcolor mt-4">
+                                <h2>รูป 1</h2>
+                                <input #Image type="file" accept="image/*" capture="environment"
+                                    (change)="handleFileInput($event, 'firstImage')" [hidden]="!(allowedit$ | async)">
+                                <div class="sp1em">
+                                    <img class="sigframe" [src]="(firstimageattach | async)" />
+                                </div>
+                            </mat-card>
+                        </div>
+
+
+                        <div class="centertext" style="margin-top: 1em;">
+                            <button [disabled]="
+                            !(firstimageattach && 
+                            ((firstimageattach | async) !== '/assets/image/placeholder-image.png'
+                            )) " mat-raised-button color="primary" type="button" (click)="onNextStep()">ต่อไป</button>
+                        </div>
+
+                    </mat-tab>
+                    <mat-tab label="เอกสารตรวจสอบความเป็นธรรม" [disabled]="(lockloyaltyconsentform$ | async)">
+                        <ng-template mat-tab-label>
+                            <mat-icon *ngIf="!(chKformloyaltyvalid$ | async)" class="example-tab-icon">assignment_ind
+                            </mat-icon>
+                            <mat-icon *ngIf="(chKformloyaltyvalid$ | async)" class="example-tab-icon success-icon">
+                                how_to_reg
+                            </mat-icon>
+                            <div *ngIf="(chekisWidRes$ | async)!">
+                                เอกสารตรวจสอบความเป็นธรรม
+                            </div>
+                        </ng-template>
+
+                        <!-- เอกสารตรวจสอบความเป็นธรรม -->
+
+                        <div class="col-md-12">
+                            <app-loyalty-consent (someEvent)="onNextStep()"
+                                [insureData]="insureData$"></app-loyalty-consent>
+                        </div>
+
+                    </mat-tab>
+                    <mat-tab label="ที่อยู่ปัจจุบัน" [disabled]="(locklivingplacelocation$ | async)">
+                        <!-- <mat-tab label="PDPA" [disabled]="true"> -->
+                        <ng-template mat-tab-label>
+                            <mat-icon *ngIf="!(chklivingplacelocation$ | async)" class="example-tab-icon">
+                                assignment_ind
+                            </mat-icon>
+                            <mat-icon *ngIf="(chklivingplacelocation$ | async)" class="example-tab-icon success-icon">
+                                how_to_reg
+                            </mat-icon>
+                            <div *ngIf="(chekisWidRes$ | async)!">
+                                ที่อยู่ปัจจุบัน
+                            </div>
+                        </ng-template>
+                        <mat-card>
+
+                            <!-- ที่อยู่ปัจจุบัน -->
+
+                            <div class="flexbox">
+                                <mat-form-field appearance="outline" style="width: 90%;">
+                                    <mat-label>ที่อยู่</mat-label>
+                                    <textarea matInput [formControl]="livingAddress_address" [rows]="1"></textarea>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline">
+                                    <mat-label>แขวง/ตำบล</mat-label>
+                                    <input matInput [formControl]="livingAddress_subDistrict">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline">
+                                    <mat-label>เขต/อำเภอ</mat-label>
+                                    <input matInput [formControl]="livingAddress_district">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline">
+                                    <mat-label>จังหวัด</mat-label>
+                                    <input matInput [formControl]="livingAddress_provinceName">
+                                </mat-form-field>
+
+                                <!-- <mat-form-field appearance="outline">
+                                    <mat-select [formControl]="_l_provinceCode">
+                                        <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
+                                        <mat-option *ngFor="let item of masterProvince.data"
+                                            [value]="item.prov_code">{{item.prov_name}}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-label>
+                                        จังหวัด
+                                    </mat-label>
+                                </mat-form-field> -->
+
+
+
+                                <mat-form-field appearance="outline">
+                                    <mat-label>รหัสไปรษณีย์</mat-label>
+                                    <input matInput [formControl]="livingAddress_postalCode">
+                                </mat-form-field>
+                            </div>
+
+                            <button mat-raised-button color="primary" [disabled]="
+                                !(sendcarForm.controls.livingAddress_subDistrict.value &&
+                                sendcarForm.controls.livingAddress_district.value &&
+                                sendcarForm.controls.livingAddress_provinceName.value &&
+                                sendcarForm.controls.livingAddress_postalCode.value )
+                                " (click)="opengooglemap()">เปิด Google map</button>
+
+                            <div class="flexbox">
+                                <mat-form-field appearance="outline" style="width: 50vh">
+                                    <mat-label>Latitude, Lontitude</mat-label>
+                                    <input matInput [formControl]="livingAddress_lalon">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Latitude</mat-label>
+                                    <input matInput [formControl]="livingAddress_la">
+                                    <mat-error
+                                        *ngIf="livingAddress_la.invalid && livingAddress_la.errors?.['required']">
+                                        กรอกละติจูด
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Longitude</mat-label>
+                                    <input matInput [formControl]="livingAddress_lon">
+                                    <mat-error
+                                        *ngIf="livingAddress_lon.invalid && livingAddress_lon.errors?.['required']">
+                                        กรอกละติจูด
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                        </mat-card>
+                    </mat-tab>
+                    <mat-tab label="คำนวณประกัน MRTA">
+                        <ng-template mat-tab-label>
+                            <mat-icon *ngIf="!(chKformloyaltyvalid$ | async)" class="example-tab-icon">assignment_ind
+                            </mat-icon>
+                            <mat-icon *ngIf="(chKformloyaltyvalid$ | async)" class="example-tab-icon success-icon">
+                                how_to_reg
+                            </mat-icon>
+                            <div *ngIf="(chekisWidRes$ | async)!">
+                                คำนวณประกัน MRTA
+                            </div>
+                        </ng-template>
+
+                        <!-- คำนวณประกัน MRTA -->
+
+                        <div class="col-md-12 mt-4">
+                            <!-- tab ซ้อน tab ในหน้า sendcar (MRTA) -->
+                            <mat-tab-group dynamicHeight [(selectedIndex)]="qrTabIndex">
+                                <mat-tab label="หน้าคำนวณประกัน MRTA">
+                                    <div class="col-md-12 mt-4">
+                                        <app-mrta-product [pay_status]="pay_status" [active_status]="active_status"
+                                            [insurance_code]="insurance_code" [insurance_year]="insurance_year"
+                                            [insurance_seller]="insurance_seller" [age]="age" [gender]="gender"
+                                            [out_stand]="out_stand" [showseller]="true"
+                                            (emitqrtoparentclickbtn)="receiveEmitChildClickBtn($event)"
+                                            (emitqrtoparentshowqr)="receiveEmitChildShowQR($event)"></app-mrta-product>
+                                    </div>
+                                </mat-tab>
+                                <mat-tab label="สร้าง QR CODE สำหรับชำระค่าประกัน MRTA" [disabled]="lockqrpage">
+                                    <div class="col-md-12 mt-4">
+                                        <app-qr-barcode-mrta [qrpaymentdata]="this.MRTAdata"
+                                            (genfinish)="checkqrgenfinish($event)"
+                                            (updatepaymentstatus)="updatepaymentStatus($event)"></app-qr-barcode-mrta>
+                                    </div>
+                                </mat-tab>
+                                <mat-tab label="สร้าง QR CODE สำหรับค่างวดล่วงหน้า">
+                                    <div class="col-md-12 mt-4">
+                                        <app-advance-payment-qr-code
+                                            [application_num]="application_num_qr"></app-advance-payment-qr-code>
+                                    </div>
+                                </mat-tab>
+                                <mat-tab label="สร้าง QR CODE สำหรับค่าประกัน TOTAL LOSS ขายเงินสด">
+                                    <div class="col-md-12 mt-4">
+                                        <app-total-loss-qr-code
+                                            [application_num]="application_num_qr"></app-total-loss-qr-code>
+                                    </div>
+                                </mat-tab>
+                            </mat-tab-group>
+                        </div>
+
+                    </mat-tab>
+                </mat-tab-group>
+            </div>
+
+            <div class="col-md-12 mt-4" *ngIf="(allowedit$ | async)" style="margin-top: 1em;">
+                <button mat-raised-button class=btnsubmit color="primary" [disabled]="!(this.sendcarForm.valid
+                 && this.loyaltychild.loyaltyform.valid)" (click)="uploaddeliverapproveimg()"
+                    >ยืนยันข้อมูล</button>
+            </div>
+
+        </div>
+        <div class=row *ngIf="!(showpage$ | async)">
+            <div class="col-md-12 mt-4">
+                <h1 class="centertext">รอ Checker อัพโหลดภาพ</h1>
+            </div>
+        </div>
+    </div>
+</form>

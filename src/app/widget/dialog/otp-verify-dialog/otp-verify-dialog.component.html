@@ -2,33 +2,43 @@
 <div mat-dialog-content>
 
   {{data.message}}
-  <form [formGroup]="mainOTPForm">
+  <form [formGroup]="mainOTPForm" (keydown.enter)="$event.preventDefault()">
     <mat-stepper labelPosition="bottom" [selectedIndex]="_tabindex" [linear]="true">
       <mat-step [stepControl]="confirmForm" [editable]="_editabletab1">
         <ng-template matStepLabel>ตรวจสอบเบอร์โทรศัพท์</ng-template>
         <div [formGroup]="confirmForm">
-          <mat-form-field appearance="fill">
-            <mat-label>เบอร์โทรศัพท์</mat-label>
-            <input matInput [formControl]="phone_number">
-          </mat-form-field><br>
-          <h3>{{_createotpResMsg}}</h3>
-          <button mat-raised-button codor="primary" (click)="createoptphonevalid()">ยืนยันเบอร์โทรศัพท์ถูกต้อง</button>
+          <div class="flex-center" style="margin-top: 1.5em;">
+            <mat-form-field appearance="fill" style="width: 90%; max-width: 400px;">
+              <mat-label>เบอร์โทรศัพท์</mat-label>
+              <input matInput [formControl]="phone_number">
+            </mat-form-field><br>
+            <h3>{{_createotpResMsg}}</h3>
+            <button mat-raised-button color="primary"
+              (click)="createoptphonevalid()" type="submit">ยืนยันเบอร์โทรศัพท์ถูกต้อง</button>
+          </div>
         </div>
       </mat-step>
       <mat-step [stepControl]="otpactivate" [editable]="_editabletab2">
         <ng-template matStepLabel>ยืนยัน OTP</ng-template>
-        <mat-label>กรอกเลข OTP</mat-label>
-        <ng-otp-input [formCtrl]="otp_value" [config]="{length:6}"></ng-otp-input><br>
-        <h3>{{_validationResMsg}}</h3>
-        <button mat-raised-button color="primary" (click)="activateotpphone($event)"> ยืนยัน OTP</button>
+        <div [formGroup]="otpactivate">
+          <div class="flex-center" style="margin-top: 1.5em;">
+            <mat-label>กรอกเลข OTP</mat-label>
+            <ng-otp-input [formCtrl]="otp_value" [config]="{length:6}" style="margin-top: 1em;"></ng-otp-input><br>
+            <h3>{{_validationResMsg}}</h3>
+            <button mat-raised-button color="primary" (click)="activateotpphone()" type="submit"> ยืนยัน OTP</button>
+          </div>
+        </div>
       </mat-step>
       <mat-step [stepControl]="otpvalidation" [editable]="_editabletab3">
         <ng-template matStepLabel>ผลการยืนยัน OTP</ng-template>
-        <span>เบอร์โทรศัพท์นี้ได้รับการยืนยันตนแล้ว</span>
+        <div class="flex-center" style="margin-top: 1em;">
+          <span> ✅ เบอร์โทรศัพท์นี้ได้รับการยืนยันตนแล้ว</span>
+        </div>
       </mat-step>
     </mat-stepper>
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-raised-button [mat-dialog-close]="true" color="primary" (click)="closeDialog()">{{data.button_name}}</button>
+  <button mat-raised-button [mat-dialog-close]="true" color="primary"
+    (click)="closeDialog()">{{data.button_name}}</button>
 </div>

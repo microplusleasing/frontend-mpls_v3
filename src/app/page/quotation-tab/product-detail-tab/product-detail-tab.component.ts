@@ -23,8 +23,8 @@ import { MasterDataService } from 'src/app/service/master.service';
 export class ProductDetailTabComponent extends BaseService implements OnInit, AfterViewInit {
 
   @Input() quotationReq = {} as Subject<IResQuotationDetail>;
-
   quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
+  lockallbtn: boolean = false
 
   // *** check econsent verify ***
   consentVerify = new FormControl<boolean>(false, Validators.requiredTrue)
@@ -158,6 +158,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
   // === variable (out_stand) (22/09/2022) ===
   out_stand: number = 0
+
+  @Input() cusage: number = 0
+  @Input() gender: number = 0
+
 
 
   warningMsgPaymentValueField: boolean = false;// === subscribe on paymentValueField (valueChange) to show or hide === 
@@ -929,6 +933,12 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 // ==== add warning alert about interestrate 1.39 (add-on 02/08/2022) ====
 
               }
+
+              // ===== ***** check quo_status (if quo_status = 1 : lock all client field , valid in api can't update data) ****** =======
+              if (this.quotationdatatemp.data[0].quo_status == 1) {
+                this.productForm.disable({ onlySelf: true, emitEvent: false })
+                this.lockallbtn = true
+              }
               this.loadingService.hideLoader()
 
 
@@ -1151,7 +1161,17 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
         this.loadingService.hideLoader()
 
         this.paymentCountSelect = resPayment.data
-        this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable({ emitEvent: false });
+
+
+        // === *** extra add on for disalbe paymentRoundCountValue (เพิ่มเงื่่อนไขพิเศษในการ lock field จำนวนงวด เนื่องจาก trigger และ condition เยอะ) *** ===
+        if (this.quotationdatatemp.data) {
+          if (this.quotationdatatemp.data[0].quo_status == 1) {
+          } else {
+            this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable({ emitEvent: false });
+          }
+        }
+
+        // ===========================================================================================================================================
 
         if (this.quotationdatatemp.data[0].cd_payment_round_count) {
           this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue((this.quotationdatatemp.data[0].cd_payment_round_count ? this.quotationdatatemp.data[0].cd_payment_round_count : null), { emitEvent: false })

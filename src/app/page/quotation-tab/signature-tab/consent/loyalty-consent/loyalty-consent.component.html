@@ -1,0 +1,305 @@
+<p>loyalty-consent works!</p>
+<form [formGroup]="loyaltyform">
+    <div class="left-position">
+        <h1 style="font-family: Prompt;">
+            <span>แบบสอบทานการให้บริการทางการเงินแก่ลูกค้าอย่างเป็นธรรม </span>
+        </h1>
+        (บริษัท ไมโครพลัสลิสซิ่ง จำกัด)
+
+        <!-- <h2 style="font-family: Prompt;">
+            (สำหรับลูกค้า, คู่สมรสของลูกค้า)
+        </h2> -->
+
+    </div>
+    <div class="left-position border-box">
+        เพื่อให้ความสำคัญและส่งเสริมให้บริการทางการเงินแก่ลูกค้าอย่างเป็นธรรม โดยมีจุดมุ่งหมายให้ (1)
+        ลูกค้าเชื่อมั่นว่าได้รับการบริการ
+        อย่างเป็นธรรม จริงใจ ไม่เอาเปรียบ (2) ลูกค้าได้รับคำาแนะนำที่เหมาะสมและชัดเจน (3)
+        ลูกค้าได้รับผลิตภัณฑ์และบริการที่เป็นธรรมทั้ง
+        ด้านราคาและเงื่อนไข (4) ลูกค้าใช้บริการได้สะดวกและได้รับการดูแลแก้ไขปัญหาอย่างเหมาะสม (5)
+        ผู้ให้บริการช่วยให้ลูกค้าเข้าใจสิทธิและ
+        หน้าที่ของตนเอง
+    </div>
+
+    <!-- table -->
+
+    <br>
+    <br>
+
+    <table style="width: 100%;">
+        <tr>
+            <td colspan="2" class="gray-background" style="font-size: 18px;">
+                สินเชื่อรถจักรยานยนต์
+            </td>
+        </tr>
+        <!-- 1 -->
+        <tr>
+            <td colspan="2">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8">
+                        1. พนักงานนำเสนอเอกสาร Sales Sheet มอบให้ลูกค้าและเอกสารขายสินเชื่อ อธิบายให้ลูกค้าได้เข้าใจ
+                        อย่างครบถ้วน
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <mat-radio-group [formControl]="is_check_sale_sheet_explain_value"
+                            style="min-width: 30px !important;">
+                            <mat-radio-button color="primary" class="example-margin" [value]="1">ครบถ้วน&nbsp;&nbsp;
+                            </mat-radio-button>
+                            <mat-radio-button color="primary" class="example-margin" [value]="0">ไม่ครบถ้วน
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <!-- 2 -->
+        <tr>
+            <td colspan="2">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8">
+                        2. พนักงานอธิบายข้อมูลผลิตภัณฑ์ เสนอข้อมูลสำคัญของผลิตภัณฑ์ที่ลูกค้าสนใจสมัครอย่างครบถ้วน
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <mat-radio-group [formControl]="is_check_product_detail_value"
+                            style="min-width: 30px !important;">
+                            <mat-radio-button color="primary" class="example-margin" [value]="1">ครบถ้วน&nbsp;&nbsp;
+                            </mat-radio-button>
+                            <mat-radio-button color="primary" class="example-margin" [value]="0">ไม่ครบถ้วน
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <!-- 3 -->
+        <tr>
+            <td colspan="2">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8">
+                        3. เปรียบเทียบผลิตภัณฑ์ทางการเงิน รวมถึงความรู้เกี่ยวกับการใช้บริการทางการเงิน อัตราค่าธรรมเนียม
+                        และแจ้งทำความเข้าใจ กรณีหากลูกค้าค้าผิดนัดชำระค่างวด
+                        จะมีค่าธรรมเนียมในการติดตามทวงถาม เช่น ดอกเบี้ยการชำระล่าช้า ค่าธรรมเนียมยึดรถ เป็นต้น
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <mat-radio-group [formControl]="is_check_payment_rule_value"
+                            style="min-width: 30px !important;">
+                            <mat-radio-button color="primary" class="example-margin" [value]="1">ครบถ้วน&nbsp;&nbsp;
+                            </mat-radio-button>
+                            <mat-radio-button color="primary" class="example-margin" [value]="0">ไม่ครบถ้วน
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <!-- 4 -->
+        <tr>
+            <td colspan="2">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8">
+                        4. พนักงานได้ทบทวนข้อมูลสัญญาเช่าซื้อ
+                        ยอดกู้ในครั้งนี้ {{(netfinance$ | async) | number}} บาท งวดละ {{(monthly$ | async) | number}}
+                        บาท/เดือน อัตราดอกเบี้ย {{(rate$ | async) | number}} %
+                        จำนวน {{(term$ | async) | number}} งวด วันเริ่มต้นการจ่าย {{(first_due$ | async) | date:
+                        'dd/MM/yyyy'}}
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <mat-radio-group [formControl]="is_check_contract_explain_value"
+                            style="min-width: 30px !important;">
+                            <mat-radio-button color="primary" class="example-margin" [value]="1">ครบถ้วน&nbsp;&nbsp;
+                            </mat-radio-button>
+                            <mat-radio-button color="primary" class="example-margin" [value]="0">ไม่ครบถ้วน
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <!-- ประกันรถหาย (TOTAL LOSS) -->
+        <tr>
+            <td colspan="2" class="gray-background" style="font-size: 18px;">
+                ประกันรถหาย (TOTAL LOSS)
+            </td>
+        </tr>
+        <!-- 5 -->
+        <tr>
+            <td colspan="2">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8">
+                        5. พนักงานได้แจ้ง และอธิบายว่าประกันดังกล่าว เป็นประกันคุ้มครองการสูญเสียทางการเงิน
+                        กรณีรถคันที่เช่าซื้อสูญหาย
+                        หรือรถคันที่เช่าซื้อเกิดอุบัติเหตุจนเสียหายสิ้นเชิง และกรณีผู้เช่าซื้อเสียชีวิตจากอุบัติเหตุ
+                        รวมถึงได้แจ้งให้ลูกค้าทราบถึงข้อยกเว้น
+                        หรือข้อจำกัดในการทำประกันภัยอย่างครบถ้วน
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <mat-radio-group [formControl]="is_check_total_loss_explain_value"
+                            style="min-width: 30px !important;">
+                            <mat-radio-button color="primary" class="example-margin" [value]="1">ครบถ้วน&nbsp;&nbsp;
+                            </mat-radio-button>
+                            <mat-radio-button color="primary" class="example-margin" [value]="0">ไม่ครบถ้วน
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <!-- 6 -->
+        <tr>
+            <td colspan="2">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8">
+                        6. พนักงานได้แจ้งว่าประกันที่ทำครั้งนี้เป็นของบริษัท {{(insurancecompany$ | async)}}
+                        มีระยะเวลาความคุ้มครอง {{(insuranceyear$ | async) | number}} ปี ทุนความคุ้มครองที่ได้รับ
+                        {{(coverage_total_loss$ | async) | number}} บาท
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <mat-radio-group [formControl]="is_check_total_loss_company_value"
+                            style="min-width: 30px !important;">
+                            <mat-radio-button color="primary" class="example-margin" [value]="1">ครบถ้วน&nbsp;&nbsp;
+                            </mat-radio-button>
+                            <mat-radio-button color="primary" class="example-margin" [value]="0">ไม่ครบถ้วน
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <!-- ประกันชีวิต (ถ้ามี) -->
+        <tr *ngIf="false">
+            <td colspan="2" class="gray-background" style="font-size: 18px;">
+                ประกันชีวิต (ถ้ามี)
+            </td>
+        </tr>
+        <!-- 7 -->
+        <tr *ngIf="false">
+            <td colspan="2">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8">
+                        7. พนักงานได้แสดงใบอนุญาตนายหน้าประกันชีวิต เลขที่_______________________________________
+                        ก่อนการเสนอขายผลิตภัณฑ์
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <mat-radio-group [formControl]="is_check_life_insurance_value"
+                            style="min-width: 30px !important;">
+                            <mat-radio-button color="primary" class="example-margin" [value]="1">ครบถ้วน&nbsp;&nbsp;
+                            </mat-radio-button>
+                            <mat-radio-button color="primary" class="example-margin" [value]="0">ไม่ครบถ้วน
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <!-- 8 -->
+        <tr *ngIf="false">
+            <td colspan="2">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8">
+                        8. พนักงานได้แจ้งและทำความเข้าใจให้ลูกค้าทราบว่าการทำประกันชีวิต
+                        ไม่ใช่การฝากเงินรวมถึงได้แจ้งให้ลูกค้าทราบถึงข้อยกเว้น
+                        หรือข้อจำกัดในการทาประกันภัยอย่างครบถ้วน
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <mat-radio-group [formControl]="is_check_l_insur_detail_value"
+                            style="min-width: 30px !important;">
+                            <mat-radio-button color="primary" class="example-margin" [value]="1">ครบถ้วน&nbsp;&nbsp;
+                            </mat-radio-button>
+                            <mat-radio-button color="primary" class="example-margin" [value]="0">ไม่ครบถ้วน
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <!-- 9 -->
+        <tr *ngIf="false">
+            <td colspan="2">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8">
+                        9. พนักงานได้เสนอแบบประกันชีวิตที่ทาในครั้งนี้ตรงตามความต้องการของลูกค้า
+                        โดยได้แนะนำแบบประกันอื่นๆ
+                        ที่เหมาะสมกับท่าน และได้แจ้งความคุ้มครองของแบบประกันเพื่อให้มีโอกาสเลือก
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <mat-radio-group [formControl]="is_check_l_insur_plan_value"
+                            style="min-width: 30px !important;">
+                            <mat-radio-button color="primary" class="example-margin" [value]="1">ครบถ้วน&nbsp;&nbsp;
+                            </mat-radio-button>
+                            <mat-radio-button color="primary" class="example-margin" [value]="0">ไม่ครบถ้วน
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <!-- 10 -->
+        <tr *ngIf="false">
+            <td colspan="2">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8">
+                        10. พนักงานได้แจ้งบริษัทประกันที่ทำครั้งนี้ เป็นของบริษัท_______________________________________
+                        มีระยะเวลาความคุ้มครอง_________ปี ระยะเวลาชำระเบี้ยประกันรวม_________ปี
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <mat-radio-group [formControl]="is_check_l_insur_company_value"
+                            style="min-width: 30px !important;">
+                            <mat-radio-button color="primary" class="example-margin" [value]="1">ครบถ้วน&nbsp;&nbsp;
+                            </mat-radio-button>
+                            <mat-radio-button color="primary" class="example-margin" [value]="0">ไม่ครบถ้วน
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <!-- 11 -->
+        <tr *ngIf="false">
+            <td colspan="2">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8">
+                        11. พนักงานแจ้ง กรณีที่ต้องการยกเลิกกรมธรรม์ก่อนครบกำหนด
+                        ท่านจะได้รับเงินค่าเวรคืนกรมธรรม์ไม่เต็มจานวนเท่าที่ชำระเบี้ยประกันไว้
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <mat-radio-group [formControl]="is_check_l_insur_refund_value"
+                            style="min-width: 30px !important;">
+                            <mat-radio-button color="primary" class="example-margin" [value]="1">ครบถ้วน&nbsp;&nbsp;
+                            </mat-radio-button>
+                            <mat-radio-button color="primary" class="example-margin" [value]="0">ไม่ครบถ้วน
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <!-- 12 -->
+        <tr *ngIf="false">
+            <td colspan="2">
+                <div class="row">
+                    <div class="col-sm-12 col-md-8">
+                        12. พนักงานแจ้ง สามารถยกเลิกกรมธรรม์ได้ภายใน 15 วัน นับจากวันที่ได้รับกรมธรรม์จากบริษัทประกัน
+                    </div>
+                    <div class="col-sm-12 col-md-4">
+                        <mat-radio-group [formControl]="is_check_l_insur_cancle_d_value"
+                            style="min-width: 30px !important;">
+                            <mat-radio-button color="primary" class="example-margin" [value]="1">ครบถ้วน&nbsp;&nbsp;
+                            </mat-radio-button>
+                            <mat-radio-button color="primary" class="example-margin" [value]="0">ไม่ครบถ้วน
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="row">
+        <div class="col-md-12 mt-4">
+            <div class="center-position">
+                <button [disabled]="!loyaltyform.valid" mat-raised-button
+                    color="primary" type="button" (click)="callParent()">ต่อไป</button>
+            </div>
+        </div>
+    </div>
+</form>

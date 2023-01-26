@@ -1,0 +1,50 @@
+<div class="cardarea">
+    <div class="flexpos" style="margin-top: 2em">
+        <div></div>
+        <div>
+            <h3>คิวอาร์โค้ดสำหรับให้ลูกค้าชำระค่าประกันสินเชื่อ MRTA เท่านั้น</h3>
+        </div>
+        <div></div>
+    </div>
+    <div class="flexpos" style="margin-top: 1em;">
+        <div></div>
+        <div style="text-align: center;">
+            <img [src]="(image_qr$ | async)" style="margin-top: 0.5em; margin-right: 0.2em; width: 75%">
+        </div>
+        <div></div>
+    </div>
+    <div class="flexpos" style="margin-top: 2em;">
+        <div></div>
+        <div>
+            <!-- <img [src]="(image_barcode$ | async)" class="barcode"><br> -->
+            <p style="font-size: 15px; display: block;
+            text-align: center;">
+                คุณ&nbsp;{{this.qrpaymentdata.first_name}}&nbsp;{{this.qrpaymentdata.last_name}}<br><br>
+                ยอดชำระ :&nbsp;{{(this.qrpaymentdata.premium_insur | number)}} บาท
+            </p>
+        </div>
+        <div></div>
+    </div>
+    <div class="flexpos">
+        <div></div>
+        <div>
+            <p style="font-size: 10px; color:red;">ชำระผ่านโมบายแบงค์กิ้ง ไม่เสียค่าธรรมเนียม ชำระผ่าน 7/11
+                ค่าบริการตามที่กำหนด</p>
+        </div>
+        <div></div>
+    </div>
+</div>
+<div class="flexpos">
+    <div></div>
+    <div>
+        <div style="text-align: center;">
+            <button *ngIf="showconfirmbtn" [disabled]="lockconfirmbtn" mat-raised-button color="primary" style="margin-top: 2em;"
+                (click)="onclickconfirmqrpaymentbtn()">
+                ยืนยันการชำระเงิน
+            </button>
+            <br><br>
+            <p *ngIf="showtxtpayment" style="font-size: 15px; color:red;">ชำระเงินแล้ว</p>
+        </div>
+    </div>
+    <div></div>
+</div>

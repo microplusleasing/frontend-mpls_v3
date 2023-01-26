@@ -259,6 +259,7 @@ export interface IResQuotationDetailData {
     cizcard_status?: string;
     quo_dopa_status: string;
     quo_face_compare_verify: string;
+    quo_image_attach_verify: string;
 
 
 }

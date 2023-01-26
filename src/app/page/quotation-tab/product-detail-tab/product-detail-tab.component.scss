@@ -1,50 +1,73 @@
-.form-container> .mat-form-field:first-child {
-    margin-left: 0px;
-  }
-  
-  .form-container .mat-form-field {
-    width: 220px;
+.mat-form-field-type-mat-native-select.mat-form-field-disabled .mat-form-field-infix::after,
+.mat-input-element:disabled {
+  color: rgba(0, 0, 0, 1) !important;
+}
+
+.mat-select {
+  ::ng-deep .mat-select-content {
     width: 100%;
   }
-  
-  .form-container form {
-    margin-bottom: 20px;
+
+  ::ng-deep .mat-select-value {
+    color: rgba(0, 0, 0, 1) !important;
+
   }
-  
-  .form-container form>* {
-    margin: 10px 0;
+}
+
+.mat-select-disabled {
+  ::ng-deep .mat-select-value {
+    color: rgba(0, 0, 0, 1) !important;
+
   }
-  
-  .form-container .mat-radio-button {
-    margin: 0 12px;
-  }
-  
-  .flexbox {
-    display: flex;
-    gap: 10px 10px;
-    flex-wrap: wrap;
-  }
-  
-  .flex-center {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .header-left {
-    margin: 0.5;
-    font-size: 16px;
-  }
-  
-  .flex-image-header {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
-  
-  .img-box {
-    // border-image: fill;
-    margin: 1em;
-    max-width: 250px;
-  }
+}
+
+.form-container>.mat-form-field:first-child {
+  margin-left: 0px;
+}
+
+.form-container .mat-form-field {
+  width: 220px;
+  width: 100%;
+}
+
+.form-container form {
+  margin-bottom: 20px;
+}
+
+.form-container form>* {
+  margin: 10px 0;
+}
+
+.form-container .mat-radio-button {
+  margin: 0 12px;
+}
+
+.flexbox {
+  display: flex;
+  gap: 10px 10px;
+  flex-wrap: wrap;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header-left {
+  margin: 0.5;
+  font-size: 16px;
+}
+
+.flex-image-header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.img-box {
+  // border-image: fill;
+  margin: 1em;
+  max-width: 250px;
+}

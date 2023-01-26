@@ -1,0 +1,119 @@
+<form [formGroup]="epaperform">
+    <div class="center-position">
+        <h1 style="font-family: Prompt;">
+            แบบคำขอใช้บริการ/ยกเลิก การนำส่งเอกสารสัญญาเช่าซื้ออิเล็กทรอนิกส์ (e-contract)
+        </h1>
+        <h2 style="font-family: Prompt;">
+            และแบบฟอร์มการชำระเงินอิเล็กทรอนิกส์ (e-bill) ผ่านอีเมล์ และ/หรือ SMS
+        </h2>
+    </div>
+    <div class="left-position">
+        <span>
+            ชื่อผู้ใช้บริการ(ตามที่ระบุในใบคำขอเช่าซื้อรถจักรยานยนต์)
+            <!-- <mat-divider></mat-divider> -->
+            <br>
+            <br>
+            {{(title$ | async)}}&nbsp;&nbsp;{{(fname$ | async)}}&nbsp;&nbsp;&nbsp;{{(lname$ | async)}}
+            <br>
+            <br>
+            เลขที่บัตรประชาชน&nbsp;&nbsp;&nbsp;{{(cizid$ | async)}}
+            <br>
+            <br>
+            <!-- <label class="example-margin">Align:</label> -->
+            <mat-radio-group [formControl]="epaperconsentvalue">
+                <mat-radio-button color="primary" class="sp1em" [value]="1">
+                    <span class="wrap-mat-radio-label">
+                        สมัครบริการ e-contract, e-bill (ชื่อที่อยู่อีเมล์ และเบอร์โทรศัพท์มือถือ
+                        เป็นข้อมูลเดียวกันกับในใบคำขอเช่าซื้อรถจักรยานยนต์)
+                    </span>
+                </mat-radio-button>
+                <br>
+                <mat-radio-button color="primary" class="sp1em" [value]="2">
+                    เปลี่ยนแปลงอีเมล์&nbsp;&nbsp;&nbsp; {{(email$ | async)}}&nbsp;&nbsp;&nbsp;โทรศัพท์มือถือ
+                    &nbsp;&nbsp;&nbsp; {{(phoneno$ | async)}}
+                </mat-radio-button>
+                <br>
+                <mat-radio-button color="primary" class="sp1em" [value]="3">
+                    ยกเลิกบริการ e-bill
+                </mat-radio-button>
+                <br>
+            </mat-radio-group>
+            <hr>
+            <br>
+        </span>
+    </div>
+    <div class="center-position">
+        <b style="font-family: Prompt;">
+            <u>
+                เงื่อนไขสำหรับการให้บริการแบบฟอร์มสัญญาเช่าซื้ออิเล็กทรอนิกส์ (e-contract)
+                และแบบฟอร์มชำระหนี้อิเล็กทรอนิกส์ (e-bill)
+            </u>
+        </b>
+    </div>
+    <br>
+    <div class="left-position">
+        <span>กรุณาอ่านข้อตกลงการใช้งานต่อไปนี้อย่างละเอียด</span>
+    </div>
+    <br>
+    <div class="left-position">
+        <table>
+            <tr>
+                <td style="min-width: 40px; vertical-align:top;">1.&nbsp;&nbsp;</td>
+                <td>บริการรับสัญญาเช่าซื้อ และแบบฟอร์มการชำระหนี้ทางอีเมล์ และ/หรือ SMS คือ ขอรับสัญญาเช่าซื้อ
+                    และแบบฟอร์มชำระหนี้ทางอีเมล์ และ/หรือ SMS</td>
+            </tr>
+            <tr>
+                <td style="min-width: 40px; vertical-align:top;">2.&nbsp;&nbsp;</td>
+                <td>ผู้เช่าซื้อที่สมัครรับสัญญาเช่าซื้อ และแบบฟอร์มการชำระหนี้ทางอีเมล์ และ/หรือ SMS
+                    ถือว่าผู้เช่าซื้อต้องการให้ บริษัท ไมโครพลัสลิสซิ่ง จำกัด จัดส่งสัญญาเช่าซื้อ
+                    และแบบฟอร์มการชำระหนี้ทางอีเมล์ และ/หรือ SMS ตาม email address
+                    และเบอร์โทรศัพท์มือถือที่ให้ไว้ในใบคำขอเช่าซื้อรถจักรยานยนต์</td>
+            </tr>
+            <tr>
+                <td style="min-width: 40px; vertical-align:top;">3.&nbsp;&nbsp;</td>
+                <td>ผู้เช่าซื้อยอมรับว่าเมื่อสมัครใช้บริการรับสัญญาเช่าซื้อ และแบบฟอร์มชำระหนี้ผ่านทางอีเมล์ และ/หรือ
+                    SMS แล้วให้ถือว่าได้แสดงเจตจำนงยกเลิกการบริการใช้บริการทางไปรษณีย์</td>
+            </tr>
+            <tr>
+                <td style="min-width: 40px; vertical-align:top;">4.&nbsp;&nbsp;</td>
+                <td>ผู้เช่าซื้อสามารถนำแบบฟอร์มการชำระหนี้ทางอีเมล์ และ/หรือ SMS นั้นไปชำระผ่านช่องทางชำระตามที่บริษัทฯ
+                    ได้แจ้งในแบบฟอร์มการชำระหนี้</td>
+            </tr>
+            <tr>
+                <td style="min-width: 40px; vertical-align:top;">5.&nbsp;&nbsp;</td>
+                <td>หากบริษัทฯ ได้ส่งสัญญาเช่าซื้อ และแบบฟอร์มการชำระหนี้ผ่านทางอีเมล์ และ/หรือ SMS
+                    ออกจากระบบโปรแกรมของทางบริษัทฯ แล้ว แต่ผู้เช่าซื้อมิได้รับหรือไม่สามารถรับสัญญาเช่าซื้อ
+                    และแบบฟอร์มการชำระหนี้ผ่านทางอีเมล์ และ/หรือ SMS ได้ เนื่องด้วยเหตุใดๆ ก็ตาม เช่น กล่องรับ (Mail
+                    box) เต็ม หรือมีข้อบกพร่อง
+                    หรือผิดพลาดประการอื่นเกี่ยวกับประสิทธิภาพของเครือข่ายผู้ให้บริการอินเตอร์เน็ต
+                    หรืออาจเกิดจากการบกพร่องของเครื่องคอมพิวเตอร์/Smart Phone/Tablet ของผู้เช่าซื้อเอง หรือเหตุใดๆ
+                    ที่อยู่เหนือการควบคุมของบริษัทฯ แล้วให้ถือว่าเป็นการส่งโดยชอบจะไม่ถือเป็นเหตุกล่าวอ้างว่าบริษัทฯ
+                    มิได้จัดส่งสัญญาเช่าซื้อ และแบบฟอร์มการชำระหนี้ทางอีเมล์ และ/หรือ SMS
+                    หรือจะนำมาเป็นเหตุแห่งการปฏิเสธการชำระหนี้ หรือจะนำมาเป็นเหตุเรียกร้องให้บริษัทฯ ต้องรับผิดใดๆ
+                    ทั้งสิ้นมิได้</td>
+            </tr>
+            <tr>
+                <td style="min-width: 40px; vertical-align:top;">6.&nbsp;&nbsp;</td>
+                <td>หากผู้เช่าซื้อต้องการยกเลิกการรับแบบฟอร์มการชำระหนี้ทางอีเมล์ และ/หรือ SMS ต้องแจ้งให้บริษัทฯ
+                    ทราบล่วงหน้าอย่างน้อย 1 รอบบิล</td>
+            </tr>
+            <tr>
+                <td style="min-width: 40px; vertical-align:top;">7.&nbsp;&nbsp;</td>
+                <td>บริษัทฯ ขอสงวนสิทธิ์ในการยกเลิกและ/เปลี่ยนแปลงการจัดส่งสัญญาเช่าซื้อ
+                    และแบบฟอร์มการชำระหนี้ได้ตามที่เห็นสมควร</td>
+            </tr>
+        </table>
+    </div>
+    <br>
+    <div class="left-position">
+        <span>
+            ข้าพเจ้าได้รับทราบและยอมรับเงื่อนไขสำหรับการรับสัญญาเช่าซื้อ (e-contract)
+            และแบบฟอร์มการชำระหนี้ผ่านทางอิเล็กทรอนิกส์ (e-bill) ข้างต้น
+        </span>
+    </div>
+
+    <div class="center-position sp1em">
+        <button mat-raised-button color="primary" [disabled]="disableNextBtn" type="button"
+            (click)="callParent()">ต่อไป</button>
+    </div>
+</form>

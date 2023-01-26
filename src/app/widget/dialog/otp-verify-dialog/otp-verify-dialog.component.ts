@@ -120,7 +120,7 @@ export class OtpVerifyDialogComponent implements OnInit {
     })
   }
 
-  async activateotpphone($event: any) {
+  async activateotpphone() {
     const otpfield = this.mainOTPForm.controls.otpactivate.controls.otp_value.value
     if (otpfield) {
       console.log(`this is otpfield value : ${otpfield}`)

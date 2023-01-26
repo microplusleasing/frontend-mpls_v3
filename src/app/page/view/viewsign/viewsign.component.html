@@ -1,0 +1,54 @@
+<!-- create form -->
+<!-- header -->
+<form [formGroup]="viewsignForm">
+
+    <!-- image tag (grid) -->
+
+    <ng-container *ngIf="cardLayout | async as layout">
+        <mat-grid-list [cols]="layout.columns" [rowHeight]="'120px'">
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <div style="color: red; text-align: center;">
+                    {{this.quotationService.dopastatus.message}}
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <img src="{{(customersignatureimg$ | async)}}" class="img-viewsign">
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <div class="textcenter-viewsign">
+                    <a>ลูกค้า</a>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <img src="{{(witnesssignatureimg$ | async)}}" class="img-viewsign">
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <div class="textcenter-viewsign">
+                    <a>พยาน</a>
+                </div>
+            </mat-grid-tile>
+
+            <!-- verify tab -->
+
+
+            <mat-grid-tile style="text-align: center;" [colspan]="layout.list.maxcols"
+                *ngIf="(letverify$ | async) && !(this.alreadyverify$ | async)">
+                <mat-checkbox color="primary" formControlNam="selectverify" (change)="onselectcheckbox($event)"
+                    [disabled]="(this.alreadyverify$ | async)">ยืนยันข้อมูลถูกต้อง</mat-checkbox>
+            </mat-grid-tile>
+            <mat-grid-tile style="text-align: center;" [colspan]="layout.list.maxcols"
+                *ngIf="(letverify$ | async) && !(this.alreadyverify$ | async)">
+                <button mat-raised-button color="primary" (click)="onclickbtn()"
+                    [disabled]="!((this.viewsignForm.valid) && !(this.alreadyverify$ | async))">ยืนยัน</button>
+            </mat-grid-tile>
+            <mat-grid-tile style="text-align: center;" [colspan]="layout.list.maxcols" *ngIf="(iserr$ | async)">
+                <h1>{{(errmsg$ | async)}}</h1>
+            </mat-grid-tile>
+            <mat-grid-tile style="text-align: center;" [colspan]="layout.list.maxcols"
+                *ngIf="(this.alreadyverify$ | async)">
+                <h1>ยืนยันแล้ว</h1>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </ng-container>
+    <!-- end form -->
+</form>

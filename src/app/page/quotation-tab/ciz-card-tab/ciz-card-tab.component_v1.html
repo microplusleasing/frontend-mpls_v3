@@ -228,7 +228,7 @@
       <div class="header-left">
         ที่อยู่ปัจจุบัน
       </div>
-      <button class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('living')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('living')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับบัตรปชช.
       </button>
@@ -265,7 +265,7 @@
         </mat-form-field>
       </div>
 
-      <button mat-raised-button color="primary" (click)="opengooglemap()">เปิด Google map</button>
+      <button [disabled]="lockallbtn" mat-raised-button color="primary" (click)="opengooglemap()">เปิด Google map</button>
 
       <div class="flexbox">
         <mat-form-field appearance="outline" style="width: 50vh">
@@ -292,11 +292,11 @@
       <div class="header-left">
         ที่อยู่ส่งจดหมาย
       </div>
-      <button class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('contact')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('contact')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับบัตรปชช.
       </button>
-      <button class="button-mapping" mat-raised-button color="primary" (click)="samelivinAddress('contact')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="samelivinAddress('contact')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ปัจจุบัน
       </button>
@@ -341,15 +341,15 @@
       <div class="header-left">
         ที่อยู่ตามทะเบียนบ้าน
       </div>
-      <button class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('houseregis')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('houseregis')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับบัตรปชช.
       </button>
-      <button class="button-mapping" mat-raised-button color="primary" (click)="samelivinAddress('houseregis')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="samelivinAddress('houseregis')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ปัจจุบัน
       </button>
-      <button class="button-mapping" mat-raised-button color="primary" (click)="samecontactAddress('houseregis')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="samecontactAddress('houseregis')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ส่งจดหมาย
       </button>
@@ -394,15 +394,15 @@
       <div class="header-left">
         ที่อยู่ที่ทำงาน
       </div>
-      <button class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('work')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('work')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับบัตรปชช.
       </button>
-      <button class="button-mapping" mat-raised-button color="primary" (click)="samelivinAddress('work')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="samelivinAddress('work')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ปัจจุบัน
       </button>
-      <button class="button-mapping" mat-raised-button color="primary" (click)="samecontactAddress('work')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="samecontactAddress('work')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ส่งจดหมาย
       </button>
@@ -453,9 +453,5 @@
       <span> {{this.phonevalidstatus}}</span>
     </div>
 
-    <!-- <div class="flex-center">
-      <button mat-raised-button color="primary" (click)="onClickBtnVerifyPhone()"
-        [disabled]="!this.cizForm.valid">ยืนยันเบอร์โทรศัพท์ลูกค้า</button>
-    </div> -->
   </form>
 </div>

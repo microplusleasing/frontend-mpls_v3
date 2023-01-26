@@ -35,6 +35,7 @@ import { IResHouseOwnerType } from '../interface/i-res-house-owner-type';
 import { IResMasterBrand } from '../interface/i-res-master-brand';
 import { IResMasterModel } from '../interface/i-res-master-model';
 import { IResImageTypeAttach } from '../interface/i-res-image-type-attach';
+import { IResMrtaProduct } from '../interface/i-res-mrta-product';
 
 
 
@@ -129,11 +130,11 @@ export class MasterDataService {
     return this.http.get<IResMasterInsurance>(url)
   }
   
-  getmrtainsurance(out_stand: number, age: number, gender: number ): Observable<IResMasterMrtaInsurance> {
+  getmrtainsurance(out_stand: number, age: number, gender: number ): Observable<IResMrtaProduct> {
     // ===== **** getder (1: male, 2: female) **** =====
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getInsurance?factory_price=${factory_price}`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getmrtainsurance?out_stand=${out_stand}&age=${age}&gender=${gender}`
-    return this.http.get<IResMasterMrtaInsurance>(url)
+    return this.http.get<IResMrtaProduct>(url)
   }
   
   getInsurer(): Observable<IResMasterInsurer> {
@@ -193,10 +194,10 @@ export class MasterDataService {
     return this.http.get<IResMasterMrtaSeller>(url)
   }
 
-  checkmrtarecent(quotationid: string): Observable<IResMasterMrtaInsuranceData> {
+  checkmrtarecent(quotationid: string): Observable<IResMasterMrtaInsurance> {
 
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/checkmrtarecent?quotationid=${quotationid}`
-    return this.http.get<IResMasterMrtaInsuranceData>(url)
+    return this.http.get<IResMasterMrtaInsurance>(url)
   }
 
   confirmqrpayment(application_num: string, contract_no: string): Observable<IResConfirmQrPayment>{

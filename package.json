@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "builddev": "ng build --configuration development --output-hashing none",
+    "buildprod": "ng build --configuration production --output-hashing none"
   },
   "private": true,
   "dependencies": {
@@ -26,6 +28,7 @@
     "ng-otp-input": "^1.8.5",
     "ngx-spinner": "^14.0.0",
     "rxjs": "~7.5.0",
+    "signature_pad": "^4.1.4",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },

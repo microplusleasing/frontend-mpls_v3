@@ -1,6 +1,6 @@
 
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatExpansionPanel } from '@angular/material/expansion';
@@ -26,6 +26,7 @@ import { IResImageAttachData } from 'src/app/interface/i-res-image-attach';
 })
 export class ImageAttachComponent extends BaseService implements OnInit {
   @Input() quotationReq = {} as Observable<IResQuotationDetail>;
+  @Output() emitverifyimageattach = new EventEmitter();
 
   quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
 
@@ -47,6 +48,9 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
   category = new FormControl('', Validators.required)
   image = new FormControl('', Validators.required)
+  verifyImageAttach = new FormControl<boolean>(false, Validators.requiredTrue)
+
+  txtrequireimage: string  = ''
 
   uploadForm = this.fb.group({
     category: this.category,
@@ -133,6 +137,15 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                 })
 
                 // === value Change ===
+
+                this.verifyImageAttach.valueChanges.subscribe((value) => {
+                  if (value) {
+
+                  } else {
+
+                  }
+                })
+
                 this.uploadForm.valueChanges.subscribe((value) => {
                   if (this.uploadForm.valid) {
                     this.disableUploadBtn = false
@@ -174,7 +187,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
           this.loadingService.hideLoader()
           this.snackbarfail(`${err.message}`)
         }, complete: () => {
-          this.loadingService.showLoader();
+          this.loadingService.hideLoader();
         }
       })
     }
@@ -214,7 +227,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
       fd.append('item', itemString)
       fd.append('image_file', await this._base64toblob(fileimage))
       this.quotationService.MPLS_create_image_attach_file(fd).subscribe({
-        next: (res_image_create) => {
+        next: async (res_image_create) => {
           if (res_image_create.status == 200) {
             this.snackbarsuccess(`ทำรายการสำเร็จ : ${res_image_create.message ? res_image_create.message : 'No return message'}`)
             // === handle image variable next when success === 
@@ -226,6 +239,8 @@ export class ImageAttachComponent extends BaseService implements OnInit {
               urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(img.src),
               src: img.src
             });
+
+            await this.checkimageattachtype()
 
             // remove category type out from list when is used to upload 
             this.categories = this.categories.filter(category => category.image_code !== this.uploadForm.controls.category.value);
@@ -328,6 +343,9 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
           const imagesrc = reader.result
 
+          // === keep current file to stamp when update is fail or stage can't update (quo_status == 1)
+          const currentpic = this.uploadedImages.filter((item) => { return (item.image_code == this.currentimageeditcode) })
+
           this.uploadedImages = this.uploadedImages.map(img => {
             if (img.image_code === this.currentimageeditcode) {
               return {
@@ -367,6 +385,21 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                   // === handle image variable next when success === 
                 } else {
                   this.snackbarfail(`ทำรายการไม่สำเร็จ : ${res_image_update.message ? res_image_update.message : 'No return message'}`)
+                  // === set current file when update fail or on stage that can't update image (quo_status = 1) ===
+
+                  if (currentpic.length !== 0) {
+                    this.uploadedImages = this.uploadedImages.map(img => {
+                      if (img.image_code === this.currentimageeditcode) {
+                        return {
+                          ...img,
+                          urlsanitizer: currentpic[0].urlsanitizer,
+                          src: currentpic[0].src
+                        }
+                      }
+                      return img;
+                    });
+                  }
+                  // ===== End ====
                 }
               }, error: (e) => {
                 console.log(JSON.stringify(e))
@@ -401,12 +434,16 @@ export class ImageAttachComponent extends BaseService implements OnInit {
     fd.append('item', itemString)
 
     this.quotationService.MPLS_delete_image_attach_file(fd).subscribe({
-      next: (res_delete_image) => {
+      next: async (res_delete_image) => {
+
 
         if (res_delete_image.status == 200) {
           this.snackbarsuccess(`ทำรายการสำเร็จ : ${res_delete_image.message ? res_delete_image.message : 'No return message'}`)
           // === handle image attach next when delete success ===
           this.uploadedImages = this.uploadedImages.filter(img => img !== image);
+
+          await this.checkimageattachtype()
+
           this.categories.push
             ({
               image_header: image.image_header ?? '',
@@ -457,5 +494,52 @@ export class ImageAttachComponent extends BaseService implements OnInit {
     imagetype = imagetypechk ? 'edit' : 'create';
 
     return imagetype
+  }
+
+  async checkimageattachtype() {
+    console.log(``)
+    const checkverifyimage = this.uploadedImages.filter((item) => { return (item.image_code == '01' || item.image_code == '03' || item.image_code == '09' || item.image_code == '10') })
+
+    if (checkverifyimage.length == 4) {
+      // === set flag via api to update QUO_IMAGE_ATTACH_VERIFY TO 'Y' === SUCCESS DO NEXT PROCESS
+
+      this.quotationService.MPLS_update_flag_image_attach_file(this.quotationdatatemp.data[0].quo_key_app_id ?? '').subscribe({
+        next: (res_update_flag_image) => {
+          if (res_update_flag_image.status == 200) {
+            // === success ===
+            this.snackbarsuccesscenter(`ทำรายการสำเร็จ : ${res_update_flag_image.message}`)
+            this.verifyImageAttach.setValue(true)
+            this.emitverifyimageattach.emit(true)
+            this.txtrequireimage = ''
+          } else {
+            // === fail ===
+            this.snackbarfailcenter(`ทำรายการไม่สำเร็จ : ${res_update_flag_image.message}`)
+          }
+        }, error: (e) => {
+
+        }, complete: () => {
+
+        }
+      })
+    } else {
+      // === set flag via api to update QUO_IMAGE_ATTACH_VERIFY TO '' === SUCCESS DO NEXT PROCESS
+
+      this.quotationService.MPLS_update_flag_image_attach_file(this.quotationdatatemp.data[0].quo_key_app_id ?? '').subscribe({
+        next: (res_update_flag_image) => {
+          if (res_update_flag_image.status == 200) {
+            // === success ===
+            this.snackbarsuccesscenter(`ทำรายการสำเร็จ : ${res_update_flag_image.message}`)
+          } else {
+            // === fail ===
+            this.verifyImageAttach.setValue(false)
+            this.emitverifyimageattach.emit(false)
+          }
+        }, error: (e) => {
+
+        }, complete: () => {
+
+        }
+      })
+    }
   }
 }

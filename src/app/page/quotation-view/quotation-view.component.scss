@@ -1,35 +1,51 @@
 .btnhome {
-    height: 3.5em;
-  }
-  
-  .table-home {
-    width: 100%;
-  }
-  
-  .mat-header-cell {
-    color: #FFFF;
-    font-size : 17px;
-    background-color: #3d3d3d;
-   }
-  
-  .mat-row:nth-child(even){
-    background-color:#F5F5F5;
-    }
-  
-  .mat-row:nth-child(odd){
-    background-color:#e3e3e3;
-    }
-  
-    tr.example-element-row:not(.example-expanded-row):hover {
-      background: #CBCBCB;
-    }
-  
-  
-    tr.mat-header-row {
-      height: 35px;
-    }
-  
-    .card-header-home {
-      background-color: #e9e9e9;
-    }
-  
+  height: 3.5em;
+}
+
+.table-home {
+  width: 100%;
+}
+
+.mat-header-cell {
+  color: #FFFF;
+  font-size: 17px;
+  background-color: #3d3d3d;
+}
+
+.mat-row:nth-child(even) {
+  background-color: #F5F5F5;
+}
+
+.mat-row:nth-child(odd) {
+  background-color: #e3e3e3;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: #CBCBCB;
+}
+
+
+tr.mat-header-row {
+  height: 35px;
+}
+
+.card-header-home {
+  background-color: #e9e9e9;
+}
+
+.example-full-width {
+  width: 100%;
+}
+
+.flexbox {
+  display: flex;
+  gap: 10px 10px;
+  flex-wrap: wrap;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}

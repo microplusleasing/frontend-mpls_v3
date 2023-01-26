@@ -36,6 +36,9 @@ import { IResImageAttach } from '../interface/i-res-image-attach';
 import { IResCreateImageAttach } from '../interface/i-res-create-image-attach';
 import { IResUpdateImageAttach } from '../interface/i-res-update-image-attach';
 import { IResDeleteImageAttach } from '../interface/i-res-delete-image-attach';
+import { IResUpdateFlagImageAttach } from '../interface/i-res-update-flag-image-attach';
+import { IResCreateConsent } from '../interface/i-res-create-consent';
+import { IResCreateSendCarAndLoyaltyConsent } from '../interface/i-res-create-send-car-and-loyalty-consent';
 
 
 @Injectable({
@@ -290,6 +293,21 @@ export class QuotationService {
     return this.http.post<IResDeleteImageAttach>(url, fd)
   }
 
+  MPLS_update_flag_image_attach_file(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_update_flag_image_attach_file?quotationid=${quotationid}`
+    return this.http.get<IResUpdateFlagImageAttach>(url)
+  }
+
+  MPLS_create_consent(fd: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_consent`
+    return this.http.post<IResCreateConsent>(url, fd)
+  }
+
+  MPLS_create_send_car_deliver_and_loyalty_consent(formData: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_send_car_deliver_and_loyalty_consent`
+    return this.http.post<IResCreateSendCarAndLoyaltyConsent>(url, formData)
+  }
+
   MPLS_getimagetocompareiapp(quotationid: string) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimagetocompareiapp?quotationid=${quotationid}`
     return this.http.get<IResImageFaceCompare>(url)
@@ -300,9 +318,14 @@ export class QuotationService {
     return this.http.get<IResCheckFaceValid>(url)
   }
 
-  MPLS_stamp_check_face_valid(quotationid: string, reason: string, status: string, is_dipchip: string) {
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_stamp_check_face_valid?quotationid=${quotationid}&reason=${reason}&status=${status}&is_dipchip=${is_dipchip}`
-    return this.http.get<IResFaceValidStamp>(url)
+  // MPLS_stamp_check_face_valid(quotationid: string, reason: string, status: string, is_dipchip: string) {
+  //   const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_stamp_check_face_valid?quotationid=${quotationid}&reason=${reason}&status=${status}&is_dipchip=${is_dipchip}`
+  //   return this.http.get<IResFaceValidStamp>(url)
+  // }
+
+  MPLS_stamp_check_face_valid(formData: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_stamp_check_face_valid`
+    return this.http.post<IResFaceValidStamp>(url, formData)
   }
 
   MPLS_get_dopa_valid_status() {

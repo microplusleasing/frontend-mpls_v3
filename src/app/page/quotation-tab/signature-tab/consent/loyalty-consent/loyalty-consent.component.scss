@@ -1,0 +1,33 @@
+.center-position {
+    text-align: center;
+}
+
+.right-position {
+    text-align: right;
+}
+
+.left-position {
+    text-align: left;
+}
+
+h1 {
+    display: inline;
+}
+
+.border-box {
+    padding: 0.5em;
+    width: auto;
+    height: auto;
+    border-style: solid;
+    border-color: black;
+}
+
+table { border-collapse: collapse; border: 1px solid #000000;}
+
+tr, td { min-width: 100px; border: 1px solid #000000; }
+
+td { padding: 0.5em;}
+
+.gray-background {
+    background-color: rgb(217, 217, 217);
+}

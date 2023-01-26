@@ -1,0 +1,32 @@
+.cardarea {
+    width: 500px;
+    height: 380px;
+    margin: 0 auto;
+    border-style: solid;
+    border-color: black;
+}
+
+.flexpos {
+    display: flex;
+    margin: 0 auto;
+    justify-content: space-between;
+}
+
+.logo {
+    width: 100px;
+    height: 100px;
+
+}
+
+.headlabel {
+    justify-content: center;
+    margin-right: 0 auto;
+    margin-left: 0 auto;
+    margin-top: 1em;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+h3 {
+    font-family: Prompt;
+}

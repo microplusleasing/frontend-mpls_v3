@@ -17,6 +17,7 @@ export class BaseService {
   userdata = localStorage.getItem('currentUser')
   userSessionQuotation: IUserTokenData = {} as IUserTokenData
   usernamefordipchip: string = ''
+  checker_id: string = ''
 
 
   constructor(
@@ -28,6 +29,12 @@ export class BaseService {
       const sessionUserObject = (JSON.parse(this.userdata)) as IUserToken
       this.userSessionQuotation = userdataObj
       this.usernamefordipchip = userdataObj.USERNAME ? userdataObj.USERNAME : ''
+
+      if (userdataObj.channal) {
+        if (userdataObj.channal == 'checker') {
+          this.checker_id = userdataObj.USERID ? userdataObj.USERID : ''
+        }
+      }
     }
   }
 
@@ -170,6 +177,24 @@ export class BaseService {
     })
   }
 
+  getUrlImage(data: any): Promise<string> {
+    return new Promise((resolve, reject) => {
+      try {
+        const buf = data.data;
+        const base64format = "data:image/jpg;base64,"
+        const base64data = this._arrayBufferToBase64(buf)
+        const strurl = `${base64format}${base64data}`
+        if (strurl) {
+          resolve(strurl);
+        } else {
+          reject('/assets/image/placeholder-image.png');
+        }
+      } catch (e) {
+        reject('/assets/image/placeholder-image.png');
+      }
+    })
+  }
+
   _arrayBufferToBase64(buffer: any) {
     var binary = '';
     var bytes = new Uint8Array(buffer);
@@ -195,6 +220,10 @@ export class BaseService {
     const base64Response = await fetch(`${base64Data}`);
     const blob = await base64Response.blob();
     return blob
+  }
+
+  async _filetoblob(file: File) {
+    return file.slice(0, file.size, file.type);
   }
 
 
@@ -223,6 +252,23 @@ export class BaseService {
     });
   }
 
+  snackbarsuccesscenter(message: string) {
+    this._snackBar.open(message, '', {
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+      duration: 3000,
+      panelClass: 'custom-snackbar-container'
+    });
+  }
+
+  snackbarfailcenter(message: string) {
+    this._snackBar.open(message, '', {
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+      duration: 3000,
+      panelClass: 'fail-snackbar-container'
+    });
+  }
   snackbarfail(message: string) {
     this._snackBar.open(message, '', {
       horizontalPosition: 'end',

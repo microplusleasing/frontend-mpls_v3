@@ -115,7 +115,7 @@
                                 </mat-option>
                             </mat-select>
                             <mat-error *ngIf="detailForm.controls['interestRateField'].hasError('required')">
-                                เลือกอัตราดอกเบี้ย 
+                                เลือกอัตราดอกเบี้ย
                             </mat-error>
                         </mat-form-field>
                     </mat-grid-tile>
@@ -224,14 +224,12 @@
                 </mat-grid-list>
             </ng-container>
             <!-- End of Grid list -->
+            <!-- <div class=flex-center> -->
             <div class="flexbox">
-
-
                 <div *ngIf="is_edit">
                     <button class="btnsubmit" mat-raised-button color="primary" (click)="onbtnpaymentcalculate()"
                         [disabled]="(lockbtncalculate$ | async)"> คำนวณค่างวด </button>
                 </div>
-
                 <div *ngIf="showPrice" hidden>
                     <div class="form-group">
                         <label>ค่างวด</label>
@@ -249,7 +247,8 @@
                 </div>
                 <div
                     *ngIf="detailForm.controls['isincludeloanamount'].value && detailForm.controls['paymentValueField'].value">
-                    <p class="h3"> ยอดกู้รวม {{(netfinance | number)}} ( {{(paymentshowvalue | number)}} + {{(biaprakan
+                    <p class="h3"> ยอดกู้รวม {{(netfinance | number)}} ( {{(paymentshowvalue | number)}} +
+                        {{(biaprakan
                         |
                         number)}})</p>
                 </div>
@@ -262,9 +261,16 @@
                 </div>
             </div>
 
-            <div class="col-sm-12 mt-4">
+            <div class="flexbox" style="margin-top: 1em;">
                 <mat-divider></mat-divider>
             </div>
+
+
+            <div class="flexbox" style="margin-top: 1em; width: 100%;">
+                <app-mrta-product [out_stand]="out_stand" [age]="cusage" [gender]="gender"
+                    [showseller]="false"></app-mrta-product>
+            </div>
         </div>
+        <!-- </div> -->
     </form>
 </div>

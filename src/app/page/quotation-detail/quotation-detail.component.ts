@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ErrorHandler, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ErrorHandler, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, lastValueFrom, map, Observable, of } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -32,6 +32,9 @@ import { IDialogFaceValidClose } from 'src/app/interface/i-dialog-face-valid-clo
 import { ScrollStrategyOptions } from '@angular/cdk/overlay';
 import { ImageAttachComponent } from '../quotation-tab/image-attach/image-attach.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ConsentTabComponent } from '../quotation-tab/signature-tab/consent-tab.component';
+import { SendCarTabComponent } from '../quotation-tab/send-car-tab/send-car-tab.component';
+import { ImageService } from 'src/app/service/image.service';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -55,13 +58,28 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   visiblePhoneValid: boolean = true
   disablePhoneValidbtn: boolean = true
   verifyeconsent: boolean = false
+  verifyimageattach: boolean = false
   verifycareerandpurpose: boolean = false
   createorupdatecitizendataDisable: boolean = true
   createorupdatecreditbtnDisable: boolean = true
   createorupdatecareerandPurposebtnDisable: boolean = true
   econsentbtnDisable: boolean = true // === use with buttn econsent btn disable (step 2)
+  sendcarActive$ = new BehaviorSubject<boolean>(true);
+
+  lockallbtn: boolean = false
 
   canclequest: boolean = false // === case cancle (quo_status = "3") ====
+
+
+
+  // === variable from citizenpage (age, gender) (22/09/2022) ===
+  cusage: number = 0;
+  gender: number = 0;
+
+
+  @Output() age_send = new EventEmitter<number>();
+  @Output() gender_send = new EventEmitter<number>();
+
 
 
   @ViewChild(CizCardTabComponent) cizcardtab: CizCardTabComponent = new CizCardTabComponent(
@@ -106,6 +124,33 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.sanitizer
   )
 
+  @ViewChild(ConsentTabComponent) consenttab: ConsentTabComponent = new ConsentTabComponent(
+    this.router,
+    this.cd,
+    this.fb,
+    this.loadingService,
+    this.dialog,
+    this._snackBar,
+    this.breakpointObserver
+  )
+
+
+  @ViewChild(SendCarTabComponent) sendcartab: SendCarTabComponent = new SendCarTabComponent(
+    this.fb,
+    this.cd,
+    this.router,
+    this.cd,
+    this.quotationService,
+    this.masterDataService,
+    this.imageService,
+    this.loadingService,
+    this.dialog,
+    this._snackBar,
+    this.breakpointObserver
+  )
+
+
+
 
   constructor(
     private fb: FormBuilder,
@@ -114,6 +159,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     private breakpointObserver: BreakpointObserver,
     private loadingService: LoadingService,
     private masterDataService: MasterDataService,
+    private imageService: ImageService,
     private dipchipService: DipchipService,
     private actRoute: ActivatedRoute,
     private sanitizer: DomSanitizer,
@@ -156,6 +202,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         if (res.data.length !== 0) {
           const quoitem = res.data[0]
 
+          // === quo_status ===
+          // *** set parent variable for use when quo_status is 1 here ***
+          if (quoitem.quo_status == 1) {
+            this.lockallbtn = true
+          }
+
           // *** tab 2 ***
           if (quoitem.otp_consent_verify == 'Y' || quoitem.otp_consent_verify == 'N') {
             // === may be check 'N' too === 
@@ -181,6 +233,18 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           if (quoitem.cr_app_key_id !== '' && quoitem.cr_app_key_id !== null && quoitem.pp_app_key_id !== '' && quoitem.pp_app_key_id !== null) {
             this.careerandpurposetab.careerandpurposeForm.controls.verifyCareerandpurpose.setValue(true)
             this.verifycareerandpurpose = true
+          }
+
+          // *** tab 4 *** (image attach) 
+          if (quoitem.otp_consent_verify == 'Y' || quoitem.quo_image_attach_verify) {
+            this.imageattachtab.verifyImageAttach.setValue(true)
+            this.verifyimageattach = true
+          }
+
+          if (quoitem.quo_dopa_status == 'N') {
+            if (!this.verifyimageattach) {
+              this.imageattachtab.txtrequireimage = `*แนบไฟล์ "บัตรประชาชน" , "รูปหน้าลูกค้าพร้อมบัตรประชาชน" , "สำเนาบัตรประชาชนพร้อมลายเซ็นรับรองถูกต้อง"  และ "NCB Consent`
+            }
           }
 
         }
@@ -244,15 +308,21 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
   async afteroninit() {
     // == clear dopa status ==
+    this.loadingService.hideLoader()
     this.quotationService.cleardopastatus()
     if (this.quoid) {
       // === set Observable quotation (quotationResult$) ===
       this.quotationResult$.next(await lastValueFrom(this.quotationService.getquotationbyid(this.quoid)))
       if (this.quotationResult$.value.data.length !== 0) {
-        console.log(`this is quo id : ${this.quotationResult$.value.data[0].quo_key_app_id}`)
 
         this.quotationService.setstatusdopa(this.quotationResult$.value.data[0].quo_key_app_id)
         this.manageStatgequotation(this.quotationResult$.value)
+
+        // === show tab 6 (send car) ===
+
+        if (this.quotationResult$.value.data[0].loan_result !== 'Y') {
+          this.sendcarActive$.next(false)
+        }
       } else {
 
         this.dialog.open(MainDialogComponent, {
@@ -277,6 +347,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
 
   manageStatgequotation(quotationresult: IResQuotationDetail) {
+
     // === unlock tab when data verify === 
 
     const quodata = quotationresult.data[0]
@@ -289,55 +360,84 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
 
   async changeStage($event: StepperSelectionEvent) {
+
     const stage = $event.selectedIndex
     const previousStage = $event.previouslySelectedIndex
 
-    switch (stage) {
-      case 0:
-        // *** Citizencard ***
-        break;
-      case 1: {
-        // *** Product deatail ***
-        // this.cizcardtab.cizForm.valid ? this.productdetailtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
-        if (this.cizcardtab.cizForm.valid) {
-          if (previousStage == 0) {
-            const savecitizensuccess = await this.manualsaveonchangestep()
-            if (savecitizensuccess) {
-              this.productdetailtab.onStageChageFormStepper()
+    if (this.quotationResult$.value.data) {
+      const quo_status = this.quotationResult$.value.data[0].quo_status
+
+      switch (stage) {
+        case 0:
+          // *** Citizencard ***
+          break;
+        case 1: {
+          // *** Product deatail ***
+          // this.cizcardtab.cizForm.valid ? this.productdetailtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+          if (this.cizcardtab.cizForm.valid) {
+            if (previousStage == 0) {
+              if (quo_status == 1) {
+                this.productdetailtab.onStageChageFormStepper()
+              } else {
+                const savecitizensuccess = await this.manualsaveonchangestep()
+                if (savecitizensuccess) {
+                  this.productdetailtab.onStageChageFormStepper()
+                } else {
+                  this.openDialogStep(`บันทึกข้อมูลไม่สำเร็จ`, `ไม่สามารถบันทึกข้อมูลในหน้า 'ข้อมูลบัตรประชาชนได้'`, `ปิด`, previousStage)
+                }
+              }
             } else {
-              this.openDialogStep(`บันทึกข้อมูลไม่สำเร็จ`, `ไม่สามารถบันทึกข้อมูลในหน้า 'ข้อมูลบัตรประชาชนได้'`, `ปิด`, previousStage)
+              this.productdetailtab.onStageChageFormStepper()
             }
           } else {
-            this.productdetailtab.onStageChageFormStepper()
+            this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
           }
-        } else {
-          this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
-        }
 
-      }
-        break;
-      case 2: {
-        // *** career and purpose ***
-        if (this.cizcardtab.cizForm.valid) {
-          this.verifyeconsent ? this.careerandpurposetab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
-        } else {
-          this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
         }
-      }
-        break;
+          break;
+        case 2: {
+          // *** career and purpose ***
+          if (this.cizcardtab.cizForm.valid) {
+            this.verifyeconsent ? this.careerandpurposetab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+          } else {
+            this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+          }
+        }
+          break;
 
-      case 3: {
-        // *** attach image file ***
-        // this.imageattachtab.onStageChageFormStepper()
-        if (this.cizcardtab.cizForm.valid) {
-          (this.verifyeconsent && this.verifycareerandpurpose) ? this.imageattachtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
-        } else {
-          this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+        case 3: {
+          // *** attach image file ***
+          // this.imageattachtab.onStageChageFormStepper()
+          if (this.cizcardtab.cizForm.valid) {
+            (this.verifyeconsent && this.verifycareerandpurpose) ? this.imageattachtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+          } else {
+            this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+          }
         }
-      }
-        break;
+          break;
+        case 4: {
+          // *** consent tab ***
+          if (this.cizcardtab.cizForm.valid) {
+            (this.verifyeconsent && this.verifycareerandpurpose && this.verifyimageattach) ? this.imageattachtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+          } else {
+            this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+          }
+        }
+          break;
+        case 5: {
+          // *** send car tab ***
+          this.sendcartab.onStageChageFormStepper()
+        }
+          break;
         default:
           break;
+      }
+    } else {
+        if (stage == 0) {
+
+        } else {
+          this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+        }
     }
 
   }
@@ -353,6 +453,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             username: this.usernamefordipchip,
             fromBody: $event.uuid
           }).subscribe(async (value) => {
+            this.loadingService.hideLoader()
             console.log(`flag success : ${JSON.stringify(value)}`)
 
             // === set router id ===
@@ -386,6 +487,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             username: this.usernamefordipchip,
             fromBody: $event.uuid
           }).subscribe(async (value) => {
+            this.loadingService.hideLoader()
             console.log(`flag success : ${JSON.stringify(value)}`)
 
             // === set router id ===
@@ -794,7 +896,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     // เช็ค field OTP_PHONE_VERIFY ถ้าเป็น 'Y' ไม่ให้แสดงปุุ่มและปลดล๊อคหน้า product 
     // == กรณี OTP_PHONE_VERIFY ไม่มีค่า (ไม่ได้เป็นค่า 'Y')
-    // เช็ค field QUO_OTP_PHONE ถ้าเป็น 'C' แสดงว่ามีการขอ OTP ไปแล้ว
+    // เช็ค field QUO_OTP_PHONE ถ้าเป็น 'C' แสดงว่ามีการขอ OTP ไปแล้ว (ไปใช้ OTP_PHONE_VERIFY แทน)
 
     // ==== กรณี field phone_number บนหน้า form มีการแก้ไข ให้ save record ก่อนค่อยเปิดหน้าออก OTP (open dialog OtpVerifyDialogComponent)
 
@@ -922,6 +1024,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       chassis_number: this.productdetailtab.productForm.controls.detailForm.controls.chassisNoField.value ? this.productdetailtab.productForm.controls.detailForm.controls.chassisNoField.value : null,
       engine_no_running: this.productdetailtab.productForm.controls.detailForm.controls.runningengineNoField.value ? this.productdetailtab.productForm.controls.detailForm.controls.runningengineNoField.value : null,
       chassis_no_running: this.productdetailtab.productForm.controls.detailForm.controls.runningchassisNoField.value ? this.productdetailtab.productForm.controls.detailForm.controls.runningchassisNoField.value : null,
+      checker_id: this.checker_id
     }
 
     const reqcreatecredit = await lastValueFrom(this.quotationService.MPLS_create_or_update_credit(reqcreatecreditdata))
@@ -1011,6 +1114,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             this.snackbarsuccess('ทำรายการสำเร็จ')
             this.productdetailtab.productForm.controls.consentVerify.setValue(true)
             this.verifyeconsent = true
+
+            // === set image attach valid (econsent non require image) === 
+            this.verifyimageattach = true
+            this.imageattachtab.txtrequireimage = ``
           }
         })
       } else {
@@ -1122,6 +1229,92 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
   }
 
+  recieve_verifyimageattach($event: boolean) {
+    if ($event) {
+      this.verifyimageattach = true
+      this.imageattachtab.txtrequireimage = `*แนบไฟล์ "บัตรประชาชน" , "รูปหน้าลูกค้าพร้อมบัตรประชาชน" , "สำเนาบัตรประชาชนพร้อมลายเซ็นรับรองถูกต้อง"  และ "NCB Consent`
+    } else {
+      this.verifyimageattach = false
+    }
+  }
+
+  async recieve_createconsentBtn($event: boolean) {
+    // === CREATE CONSENT (FINAL STAGE BEFORE SEND TO ORACLE)  ===
+    if ($event) {
+      // === call api to create consent and signature (all in tab consent) ===
+      this.loadingService.showLoader()
+      const consent_tab = this.consenttab
+      const ciz_form = this.cizcardtab.cizForm
+
+      // *** PDPA ***
+      const pdpa_form = consent_tab.p_d_econsenttab.formPersonalDisclosureConsent
+      // *** E-paper ***
+      const e_paper_form = consent_tab.e_paper_econsenttab.epaperform
+      // *** Siganture ***
+      const signature_form = consent_tab.signaturetab.signatureForm
+
+      const quoid = this.actRoute.snapshot.queryParamMap.get('id') ?? ''
+
+      const quodata = this.quotationResult$.value.data[0]
+
+      let quotationdata = {
+        quotationid: quoid ? quoid : '',
+        // *** customer name ***
+
+        consent_customer_name: (quodata.first_name ? quodata.first_name : '') + ' ' + (quodata.last_name ? quodata.last_name : ''),
+        consent_first_name: quodata.first_name ? quodata.first_name : '',
+        consent_last_name: quodata.last_name ? quodata.last_name : '',
+        // *** PDPA ***
+        identity_approve_consent_value: pdpa_form.controls.identity_approve_consent_value.value ? pdpa_form.controls.identity_approve_consent_value.value : 0,
+        motor_insurance_consent_value: pdpa_form.controls.motor_insurance_consent_value.value ? pdpa_form.controls.motor_insurance_consent_value.value : 0,
+        nmotor_insurance_consent_value: pdpa_form.controls.nmotor_insurance_consent_value.value ? pdpa_form.controls.nmotor_insurance_consent_value.value : 0,
+        analyze_consent_value: pdpa_form.controls.analyze_consent_value.value ? pdpa_form.controls.analyze_consent_value.value : 0,
+        info_consent_value: pdpa_form.controls.info_consent_value.value ? pdpa_form.controls.info_consent_value.value : 0,
+        info_party_consent_value: pdpa_form.controls.info_party_consent_value.value ? pdpa_form.controls.info_party_consent_value.value : 0,
+        analyze_party_consent_value: pdpa_form.controls.analyze_party_consent_value.value ? pdpa_form.controls.analyze_party_consent_value.value : 0,
+        prdt_info_party_consent_value: pdpa_form.controls.prdt_info_party_consent_value.value ? pdpa_form.controls.prdt_info_party_consent_value.value : 0,
+        followup_consent_value: pdpa_form.controls.followup_consent_value.value ? pdpa_form.controls.followup_consent_value.value : 0,
+        info_develop_consent_value: pdpa_form.controls.info_develop_consent_value.value ? pdpa_form.controls.info_develop_consent_value.value : 0,
+        // *** E-paper ***
+        e_paper_consent_value: e_paper_form.controls.epaperconsentvalue.value ? e_paper_form.controls.epaperconsentvalue.value : 0,
+      }
+
+      console.log(`data for create consent : ${JSON.stringify(quotationdata)}`)
+
+      const itemString = JSON.stringify(quotationdata)
+
+      let fd = new FormData();
+      fd.append('item', itemString)
+      // *** signature ***
+      if (signature_form.controls.customerSignature.value) { fd.append('signature_image', await this._base64toblob(signature_form.controls.customerSignature.value)) }
+      if (signature_form.controls.witnessSignature.value) { fd.append('witness_image', await this._base64toblob(signature_form.controls.witnessSignature.value)) }
+
+      this.quotationService.MPLS_create_consent(fd).subscribe({
+        next: (res_create_consent) => {
+
+          this.loadingService.hideLoader()
+          // === check result create consent (success when status == 200) ===
+          if (res_create_consent.status == 200) {
+            // === sucess ===
+            this.snackbarsuccess(`ทำรายการสำเร็จ : ${res_create_consent.message ? res_create_consent.message : 'No message'}`)
+            // === do next stage === 
+            this.router.navigate(['/quotation-view']);
+          } else {
+            this.snackbarfail(`ทำรายการไม่สำเร็จ : ${res_create_consent.message ? res_create_consent.message : 'No message'}`)
+          }
+        }, error: (e) => {
+          // === handle error here ===
+          this.loadingService.hideLoader()
+          this.snackbarfail(`ผิดพลาด : ${e.message ? e.message : 'No return message'}`)
+          console.error(e.message ? e.message : 'No return message ')
+        }, complete: () => {
+          // === complete ===
+          this.loadingService.hideLoader()
+        }
+      })
+    }
+  }
+
   openDialogStep(header: string, message: string, buttonName: string, previousStage: number) {
     this.dialog.open(MainDialogComponent, {
       maxWidth: '500px',
@@ -1133,6 +1326,26 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     }).afterClosed().subscribe((res) => {
       this.stepper.selectedIndex = previousStage;
     })
+  }
+
+  checkIsSendCar($event: boolean) {
+    this.sendcarActive$.next($event)
+  }
+
+  updateage($event: number) {
+    this.cusage = $event
+
+    // console.log(`this is age from ciz page (quotaion) : ${this.age}`)
+
+    this.age_send.emit($event)
+  }
+
+  updategender($event: number) {
+    this.gender = $event
+
+    // console.log(`this is gender from ciz page (quotaion) : ${this.gender}`)
+
+    this.age_send.emit($event)
   }
 
 }

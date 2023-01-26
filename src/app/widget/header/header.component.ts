@@ -8,6 +8,7 @@ import { BaseService } from 'src/app/service/base/base.service';
 import { DipchipService } from 'src/app/service/dipchip.service';
 import { InformationDialogComponent } from '../dialog/information-dialog/information-dialog.component';
 import { MainDialogComponent } from '../dialog/main-dialog/main-dialog.component';
+import { MrtaListComponent } from 'src/app/page/view/mrta/mrta-list/mrta-list.component';
 
 @Component({
   selector: 'app-header',
@@ -82,18 +83,18 @@ export class HeaderComponent implements OnInit {
 
 
 
-  // opendialogMrta() {
-  //   this.dialog.open(MrtaListComponent, {
-  //     height: '90%',
-  //     width: '80%',
-  //     data: this.dialogData
-  // }).afterClosed().subscribe((result) => {
-  //   if(result) {
-  //     // === not stage here ===
-  //   }
-  // })
-  //   // this.router.navigate(['mrta-list']);
-  // }
+  opendialogMrta() {
+    this.dialog.open(MrtaListComponent, {
+      height: '90%',
+      width: '80%',
+      data: this.dialogData
+  }).afterClosed().subscribe((result) => {
+    if(result) {
+      // === not stage here ===
+    }
+  })
+    // this.router.navigate(['mrta-list']);
+  }
 
   openrepohistory() {
 

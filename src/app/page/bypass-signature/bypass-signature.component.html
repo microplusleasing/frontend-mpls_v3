@@ -1,0 +1,82 @@
+<!-- (grid) -->
+<form [formGroup]="bypassSigForm">
+    <ng-container *ngIf="cardLayout | async as layout">
+        <mat-grid-list [cols]="layout.columns" [rowHeight]="'150px'">
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <mat-card class="matparentcolor" style="width: 90%;">
+                    <mat-card-content>
+                        <h2>{{quoitem.first_name}} {{quoitem.last_name}} <br> {{quoitem.idcard_num}}</h2>
+                    </mat-card-content>
+                </mat-card>
+            </mat-grid-tile>
+        </mat-grid-list>
+
+        <mat-grid-list [cols]="layout.columns" [rowHeight]="'400px'">
+            <mat-grid-tile [colspan]="layout.list.cols6">
+                <mat-card class="matchildcolor">
+                    <h2>ลายเซ็นต์ลูกค้า</h2>
+                    <input #Image type="file" accept="image/*" (change)="handleFileInput($event, 'customer')"
+                        [hidden]="!(editstage$ | async)">
+                    <div class="sp1em">
+                        <img class="sigframe" [src]="(customerSig | async)" />
+                    </div>
+                </mat-card>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols6">
+                <mat-card class="matchildcolor">
+                    <h2>ลายเซ็นต์พยาน</h2>
+                    <input #Image type="file" accept="image/*" (change)="handleFileInput($event, 'witness')"
+                        [hidden]="!(editstage$ | async)">
+                    <div class="sp1em">
+                        <img class="sigframe" [src]="(witnessSIg | async)" />
+                    </div>
+                </mat-card>
+            </mat-grid-tile>
+        </mat-grid-list>
+        <mat-grid-list [cols]="layout.columns" [rowHeight]="'100px'">
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <button mat-raised-button color="primary" (click)="uploadbypassimage()" type="submit"
+                    [disabled]="!this.bypassSigForm.valid" style="width: 80%;">Upload image</button>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </ng-container>
+</form>
+<!-- (col) -->
+<!-- <form [formGroup]="bypassSigForm">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <mat-card class="matparentcolor">
+                    <mat-card-content>
+                        <h2>{{quoitem.first_name}} {{quoitem.last_name}} <br> {{quoitem.idcard_num}}</h2>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            <div class="sp1em"></div>
+            <div class="col-md-6">
+                <mat-card class="matchildcolor">
+                    <h2>ลายเซ็นต์ลูกค้า</h2>
+                    <input #Image type="file" accept="image/*" (change)="handleFileInput($event, 'customer')"
+                        [hidden]="!(editstage$ | async)">
+                    <div class="sp1em">
+                        <img class="sigframe" [src]="(customerSig | async)" />
+                    </div>
+                </mat-card>
+            </div>
+            <div class="col-md-6">
+                <mat-card class="matchildcolor mt-4 mt-md-0 mt-lg-0 mt-xl-0">
+                    <h2>ลายเซ็นต์พยาน</h2>
+                    <input #Image type="file" accept="image/*" (change)="handleFileInput($event, 'witness')"
+                        [hidden]="!(editstage$ | async)">
+                    <div class="sp1em">
+                        <img class="sigframe" [src]="(witnessSIg | async)" />
+                    </div>
+                </mat-card>
+            </div>
+            <div class="col-md-12">
+                <button class="mt-4 mb-4" mat-raised-button color="primary" (click)="uploadbypassimage()" type="submit"
+                    [disabled]="!this.bypassSigForm.valid" style="width: 100%;">Upload image</button>
+            </div>
+        </div>
+    </div>
+</form> -->

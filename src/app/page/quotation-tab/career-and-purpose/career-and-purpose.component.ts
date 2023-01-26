@@ -65,9 +65,9 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
 
 
   // *** purpose form ***
-  purposeBuy = new FormControl()
-  purposeBuyName = new FormControl('', [Validators.maxLength(300)])
-  reasonBuy = new FormControl()
+  purposeBuy = new FormControl() // PURPOSE_OF_BUY (NVARCHAR 3)
+  purposeBuyName = new FormControl('', [Validators.maxLength(1000)]) // PURPOSE_OF_BUY_NAME (NAVARCHAR 1000)
+  reasonBuy = new FormControl() // REASON_OF_BUY
   reasonBuyEtc = new FormControl('', [Validators.maxLength(300)])
   carUser = new FormControl()
   carUserName = new FormControl('', [Validators.maxLength(200)])
@@ -124,8 +124,8 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
     mainCareerNameField: this.mainCareerNameField,
     mainCareerCodeField: this.mainCareerCodeField,
     mainCareerWorkplace: this.mainCareerWorkplace,
-    mainCareerPositionField: this.mainCareerWorkplace,
-    mainCareerDepartmentField: this.mainCareerWorkplace,
+    mainCareerPositionField: this.mainCareerPositionField,
+    mainCareerDepartmentField: this.mainCareerDepartmentField,
     mainCareerExperienceYearsField: this.mainCareerExperienceYearsField,
     mainCareerExperienceMonthField: this.mainCareerExperienceMonthField,
     mainCareerSalaryPerMonthField: this.mainCareerSalaryPerMonthField,
@@ -366,6 +366,11 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
                   if (quoitem.cr_is_sub_career) {
                     this.showSubCareer = true;
                   }
+
+                  // ===== ***** check quo_status (if quo_status = 1 : lock all client field , valid in api can't update data) ****** =======
+                  if (this.quotationdatatemp.data[0].quo_status == 1) {
+                    this.careerandpurposeForm.disable({ onlySelf: true, emitEvent: false })
+                  }
                 }
 
                 // ===== End ======
@@ -385,7 +390,7 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
           this.loadingService.hideLoader()
           this.snackbarfail(`${err.message}`)
         }, complete: () => {
-          this.loadingService.showLoader();
+          this.loadingService.hideLoader();
         }
       })
     }

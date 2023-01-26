@@ -6,7 +6,8 @@ import { LoginComponent } from './page/login/login.component';
 import { AuthGuardService } from './_helper/auth.guard';
 import { DashboardComponent } from './page/dashboard/dashboard.component';
 import { NotFoundComponent } from './page/not-found/not-found.component';
-import { ImageAttachComponent } from './page/quotation-tab/image-attach/image-attach.component';
+import { ViewsignComponent } from './page/view/viewsign/viewsign.component';
+import { BypassSignatureComponent } from './page/bypass-signature/bypass-signature.component';
 
 const routes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthGuardService] },
@@ -14,7 +15,9 @@ const routes: Routes = [
   { path: 'quotation-view', component: QuotationViewComponent, canActivate: [AuthGuardService] },
   { path: 'quotation-detail', component: QuotationDetailComponent, canActivate: [AuthGuardService] },
   { path: 'quotation-detail/:id', component: QuotationDetailComponent, canActivate: [AuthGuardService] },
-  { path: 'testimageattach', component: ImageAttachComponent },
+  { path: 'bypass', component: BypassSignatureComponent, canActivate: [AuthGuardService] },
+  { path: 'bypass/:id', component: BypassSignatureComponent, canActivate: [AuthGuardService] },
+  { path: 'viewsign', component: ViewsignComponent },
   { path: 'notfound', component: NotFoundComponent },
   { path: '**', redirectTo: 'notfound', pathMatch: 'full' }
 ];

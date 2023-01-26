@@ -1,0 +1,67 @@
+<div class="cardarea" *ngIf="showqr">
+    <div class="flexpos">
+        <div>
+            <img [src]="logo" class="logo"><br>
+            <span style="font-size: 8px;">&nbsp;&nbsp;บริษัท ไมโครพลัสลิสซิ่ง จำกัด</span>
+        </div>
+        <div class="headlabel">
+            <span>บัตรชำระค่างวด</span>
+        </div>
+        <div>
+            <img [src]="(image_qr$ | async)" style="margin-top: 0.5em; margin-right: 0.2em; width: 75%">
+            <br>
+            <span style="font-size: 10px;">ชำระด้วย Mobile <br>Banking</span>
+        </div>
+    </div>
+    <div class="flexpos" style="text-align: center;">
+        <div style="margin-left: 1em;">
+            <h3>ชื่อ-นามสกุล&nbsp;&nbsp;:&nbsp;&nbsp;{{first_name_txt}}&nbsp;{{last_name_txt}}</h3>
+        </div>
+        <div>
+            <h3>จำนวนงวด&nbsp;&nbsp;:&nbsp;&nbsp;{{term}}&nbsp;&nbsp;&nbsp;&nbsp;งวด</h3>
+        </div>
+        <div></div>
+    </div>
+    <div class="flexpos">
+        <div style="margin-left: 1em;">
+            <h3>ค่างวด&nbsp;&nbsp;{{monthly | number}} &nbsp;&nbsp; บาท </h3>
+        </div>
+        <div>
+            <h3>ชำระทุกวันที่&nbsp;&nbsp;{{due}}&nbsp;&nbsp;ของทุกเดือน</h3>
+        </div>
+        <div></div>
+    </div>
+    <div class="flexpos">
+        <div>
+
+        </div>
+        <div style="text-align: center;">
+            <h3>วันที่ชำระงวดแรก&nbsp;&nbsp;{{first_due}}</h3>
+        </div>
+        <div>
+
+        </div>
+    </div>
+
+    <div class="flexpos">
+        <div></div>
+        <div>
+            <span style="font-size: 10px;">สำหรับชำระผ่านทาง Counter Service</span><br>
+            <div style="text-align:center;">
+                <img [src]="(image_barcode$ | async)" class="barcode"><br>
+                <span style="font-size: 10px;">{{billpayment}}</span><br>
+                <span style="font-size: 8px;">บริษัท ไมโครพลัสลิสซิ่ง จำกัด โทร 021143459</span>
+            </div>
+        </div>
+        <div></div>
+    </div>
+</div>
+<div *ngIf="!showqr">
+    <div class="flexpos" style="margin-top: 2em;">
+        <div></div>
+        <div style="font-size: 16px;">
+            <h2>ระบบขัดข้อง ไม่สามารถดู QR ชำระเงินล่วงหน้าได้ในขณะนี้</h2>
+        </div>
+        <div></div>
+    </div>
+</div>

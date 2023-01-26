@@ -1,43 +1,47 @@
-<form [formGroup]="uploadForm" >
+<form [formGroup]="uploadForm">
   <div [formGroup]="uploadForm">
-    <div class="card" style="width: 80%;">
-      <mat-form-field appearance="outline">
-        <mat-label>เอกสารแนบ</mat-label>
-        <mat-select [formControl]="category">
-          <mat-option [value]="undefined" disabled hidden>เลือกประเภทของรูปถ่าย</mat-option>
-          <mat-option *ngFor="let category of categories" [value]="category.image_code">
-            {{ category.image_header }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+    <div class="flex-center">
+      <div class="card" style="width: 80%;">
+        <mat-form-field appearance="outline">
+          <mat-label>เอกสารแนบ</mat-label>
+          <mat-select [formControl]="category">
+            <mat-option [value]="undefined" disabled hidden>เลือกประเภทของรูปถ่าย</mat-option>
+            <mat-option *ngFor="let category of categories" [value]="category.image_code">
+              {{ category.image_header }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
 
-      <button mat-raised-button color="primary" (click)="fileInput.click();" style="margin-left: 1em;;">
-        <mat-icon>photo_library</mat-icon>
-        แนบไฟล์ภาพ
-      </button>
+        <button mat-raised-button color="primary" (click)="fileInput.click();" style="margin-left: 1em;;">
+          <mat-icon>photo_library</mat-icon>
+          แนบไฟล์ภาพ
+        </button>
 
-      <div *ngIf="this.selectImage">
-        <img [src]="selectImage" style="max-width: 400px;">
+        <div *ngIf="this.selectImage">
+          <img [src]="selectImage" style="max-width: 400px; max-height: 400px;">
+        </div>
+        <input type="file" accept="image/jpeg" capture="environment" (change)="onFileChange($event)" #fileInput
+          style="visibility: hidden;">
+        <input type="file" accept="image/jpeg" capture="environment" (change)="onFileChangeEdit($event)" #fileInputEdit
+          style="visibility: hidden;">
+        <input #hiddenInput style="visibility: hidden;">
+
+
+        <button mat-raised-button (click)="uploadImage()" color="primary" [disabled]="disableUploadBtn">Upload</button>
       </div>
-      <input type="file" accept="image/jpeg" capture="environment" (change)="onFileChange($event)" #fileInput
-        style="visibility: hidden;">
-      <input type="file" accept="image/jpeg" capture="environment"  (change)="onFileChangeEdit($event)" #fileInputEdit
-        style="visibility: hidden;">
-      <input #hiddenInput style="visibility: hidden;">
-
-
-      <button mat-raised-button (click)="uploadImage()" color="primary" [disabled]="disableUploadBtn">Upload</button>
+      <br>
+      <span style="color: red;">{{this.txtrequireimage}}</span>
     </div>
 
     <div class="card-list-image" *ngFor="let image of uploadedImages">
-      <mat-expansion-panel (opened)="onPanelOpen(image)">
+      <mat-expansion-panel (opened)="onPanelOpen(image)" style="min-width: 600px;">
         <mat-expansion-panel-header>
           {{ image.image_header }}
         </mat-expansion-panel-header>
         <img [src]="image.urlsanitizer" [alt]="'ha'" style="max-width: 400px; max-height: 400px;"
-        (click)="openimagedialog(image)"><br>
+          (click)="openimagedialog(image)"><br>
         <button mat-raised-button (click)="updateImage(image)" color="primary">Edit</button>
-        <button mat-raised-button (click)="deleteImage(image)" color="warn" style="margin-left: 1em;">Delete</button>
+        <!-- <button mat-raised-button (click)="deleteImage(image)" color="warn" style="margin-left: 1em;">Delete</button> -->
       </mat-expansion-panel>
     </div>
 

@@ -1,0 +1,12 @@
+.flexbox {
+    display: flex;
+    gap: 10px 10px;
+    flex-wrap: wrap;
+  }
+  
+  .flex-center {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }

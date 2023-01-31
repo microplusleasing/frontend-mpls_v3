@@ -80,14 +80,14 @@ export class QuotationService {
     return throwError(() => new Error('Something bad happened; please try again later.'));
   }
 
-  getquotationbypage(pageno: number, status: string, params: ISearchQuotation) {
+  getquotationlist(pageno: number, status: string, params: ISearchQuotation) {
 
-    let url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/quotation?pageno=${pageno}&status=${status}&searchname=${params.searchname}&searchidcardnum=${params.searchidcard}&searchrefpaynum=${params.searchrefpaynum}&searchpaystatus=${params.searchpaystatus}`
+    let url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getquotationlist?pageno=${pageno}&status=${status}&searchname=${params.searchname}&searchidcardnum=${params.searchidcard}&searchrefpaynum=${params.searchrefpaynum}&searchpaystatus=${params.searchpaystatus}`
     return this.http.get<IResQuotationView>(url)
   }
 
   createquotation(formData: FormData) {
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/quotation`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/createquotation`
     return this.http.post<IResQuotationView>(url, formData)
   }
 
@@ -116,7 +116,7 @@ export class QuotationService {
   }
 
   getquotationbyid(id: string) {
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/quotationbyid/${id}`;
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getquotationbyid/${id}`;
     return this.http.get<IResQuotationDetail>(url);
   }
 

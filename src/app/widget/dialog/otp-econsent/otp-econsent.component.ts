@@ -30,6 +30,8 @@ export class OtpEconsentComponent implements OnInit {
   _createotpResMsg: string = ''
   _validationResMsg: string = ''
   otp_validation: boolean = false;
+  otpInputOptions = { allowNumbersOnly: true };
+
 
   econsent_valid_status: boolean = false
 
@@ -166,7 +168,8 @@ export class OtpEconsentComponent implements OnInit {
             const imageblob = await htmlToImage.toBlob(divfortest, {
               quality: 1,
               style: {
-                background: 'white'
+                background: 'white',
+                fontSize: '20'
               },
             })
 
@@ -232,8 +235,31 @@ export class OtpEconsentComponent implements OnInit {
 
   }
 
+  async test_gen_image() {
+    const divfortest = document.getElementById('econsentelement');
+
+    if (divfortest) {
+
+      htmlToImage.toJpeg(divfortest, {
+        quality: 0.95, style: {
+          background: 'white',
+          fontFamily: 'Tahoma',
+          padding: '1.5em'
+        }
+      })
+        .then(function (dataUrl) {
+          var link = document.createElement('a');
+          link.download = 'my-image-name.jpeg';
+          link.href = dataUrl;
+          link.click();
+        });
+    }
+  }
+
 
   async activateotpeconsent($event: any) {
+
+    // === stamp econsent image and econsent log ===
 
     const otpfield = this.mainOTPForm.controls.otpactivate.controls.otp_value.value
 
@@ -248,7 +274,12 @@ export class OtpEconsentComponent implements OnInit {
       let itemobj = {
         quotationid: this.data.quotationid,
         otp_value: otpfield,
-        phone_no: this.data.phone_number
+        phone_no: this.data.phone_number,
+        // === add log econsend time ===
+        consent_datetime: this.data.currentDate,
+        application_no: this.data.application_no,
+        transaction_no: this.data.transaction_no,
+        citizen_id: this.data.citizenid
       }
 
       const itemString = JSON.stringify(itemobj)

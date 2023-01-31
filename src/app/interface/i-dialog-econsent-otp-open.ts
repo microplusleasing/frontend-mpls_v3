@@ -11,4 +11,6 @@ export interface IDialogEconsentOtpOpen {
     phone_number: string;
     refid: string;
     button_name: string;
+    // === more field for stamp econsent log (addon 28/01/2023) ===
+    transaction_no: string; // (quo_app_ref_no)
 }

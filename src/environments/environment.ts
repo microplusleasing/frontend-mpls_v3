@@ -20,7 +20,8 @@ export const environment = {
   carcheckapi: 'api-repos-uat.microplusleasing.com',
   carcheckport: '',
 
-  citizen_card_img_preload: '/assets/image/placeholder-image.png'
+  citizen_card_img_preload: '/assets/image/placeholder-image.png',
+  welcome_call_fcr_web: 'web-welcome-uat.microplusleasing.com/fcr'
 };
 
 // === build UAT === 
@@ -55,21 +56,23 @@ export const environment = {
 //   carcheckport: ''
 // };
 
-// === build UAT (internet) (certificate 443)=== 
+// === build UAT (internet) (certificate 443)=== (v2)
 // export const environment = {
 //   production: true,
 //   // apiurl: 'http://58.136.5.116:9989',
 //   // apiurl: '43.249.69.202',
-//   apiurl: 'api-mpls-uat.microplusleasing.com', 
+//   apiurl: 'api2-mpls-uat.microplusleasing.com', 
 //   apiportsign: ':',
 //   apiport: '',
 //   httpheader: 'https://',
 //   httpheadercert: 'https://',
 //   apidipchip: 'api-dipch-uat.microplusleasing.com',
-//   smsserviceallow: 0,
+//   smsserviceallow: 1,
 //   carcheck: 'web-repos-uat.microplusleasing.com',
 //   carcheckapi: 'api-repos-uat.microplusleasing.com',
-//   carcheckport: ''
+//   carcheckport: '',
+//   citizen_card_img_preload: '/assets/image/placeholder-image.png',
+//   welcome_call_fcr_web: 'web-welcome-uat.microplusleasing.com/fcr'
 // };
 
 // === build Development === 

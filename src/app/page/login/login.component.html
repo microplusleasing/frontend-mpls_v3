@@ -1,89 +1,329 @@
-<div class="container center-content">
-  <form [formGroup]="mainForm">
-    <div formGroupName="loginForm" *ngIf="showlogin" class="flexbox">
-
-      <div class="example-container nox">
-        <div class="box">
-
-          <mat-form-field appearance="fill" style="width: 100%;">
-            <mat-label>User ID</mat-label>
-            <input matInput formControlName="username" type="username">
-            <mat-error *ngIf="username.invalid">
-              <div *ngIf="this.username.hasError('required')">
-                กรอก User ID
-              </div>
-            </mat-error>
-          </mat-form-field>
-        </div>
-        <div class="box">
-          <mat-form-field appearance="fill" style="width: 100%;">
-            <mat-label>รหัสผ่าน</mat-label>
-            <input matInput formControlName="password"
-            [type]="hide ? 'password' : 'text'" autocomplete="on">
-            <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-              <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-            </button>
-            <mat-error *ngIf="this.password.invalid">
-              <div *ngIf="this.password.hasError('required')">
-                กรอกรหัสผ่าน
-              </div>
-            </mat-error>
-          </mat-form-field>
-        </div>
-        <div class="box">
-          <mat-form-field appearance="fill" style="width: 100%;">
-            <mat-label>ประเภทการใช้งาน</mat-label>
-            <mat-select formControlName="usertype">
-              <mat-option [value]="null" disabled hidden>เลือกประเภทการใช้งาน</mat-option>
-              <mat-option [value]="1">Checker</mat-option>
-              <mat-option [value]="2">FCR</mat-option>
-              <mat-option [value]="0">Dealer</mat-option>
-            </mat-select>
-            <mat-error *ngIf="this.usertype.invalid">
-              <div *ngIf="this.usertype.hasError('required')">
-                เลือกประเภทการใช้งาน
-              </div>
-            </mat-error>
-          </mat-form-field>
-        </div>
-        <div class="box">
-          <mat-error *ngIf="this.showmessage">
-            {{this.messagetext}}
-          </mat-error>
-        </div>
-        <div class="box">
-          <button mat-raised-button type="submit" [disabled]="!this.mainForm.controls['loginForm'].valid"
-            color="primary" class="submit-btn" (click)="submitForm()">
-            ยืนยัน</button>
-        </div>
+<div class="parent-center">
+  <div class="child-center">
+    <div class="formContent">
+      <div class="formHerder" *ngIf="showforgetpassword || showresetpassword">
+        <button mat-icon-button color="primary" (click)="backtologin()">
+          <mat-icon>arrow_back_ios_new</mat-icon>
+          กลับไปหน้า Login
+        </button>
       </div>
+      <div class="wrapper-content">
+
+        <form [formGroup]="mainForm">
+          <div [formGroup]="loginForm" *ngIf="showlogin" class="flexbox">
+
+            <div style="max-width: 600px;">
+
+              <img style="max-width: 80px;" src="./../../../../assets/image/Logo1.png">
 
 
-    </div>
-    <div formGroupName="forgetpasswordForm" *ngIf="showforgetpassword">
-      <button mat-icon-button color="primary" (click)="backtologin()"
-        aria-label="Example icon button with a heart icon">
-        <mat-icon>arrow_back_ios_new</mat-icon>
-        กลับไปหน้า Login
-      </button>
-      <div class="card">
-        <h4 class="card-header">Forget password</h4>
-        <div class="card-body">
+              <mat-form-field appearance="fill" style="width: 100%;">
+                <mat-label>User ID</mat-label>
+                <input matInput formControlName="username" type="username">
+                <mat-error *ngIf="username.invalid">
+                  <div *ngIf="this.username.hasError('required')">
+                    กรอก User ID
+                  </div>
+                </mat-error>
+              </mat-form-field>
 
-          <div class="input-group mb-3">
-            <div class="input-group-prepend">
-              <mat-icon class="input-group-text mic-front" id="basic-addon1">mail</mat-icon>
+
+              <mat-form-field appearance="fill" style="width: 100%;">
+                <mat-label>รหัสผ่าน</mat-label>
+                <input matInput formControlName="password" [type]="hide ? 'password' : 'text'" autocomplete="on">
+                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+                  [attr.aria-pressed]="hide">
+                  <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+                <mat-error *ngIf="this.password.invalid">
+                  <div *ngIf="this.password.hasError('required')">
+                    กรอกรหัสผ่าน
+                  </div>
+                </mat-error>
+              </mat-form-field>
+
+
+              <mat-form-field appearance="fill" style="width: 100%;">
+                <mat-label>ประเภทการใช้งาน</mat-label>
+                <mat-select formControlName="usertype">
+                  <mat-option [value]="null" disabled hidden>เลือกประเภทการใช้งาน</mat-option>
+                  <mat-option [value]="1">Checker</mat-option>
+                  <mat-option [value]="2">FCR</mat-option>
+                  <mat-option [value]="0">Dealer</mat-option>
+                </mat-select>
+                <mat-error *ngIf="this.usertype.invalid">
+                  <div *ngIf="this.usertype.hasError('required')">
+                    เลือกประเภทการใช้งาน
+                  </div>
+                </mat-error>
+              </mat-form-field>
+
+
+              <mat-error *ngIf="this.showmessage">
+                {{this.messagetext}}
+              </mat-error>
+
+
+              <button mat-raised-button type="submit" [disabled]="!this.mainForm.controls['loginForm'].valid"
+                color="primary" class="submit-btn" (click)="submitForm()">
+                ยืนยัน</button>
+
+
             </div>
-            <input type="email" class="form-control" autocomplete="email" placeholder="Email" aria-label="Email"
-              aria-describedby="basic-addon1" formControlName="emailfield">
+
           </div>
-          <div>
-            <button mat-raised-button color="primary" type="submit"
-              [disabled]="!this.mainForm.controls['forgetpasswordForm'].valid" (click)="confirmemail()">ยืนยัน
-              Email</button>
+
+          <!-- Change password  -->
+
+          <div [formGroup]="forgetpasswordForm" *ngIf="showforgetpassword" class="flexbox">
+            <!-- start form change password -->
+            <div>
+              <h4>Forget password</h4>
+              <div>
+                <mat-form-field appearance="outline" style="width: 100%;">
+                  <mat-label>Email</mat-label>
+                  <input type="email" autocomplete="email" matInput placeholder="Email" aria-label="Email"
+                    aria-describedby="basic-addon1" [formControl]="emailfield">
+                  <mat-icon matSuffix>mail</mat-icon>
+                </mat-form-field>
+                <div>
+
+                  <div [ngClass]=" successforgotpassword ? 'success-message' : 'fail-message'">
+                    {{errorforgotemail}}
+                  </div>
+
+                  <button mat-raised-button color="primary" type="submit"
+                    [disabled]="!this.mainForm.controls['forgetpasswordForm'].valid" (click)="confirmemail()">ยืนยัน
+                    Email</button>
+                </div>
+              </div>
+            </div>
+            <!-- End form change password  -->
           </div>
-        </div>
+
+          <!-- reset password -->
+          <div [formGroup]="changepasswordForm" *ngIf="showresetpassword">
+            <!-- start form reset password -->
+            <div *ngIf="showexpiretxt" style="margin-bottom: 0.5em; font-size: 12px; ">
+              *password หมดอายุ กรุณาทำการ reset password ก่อนเข้าใช้งาน
+            </div>
+            <div style="width: 450px;">
+              <!-- <h4>Reset password</h4> -->
+              <div>
+                <!-- Username -->
+
+                <mat-grid-list [cols]="12" [rowHeight]="'60px'">
+                  <mat-grid-tile [colspan]="12">
+                    <mat-form-field appearance="fill" style="width: 100%; font-size: 12px;">
+                      <mat-label>Username</mat-label>
+                      <input matInput autocomplete="new-name" placeholder="ไอดีผู้ใช้งาน" [formControl]="usernameField"
+                        [ngClass]="{ 'is-invalid': _formresetchk && usernameField.errors }">
+                      <mat-error *ngIf="_formresetchk && usernameField.errors">
+                        <div *ngIf="usernameField.errors?.['required']">
+                          กรอกชื่อบัญชีผู้ช้งาน
+                        </div>
+                      </mat-error>
+                    </mat-form-field>
+                  </mat-grid-tile>
+
+                  <!-- Old Password -->
+
+                  <mat-grid-tile [colspan]="12">
+                    <mat-form-field appearance="fill" style="width: 100%; font-size: 12px;">
+                      <input matInput [type]="_oldPasswordType ? 'text' : 'password'" autocomplete="new-password"
+                        placeholder="รหัสผ่านปัจจุบัน" [formControl]="oldpasswordField"
+                        [ngClass]="{ 'is-invalid': _formresetchk && oldpasswordField.errors }">
+                      <button mat-icon-button matSuffix (click)="toggleoldPasswordType()">
+                        <mat-icon>{{_oldPasswordType ? 'visibility' : 'visibility_off'}}</mat-icon>
+                      </button>
+                      <mat-error *ngIf="_formresetchk && oldpasswordField.errors">
+                        <div *ngIf="oldpasswordField.errors?.['required']">
+                          กรอกรหัสผ่านปัจจุบัน
+                        </div>
+                      </mat-error>
+                    </mat-form-field>
+                  </mat-grid-tile>
+
+                  <!-- New Password -->
+
+                  <mat-grid-tile [colspan]="12">
+                    <mat-form-field appearance="fill" style="width: 100%; font-size: 12px;">
+                      <input matInput [type]="_newPasswordType ? 'text' : 'password'" autocomplete="new-password"
+                        placeholder="กรอกรหัสผ่านใหม่" [formControl]="newpasswordField"
+                        [ngClass]="{ 'is-invalid': _formresetchk && newpasswordField.errors }">
+                      <button mat-icon-button matSuffix (click)="togglenewPasswordType()">
+                        <mat-icon>{{_newPasswordType ? 'visibility' : 'visibility_off'}}</mat-icon>
+                      </button>
+                      <mat-error *ngIf="_formresetchk && newpasswordField.errors">
+                        <div *ngIf="newpasswordField.errors?.['required']">
+                          กรอกรหัสผ่านใหม่
+                        </div>
+                      </mat-error>
+                    </mat-form-field>
+                  </mat-grid-tile>
+                </mat-grid-list>
+
+                <!-- All validation new Password  -->
+
+                <!-- Must be at least 8 characters! -->
+                <mat-grid-list [cols]="12" [rowHeight]="'30px'">
+                  <mat-grid-tile [colspan]="6">
+                    <div class="leftVerticalAlign">
+                      <mat-label style="display: flex; align-items: center;">
+                        <mat-icon [color]="newpasswordField.hasError('required') ||
+                        newpasswordField.hasError('minlength') ? 'warn' : 'primary'">
+                          {{ newpasswordField.hasError('required') ||
+                          newpasswordField.hasError('minlength') ? 'cancel' :
+                          'check_circle' }}
+                        </mat-icon>
+                        &nbsp; มีตัวอักษรขั้นต่ำ 8 ตัว
+                      </mat-label>
+                    </div>
+                  </mat-grid-tile>
+
+                  <!-- Must contain at least 1 number! -->
+                  <mat-grid-tile [colspan]="6">
+                    <div class="leftVerticalAlign">
+                      <mat-label style="display: flex; align-items: center;">
+                        <mat-icon [color]="newpasswordField.hasError('required') ||
+                        newpasswordField.hasError('hasNumber') ? 'warn' : 'primary'">
+                          {{ newpasswordField.hasError('required') ||
+                          newpasswordField.hasError('hasNumber') ? 'cancel' :
+                          'check_circle' }}
+                        </mat-icon>
+                        &nbsp; มีตัวเลข
+                      </mat-label>
+                    </div>
+                  </mat-grid-tile>
+
+                  <!-- Must contain at least 1 Letter in Small Case! -->
+                  <mat-grid-tile [colspan]="6">
+                    <div class="leftVerticalAlign">
+                      <mat-label style="display: flex; align-items: center;">
+                        <mat-icon [color]="newpasswordField.hasError('required') ||
+                        newpasswordField.hasError('hasSmallCase') ? 'warn' : 'primary'">
+                          {{ newpasswordField.hasError('required') ||
+                          newpasswordField.hasError('hasSmallCase') ? 'cancel' :
+                          'check_circle' }}
+                        </mat-icon>
+                        &nbsp; มีตัวอักษรตัวเล็ก
+                      </mat-label>
+                    </div>
+                  </mat-grid-tile>
+
+                  <!-- Must contain at least 1 in Capital Case! -->
+                  <mat-grid-tile [colspan]="6">
+                    <div class="leftVerticalAlign">
+                      <mat-label style="display: flex; align-items: center;">
+                        <mat-icon [color]="newpasswordField.hasError('required') ||
+                        newpasswordField.hasError('hasCapitalCase') ? 'warn' : 'primary'">
+                          {{ newpasswordField.hasError('required') ||
+                          newpasswordField.hasError('hasCapitalCase') ? 'cancel' :
+                          'check_circle' }}
+                        </mat-icon>
+                        &nbsp; มีตัวอักษรตัวใหญ่
+                      </mat-label>
+                    </div>
+                  </mat-grid-tile>
+
+                  <!-- Must contain at least 1 Special Character! -->
+                  <mat-grid-tile [colspan]="6">
+                    <div class="leftVerticalAlign">
+                      <mat-label style="display: flex; align-items: center;">
+                        <mat-icon [color]="newpasswordField.hasError('required') ||
+                        newpasswordField.hasError('hasSpecialCharacters') ? 'warn' : 'primary'">
+                          {{ newpasswordField.hasError('required') ||
+                          newpasswordField.hasError('hasSpecialCharacters') ? 'cancel' :
+                          'check_circle' }}
+                        </mat-icon>
+                        &nbsp; มีอักขระพิเศษ
+                      </mat-label>
+                    </div>
+                  </mat-grid-tile>
+
+                  <!-- Must contain only English Character! -->
+                  <mat-grid-tile [colspan]="6">
+                    <div class="leftVerticalAlign">
+                      <mat-label style="display: flex; align-items: center;">
+                        <mat-icon [color]="newpasswordField.hasError('required') ||
+                        newpasswordField.hasError('onlyEng') ? 'warn' : 'primary'">
+                          {{ newpasswordField.hasError('required') ||
+                          newpasswordField.hasError('onlyEng') ? 'cancel' :
+                          'check_circle' }}
+                        </mat-icon>
+                        &nbsp; ภาษาอังกฤษ
+                      </mat-label>
+                    </div>
+                  </mat-grid-tile>
+
+                  <!-- no spaceing ! -->
+                  <mat-grid-tile [colspan]="6">
+                    <div class="leftVerticalAlign">
+                      <mat-label style="display: flex; align-items: center;">
+                        <mat-icon [color]="newpasswordField.hasError('spaceInclude') ? 'warn' : 'primary'">
+                          {{ newpasswordField.hasError('spaceInclude') ||
+                          newpasswordField.hasError('spaceInclude') ? 'cancel' :
+                          'check_circle' }}
+                        </mat-icon>
+                        &nbsp; ไม่มีช่องว่าง
+                      </mat-label>
+                    </div>
+                  </mat-grid-tile>
+                </mat-grid-list>
+
+                <!-- Re-New Password -->
+
+                <mat-grid-list [cols]="12" [rowHeight]="'60px'">
+                  <mat-grid-tile [colspan]="12">
+                    <mat-form-field appearance="fill" style="width: 100%; font-size: 12px;">
+                      <mat-label>Confirm New-Password</mat-label>
+                      <input [type]="_repeatPasswordType ? 'text' : 'password'" matInput autocomplete="new-password"
+                        placeholder="กรอกรหัสผ่านใหม่อีกครั้ง" [formControl]="retypenewpasswordField"
+                        [ngClass]="{ 'is-invalid': _formresetchk && retypenewpasswordField.errors }">
+                      <mat-icon matSuffix class="mic-front" (click)="toggleRepeatPasswordType()">
+                        {{!_repeatPasswordType ? 'visibility_off' : 'remove_red_eye'}}
+                      </mat-icon>
+                      <mat-error *ngIf="retypenewpasswordField.errors">
+                        <div *ngIf="retypenewpasswordField.hasError('notEquivalent')">
+                          รหัสผ่านใหม่ไม่ตรงกัน
+                        </div>
+                      </mat-error>
+                    </mat-form-field>
+                  </mat-grid-tile>
+                </mat-grid-list>
+
+
+
+                <!-- return message from api reset password -->
+                <mat-grid-list [cols]="12" [rowHeight]="'30px'">
+                  <mat-grid-tile [colspan]="12">
+                    <div [ngClass]=" successresetpassword ? 'success-message' : 'fail-message'">
+                      {{errorresetpassword}}
+                    </div>
+                  </mat-grid-tile>
+
+                  <!-- Button -->
+                  <mat-grid-tile [colspan]="12">
+                    <div>
+                      <button mat-raised-button color="primary" (click)="confirmnewpassword()" [disabled]="!changepasswordForm.valid">ยืนยันรหัสผ่าน</button>
+                    </div>
+                  </mat-grid-tile>
+                </mat-grid-list>
+
+
+              </div>
+            </div>
+
+            <!-- End form reset password -->
+          </div>
+        </form>
+
+      </div>
+      <div class="formFooter" *ngIf="false">
+        <a [routerLink]="" (click)="clickforgetpassword()" style="font-size: 10px;">ลืมรหัสผ่าน?</a>
+        <br>
+        <a [routerLink]="" (click)="clickresetpassword()" style="font-size: 10px;">เปลี่ยนรหัสผ่าน</a>
       </div>
     </div>
-  </form>
+  </div>
 </div>

@@ -208,7 +208,7 @@ export class QuotationViewComponent implements OnInit {
 
     this.loadingService.showLoader();
 
-    this.quotationService.getquotationbypage(1, '', { searchidcard: '', searchname: '', searchrefpaynum: '', searchpaystatus: '' }).subscribe({
+    this.quotationService.getquotationlist(1, '', { searchidcard: '', searchname: '', searchrefpaynum: '', searchpaystatus: '' }).subscribe({
       next: (resultListQuotation) => {
 
 
@@ -304,7 +304,7 @@ export class QuotationViewComponent implements OnInit {
 
     this.loadingService.showLoader();
 
-    this.quotationService.getquotationbypage(
+    this.quotationService.getquotationlist(
       pageno,
       searchstatus,
       {
@@ -433,7 +433,7 @@ export class QuotationViewComponent implements OnInit {
 
     this.loadingService.showLoader()
 
-    this.quotationService.getquotationbypage(1, searchStatus, params).pipe(
+    this.quotationService.getquotationlist(1, searchStatus, params).pipe(
       map((resultListQuotation: IResQuotationView) => {
         resultListQuotation.data.map((items) => {
           switch (items.quo_status) {
@@ -514,6 +514,9 @@ export class QuotationViewComponent implements OnInit {
 
 
   onPaginationChange(event: PageEvent) {
+
+    this.loadingService.showLoader()
+
     let page = event.pageIndex;
     let size = event.pageSize;
 
@@ -546,7 +549,7 @@ export class QuotationViewComponent implements OnInit {
         break;
     }
 
-    this.quotationService.getquotationbypage(page, searchStatus,
+    this.quotationService.getquotationlist(page, searchStatus,
       {
         searchidcard: this.searchform.get(`customeridcard`)?.value ?? '',
         searchname: this.searchform.get('customername')?.value ?? '',
@@ -556,6 +559,9 @@ export class QuotationViewComponent implements OnInit {
         map((result: IResQuotationView) => {
           // this.dataSource = new MatTableDataSource(result.data);
           result.data.map((items) => {
+            
+            this.loadingService.hideLoader()
+
             switch (items.quo_status) {
               case 0:
                 items._client_quo_status = 'ส่งงาน'

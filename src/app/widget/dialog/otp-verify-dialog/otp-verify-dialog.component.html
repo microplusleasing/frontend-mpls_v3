@@ -23,7 +23,7 @@
         <div [formGroup]="otpactivate">
           <div class="flex-center" style="margin-top: 1.5em;">
             <mat-label>กรอกเลข OTP</mat-label>
-            <ng-otp-input [formCtrl]="otp_value" [config]="{length:6}" style="margin-top: 1em;"></ng-otp-input><br>
+            <ng-otp-input [formCtrl]="otp_value" [config]="{length:6, allowNumbersOnly: true}" style="margin-top: 1em;"></ng-otp-input><br>
             <h3>{{_validationResMsg}}</h3>
             <button mat-raised-button color="primary" (click)="activateotpphone()" type="submit"> ยืนยัน OTP</button>
           </div>

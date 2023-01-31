@@ -7,6 +7,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: THSarabunNew;
+  src: url('assets/fonts/THSarabunNew.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
 :root,
 .container,
 .container .row,
@@ -37,7 +44,9 @@ div {
 .mat-dialog-title h1,
 .mat-dialog-title h2,
 .mat-h2, .mat-title, .mat-typography h2,
-.mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button {
+.mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button,
+.mat-snack-bar-container,
+.mat-h4, .mat-subheading-1, .mat-typography h4 {
   font-family: Prompt;
 }
 
@@ -49,10 +58,12 @@ body {
 
 
 .custom-snackbar-container {
+  font-family: Prompt;
   background-color: #35A255;
 }
 
 .fail-snackbar-container {
+  font-family: Prompt;
   background-color: #fa6e5b;
 }
 

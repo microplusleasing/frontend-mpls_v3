@@ -11,8 +11,8 @@ export const environment = {
   carcheck: 'web-repos.microplusleasing.com', // wait for sub-domain confirm
   carcheckapi: 'api-repos.microplusleasing.com',
   carcheckport: '',
-
-  citizen_card_img_preload: '/assets/image/placeholder-image.png'
+  citizen_card_img_preload: '/assets/image/placeholder-image.png',
+  welcome_call_fcr_web: 'web-welcome.microplusleasing.com/fcr'
 };
 
 

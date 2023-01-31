@@ -1,7 +1,7 @@
 <form [formGroup]="quoForm">
     <mat-stepper labelPosition="bottom" [orientation]="(stepperOrientation | async)!" [linear]="isLinear" #stepper
         (selectionChange)="changeStage($event)">
-        <mat-step [stepControl]="this.cizcardtab.cizForm">
+        <mat-step [stepControl]="this.cizcardtab.cizForm" state="cizcard">
             <mat-divider></mat-divider>
             <ng-template matStepLabel>ข้อมูลบัตรประชาชน</ng-template>
             <app-ciz-card-tab [quotationReq]="(quotationResult$)" (dipchipRes)="recieve_dipchipData($event)"
@@ -29,9 +29,11 @@
             </div>
         </mat-step>
 
-        <mat-step [stepControl]="this.productdetailtab.productForm.controls.consentVerify">
+        <mat-step [stepControl]="this.productdetailtab.productForm.controls.consentVerify" state="product">
+            <mat-divider></mat-divider>
             <ng-template matStepLabel>ข้อมูลผลิตภัณฑ์/วงเงินสินเชื่อ</ng-template>
-            <app-product-detail-tab [quotationReq]="quotationResult$" [cusage]="cusage" [gender]="gender"></app-product-detail-tab>
+            <app-product-detail-tab [quotationReq]="quotationResult$" [cusage]="cusage"
+                [gender]="gender"></app-product-detail-tab>
             <div class="flex-center">
                 <div *ngIf="verifyeconsent">
                     <br>
@@ -55,7 +57,8 @@
             </div>
         </mat-step>
 
-        <mat-step [stepControl]="this.careerandpurposetab.careerandpurposeForm.controls.verifyCareerandpurpose">
+        <mat-step [stepControl]="this.careerandpurposetab.careerandpurposeForm.controls.verifyCareerandpurpose" state="careerandpurpose">
+            <mat-divider></mat-divider>
             <ng-template matStepLabel>อาชีพ และ รายได้</ng-template>
             <app-career-and-purpose [quotationReq]="quotationResult$"></app-career-and-purpose>
             <div class="flex-center">
@@ -68,22 +71,46 @@
             </div>
         </mat-step>
 
-        <mat-step [stepControl]="this.imageattachtab.verifyImageAttach">
+        <mat-step [stepControl]="this.imageattachtab.verifyImageAttach" state="imageattach">
+            <mat-divider></mat-divider>
             <ng-template matStepLabel>เอกสารประกอบการสมัครสินเชื่อ</ng-template>
             <app-image-attach [quotationReq]="quotationResult$"
                 (emitverifyimageattach)="recieve_verifyimageattach($event)"></app-image-attach>
         </mat-step>
 
-        <mat-step>
+        <mat-step state="consent" >
+            <mat-divider></mat-divider>
             <ng-template matStepLabel>เอกสารสัญญา</ng-template>
             <app-consent-tab [quotationReq]="quotationResult$"
                 (emitcreateconsentbtn)="recieve_createconsentBtn($event)"></app-consent-tab>
         </mat-step>
 
-        <mat-step label="ส่งมอบรถ" *ngIf="(sendcarActive$ | async)">
+        <mat-step label="ส่งมอบรถ" *ngIf="(sendcarActive$ | async)" state="sendcar">
+            <mat-divider></mat-divider>
             <ng-template matStepLabel>ส่งมอบรถ</ng-template>
             <app-send-car-tab [quotationReq]="quotationResult$" (changeEvent)="checkIsSendCar($event)" [gender]="gender"
                 [age]="cusage"></app-send-car-tab>
         </mat-step>
+
+
+        <!-- Icon overrides. -->
+        <ng-template matStepperIcon="cizcard">
+            <mat-icon>person</mat-icon>
+        </ng-template>
+        <ng-template matStepperIcon="product">
+            <mat-icon>request_page</mat-icon>
+        </ng-template>
+        <ng-template matStepperIcon="careerandpurpose">
+            <mat-icon>business_center</mat-icon>
+        </ng-template>
+        <ng-template matStepperIcon="imageattach">
+            <mat-icon>photo_library</mat-icon>
+        </ng-template>
+        <ng-template matStepperIcon="consent">
+            <mat-icon>history_edu</mat-icon>
+        </ng-template>
+        <ng-template matStepperIcon="sendcar">
+            <mat-icon>car_rental</mat-icon>
+        </ng-template>
     </mat-stepper>
 </form>

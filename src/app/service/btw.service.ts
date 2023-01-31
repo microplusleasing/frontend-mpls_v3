@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 import { DOCUMENT } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { IReqBtwMrtaList } from '../interface/i-req-btw-mrta-list';
+import { IResGenerateTokenWelcomeCall } from '../interface/i-res-generate-token-welcome-call';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +42,11 @@ export class BtwService {
     return this.http.get<IResBtwMrtaInfo>(url)
   }
 
+  // === welcome call service ===
+  generatetokenWelcomeCall(menu_id: string, token: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/generatetokenWelcomeCall?menu_id=${menu_id}&token=${token}`
+    return this.http.get<IResGenerateTokenWelcomeCall>(url)
+  }
 
 
 

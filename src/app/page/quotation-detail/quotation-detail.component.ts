@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, ErrorHandler, EventEmitter, OnInit, Outpu
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, lastValueFrom, map, Observable, of } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { StepperOrientation, StepperSelectionEvent } from '@angular/cdk/stepper';
+import { StepperOrientation, StepperSelectionEvent, STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { CizCardTabComponent } from '../quotation-tab/ciz-card-tab/ciz-card-tab.component';
 import { LoadingService } from 'src/app/service/loading.service';
 import { MasterDataService } from 'src/app/service/master.service';
@@ -39,7 +39,13 @@ import { ImageService } from 'src/app/service/image.service';
 @Component({
   selector: 'app-quotation-detail',
   templateUrl: './quotation-detail.component.html',
-  styleUrls: ['./quotation-detail.component.scss']
+  styleUrls: ['./quotation-detail.component.scss'],
+  providers: [
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: {displayDefaultIndicatorType: false},
+    },
+  ],
 })
 export class QuotationDetailComponent extends BaseService implements OnInit {
 
@@ -1099,7 +1105,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           application_no: app_no ?? '-',
           phone_number: this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.value ?? '-',
           refid: app_no ?? '-',
-          button_name: `ตกลง`
+          button_name: `ตกลง`,
+          // === more field for stamp econsent log (addon 28/01/2023) ===
+          transaction_no: this.quotationResult$.value.data[0].quo_app_ref_no
         }
 
 

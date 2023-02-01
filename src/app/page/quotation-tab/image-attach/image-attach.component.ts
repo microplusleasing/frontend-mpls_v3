@@ -50,7 +50,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
   image = new FormControl('', Validators.required)
   verifyImageAttach = new FormControl<boolean>(false, Validators.requiredTrue)
 
-  txtrequireimage: string  = ''
+  txtrequireimage: string = ''
 
   uploadForm = this.fb.group({
     category: this.category,
@@ -402,6 +402,19 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                   // ===== End ====
                 }
               }, error: (e) => {
+                // === fail ====
+                if (currentpic.length !== 0) {
+                  this.uploadedImages = this.uploadedImages.map(img => {
+                    if (img.image_code === this.currentimageeditcode) {
+                      return {
+                        ...img,
+                        urlsanitizer: currentpic[0].urlsanitizer,
+                        src: currentpic[0].src
+                      }
+                    }
+                    return img;
+                  });
+                }
                 console.log(JSON.stringify(e))
               }, complete: () => {
                 console.log(`complete trigger`)

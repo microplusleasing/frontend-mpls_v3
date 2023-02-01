@@ -441,7 +441,11 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
           }
         } else {
-          this.showdipchipbtn = true;
+          if (this.userSessionQuotation.RADMIN == 'Y') {
+            this.showdipchipbtn = false;
+          } else {
+            this.showdipchipbtn = true;
+          }
         }
       }, error: (e) => {
         this.loadingService.hideLoader()

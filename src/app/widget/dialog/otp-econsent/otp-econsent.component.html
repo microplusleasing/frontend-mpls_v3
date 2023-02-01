@@ -77,7 +77,7 @@
 
                                 </html>
                                 <br>
-                                <div class="flex-center">
+                                <!-- <div class="flex-center">
                                     <mat-radio-group aria-labelledby="example-radio-group-label"
                                         class="example-radio-group" [formControl]="econsentvalue"
                                         [formControl]="econsentvalue">
@@ -91,12 +91,12 @@
                                         (click)="onClickAcceptEconsent()">ยืนยันรายการ</button>
                                     <br>
                                     <br>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
-                        <div>
+                        <!-- <div>
                             <button mat-raised-button color="primary" (click)="test_gen_image()"> ทดสอบภาพ</button>
-                        </div>
+                        </div> -->
                     </mat-dialog-content>
                 </div>
             </mat-step>
@@ -104,7 +104,8 @@
                 <ng-template matStepLabel>ยืนยัน OTP</ng-template>
                 <div class="flex-center" style="margin-top: 1em;">
                     <mat-label>กรอกเลข OTP</mat-label>
-                    <ng-otp-input [formCtrl]="otp_value" [config]="{length:6, allowNumbersOnly: true}"></ng-otp-input><br>
+                    <ng-otp-input [formCtrl]="otp_value"
+                        [config]="{length:6, allowNumbersOnly: true}"></ng-otp-input><br>
                     <h3>{{_validationResMsg}}</h3>
                     <button mat-raised-button color="primary" (click)="activateotpeconsent($event)"> ยืนยัน OTP</button>
                 </div>
@@ -118,6 +119,26 @@
         </mat-stepper>
     </form>
 </div>
-<div mat-dialog-actions align="end">
+<div mat-dialog-actions align="center">
     <!-- <button mat-raised-button [mat-dialog-close]="true" color="primary">{{data.button_name}}</button> -->
+    <div class="flex-center" *ngIf="_tabindex  == 0">
+        <!-- <div class="flex-center">
+            <span>scrollTop : {{this.txt_scrollTop}}</span>
+            <br>
+            <span>offsetHeight : {{this.txt_offsetHeight}}</span>
+            <br>
+            <span>scrollHeight : {{this.txt_scrollHeight}}</span>
+            <br>
+
+        </div> -->
+        <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+            [formControl]="econsentvalue" [formControl]="econsentvalue">
+            <mat-radio-button color="primary" class="example-radio-button" *ngFor="let item of econsentvalueList"
+                [value]="item.value">
+                {{item.label}}
+            </mat-radio-button>
+        </mat-radio-group>
+        <button mat-raised-button color="primary" [disabled]="!this.confirmEconsentForm.controls.econsentvalue.valid"
+            (click)="onClickAcceptEconsent()">ยืนยันรายการ</button>
+    </div>
 </div>

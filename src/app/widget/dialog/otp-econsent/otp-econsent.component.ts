@@ -21,6 +21,10 @@ export interface econsentValue {
 })
 export class OtpEconsentComponent implements OnInit {
 
+  txt_scrollTop: string = ''
+  txt_offsetHeight: string = ''
+  txt_scrollHeight: string = ''
+
   _countconfirmask: number = 0
   _countscrollbottom: number = 0
   _tabindex: number = 0
@@ -133,9 +137,16 @@ export class OtpEconsentComponent implements OnInit {
   }
 
   onScroll(event: any) {
+    this.txt_scrollTop = event.target.scrollTop
+    this.txt_offsetHeight = event.target.offsetHeight
+    this.txt_scrollHeight = event.target.scrollHeight
+    console.log(`scrollTop : ${event.target.scrollTop}`)
+    console.log(`offsetHeight : ${event.target.offsetHeight}`)
+    console.log(`scrollHeight : ${event.target.scrollHeight}`)
     if (this._countscrollbottom == 0) {
-      if (event.target.scrollTop + event.target.offsetHeight === event.target.scrollHeight) {
+      if (event.target.scrollTop + event.target.offsetHeight >= event.target.scrollHeight) {
         // The user has scrolled to the end of the dialog content
+
         this.confirmEconsentForm.controls.econsentvalue.enable()
         this._countscrollbottom++
       }

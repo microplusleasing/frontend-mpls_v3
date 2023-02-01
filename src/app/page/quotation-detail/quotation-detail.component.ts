@@ -43,7 +43,7 @@ import { ImageService } from 'src/app/service/image.service';
   providers: [
     {
       provide: STEPPER_GLOBAL_OPTIONS,
-      useValue: {displayDefaultIndicatorType: false},
+      useValue: { displayDefaultIndicatorType: false },
     },
   ],
 })
@@ -314,13 +314,14 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
   async afteroninit() {
     // == clear dopa status ==
-    this.loadingService.hideLoader()
+    this.loadingService.showLoader()
     this.quotationService.cleardopastatus()
     if (this.quoid) {
       // === set Observable quotation (quotationResult$) ===
       this.quotationResult$.next(await lastValueFrom(this.quotationService.getquotationbyid(this.quoid)))
       if (this.quotationResult$.value.data.length !== 0) {
 
+        this.loadingService.hideLoader()
         this.quotationService.setstatusdopa(this.quotationResult$.value.data[0].quo_key_app_id)
         this.manageStatgequotation(this.quotationResult$.value)
 
@@ -331,6 +332,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         }
       } else {
 
+        this.loadingService.hideLoader()
         this.dialog.open(MainDialogComponent, {
           panelClass: 'custom-dialog-container',
           data: {
@@ -385,11 +387,15 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               if (quo_status == 1) {
                 this.productdetailtab.onStageChageFormStepper()
               } else {
-                const savecitizensuccess = await this.manualsaveonchangestep()
-                if (savecitizensuccess) {
-                  this.productdetailtab.onStageChageFormStepper()
+                if (this.userSessionQuotation.RADMIN !== 'Y') {
+                  const savecitizensuccess = await this.manualsaveonchangestep()
+                  if (savecitizensuccess) {
+                    this.productdetailtab.onStageChageFormStepper()
+                  } else {
+                    this.openDialogStep(`บันทึกข้อมูลไม่สำเร็จ`, `ไม่สามารถบันทึกข้อมูลในหน้า 'ข้อมูลบัตรประชาชนได้'`, `ปิด`, previousStage)
+                  }
                 } else {
-                  this.openDialogStep(`บันทึกข้อมูลไม่สำเร็จ`, `ไม่สามารถบันทึกข้อมูลในหน้า 'ข้อมูลบัตรประชาชนได้'`, `ปิด`, previousStage)
+                  this.productdetailtab.onStageChageFormStepper()
                 }
               }
             } else {
@@ -439,11 +445,11 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           break;
       }
     } else {
-        if (stage == 0) {
+      if (stage == 0) {
 
-        } else {
-          this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
-        }
+      } else {
+        this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+      }
     }
 
   }
@@ -782,7 +788,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       }
 
     } catch (e: any) {
-      this.loadingService.hideLoader
+      this.loadingService.hideLoader()
       console.log(`error create e-consent quotation : ${e.message}`)
     }
 
@@ -1054,6 +1060,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     // - ถ้าเป็น 'N' ให้ Skip ไปหน้า อาชีพและรายได้
 
     // === Create credit success  (first time click) === 
+    this.loadingService.showLoader()
 
     const dopastatus = this.quotationResult$.value.data[0].quo_dopa_status
 
@@ -1113,10 +1120,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
         this.dialog.open(OtpEconsentComponent, {
           width: `100%`,
-          height: `100%`,
+          height: `90%`,
           data: senddata,
-          scrollStrategy: this.sso.noop()
+          scrollStrategy: this.sso.reposition()
         }).afterClosed().subscribe((reseconsentdialog: IDialogEconsentValidClose) => {
+
+          this.loadingService.hideLoader()
 
           if (reseconsentdialog.status == true) {
             this.snackbarsuccess('ทำรายการสำเร็จ')
@@ -1130,6 +1139,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         })
       } else {
         // === no application num value ===
+        this.loadingService.hideLoader()
         this.openMaindialog('ผิดพลาด', 'ไม่พบเลข application no', 'OK')
       }
     } else if (dopastatus == 'N') {
@@ -1137,6 +1147,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       if (this.quoid !== null || this.quoid !== '') {
         this.quotationService.MPLS_validation_otp_econsent_non(this.quoid).subscribe({
           next: (res_non) => {
+            this.loadingService.hideLoader()
             if (res_non.status) {
               // === success update flag econsent ====
               this.snackbarsuccess('ทำรายการสำเร็จ')
@@ -1147,14 +1158,17 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               this.snackbarfail(`ไม่สามารถทำรายการได้ : ${res_non.message}`)
             }
           }, error: (e) => {
+            this.loadingService.hideLoader()
             console.error(e)
           }, complete: () => {
+            this.loadingService.hideLoader()
             console.log(`complete trigger flag non e-consent`)
           }
         })
       }
     } else {
       // === do nothing === 
+      this.loadingService.hideLoader()
     }
 
 

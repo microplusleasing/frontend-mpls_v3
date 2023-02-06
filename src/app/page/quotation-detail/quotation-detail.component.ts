@@ -92,6 +92,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.fb,
     this.cd,
     this.router,
+    this.actRoute,
     this.quotationService,
     this.loadingService,
     this.masterDataService,

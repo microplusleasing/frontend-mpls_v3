@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnIni
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import { combineLatest, debounceTime, lastValueFrom, map, Observable, of, Subject } from 'rxjs';
 import { IReqFlagDipchip } from 'src/app/interface/i-req-flag-dipchip';
@@ -244,6 +244,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     private fb: FormBuilder,
     private cdRef: ChangeDetectorRef,
     private router: Router,
+    private actRoute: ActivatedRoute,
     public quotationService: QuotationService,
     private loadingService: LoadingService,
     private masterDataService: MasterDataService,
@@ -252,6 +253,10 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     public override _snackBar: MatSnackBar
   ) {
     super(dialog, _snackBar)
+
+    this.actRoute.queryParams.subscribe(params => {
+      this.quotationid = params['id']
+    });
 
     this.cizForm.controls.maincitizenForm.controls.provinceName.valueChanges.subscribe((value) => {
       const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
@@ -396,7 +401,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
         // *** set phone valid status ***
 
         // === ปลดล๊อค form เมื่อมี record อยู่แล้ว ===
-        // this.loadingService.hideLoader() === (comment on 06/02/2023 to manage stage (timing)) ===
+        // this.loadingService.hideLoader() // === (comment on 06/02/2023 to manage stage (timing)) ===
         if (res.data) {
           this.showdipchipbtn = false;
           if (res.data.length !== 0) {
@@ -432,7 +437,6 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
               }
             }
 
-
             // *** ล๊อคฟิวส์พวกข้อมูลบนบัตรประชาชนไม่ให้แก้ไขกรณี case มาจากการ dipchip (dipchip_uuid is not null || dipchip_uuid !== '')
 
             // if(quodata.dipchip_uuid !== '' && quodata.dipchip_uuid !== null) {
@@ -441,6 +445,11 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
           }
         } else {
+
+          if (!this.quotationid) {
+            this.loadingService.hideLoader();
+          }
+
           if (this.userSessionQuotation.RADMIN == 'Y') {
             this.showdipchipbtn = false;
           } else {
@@ -468,7 +477,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     ]).subscribe({
       next: (resultMaster) => {
         // === set master data ====
-        // this.loadingService.hideLoader() === (comment on 06/02/2023 to manage stage (timing)) ===
+        // this.loadingService.hideLoader() //=== (comment on 06/02/2023 to manage stage (timing)) ===
         this.masterTitle = resultMaster[0]
         this.masterProvince = resultMaster[1]
         this.masterMariedStatus = resultMaster[2]

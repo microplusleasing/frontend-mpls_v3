@@ -3,6 +3,11 @@ import { Validators, FormGroup, FormControl, FormBuilder, AbstractControl, Valid
 import { Component, Inject } from '@angular/core';
 import { first } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { BaseService } from 'src/app/service/base/base.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
+import { LoadingService } from 'src/app/service/loading.service';
 
 
 @Component({
@@ -10,7 +15,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent extends BaseService {
   // mainForm: FormGroup;
   showmessage: boolean = false;
   messagetext: string | undefined;
@@ -127,10 +132,13 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private loadingService: LoadingService,
+    public override dialog: MatDialog,
+    public override _snackBar: MatSnackBar,
 
   ) {
-
+    super(dialog, _snackBar)
   }
 
   get f(): { [key: string]: AbstractControl } {
@@ -204,6 +212,7 @@ export class LoginComponent {
   }
 
   submitForm() {
+    this.loadingService.showLoader()
     const data = {
       username: this.mainForm.controls.loginForm.controls.username.value ?? '',
       password: this.mainForm.controls.loginForm.controls.password.value ?? '',
@@ -216,6 +225,7 @@ export class LoginComponent {
       .pipe(first())
       .subscribe({
         next: (result) => {
+          this.loadingService.hideLoader();
           if (result.status == 200) {
             // === contain user in database ==== 
             if (this.returnUrl == '/') {
@@ -235,7 +245,22 @@ export class LoginComponent {
             this.showmessage = true;
           }
         }, error: (error) => {
+          this.loadingService.hideLoader();
+          this.dialog.open(MainDialogComponent ,  {
+            panelClass: 'custom-dialog-container',
+            data: {
+              header: `ผิดพลาด`,
+              message: `Error : ${ (error.status && error.statusText) ? error.status + ' : ' + error.statusText : 'NO return message'}`,
+              button: `close`
+            }
+          }).afterClosed().subscribe((result) => {
+            // === handle dialog close ===
+          })
           this.error = error;
+        }, complete: () => {
+          // === complete api login (fail or success) ===
+          this.loadingService.hideLoader();
+          console.log(`complete api login !!`)
         }
       });
   }

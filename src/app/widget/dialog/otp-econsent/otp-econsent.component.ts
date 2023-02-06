@@ -155,6 +155,7 @@ export class OtpEconsentComponent implements OnInit {
 
   async onClickAcceptEconsent() {
 
+    this.loadingService.showLoader()
     // === check accept or not accept (เช็ค ยินยอม หรือ ไม่ยินยอม) ====
     const acceptvalue = this.confirmEconsentForm.controls.econsentvalue.value
 
@@ -170,32 +171,42 @@ export class OtpEconsentComponent implements OnInit {
         quotationid: quotationid,
         refid: refid,
         phone_no: quophoneno
-      }).subscribe(async (res) => {
-        console.log(`res otp Data : ${JSON.stringify(res)}`)
-        if (res.status == 200) {
-          const divfortest = document.getElementById('econsentelement');
+      }).subscribe({
+        next: async (res) => {
+          console.log(`res otp Data : ${JSON.stringify(res)}`)
+          if (res.status == 200) {
+            const divfortest = document.getElementById('econsentelement2');
 
-          if (divfortest) {
-            const imageblob = await htmlToImage.toBlob(divfortest, {
-              quality: 1,
-              style: {
-                background: 'white',
-                fontSize: '20'
-              },
-            })
+            if (divfortest) {
+              this._tabindex = 1
+              divfortest.style.display = 'block';
+              const imageblob = await htmlToImage.toBlob(divfortest, {
+                quality: 1,
+                backgroundColor: 'white',
+                height: 3400
+              })
 
-            this.econsentimageblob = imageblob
-            this._tabindex = 1
+              divfortest.style.display = 'none';
+              this.econsentimageblob = imageblob
+            } else {
+              this.loadingService.hideLoader()
+              console.log('imageblob is null')
+            }
+
           } else {
-            this.loadingService.hideLoader()
-            console.log('imageblob is null')
+            this._createotpResMsg = res.message
+            this.snackbarfail(`ทำรายการไม่สำเร็จ : ${res.message ? res.message : 'No return message'}`)
           }
-
-        } else {
-          this._createotpResMsg = res.message
+        }, error: (e) => {
+          this.loadingService.hideLoader()
+          this.snackbarfail(`ไม่สามารถทำรายการได้ : ${e.message ? e.message : 'No return message'}`)
+        }, complete: () => {
+          this.loadingService.hideLoader()
+          console.log(`MPLS_create_otp_econsent create !!!`)
         }
       })
     } else {
+      this.loadingService.hideLoader()
       // === not accept ===
       const quotationid = this.data.quotationid
 
@@ -247,18 +258,16 @@ export class OtpEconsentComponent implements OnInit {
   }
 
   async test_gen_image() {
-    const divfortest = document.getElementById('econsentelement');
+    const divfortest = document.getElementById('econsentelement2');
 
     if (divfortest) {
 
+      divfortest.style.display = 'block';
       htmlToImage.toJpeg(divfortest, {
-        quality: 0.95, style: {
-          background: 'white',
-          fontFamily: 'Tahoma',
-          padding: '1.5em'
-        }
+        quality: 1, backgroundColor: 'White' ,height: 3400
       })
         .then(function (dataUrl) {
+          divfortest.style.display = 'none';
           var link = document.createElement('a');
           link.download = 'my-image-name.jpeg';
           link.href = dataUrl;

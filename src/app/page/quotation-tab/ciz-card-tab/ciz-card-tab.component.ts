@@ -396,7 +396,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
         // *** set phone valid status ***
 
         // === ปลดล๊อค form เมื่อมี record อยู่แล้ว ===
-        this.loadingService.hideLoader()
+        // this.loadingService.hideLoader() === (comment on 06/02/2023 to manage stage (timing)) ===
         if (res.data) {
           this.showdipchipbtn = false;
           if (res.data.length !== 0) {
@@ -449,7 +449,8 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
         }
       }, error: (e) => {
         this.loadingService.hideLoader()
-        console.log(`Error on get observable quotation result : ${e.messgae}`)
+        this.snackbarfail(`error : ${e.message ? e.message : 'No return message'}`)
+        console.log(`Error on get observable quotation result : ${e.messgae ? e.message : `No return message`}`)
       }, complete: () => {
         this.loadingService.hideLoader()
         console.log(`complete observe !`)
@@ -467,7 +468,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     ]).subscribe({
       next: (resultMaster) => {
         // === set master data ====
-        this.loadingService.hideLoader()
+        // this.loadingService.hideLoader() === (comment on 06/02/2023 to manage stage (timing)) ===
         this.masterTitle = resultMaster[0]
         this.masterProvince = resultMaster[1]
         this.masterMariedStatus = resultMaster[2]
@@ -508,7 +509,8 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
       }, error: (e) => {
         this.loadingService.hideLoader()
-        console.log(`error during call master data from oracle DB : ${e.message}`)
+        this.snackbarfail(`Error : ${e.message ? e.message : 'No return message'}`)
+        console.log(`error during call master data from oracle DB : ${e.message ? e.message : `No return message`}`)
       }, complete: () => {
         this.loadingService.hideLoader()
       }

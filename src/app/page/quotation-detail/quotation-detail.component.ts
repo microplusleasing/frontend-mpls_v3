@@ -66,6 +66,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   verifyeconsent: boolean = false
   verifyimageattach: boolean = false
   verifycareerandpurpose: boolean = false
+  verifysignature: boolean = false
   createorupdatecitizendataDisable: boolean = true
   createorupdatecreditbtnDisable: boolean = true
   createorupdatecareerandPurposebtnDisable: boolean = true
@@ -218,7 +219,6 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           // *** tab 2 ***
           if (quoitem.otp_consent_verify == 'Y' || quoitem.otp_consent_verify == 'N') {
             // === may be check 'N' too === 
-            this.productdetailtab.productForm.controls.consentVerify.setValue(true)
             this.verifyeconsent = true
           }
 
@@ -246,6 +246,13 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           if (quoitem.otp_consent_verify == 'Y' || quoitem.quo_image_attach_verify) {
             this.imageattachtab.verifyImageAttach.setValue(true)
             this.verifyimageattach = true
+          }
+
+          // *** tab 5 **** (signature)
+          if (quoitem.cs_app_key_id !== '' && quoitem.cs_app_key_id !== null) {
+            // === set valid when record signature is already exits === 
+            this.consenttab.signaturetab.signatureForm.controls.verifySignature.setValue(true)
+            this.verifysignature = true
           }
 
           if (quoitem.quo_dopa_status == 'N') {

@@ -520,7 +520,8 @@ export class ImageAttachComponent extends BaseService implements OnInit {
         next: (res_update_flag_image) => {
           if (res_update_flag_image.status == 200) {
             // === success ===
-            this.snackbarsuccesscenter(`ทำรายการสำเร็จ : ${res_update_flag_image.message}`)
+            // this.snackbarsuccesscenter(`ทำรายการสำเร็จ : ${res_update_flag_image.message}`)
+            // this.snackbarsuccesscenter(`ทำรายการสำเร็จ`)
             this.verifyImageAttach.setValue(true)
             this.emitverifyimageattach.emit(true)
             this.txtrequireimage = ''
@@ -541,7 +542,8 @@ export class ImageAttachComponent extends BaseService implements OnInit {
         next: (res_update_flag_image) => {
           if (res_update_flag_image.status == 200) {
             // === success ===
-            this.snackbarsuccesscenter(`ทำรายการสำเร็จ : ${res_update_flag_image.message}`)
+            // this.snackbarsuccesscenter(`ทำรายการสำเร็จ : ${res_update_flag_image.message}`)
+            // this.snackbarsuccesscenter(`ทำรายการสำเร็จ`)
           } else {
             // === fail ===
             this.verifyImageAttach.setValue(false)

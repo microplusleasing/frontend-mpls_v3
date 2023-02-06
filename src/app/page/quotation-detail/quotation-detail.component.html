@@ -78,7 +78,7 @@
                 (emitverifyimageattach)="recieve_verifyimageattach($event)"></app-image-attach>
         </mat-step>
 
-        <mat-step state="consent" >
+        <mat-step [stepControl]="this.consenttab.signaturetab.signatureForm.controls.verifySignature" state="consent" >
             <mat-divider></mat-divider>
             <ng-template matStepLabel>เอกสารสัญญา</ng-template>
             <app-consent-tab [quotationReq]="quotationResult$"

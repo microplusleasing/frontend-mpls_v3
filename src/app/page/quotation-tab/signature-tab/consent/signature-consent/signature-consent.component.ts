@@ -24,7 +24,6 @@ export class SignatureConsentComponent extends BaseService implements OnInit {
   imagesigsrc: Promise<string> | null = null;
   imagewitnesssrc: Promise<string> | null = null;
   show_pad: boolean = true
-  
   show_pic: boolean = false
 
   title$: Observable<string> = of('')
@@ -45,11 +44,14 @@ export class SignatureConsentComponent extends BaseService implements OnInit {
 
   customerSignature = new FormControl<string | undefined>('', Validators.required)
   witnessSignature = new FormControl<string | undefined>('', Validators.required)
+    // *** check signature verify ***
+  verifySignature = new FormControl<boolean>(false, Validators.requiredTrue)
 
-  signatureForm = this.fb.group({
-    customerSignature: this.customerSignature,
-    witnessSignature: this.witnessSignature
-  })
+    signatureForm = this.fb.group({
+      customerSignature: this.customerSignature,
+      witnessSignature: this.witnessSignature,
+      verifySignature: this.verifySignature
+    })
 
   constructor(
     private fb: FormBuilder,
@@ -60,6 +62,15 @@ export class SignatureConsentComponent extends BaseService implements OnInit {
     private breakpointObserver: BreakpointObserver
   ) {
     super(dialog, _snackBar)
+    
+    // === stamp verifySignature form true when all other form valid (06/02/2023) ===
+    this.signatureForm.controls.customerSignature.valueChanges.subscribe((result) => {
+      this.stampformsignaturevalid()
+    })
+
+    this.signatureForm.controls.witnessSignature.valueChanges.subscribe((result) => {
+      this.stampformsignaturevalid()
+    })
   }
 
   ngOnInit(): void {
@@ -132,6 +143,7 @@ export class SignatureConsentComponent extends BaseService implements OnInit {
 
     this.signaturePad?.addEventListener("endStroke", () => {
       this.signatureForm.controls.customerSignature.setValue(this.signaturePad?.toDataURL())
+      console.log(`log : ${this.signatureForm.valid}`)
     })
 
 
@@ -162,6 +174,14 @@ export class SignatureConsentComponent extends BaseService implements OnInit {
   clearCanvas2() {
     this.signaturePad2?.clear();
     this.signatureForm.controls.witnessSignature.setValue('')
+  }
+
+  stampformsignaturevalid() {
+    if(this.signatureForm.controls.customerSignature.valid && this.signatureForm.controls.witnessSignature.valid) {
+      this.signatureForm.controls.verifySignature.setValue(true)
+    } else {
+      this.signatureForm.controls.verifySignature.setValue(false)
+    }
   }
 
 }

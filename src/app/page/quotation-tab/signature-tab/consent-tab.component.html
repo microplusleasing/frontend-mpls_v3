@@ -1,5 +1,16 @@
 <mat-tab-group dynamicHeight [(selectedIndex)]="consentTabIndex">
-    <mat-tab label="PDPA">
+    <mat-tab label="แบบจำลองด้านเครดิต">
+        <ng-template mat-tab-label>
+            <div>แบบจำลองด้านเครดิต</div>
+        </ng-template>
+        <mat-card>
+            <app-credit-disclosure-consent [quotationReq]="quotationReq" (someEvent)="onNextStep()"
+                (creditConsentValid)="recieve_creditdisclosurevalid($event)
+                ">
+            </app-credit-disclosure-consent>
+        </mat-card>
+    </mat-tab>
+    <mat-tab label="PDPA" [disabled]="personalTabDisable">
         <ng-template mat-tab-label>
             <div>PDPA</div>
         </ng-template>

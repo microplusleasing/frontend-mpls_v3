@@ -136,6 +136,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.router,
     this.cd,
     this.fb,
+    this.quotationService,
     this.loadingService,
     this.dialog,
     this._snackBar,
@@ -1276,6 +1277,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       const consent_tab = this.consenttab
       const ciz_form = this.cizcardtab.cizForm
 
+      // *** credit disclosure ****
+      const credit_disclosure_form = consent_tab.credit_consent.creditdisclosureForm
       // *** PDPA ***
       const pdpa_form = consent_tab.p_d_econsenttab.formPersonalDisclosureConsent
       // *** E-paper ***
@@ -1294,6 +1297,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         consent_customer_name: (quodata.first_name ? quodata.first_name : '') + ' ' + (quodata.last_name ? quodata.last_name : ''),
         consent_first_name: quodata.first_name ? quodata.first_name : '',
         consent_last_name: quodata.last_name ? quodata.last_name : '',
+        // *** credit disclosure ***
+        is_credit_consent: credit_disclosure_form.controls.is_credit_disclosure.value ? credit_disclosure_form.controls.is_credit_disclosure.value : 0,
         // *** PDPA ***
         identity_approve_consent_value: pdpa_form.controls.identity_approve_consent_value.value ? pdpa_form.controls.identity_approve_consent_value.value : 0,
         motor_insurance_consent_value: pdpa_form.controls.motor_insurance_consent_value.value ? pdpa_form.controls.motor_insurance_consent_value.value : 0,

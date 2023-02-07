@@ -1,0 +1,22 @@
+.center-position {
+    text-align: center;
+}
+
+.right-position {
+    text-align: right;
+}
+
+.left-position {
+    text-align: left;
+}
+
+.example-radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+    align-items: flex-start;
+  }
+  
+  .example-radio-button {
+    margin: 5px;
+  }

@@ -11,7 +11,7 @@ export interface IResQuotationDetailData {
     title_name: string;
     first_name: string;
     last_name: string;
-    birth_date?: Date;
+    birth_date: Date;
     birth_date_text_th: string;
     birth_date_text_en: string;
     ciz_issued_date: Date;

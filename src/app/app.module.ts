@@ -43,6 +43,7 @@ import { ViewsignComponent } from './page/view/viewsign/viewsign.component';
 import { BypassSignatureComponent } from './page/bypass-signature/bypass-signature.component';
 import { MrtaListComponent } from './page/view/mrta/mrta-list/mrta-list.component';
 import { CreditDisclosureConsentComponent } from './page/quotation-tab/signature-tab/consent/credit-disclosure-consent/credit-disclosure-consent.component';
+import { FinishQuotationDialogComponent } from './widget/dialog/finish-quotation-dialog/finish-quotation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -80,6 +81,7 @@ import { CreditDisclosureConsentComponent } from './page/quotation-tab/signature
     BypassSignatureComponent,
     MrtaListComponent,
     CreditDisclosureConsentComponent,
+    FinishQuotationDialogComponent,
   ],
   imports: [
     BrowserModule,

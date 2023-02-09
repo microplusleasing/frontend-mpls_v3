@@ -27,10 +27,48 @@
                     <a>พยาน</a>
                 </div>
             </mat-grid-tile>
+        </mat-grid-list>
 
-            <!-- verify tab -->
+        <!-- customer Compare -->
 
+        <!-- Cizcard image  -->
 
+        <mat-grid-list [cols]="layout.columns" [rowHeight]="'200px'">
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <img src="{{(customerdipchipimg$ | async)}}" class="img-viewsign-face">
+            </mat-grid-tile>
+        </mat-grid-list>
+        <mat-grid-list [cols]="layout.columns" [rowHeight]="'120px'">
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <div class="textcenter-viewsign">
+                    <a>หน้าบัตรประชาชน</a>
+                </div>
+            </mat-grid-tile>
+        </mat-grid-list>
+
+        <!-- face customer image -->
+        <mat-grid-list [cols]="layout.columns" [rowHeight]="'200px'">
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <img src="{{(facecustomerimg$ | async)}}" class="img-viewsign-face">
+            </mat-grid-tile>
+        </mat-grid-list>
+        <mat-grid-list [cols]="layout.columns" [rowHeight]="'120px'">
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <div class="textcenter-viewsign">
+                    <a>หน้าภาพลูกค้า</a>
+                </div>
+            </mat-grid-tile>
+        </mat-grid-list>
+
+        <!-- สถานะยืนยันหน้าลูกค้า (result) (resaon) -->
+        <div style="text-align: center;"> 
+            <a>{{resultFaceCompare}}</a><br>
+            <a>{{reasonFaceCompare}}</a>
+        </div>
+
+        <!-- verify tab -->
+
+        <mat-grid-list [cols]="layout.columns" [rowHeight]="'120px'">
             <mat-grid-tile style="text-align: center;" [colspan]="layout.list.maxcols"
                 *ngIf="(letverify$ | async) && !(this.alreadyverify$ | async)">
                 <mat-checkbox color="primary" formControlNam="selectverify" (change)="onselectcheckbox($event)"

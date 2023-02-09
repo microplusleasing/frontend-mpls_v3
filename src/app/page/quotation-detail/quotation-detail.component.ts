@@ -35,6 +35,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ConsentTabComponent } from '../quotation-tab/signature-tab/consent-tab.component';
 import { SendCarTabComponent } from '../quotation-tab/send-car-tab/send-car-tab.component';
 import { ImageService } from 'src/app/service/image.service';
+import { FinishQuotationDialogComponent } from 'src/app/widget/dialog/finish-quotation-dialog/finish-quotation-dialog.component';
+import { IDialogFinishQuotation } from 'src/app/interface/i-dialog-finish-quotation';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -1333,7 +1335,25 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             // === sucess ===
             this.snackbarsuccess(`ทำรายการสำเร็จ : ${res_create_consent.message ? res_create_consent.message : 'No message'}`)
             // === do next stage === 
-            this.router.navigate(['/quotation-view']);
+            // this.router.navigate(['/quotation-view']);
+
+            // === addd finish dialog (thankyou customer) (add on 09/02/2023) ===
+
+            const data: IDialogFinishQuotation = {
+              title_name: this.quotationResult$.value.data[0].title_name,
+              first_name: this.quotationResult$.value.data[0].first_name,
+              last_name: this.quotationResult$.value.data[0].last_name
+            }
+
+            this.dialog.open(FinishQuotationDialogComponent, {
+              panelClass: 'custom-dialog-container',
+              width: '700px',
+              data: data
+            }).afterClosed().subscribe((res) => {
+              // === do next stage === 
+              this.router.navigate(['/quotation-view']);
+
+            })
           } else {
             this.snackbarfail(`ทำรายการไม่สำเร็จ : ${res_create_consent.message ? res_create_consent.message : 'No message'}`)
           }

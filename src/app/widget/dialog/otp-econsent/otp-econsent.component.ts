@@ -183,7 +183,7 @@ export class OtpEconsentComponent implements OnInit {
               const imageblob = await htmlToImage.toBlob(divfortest, {
                 quality: 1,
                 backgroundColor: 'white',
-                height: 3400
+                height: 1169
               })
 
               divfortest.style.display = 'none';
@@ -264,7 +264,7 @@ export class OtpEconsentComponent implements OnInit {
 
       divfortest.style.display = 'block';
       htmlToImage.toJpeg(divfortest, {
-        quality: 1, backgroundColor: 'White' ,height: 3400
+        quality: 1, backgroundColor: 'White' ,height: 1169
       })
         .then(function (dataUrl) {
           divfortest.style.display = 'none';

@@ -8,6 +8,8 @@ import { QuotationService } from 'src/app/service/quotation.service';
 import * as htmlToImage from 'html-to-image';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { BaseService } from 'src/app/service/base/base.service';
+import { IUserTokenData } from 'src/app/interface/i-user-token';
 
 export interface econsentValue {
   value: boolean;
@@ -19,8 +21,10 @@ export interface econsentValue {
   templateUrl: './otp-econsent.component.html',
   styleUrls: ['./otp-econsent.component.scss']
 })
-export class OtpEconsentComponent implements OnInit {
+export class OtpEconsentComponent extends BaseService implements OnInit {
 
+
+  userSession: IUserTokenData = {} as IUserTokenData
   txt_scrollTop: string = ''
   txt_offsetHeight: string = ''
   txt_scrollHeight: string = ''
@@ -46,6 +50,14 @@ export class OtpEconsentComponent implements OnInit {
   // === variable send data back via close dialog ===
   validsuccess: boolean = false
 
+
+  // === stamp witness name 
+
+  // === if channal type chekker : use chekker name  ===
+  // === if channal type store : use cheker of that store ====
+
+  witness_fname: string = ''
+  witness_lname: string = ''
 
   econsentvalueList: econsentValue[] = [
     {
@@ -93,11 +105,11 @@ export class OtpEconsentComponent implements OnInit {
     private quotationService: QuotationService,
     private loadingService: LoadingService,
     public dialogRef: MatDialogRef<OtpEconsentComponent>,
-    public dialog: MatDialog,
-    public _snackBar: MatSnackBar,
+    public override dialog: MatDialog,
+    public override _snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: IDialogEconsentOtpOpen
   ) {
-
+    super(dialog, _snackBar)
     this.econsentvalue.valueChanges.subscribe((res) => {
       console.log(`this is value of radio btn : ${res}`)
     })
@@ -113,25 +125,58 @@ export class OtpEconsentComponent implements OnInit {
 
     this.loadingService.showLoader()
 
-    this.confirmEconsentForm.controls.econsentvalue.disable()
-    await lastValueFrom(this.quotationService.MPLS_check_econsent(this.data.quotationid)).then((res) => {
-      if (res.validation) {
+    this.getUserSessionQuotation().subscribe({
+      next: async (resSession) => {
+        this.userSession = resSession
 
-        this.mainOTPForm.controls.confirmEconsentForm.controls.confirm_btn_click.setValue(true)
-        this.mainOTPForm.controls.otpactivate.controls.otp_value.setValue('xxxx')
 
-        setTimeout(() => {
+        // === set witness name ===
+        if (resSession.channal == 'checker') {
+          // === checker ===
+          this.witness_fname = resSession.FNAME
+          this.witness_lname = resSession.LNAME
+        } else {
+          // === dealer ===
+          this.quotationService.MPLS_get_witness_econsent().subscribe({
+            next: (resName) => {
+              this.witness_fname = resName.data[0].fname
+              this.witness_lname = resName.data[0].lname
+            }, error: (e) => {
+               // === handle error ===
+            }, complete: () => {  
+              console.log(`complete stamp witness name `)
+            }
+          })
+        }
+
+        // ==== begin ====
+        this.confirmEconsentForm.controls.econsentvalue.disable()
+        await lastValueFrom(this.quotationService.MPLS_check_econsent(this.data.quotationid)).then((res) => {
+          if (res.validation) {
+
+            this.mainOTPForm.controls.confirmEconsentForm.controls.confirm_btn_click.setValue(true)
+            this.mainOTPForm.controls.otpactivate.controls.otp_value.setValue('xxxx')
+
+            setTimeout(() => {
+              this.loadingService.hideLoader()
+              this._editabletab1 = false
+              this._editabletab2 = false
+              this._tabindex = 2
+            });
+          } else {
+            this.loadingService.hideLoader()
+          }
+        }).catch((e) => {
           this.loadingService.hideLoader()
-          this._editabletab1 = false
-          this._editabletab2 = false
-          this._tabindex = 2
-        });
-      } else {
+          console.log(`Error : ${e.message}`)
+        })
+      }, error: (e) => {
         this.loadingService.hideLoader()
+        this.snackbarfail(`Error : ${e.messgae ? e.message : 'No return message'}`)
+      }, complete: () => {
+        this.loadingService.hideLoader()
+        this.snackbarfail(`Complete subscribe session !`)
       }
-    }).catch((e) => {
-      this.loadingService.hideLoader()
-      console.log(`Error : ${e.message}`)
     })
 
   }
@@ -264,7 +309,7 @@ export class OtpEconsentComponent implements OnInit {
 
       divfortest.style.display = 'block';
       htmlToImage.toJpeg(divfortest, {
-        quality: 1, backgroundColor: 'White' ,height: 1169
+        quality: 1, backgroundColor: 'White', height: 1169
       })
         .then(function (dataUrl) {
           divfortest.style.display = 'none';
@@ -344,22 +389,22 @@ export class OtpEconsentComponent implements OnInit {
     })
   }
 
-  snackbarsuccess(message: string) {
-    this._snackBar.open(message, '', {
-      horizontalPosition: 'end',
-      verticalPosition: 'bottom',
-      duration: 3000,
-      panelClass: 'custom-snackbar-container'
-    });
-  }
+  // snackbarsuccess(message: string) {
+  //   this._snackBar.open(message, '', {
+  //     horizontalPosition: 'end',
+  //     verticalPosition: 'bottom',
+  //     duration: 3000,
+  //     panelClass: 'custom-snackbar-container'
+  //   });
+  // }
 
-  snackbarfail(message: string) {
-    this._snackBar.open(message, '', {
-      horizontalPosition: 'end',
-      verticalPosition: 'bottom',
-      duration: 3000,
-      panelClass: 'fail-snackbar-container'
-    });
-  }
+  // snackbarfail(message: string) {
+  //   this._snackBar.open(message, '', {
+  //     horizontalPosition: 'end',
+  //     verticalPosition: 'bottom',
+  //     duration: 3000,
+  //     panelClass: 'fail-snackbar-container'
+  //   });
+  // }
 
 }

@@ -39,6 +39,7 @@ import { IResDeleteImageAttach } from '../interface/i-res-delete-image-attach';
 import { IResUpdateFlagImageAttach } from '../interface/i-res-update-flag-image-attach';
 import { IResCreateConsent } from '../interface/i-res-create-consent';
 import { IResCreateSendCarAndLoyaltyConsent } from '../interface/i-res-create-send-car-and-loyalty-consent';
+import { IResGetWitnessEconsent } from '../interface/i-res-get-witness-econsent';
 
 
 @Injectable({
@@ -110,8 +111,8 @@ export class QuotationService {
     return this.http.post<IResQuotationView>(url, formData)
   }
 
-  canclequotation(quotationid: string) {
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/canclequotation/${quotationid}`;
+  MPLS_canclequotation(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_canclequotation/${quotationid}`;
     return this.http.get<IResBasic>(url);
   }
 
@@ -244,6 +245,12 @@ export class QuotationService {
     return this.http.get<IResEconsentValid>(url)
   }
 
+  MPLS_get_witness_econsent() {
+    // === only for store (not checker) ===
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_get_witness_econsent`
+    return this.http.get<IResGetWitnessEconsent>(url)
+  }
+
   MPLS_create_otp_econsent(data: IReqOtpLog) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_otp_econsent?quotationid=${data.quotationid}&refid=${data.refid}&phone_no=${data.phone_no}`
     return this.http.get<IResOtpLog>(url)
@@ -313,8 +320,18 @@ export class QuotationService {
     return this.http.get<IResImageFaceCompare>(url)
   }
 
+  MPLS_getimagetocompareiapp_unlock(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimagetocompareiapp_unlock?quotationid=${quotationid}`
+    return this.http.get<IResImageFaceCompare>(url)
+  }
+
   MPLS_is_check_face_valid(quotationid: string) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_is_check_face_valid?quotationid=${quotationid}`
+    return this.http.get<IResCheckFaceValid>(url)
+  }
+
+  MPLS_is_check_face_valid_unlock(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_is_check_face_valid_unlock?quotationid=${quotationid}`
     return this.http.get<IResCheckFaceValid>(url)
   }
 
@@ -333,6 +350,11 @@ export class QuotationService {
     return this.http.get<IResDopaValidStatus>(url)
   }
 
+  MPLS_get_dopa_valid_status_unlock() {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_get_dopa_valid_status_unlock`
+    return this.http.get<IResDopaValidStatus>(url)
+  }
+
 
 
 
@@ -342,6 +364,64 @@ export class QuotationService {
     // === check master dopa valid status have data === 
     if (this.dopavalidstatus.length == 0) {
       this.MPLS_get_dopa_valid_status().subscribe((res) => {
+        this.dopavalidstatus = res.data.status_code
+      })
+    }
+
+    this.getdopastatusbyid(quotationid).subscribe({
+      next: (result) => {
+
+        if (result.status == 200) {
+          const resultdata = result.data[0]
+
+          // if (resultdata.status_code !== '0') {
+          if (!(this.dopavalidstatus.includes(resultdata.status_code))) {
+
+            if (resultdata.status_desc == '' || resultdata.status_desc == null || resultdata.status_desc == '500') {
+              this.dopastatus = {
+                message: `❌ ไม่สามารถเชื่อมต่อกับระบบฐานข้อมูลกรมการปกครองได้`,
+                messageheader: `ไม่สามารถเชื่อมต่อกับระบบฐานข้อมูลกรมการปกครองได้`,
+                status: false
+              }
+            } else {
+              this.dopastatus = {
+                message: `❌ สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc ? resultdata.status_desc : ''}`,
+                messageheader: `สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc ? resultdata.status_desc : ''}`,
+                status: false
+              }
+            }
+          } else {
+            // === valid citizenid card ===
+            this.dopastatus = {
+              message: `✅ สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc ? resultdata.status_desc : '-'}`,
+              messageheader: `✅ สถานะการตรวจข้อมูลบัตรประชาชนคุณ ${resultdata.first_name} ${resultdata.last_name} : ${resultdata.status_desc ? resultdata.status_desc : '-'}`,
+              status: true
+            }
+          }
+        } else {
+          this.dopastatus = {
+            message: ``,
+            messageheader: ``,
+            status: false
+          }
+        }
+      }, error: (e) => {
+        this.dopastatus = {
+          message: ``,
+          messageheader: ``,
+          status: false
+        }
+      }, complete: () => {
+
+      }
+    })
+  }
+
+  setstatusdopa_unlock(quotationid: string) {
+
+    // === check master dopa valid status have data === 
+    if (this.dopavalidstatus.length == 0) {
+      this.MPLS_get_dopa_valid_status_unlock().subscribe((res) => {
         this.dopavalidstatus = res.data.status_code
       })
     }

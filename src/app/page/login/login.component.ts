@@ -229,10 +229,15 @@ export class LoginComponent extends BaseService {
           if (result.status == 200) {
             // === contain user in database ==== 
             if (this.returnUrl == '/') {
-              if (data.usertype == 1) {
-                this.router.navigate(['/quotation-view']);
 
+              if (data.usertype == 1) {
+                // === checker : 1 ====
+                this.router.navigate(['/quotation-view']);
               } else if (data.usertype == 2) {
+                // === fcr : 2 ====
+                this.router.navigate(['/quotation-view']);
+              } else if (data.usertype == 0) {
+                // === dealer : 0  ====
                 this.router.navigate(['/quotation-view']);
               }
             } else {
@@ -246,11 +251,11 @@ export class LoginComponent extends BaseService {
           }
         }, error: (error) => {
           this.loadingService.hideLoader();
-          this.dialog.open(MainDialogComponent ,  {
+          this.dialog.open(MainDialogComponent, {
             panelClass: 'custom-dialog-container',
             data: {
               header: `ผิดพลาด`,
-              message: `Error : ${ (error.status && error.statusText) ? error.status + ' : ' + error.statusText : 'NO return message'}`,
+              message: `Error : ${(error.status && error.statusText) ? error.status + ' : ' + error.statusText : 'NO return message'}`,
               button: `close`
             }
           }).afterClosed().subscribe((result) => {

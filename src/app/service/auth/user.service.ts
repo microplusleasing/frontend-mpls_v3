@@ -11,7 +11,7 @@ import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dial
 export class UserService {
 
   pagepermission = {
-    seller: ['/main', '/home', '/quotation', '/bypass', '/quotation', '/quotation-view', 'quotation-detail', 'mrta-list'],
+    dealer: ['/main', '/home', '/quotation', '/bypass', '/quotation', '/quotation-view', 'quotation-detail', 'mrta-list'],
     checker: ['/main', '/home', '/quotation', '/bypass', '/quotation', '/quotation-view', 'quotation-detail', 'mrta-list'],
     collector: ['/main', '/collector-view', '/collector-detail']
   };

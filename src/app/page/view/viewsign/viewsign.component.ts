@@ -95,11 +95,11 @@ export class ViewsignComponent implements OnInit {
         this.userid.next(res['userid'])
 
         //== set dopa text status (11/11/2022) ===
-        this.quotationService.setstatusdopa(res['quotationid'])
+        this.quotationService.setstatusdopa_unlock(res['quotationid'])
 
         const combinedd$ = combineLatest([
           this.viewsignService.getviewsignimage(this.quotationid.value),
-          this.quotationService.MPLS_getimagetocompareiapp(this.quotationid.value)
+          this.quotationService.MPLS_getimagetocompareiapp_unlock(this.quotationid.value)
         ]).subscribe({
           next: async ([res_viewsign, res_face_compare]) => {
             this.loadingService.hideLoader()
@@ -127,14 +127,14 @@ export class ViewsignComponent implements OnInit {
               this.customerdipchipimg$.next((res_face_compare.data.file1 == null || res_face_compare.data.file1 == '') ? `${environment.citizen_card_img_preload}` : `data:image/jpeg;base64,${res_face_compare.data.file1}`)
               this.facecustomerimg$.next((res_face_compare.data.file2 == null || res_face_compare.data.file2 == '') ? `${environment.citizen_card_img_preload}` : `data:image/jpeg;base64,${res_face_compare.data.file2}`)
 
-              this.quotationService.MPLS_is_check_face_valid(this.quotationid.value).subscribe({
+              this.quotationService.MPLS_is_check_face_valid_unlock(this.quotationid.value).subscribe({
                 next: (res_check_face) => {
                   this.resultFaceCompare = res_check_face.data.status == 'Y' ? 'ตรงกัน' : 'ไม่ตรงกัน'
                   this.reasonFaceCompare = res_check_face.data.reason ? res_check_face.data.reason : '-'
                 }, error: (e) => {
                   console.log(`Error : ${e.message ? e.message : 'No return message'}`)
                 }, complete: () => {
-                  console.log(`complete trigger on get check face compare (MPLS_is_check_face_valid)`)
+                  console.log(`complete trigger on get check face compare (MPLS_is_check_face_valid_unlock)`)
                 }
               })
             } else {

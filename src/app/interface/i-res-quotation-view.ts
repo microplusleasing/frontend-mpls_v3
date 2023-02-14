@@ -44,6 +44,8 @@
         ciz_stayed_year: number;
         ciz_stayed_month: number;
         ciz_maried_status: number;
+        otp_consent_verify: string | null;
+        _client_otp_consent_verify: string;
     }
 
     export interface IResQuotationView {

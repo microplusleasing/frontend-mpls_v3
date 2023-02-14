@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NavigationEnd, Router } from '@angular/router';
-import { BehaviorSubject, combineLatest, lastValueFrom, map, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, lastValueFrom, map, Observable, Subject } from 'rxjs';
 import SignaturePad from 'signature_pad';
 import { IImageData } from 'src/app/interface/i-image';
 import { IMartaPaymentInsurance } from 'src/app/interface/i-marta-payment-insurance';
@@ -86,6 +86,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
   showpage$ = new BehaviorSubject<boolean>(true)
 
   quotationresultData = {} as IResQuotationDetail
+  userSession: IUserTokenData = {} as IUserTokenData
   insurancedetailData = {} as IResInsurance
   MRTAdata = {} as IMartaPaymentInsurance
   _ireqsaveqrmrta = {} as IReqSaveQrMrta
@@ -154,62 +155,77 @@ export class SendCarTabComponent extends BaseService implements OnInit {
     this.chklivingplacelocation$.next(false)
     this.chKformloyaltyvalid$.next(false)
 
+    forkJoin([
+      this.getUserSessionQuotation(),
+      this.quotationReq
+    ]).subscribe({
+      next: async ([resSession, resQuo]) => {
+        if (resSession) {
+          this.userSession = resSession
+        }
 
-    this.quotationReq.subscribe({
-      next: async (value) => {
-        this.quotationresultData = value
-        if (this.quotationresultData.status == 200) {
-          // this.setquotationDatatoForm();
-
-          // === set living address data record to form ==== 
-          this.sendcarForm.controls.livingAddress_address.setValue(this.quotationresultData.data[0].lvp_address ?? '')
-          this.sendcarForm.controls.livingAddress_subDistrict.setValue(this.quotationresultData.data[0].lvp_sub_district ?? '')
-          this.sendcarForm.controls.livingAddress_district.setValue(this.quotationresultData.data[0].lvp_district ?? '')
-          this.sendcarForm.controls.livingAddress_provinceName.setValue(this.quotationresultData.data[0].lvp_province_name ?? '')
-          this.sendcarForm.controls.livingAddress_postalCode.setValue(this.quotationresultData.data[0].lvp_postal_code ?? '')
-          this.sendcarForm.controls.livingAddress_lalon.setValue(this.quotationresultData.data[0].lvp_lalon ?? '')
-          this.sendcarForm.controls.livingAddress_la.setValue(this.quotationresultData.data[0].lvp_latitude ?? '')
-          this.sendcarForm.controls.livingAddress_lon.setValue(this.quotationresultData.data[0].lvp_londtiude ?? '')
-
-          this.sendcarForm.controls.livingAddress_address.disable()
-          this.sendcarForm.controls.livingAddress_subDistrict.disable()
-          this.sendcarForm.controls.livingAddress_district.disable()
-          this.sendcarForm.controls.livingAddress_provinceName.disable()
-          this.sendcarForm.controls.livingAddress_postalCode.disable()
-
-
-          if (this.quotationresultData.data[0].application_num) {
-            this.quotationService.getinsurancedetailbyid(this.quotationresultData.data[0].application_num).subscribe({
-              next: (result) => {
-                if (result.status == 200) {
-                  this.insurancedetailData = result
-
-                  // === set parameter loyalty consent value === 
-
-                  this.insureData$.next(result)
-                } else {
-                  console.log(`getinsurancedetailbyid return : ${result.message ? result.message : 'No return message'}`)
+        if (resQuo) {
+          this.quotationresultData = resQuo
+          if (this.quotationresultData.status == 200) {
+            // this.setquotationDatatoForm();
+  
+            // === set living address data record to form ==== 
+            this.sendcarForm.controls.livingAddress_address.setValue(this.quotationresultData.data[0].lvp_address ?? '')
+            this.sendcarForm.controls.livingAddress_subDistrict.setValue(this.quotationresultData.data[0].lvp_sub_district ?? '')
+            this.sendcarForm.controls.livingAddress_district.setValue(this.quotationresultData.data[0].lvp_district ?? '')
+            this.sendcarForm.controls.livingAddress_provinceName.setValue(this.quotationresultData.data[0].lvp_province_name ?? '')
+            this.sendcarForm.controls.livingAddress_postalCode.setValue(this.quotationresultData.data[0].lvp_postal_code ?? '')
+            this.sendcarForm.controls.livingAddress_lalon.setValue(this.quotationresultData.data[0].lvp_lalon ?? '')
+            this.sendcarForm.controls.livingAddress_la.setValue(this.quotationresultData.data[0].lvp_latitude ?? '')
+            this.sendcarForm.controls.livingAddress_lon.setValue(this.quotationresultData.data[0].lvp_londtiude ?? '')
+  
+            this.sendcarForm.controls.livingAddress_address.disable()
+            this.sendcarForm.controls.livingAddress_subDistrict.disable()
+            this.sendcarForm.controls.livingAddress_district.disable()
+            this.sendcarForm.controls.livingAddress_provinceName.disable()
+            this.sendcarForm.controls.livingAddress_postalCode.disable()
+  
+  
+            if (this.quotationresultData.data[0].application_num) {
+              this.quotationService.getinsurancedetailbyid(this.quotationresultData.data[0].application_num).subscribe({
+                next: (result) => {
+                  if (result.status == 200) {
+                    this.insurancedetailData = result
+  
+                    // === set parameter loyalty consent value === 
+  
+                    this.insureData$.next(result)
+                  } else {
+                    console.log(`getinsurancedetailbyid return : ${result.message ? result.message : 'No return message'}`)
+                  }
+  
+                }, error: (e) => {
+                  // ==== not found insurance detail ==== 
+                  this.insureData$.next({} as IResInsurance)
                 }
-
-              }, error: (e) => {
-                // ==== not found insurance detail ==== 
-                this.insureData$.next({} as IResInsurance)
-              }
-            })
-
-            // === get out stand value (22/09/2022) ===
-
-            const checkmrtarecent = await lastValueFrom(this.masterDataService.checkmrtarecent(this.quotationresultData.data[0].quo_key_app_id))
-
-            if (checkmrtarecent.status == 200) {
-              if (checkmrtarecent.data.length !== 0) {
-                const recentmrtavalue = checkmrtarecent.data[0]
-                this.pay_status = recentmrtavalue.pay_status
-                this.active_status = recentmrtavalue.active_status
-                this.insurance_seller = recentmrtavalue.seller_id
-                this.insurance_code = recentmrtavalue.insurance_code
-                this.insurance_year = recentmrtavalue.insurance_year
-                this.out_stand = recentmrtavalue.out_stand
+              })
+  
+              // === get out stand value (22/09/2022) ===
+  
+              const checkmrtarecent = await lastValueFrom(this.masterDataService.checkmrtarecent(this.quotationresultData.data[0].quo_key_app_id))
+  
+              if (checkmrtarecent.status == 200) {
+                if (checkmrtarecent.data.length !== 0) {
+                  const recentmrtavalue = checkmrtarecent.data[0]
+                  this.pay_status = recentmrtavalue.pay_status
+                  this.active_status = recentmrtavalue.active_status
+                  this.insurance_seller = recentmrtavalue.seller_id
+                  this.insurance_code = recentmrtavalue.insurance_code
+                  this.insurance_year = recentmrtavalue.insurance_year
+                  this.out_stand = recentmrtavalue.out_stand
+                } else {
+                  this.masterDataService.getoracleoutstand(this.quotationresultData.data[0].application_num).subscribe((value) => {
+                    if (value.data.length !== 0) {
+                      // === set out stand return value from oracle (api) ===
+                      this.out_stand = value.data[0].out_stand
+                    }
+                  })
+                }
               } else {
                 this.masterDataService.getoracleoutstand(this.quotationresultData.data[0].application_num).subscribe((value) => {
                   if (value.data.length !== 0) {
@@ -218,25 +234,16 @@ export class SendCarTabComponent extends BaseService implements OnInit {
                   }
                 })
               }
-            } else {
-              this.masterDataService.getoracleoutstand(this.quotationresultData.data[0].application_num).subscribe((value) => {
-                if (value.data.length !== 0) {
-                  // === set out stand return value from oracle (api) ===
-                  this.out_stand = value.data[0].out_stand
-                }
-              })
             }
           }
         }
-      }
-      , error: (e) => {
+      }, error: (e) => {
         console.error(e)
         console.log(e.message ? e.message : 'no return message')
       }, complete: () => {
-        console.log(`trigger complete combineLastest`)
+        console.log(`trigger complete forkjoin : (session , quotation)`)
       }
     })
-
 
   }
 
@@ -325,7 +332,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
               } else {
 
                 console.log(`no have data`)
-                if (this.userSessionQuotation.RADMIN == 'Y') {
+                if (this.userSession.RADMIN == 'Y') {
                   this.showpage$.next(false)
                 }
               }

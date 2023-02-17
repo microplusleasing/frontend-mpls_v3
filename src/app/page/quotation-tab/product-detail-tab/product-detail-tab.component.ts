@@ -471,7 +471,25 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
 
                       // === call insurance list value === 
-                      this.masterDataService.getInsurance(maxlvtnumber).subscribe((insuranceResult) => {
+                      // this.masterDataService.getInsuranceold2(maxlvtnumber).subscribe((insuranceResult) => {
+                      //   this.InsuranceListTemp = insuranceResult.data
+                      //   this.InsuranceList = this.InsuranceListTemp
+
+                      //   // ==== filter repeat insurance form return value ====
+                      //   this.InsuranceList = Array.from(new Set(this.InsuranceListTemp.map((a: { insurer_code: string }) => a.insurer_code)))
+                      //     .map(insurer_code => {
+                      //       return this.InsuranceListTemp.find((a: { insurer_code: string }) => a.insurer_code === insurer_code)
+                      //     })
+                      // })
+
+                      // === new api of getInsurance (5 params : (factory_price, bussi_code, brand_code, model_code, dl_code)) ====
+                      this.masterDataService.getInsurance(
+                        valuePrice,
+                        '001', // bussi_code
+                        this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',  // brand_code
+                        selectValue[0].model_code, // model_code
+                        this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '' // dealer_code
+                      ).subscribe((insuranceResult) => {
                         this.InsuranceListTemp = insuranceResult.data
                         this.InsuranceList = this.InsuranceListTemp
 
@@ -661,10 +679,20 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.productForm.controls.detailForm.controls.insuranceNameField.setValue(insureselect[0].insurer_name + '(' + insureselect[0].insurance_code + ')')
 
                   // === set coverage total loss (29/08/2022) ====
+                  // const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss
+                  //   (
+                  //     this.productForm.controls.detailForm.controls.insuranceCodeField.value ? this.productForm.controls.detailForm.controls.insuranceCodeField.value : '',
+                  //     this.maxltvCurrent
+                  //   )
+                  // )
                   const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss
                     (
                       this.productForm.controls.detailForm.controls.insuranceCodeField.value ? this.productForm.controls.detailForm.controls.insuranceCodeField.value : '',
-                      this.maxltvCurrent
+                      '001',
+                      this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
+                      this.productForm.controls.detailForm.controls.carModelField.value ? this.productForm.controls.detailForm.controls.carModelField.value : '',
+                      this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
+                      this.productForm.controls.detailForm.controls.factoryPriceValueField.value ? this.productForm.controls.detailForm.controls.factoryPriceValueField.value : 0
                     )
                   )
                   this.coverage = resultCoveragetotalloss.data[0].coverage_total_loss ? resultCoveragetotalloss.data[0].coverage_total_loss : 0
@@ -768,7 +796,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // === set max ltv field (29/08/2022) ===
                   this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
 
-                  const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsurance((resultMaxLtv.data[0].maxltv.toString())));
+                  // const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsuranceold2((resultMaxLtv.data[0].maxltv.toString())));
+                  const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsurance(qfactoryprice, '001', qcarbrandcode, qcarmodelcode, qdealercode));
 
                   // === chage from getTerm to getTermNew 03/01/2023 ===
                   // const resultTerm = await lastValueFrom(this.masterDataService.getTerm(`01`, qsizemodel))
@@ -886,7 +915,15 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // === for show coverage (24/08/2022) ===
                   // this.coverage = qfactoryprice;
                   // === new coverage total loss from DB function (29/08/2022) ===
-                  const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss(qinsurancecode, (resultMaxLtv.data[0].maxltv)))
+                  // const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss(qinsurancecode, (resultMaxLtv.data[0].maxltv)))
+                  const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss(
+                    qinsurancecode,
+                    '001',
+                    qcarbrandcode,
+                    qcarmodelcode,
+                    qdealercode,
+                    qfactoryprice
+                  ))
                   this.coverage = resultCoveragetotalloss.data[0].coverage_total_loss ? resultCoveragetotalloss.data[0].coverage_total_loss : 0
                   this.factoryprice = qfactoryprice
 

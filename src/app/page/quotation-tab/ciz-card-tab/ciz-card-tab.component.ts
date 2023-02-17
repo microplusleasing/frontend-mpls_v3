@@ -402,87 +402,176 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     if (this.quotationid) {
       this.loadingService.showLoader()
 
-      forkJoin([
-        this.getUserSessionQuotation(),
-        this.quotationReq
-      ]).subscribe({
-        next: ([resSession, resQuo]) => {
-          if (resSession) {
-            this.userSession = resSession
-          }
+      this.getUserSessionQuotation().subscribe({
+        next: (res_session) => {
+          // ==== success getUserSessionQuotation ====
+          this.userSession = res_session
 
-          if (resQuo) {
-            // *** set phone valid status ***
+          this.quotationReq.subscribe({
+            next: (res_quo) => {
+              // === success quotationReq ===
+              if (res_quo) {
+                // *** set phone valid status ***
 
-            // === ปลดล๊อค form เมื่อมี record อยู่แล้ว ===
-            // this.loadingService.hideLoader() // === (comment on 06/02/2023 to manage stage (timing)) ===
-            if (resQuo.data) {
+                // === ปลดล๊อค form เมื่อมี record อยู่แล้ว ===
+                // this.loadingService.hideLoader() // === (comment on 06/02/2023 to manage stage (timing)) ===
+                if (res_quo.data) {
 
-              this.loadingService.hideLoader();
+                  this.loadingService.hideLoader();
 
-              this.showdipchipbtn = false;
-              if (resQuo.data.length !== 0) {
+                  this.showdipchipbtn = false;
+                  if (res_quo.data.length !== 0) {
 
-                const quodata = resQuo.data[0]
+                    const quodata = res_quo.data[0]
 
-                // *** กำหนดค่า quotationid ในหน้า ciz-card-tab ***
-                this.quotationid = quodata.quo_key_app_id
+                    // *** กำหนดค่า quotationid ในหน้า ciz-card-tab ***
+                    this.quotationid = quodata.quo_key_app_id
 
-                // *** ล๊อค field เบอร์โทรศัพท์ที่ได้ทำการ verify แล้ว (OTP_PHONE_VERIFY = 'Y') ***
-                if (quodata.otp_phone_verify == 'Y') {
-                  this.cizForm.controls.generalinfoForm.controls.phoneNumber.disable()
-                }
+                    // *** ล๊อค field เบอร์โทรศัพท์ที่ได้ทำการ verify แล้ว (OTP_PHONE_VERIFY = 'Y') ***
+                    if (quodata.otp_phone_verify == 'Y') {
+                      this.cizForm.controls.generalinfoForm.controls.phoneNumber.disable()
+                    }
 
-                // *** check and trigger field phone number on form field ***
-                if (quodata.phone_number == '') {
-                  this.cizForm.controls.generalinfoForm.controls.phoneNumber.markAllAsTouched()
-                }
+                    // *** check and trigger field phone number on form field ***
+                    if (quodata.phone_number == '') {
+                      this.cizForm.controls.generalinfoForm.controls.phoneNumber.markAllAsTouched()
+                    }
 
-                // *** set phone valid status text ***
-                if (quodata.quo_key_app_id !== '') {
+                    // *** set phone valid status text ***
+                    if (quodata.quo_key_app_id !== '') {
 
-                  if (quodata.ciz_phone_valid_status == 'Y') {
-                    this.phonevalidstatus = `✅ : ได้รับการยืนยันเบอร์โทรศัพท์แล้ว`
-                  } else {
-                    this.phonevalidstatus = `❌ : ยังไม่ได้รับการยืนยันเบอร์โทรศัพท์`
+                      if (quodata.ciz_phone_valid_status == 'Y') {
+                        this.phonevalidstatus = `✅ : ได้รับการยืนยันเบอร์โทรศัพท์แล้ว`
+                      } else {
+                        this.phonevalidstatus = `❌ : ยังไม่ได้รับการยืนยันเบอร์โทรศัพท์`
+                      }
+
+                      if (quodata.quo_face_compare_verify !== '' && quodata.quo_face_compare_verify !== null) {
+                        this.facevalidstatus = `✅ : ทำการตรวจสอบใบหน้าคนเรียบร้อย`
+                      } else {
+                        this.facevalidstatus = `❌ : รอทำการตรวจสอบใบหน้าคน`
+                      }
+                    }
+
+                    // *** ล๊อคฟิวส์พวกข้อมูลบนบัตรประชาชนไม่ให้แก้ไขกรณี case มาจากการ dipchip (dipchip_uuid is not null || dipchip_uuid !== '')
+
+                    // if(quodata.dipchip_uuid !== '' && quodata.dipchip_uuid !== null) {
+                    //   this.cizForm.controls.maincitizenForm.disable()
+                    // }
+
                   }
+                } else {
+                  this.loadingService.hideLoader();
 
-                  if (quodata.quo_face_compare_verify !== '' && quodata.quo_face_compare_verify !== null) {
-                    this.facevalidstatus = `✅ : ทำการตรวจสอบใบหน้าคนเรียบร้อย`
+                  if (this.userSession.RADMIN == 'Y') {
+                    this.showdipchipbtn = false;
                   } else {
-                    this.facevalidstatus = `❌ : รอทำการตรวจสอบใบหน้าคน`
+                    this.showdipchipbtn = true;
                   }
                 }
-
-                // *** ล๊อคฟิวส์พวกข้อมูลบนบัตรประชาชนไม่ให้แก้ไขกรณี case มาจากการ dipchip (dipchip_uuid is not null || dipchip_uuid !== '')
-
-                // if(quodata.dipchip_uuid !== '' && quodata.dipchip_uuid !== null) {
-                //   this.cizForm.controls.maincitizenForm.disable()
-                // }
-
               }
-            } else {
-              this.loadingService.hideLoader();
-
-              if (this.userSession.RADMIN == 'Y') {
-                this.showdipchipbtn = false;
-              } else {
-                this.showdipchipbtn = true;
-              }
+            }, error: (e) => {
+              console.log(`Error quotationReq (ciz-card-tab) : ${e.message ? e.message : 'No return message'}`)
+            }, complete: () => {
+              console.log('complete quotationReq (ciz-card-tab) !')
             }
-          }
-        }
-        , error: (e) => {
-          this.loadingService.hideLoader()
-          this.snackbarfail(`error : ${e.message ? e.message : 'No return message'}`)
-          console.log(`Error on get observable quotation result : ${e.messgae ? e.message : `No return message`}`)
+          })
+        }, error: (e) => {
+          console.log(`Error getUserSessionQuotation (ciz-card-tab) : ${e.message ? e.message : 'No return message'}`)
         }, complete: () => {
-          this.loadingService.hideLoader()
-          console.log(`complete forkjoin !`)
+          console.log(`Complete getUserSessionQuotation (ciz-card-tab)`)
         }
       })
+
+      // forkJoin([
+      //   this.getUserSessionQuotation(),
+      //   this.quotationReq
+      // ]).subscribe({
+      //   next: ([resSession, resQuo]) => {
+      //     if (resSession) {
+      //       this.userSession = resSession
+      //     }
+
+      //     if (resQuo) {
+      //       // *** set phone valid status ***
+
+      //       // === ปลดล๊อค form เมื่อมี record อยู่แล้ว ===
+      //       // this.loadingService.hideLoader() // === (comment on 06/02/2023 to manage stage (timing)) ===
+      //       if (resQuo.data) {
+
+      //         this.loadingService.hideLoader();
+
+      //         this.showdipchipbtn = false;
+      //         if (resQuo.data.length !== 0) {
+
+      //           const quodata = resQuo.data[0]
+
+      //           // *** กำหนดค่า quotationid ในหน้า ciz-card-tab ***
+      //           this.quotationid = quodata.quo_key_app_id
+
+      //           // *** ล๊อค field เบอร์โทรศัพท์ที่ได้ทำการ verify แล้ว (OTP_PHONE_VERIFY = 'Y') ***
+      //           if (quodata.otp_phone_verify == 'Y') {
+      //             this.cizForm.controls.generalinfoForm.controls.phoneNumber.disable()
+      //           }
+
+      //           // *** check and trigger field phone number on form field ***
+      //           if (quodata.phone_number == '') {
+      //             this.cizForm.controls.generalinfoForm.controls.phoneNumber.markAllAsTouched()
+      //           }
+
+      //           // *** set phone valid status text ***
+      //           if (quodata.quo_key_app_id !== '') {
+
+      //             if (quodata.ciz_phone_valid_status == 'Y') {
+      //               this.phonevalidstatus = `✅ : ได้รับการยืนยันเบอร์โทรศัพท์แล้ว`
+      //             } else {
+      //               this.phonevalidstatus = `❌ : ยังไม่ได้รับการยืนยันเบอร์โทรศัพท์`
+      //             }
+
+      //             if (quodata.quo_face_compare_verify !== '' && quodata.quo_face_compare_verify !== null) {
+      //               this.facevalidstatus = `✅ : ทำการตรวจสอบใบหน้าคนเรียบร้อย`
+      //             } else {
+      //               this.facevalidstatus = `❌ : รอทำการตรวจสอบใบหน้าคน`
+      //             }
+      //           }
+
+      //           // *** ล๊อคฟิวส์พวกข้อมูลบนบัตรประชาชนไม่ให้แก้ไขกรณี case มาจากการ dipchip (dipchip_uuid is not null || dipchip_uuid !== '')
+
+      //           // if(quodata.dipchip_uuid !== '' && quodata.dipchip_uuid !== null) {
+      //           //   this.cizForm.controls.maincitizenForm.disable()
+      //           // }
+
+      //         }
+      //       } else {
+      //         this.loadingService.hideLoader();
+
+      //         if (this.userSession.RADMIN == 'Y') {
+      //           this.showdipchipbtn = false;
+      //         } else {
+      //           this.showdipchipbtn = true;
+      //         }
+      //       }
+      //     }
+      //   }
+      //   , error: (e) => {
+      //     this.loadingService.hideLoader()
+      //     this.snackbarfail(`error : ${e.message ? e.message : 'No return message'}`)
+      //     console.log(`Error on get observable quotation result : ${e.messgae ? e.message : `No return message`}`)
+      //   }, complete: () => {
+      //     this.loadingService.hideLoader()
+      //     console.log(`complete forkjoin !`)
+      //   }
+      // })
+
     } else {
       this.loadingService.hideLoader()
+
+
+      if (this.userSession.RADMIN == 'Y') {
+        this.showdipchipbtn = false;
+      } else {
+        this.showdipchipbtn = true;
+      }
     }
 
 
@@ -718,7 +807,6 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
           const citizenSession: any = result
           citizenSession.imageUrl = this.cizCardImage
           sessionStorage.setItem('citizenSession', JSON.stringify(citizenSession));
-
           this.cizForm.markAsDirty()
           this.dipchipRes.emit({ status: true, uuid: dipchipdata.UUID })
 

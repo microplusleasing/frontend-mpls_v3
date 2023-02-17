@@ -50,10 +50,10 @@
                         บันทึกข้อมูล
                     </button><br>
                 </div>
-                <div *ngIf="!verifyeconsent || true" class="flex-center">
+                <div *ngIf="!verifyeconsent" class="flex-center">
                     <!-- <button mat-raised-button color="primary" (click)="onclickEconsentBtn()" [disabled]="!this.productdetailtab.productForm.controls.detailForm.valid"> -->
                     <button mat-raised-button color="primary" (click)="onclickEconsentBtn()"
-                        [disabled]="this.econsentbtnDisable && false">
+                        [disabled]="this.econsentbtnDisable">
                         ยืนยันการสมัคร
                     </button>
                 </div>

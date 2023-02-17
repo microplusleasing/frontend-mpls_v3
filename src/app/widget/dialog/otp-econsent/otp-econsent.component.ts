@@ -10,6 +10,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BaseService } from 'src/app/service/base/base.service';
 import { IUserTokenData } from 'src/app/interface/i-user-token';
+import { IDialogEconsentValidClose } from 'src/app/interface/i-dialog-econsent-valid-close';
 
 export interface econsentValue {
   value: boolean;
@@ -275,7 +276,7 @@ export class OtpEconsentComponent extends BaseService implements OnInit {
               if (res_non.status) {
                 // === success update flag econsent ====
                 this.econsent_valid_status = true
-                this.dialogRef.close({ status: this.econsent_valid_status, data: '' });
+                this.dialogRef.close({ status: this.econsent_valid_status, data: 'fail' } as IDialogEconsentValidClose);
               } else {
                 // === fail to update flag econsent ==== 
                 this.snackbarfail(`ไม่สามารถทำรายการได้ : ${res_non.message}`)

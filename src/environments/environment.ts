@@ -5,7 +5,7 @@
 
 // === local serve === 
 export const environment = {
-  production: false,
+  production: true,
   apiurl: 'localhost',
   apiportsign: ':',
   apiport: '4000',

@@ -39,7 +39,8 @@
     <div>
         <div style="text-align: center;">
             <button *ngIf="showconfirmbtn" [disabled]="lockconfirmbtn" mat-raised-button color="primary" style="margin-top: 2em;"
-                (click)="onclickconfirmqrpaymentbtn()">
+                (click)="onclickconfirmqrpaymentbtn_no_sms()">
+                <!-- (click)="onclickconfirmqrpaymentbtn()"> -->
                 ยืนยันการชำระเงิน
             </button>
             <br><br>

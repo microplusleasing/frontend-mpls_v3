@@ -85,7 +85,10 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   district = new FormControl('', Validators.required)
   provinceName = new FormControl<string | undefined>('', Validators.required)
   provinceCode = new FormControl<string | undefined>('', Validators.required) // not show
-  postalCode = new FormControl('', Validators.pattern('^[0-9]{5}$'))
+  postalCode = new FormControl('', [
+    Validators.required,
+    Validators.pattern('^[0-9]{5}$')
+  ])
 
   // === ข้อมูลทั่วไป ===
   phoneNumber = new FormControl<string>('', [
@@ -612,6 +615,9 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
               // === *** เงื่อนไขใหม่ ถ้าหากมีข้อมูล dipchip ไม่ว่าจะมี dopa หรือ ไม่มี ให้ lock field พวกข้อมูลบัตรประชาชน *** ===
               this.cizForm.controls.maincitizenForm.disable() // === set on 03/01/2023 ===
+
+              // === new valid (if postal code of ciz_card null unlock field) 20/02/2023 ====
+              !quodata.ciz_postal_code ? this.cizForm.controls.maincitizenForm.controls.postalCode.enable() : {};
             }
 
             if (quodata.ciz_phone_valid_status == 'Y') {
@@ -743,6 +749,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     // === check lock form when quo_status = 1 (lock all field) 
     if (quoitem.quo_status == 1) {
       this.cizForm.disable()
+      //
       this.lockallbtn = true
     }
 

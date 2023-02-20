@@ -1,0 +1,103 @@
+<div class="container-fluid">
+
+    <ng-container *ngIf="cardLayout | async as layout" style="text-align: left;">
+        <mat-grid-list [cols]="layout.columns" [rowHeight]="layout.rowHeight" style="margin-left: 2em; margin-top: 2em;">
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p> <span id="header-label">สาขา : </span>{{mrtainfodata.branch_name}}</p>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p> <span id="header-label">ชื่อ : </span>{{mrtainfodata.first_name}}</p>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p><span id="header-label">นามสกุล : </span>{{mrtainfodata.last_name}}</p>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p><span id="header-label">เลขที่ใบสมัคร : </span>{{mrtainfodata.application_num}}</p>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p><span id="header-label">เลขที่สัญญา : </span>{{mrtainfodata.contract_no ?
+                        mrtainfodata.contract_no :
+                        '-'}}</p>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p><span id="header-label">วันที่สมัคร : </span>{{mrtainfodata.application_date}}</p>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p><span id="header-label">ชื่อดีลเลอร์ : </span>{{mrtainfodata.dl_name}}</p>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p><span id="header-label">ยี่ห้อรถ : </span>{{mrtainfodata.motorcycle_brands}}</p>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p><span id="header-label">รุ่นรถ : </span>{{mrtainfodata.motorcycle_models}}</p>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p><span id="header-label">สีรถ : </span>{{mrtainfodata.colors}}</p>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p><span id="header-label">First Due : </span>{{mrtainfodata.first_installment_paid_date}}</p>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p><span id="header-label">ค่างวด : </span>{{(mrtainfodata.monthly | number)}} บาท</p>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p><span id="header-label">จำนวนงวด : </span>{{mrtainfodata.period}} งวด</p>
+                </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols4">
+                <div class="text-inside-grid">
+                    <p><span id="header-label">ยอดกู้ : </span>{{(mrtainfodata.out_stand | number)}} บาท</p>
+                </div>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </ng-container>
+    <div class="card card-information" *ngIf="!loaddatafinish">
+        <div class="row" style="text-align: center;">
+            <h3>{{textnotfound}}</h3>
+        </div>
+
+    </div>
+
+    <mat-tab-group dynamicHeight [(selectedIndex)]="qrTabIndex" style="margin-top: 1em; margin-left: 1em;">
+        <mat-tab label="หน้าคำนวณประกัน MRTA">
+            <div style="margin-top: 1em;">
+                <app-mrta-product [pay_status]="pay_status" [active_status]="active_status"
+                    [insurance_code]="insurance_code" [insurance_year]="insurance_year"
+                    [insurance_seller]="insurance_seller" [age]="age" [gender]="gender" [out_stand]="out_stand"
+                    [showseller]="true" (emitqrtoparentclickbtn)="receiveEmitChildClickBtn($event)"
+                    (emitqrtoparentshowqr)="receiveEmitChildShowQR($event)"></app-mrta-product>
+            </div>
+        </mat-tab>
+        <mat-tab label="สร้าง QR CODE สำหรับชำระค่าประกัน MRTA" [disabled]="lockqrpage">
+            <div style="margin-top: 1em;">
+                <app-qr-barcode-mrta [qrpaymentdata]="this.MRTAdata" (genfinish)="checkqrgenfinish($event)"
+                    (updatepaymentstatus)="updatepaymentStatus($event)"></app-qr-barcode-mrta>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>

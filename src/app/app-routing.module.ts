@@ -8,6 +8,7 @@ import { DashboardComponent } from './page/dashboard/dashboard.component';
 import { NotFoundComponent } from './page/not-found/not-found.component';
 import { ViewsignComponent } from './page/view/viewsign/viewsign.component';
 import { BypassSignatureComponent } from './page/bypass-signature/bypass-signature.component';
+import { MrtaInfoComponent } from './page/view/mrta/mrta-info/mrta-info.component';
 
 const routes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthGuardService] },
@@ -17,6 +18,8 @@ const routes: Routes = [
   { path: 'quotation-detail/:id', component: QuotationDetailComponent, canActivate: [AuthGuardService] },
   { path: 'bypass', component: BypassSignatureComponent, canActivate: [AuthGuardService] },
   { path: 'bypass/:id', component: BypassSignatureComponent, canActivate: [AuthGuardService] },
+  { path: 'mrta-info', component: MrtaInfoComponent, canActivate: [AuthGuardService]},
+  { path: 'mrta-info/:id', component: MrtaInfoComponent, canActivate: [AuthGuardService] },
   { path: 'viewsign', component: ViewsignComponent },
   { path: 'notfound', component: NotFoundComponent },
   { path: '**', redirectTo: 'notfound', pathMatch: 'full' }

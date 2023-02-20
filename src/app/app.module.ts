@@ -44,6 +44,7 @@ import { BypassSignatureComponent } from './page/bypass-signature/bypass-signatu
 import { MrtaListComponent } from './page/view/mrta/mrta-list/mrta-list.component';
 import { CreditDisclosureConsentComponent } from './page/quotation-tab/signature-tab/consent/credit-disclosure-consent/credit-disclosure-consent.component';
 import { FinishQuotationDialogComponent } from './widget/dialog/finish-quotation-dialog/finish-quotation-dialog.component';
+import { MrtaInfoComponent } from './page/view/mrta/mrta-info/mrta-info.component';
 
 @NgModule({
   declarations: [
@@ -82,6 +83,7 @@ import { FinishQuotationDialogComponent } from './widget/dialog/finish-quotation
     MrtaListComponent,
     CreditDisclosureConsentComponent,
     FinishQuotationDialogComponent,
+    MrtaInfoComponent,
   ],
   imports: [
     BrowserModule,

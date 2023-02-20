@@ -410,7 +410,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         this.cizcardtab.cizForm.controls.livingAddress.valid &&
         this.cizcardtab.cizForm.controls.contactAddress.valid &&
         this.cizcardtab.cizForm.controls.houseRegisAddress.valid &&
-        this.cizcardtab.cizForm.controls.workAddress.valid
+        this.cizcardtab.cizForm.controls.workAddress.valid &&
+        this.cizcardtab.cizForm.controls.maincitizenForm.valid // (add main citizen valid on form when save (add-on 20/02/2023) *** for handle case with no contain postal code include ***)
       ) {
         this.createorupdatecitizendataDisable = false
       } else {
@@ -455,7 +456,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.quotationService.cleardopastatus()
     if (this.quoid) {
       // === set Observable quotation (quotationResult$) ===
-      console.log(`test`)
+      // console.log(`test`)
       this.quotationResult$.next(await lastValueFrom(this.quotationService.getquotationbyid(this.quoid)))
       if (this.quotationResult$.value.data.length !== 0) {
 
@@ -1471,7 +1472,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         followup_consent_value: pdpa_form.controls.followup_consent_value.value ? pdpa_form.controls.followup_consent_value.value : 0,
         info_develop_consent_value: pdpa_form.controls.info_develop_consent_value.value ? pdpa_form.controls.info_develop_consent_value.value : 0,
         // *** E-paper ***
-        e_paper_consent_value: e_paper_form.controls.epaperconsentvalue.value ? e_paper_form.controls.epaperconsentvalue.value : 0,
+        e_paper_consent_value: e_paper_form.controls.epaperconsentvalue.value == 1 ? 1 : 0,
+        // e_paper_consent_value: e_paper_form.controls.epaperconsentvalue.value == 1 ? 'Y' : 'N',
       }
 
       console.log(`data for create consent : ${JSON.stringify(quotationdata)}`)

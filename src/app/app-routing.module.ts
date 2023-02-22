@@ -9,6 +9,8 @@ import { NotFoundComponent } from './page/not-found/not-found.component';
 import { ViewsignComponent } from './page/view/viewsign/viewsign.component';
 import { BypassSignatureComponent } from './page/bypass-signature/bypass-signature.component';
 import { MrtaInfoComponent } from './page/view/mrta/mrta-info/mrta-info.component';
+import { CollectorViewComponent } from './page/collector/collector-view/collector-view.component';
+import { CollectorDetailComponent } from './page/collector/collector-detail/collector-detail.component';
 
 const routes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthGuardService] },
@@ -20,6 +22,9 @@ const routes: Routes = [
   { path: 'bypass/:id', component: BypassSignatureComponent, canActivate: [AuthGuardService] },
   { path: 'mrta-info', component: MrtaInfoComponent, canActivate: [AuthGuardService]},
   { path: 'mrta-info/:id', component: MrtaInfoComponent, canActivate: [AuthGuardService] },
+  { path: 'collector-view', component: CollectorViewComponent, canActivate: [AuthGuardService] },
+  { path: 'collector-detail', component: CollectorDetailComponent, canActivate: [AuthGuardService] },
+  { path: 'collector-detail/:id', component: CollectorDetailComponent, canActivate: [AuthGuardService] },
   { path: 'viewsign', component: ViewsignComponent },
   { path: 'notfound', component: NotFoundComponent },
   { path: '**', redirectTo: 'notfound', pathMatch: 'full' }

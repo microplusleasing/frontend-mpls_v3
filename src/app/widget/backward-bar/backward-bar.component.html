@@ -1,0 +1,25 @@
+<div class="header">
+    <div class="mac-header" >
+        <!-- <h3 class="textinside">{{(textShow$ | async)}}</h3> -->
+        <!-- <button mat-icon-button style="padding-left: 2em;" (click)="onclickbackward()">
+            <mat-icon>arrow_back</mat-icon>
+            <span> Back</span>
+        </button> -->
+        <div class="flexpos">
+            <div>
+                <button mat-icon-button style="padding-left: 2em;" (click)="onclickbackward()">
+                    <mat-icon>arrow_back</mat-icon>
+                    <span> Back</span>
+                </button>
+            </div>
+            <div></div>
+            <div>
+                <button mat-flat-button color="primary" 
+                [disabled]="disablecarcheckbtn" 
+                (click)="onclickcarcheck()"
+                style="margin-top: 0.3em; margin-bottom: 0.3em;"
+                > เปิดหน้าเช็คสภาพรถ</button>
+            </div>
+        </div>
+    </div>
+</div>

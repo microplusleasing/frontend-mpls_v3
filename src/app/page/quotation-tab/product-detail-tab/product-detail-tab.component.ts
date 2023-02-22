@@ -875,19 +875,19 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   })
 
                   // // === stamp dealer code ==== 
-                  // const sessionData = this.userSessionQuotation
-                  // // === checker ===
-                  // if (sessionData.channal == 'checker') {
-                  //   if (quoitem.sl_code) {
-                  //     this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code);
-                  //   }
-                  // } else {
-                  //   // === store ==== 
-                  //   if (this.userSessionQuotation.SELLER_ID) {
-                  //     this.productForm.controls.detailForm.controls.dealerCode.setValue(this.userSessionQuotation.SELLER_ID);
-                  //     this.productForm.controls.detailForm.controls.dealerCode.disable();
-                  //   }
-                  // }
+                  const sessionData = this.userSessionQuotation
+                  // === checker ===
+                  if (sessionData.value.channal == 'checker') {
+                    if (quoitem.sl_code) {
+                      this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code);
+                    }
+                  } else {
+                    // === store ==== 
+                    if (this.userSessionQuotation.value.seller_id) {
+                      this.productForm.controls.detailForm.controls.dealerCode.setValue(this.userSessionQuotation.value.seller_id);
+                      this.productForm.controls.detailForm.controls.dealerCode.disable();
+                    }
+                  }
 
                   // === stamp value to field ==== 
                   this.productForm.controls.detailForm.controls.dealerCode.setValue(qdealercode, { emitEvent: false })

@@ -16,6 +16,8 @@ import { LoadingService } from 'src/app/service/loading.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent extends BaseService {
+
+  type: string = '';
   // mainForm: FormGroup;
   showmessage: boolean = false;
   messagetext: string | undefined;
@@ -38,6 +40,8 @@ export class LoginComponent extends BaseService {
   showlogin: boolean = true;
   showresetpassword: boolean = false;
   showforgetpassword: boolean = false;
+  showheader: boolean = true;
+  showfooter: boolean = true;
 
   showexpiretxt: boolean = true;
 
@@ -139,6 +143,11 @@ export class LoginComponent extends BaseService {
 
   ) {
     super(dialog, _snackBar)
+
+    this.route.queryParams.subscribe((value) => {
+      this.type = value['type']
+    })
+
   }
 
   get f(): { [key: string]: AbstractControl } {
@@ -209,6 +218,16 @@ export class LoginComponent extends BaseService {
         }
       }
     }
+
+    if (this.type == 'repass') {
+      // === open page change pass ===
+      this.showexpiretxt = false
+      this.showforgetpassword = false
+      this.showlogin = false
+      this.showresetpassword = true
+      this.showheader = false
+      this.showfooter = false
+    }
   }
 
   submitForm() {
@@ -235,7 +254,7 @@ export class LoginComponent extends BaseService {
                 this.router.navigate(['/quotation-view']);
               } else if (data.usertype == 2) {
                 // === fcr : 2 ====
-                this.router.navigate(['/quotation-view']);
+                this.router.navigate(['/collector-view']);
               } else if (data.usertype == 0) {
                 // === dealer : 0  ====
                 this.router.navigate(['/quotation-view']);

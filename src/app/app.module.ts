@@ -45,6 +45,9 @@ import { MrtaListComponent } from './page/view/mrta/mrta-list/mrta-list.componen
 import { CreditDisclosureConsentComponent } from './page/quotation-tab/signature-tab/consent/credit-disclosure-consent/credit-disclosure-consent.component';
 import { FinishQuotationDialogComponent } from './widget/dialog/finish-quotation-dialog/finish-quotation-dialog.component';
 import { MrtaInfoComponent } from './page/view/mrta/mrta-info/mrta-info.component';
+import { CollectorViewComponent } from './page/collector/collector-view/collector-view.component';
+import { CollectorDetailComponent } from './page/collector/collector-detail/collector-detail.component';
+import { BackwardBarComponent } from './widget/backward-bar/backward-bar.component';
 
 @NgModule({
   declarations: [
@@ -84,6 +87,9 @@ import { MrtaInfoComponent } from './page/view/mrta/mrta-info/mrta-info.componen
     CreditDisclosureConsentComponent,
     FinishQuotationDialogComponent,
     MrtaInfoComponent,
+    CollectorViewComponent,
+    CollectorDetailComponent,
+    BackwardBarComponent,
   ],
   imports: [
     BrowserModule,

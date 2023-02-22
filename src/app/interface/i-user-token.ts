@@ -10,6 +10,7 @@ export interface IUserTokenData {
     EXPIRE_DATE: string;
     channal: string;
     FULLNAME: string;
+    seller_id: string;
     ID: string;
 }
 

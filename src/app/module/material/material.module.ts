@@ -23,6 +23,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSliderModule } from '@angular/material/slider';
+import {CdkAccordionModule} from '@angular/cdk/accordion';
 
 
 @NgModule({
@@ -53,7 +54,8 @@ import { MatSliderModule } from '@angular/material/slider';
     MatAutocompleteModule,
     MatSnackBarModule,
     MatRadioModule,
-    MatSliderModule
+    MatSliderModule,
+    CdkAccordionModule
   ]
 })
 export class MaterialModule { }

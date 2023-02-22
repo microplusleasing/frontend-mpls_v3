@@ -1,6 +1,6 @@
 import { SmsService } from 'src/app/service/sms.service';
 import { MasterDataService } from 'src/app/service/master.service';
-import { IMartaPaymentInsurance } from 'src/app/interface/i-marta-payment-insurance';
+import { IMartaPaymentInsurance } from 'src/app/interface/i-mrta-payment-insurance';
 import { ImageUtilService } from 'src/app/service/image-util.service';
 import { ImageService } from 'src/app/service/image.service';
 import { Component, Input, OnInit, Output, SimpleChanges, EventEmitter } from '@angular/core';

@@ -1,0 +1,27 @@
+h1,
+h2,
+h3 {
+    font-family: Prompt;
+    text-align: left;
+    padding-left: 2em;
+}
+
+
+.header {
+    width: 100%;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 2.5em;
+    z-index: 999;
+}
+
+.mac-header {
+    height: 3em;
+    background: linear-gradient(to bottom, #f4f4f4, #cdcdcd);
+}
+
+.flexpos {
+    display: flex;
+    margin: auto;
+    justify-content: space-between;
+}

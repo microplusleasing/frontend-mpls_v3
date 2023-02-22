@@ -7,7 +7,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, forkJoin, lastValueFrom, map, Observable, Subject } from 'rxjs';
 import SignaturePad from 'signature_pad';
 import { IImageData } from 'src/app/interface/i-image';
-import { IMartaPaymentInsurance } from 'src/app/interface/i-marta-payment-insurance';
+import { IMartaPaymentInsurance } from 'src/app/interface/i-mrta-payment-insurance';
 import { IReqSaveQrMrta } from 'src/app/interface/i-req-save-qr-mrta';
 import { IResInsurance } from 'src/app/interface/i-res-insurance';
 import { IResQuotationDetail } from 'src/app/interface/i-res-quotation-detail';

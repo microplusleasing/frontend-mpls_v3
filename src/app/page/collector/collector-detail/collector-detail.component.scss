@@ -1,0 +1,137 @@
+.mat-card.gray-matcard {
+	background-color: rgba(0, 0, 0, 0.05)
+}
+
+@media only screen and (max-width: 760px) {
+
+	table.table-responsive td,
+	table.table-responsive tr {
+		display: block;
+	}
+
+	/* Hide table headers (but not display: none;, for accessibility) */
+	table.table-responsive thead tr {
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+
+	table.table-responsive tr {
+		border: 1px solid #E74C3C;
+	}
+
+	table.table-responsive tr+table.table-responsive tr {
+		margin-top: 1.5em;
+	}
+
+	table.table-responsive td {
+		/* make like a "row" */
+		border: none;
+		border-bottom: 1px solid #eee;
+		position: relative;
+		padding-left: 50%;
+		// background-color: #F8D9D5;
+		background-color: none;
+		text-align: left;
+	}
+
+	table.table-responsive td:before {
+		content: attr(data-label);
+		display: inline-block;
+		line-height: 1.5;
+		margin-left: -100%;
+		width: 100%;
+		white-space: nowrap;
+	}
+}
+
+.wrapper {
+	width: 100%;
+	// border: 1px solid black;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.success-mat-snackbar {
+	color: lightgreen;
+}
+
+.fail-mat-snackbar {
+	color: rgb(255, 52, 52)
+}
+
+
+table.table-responsive-allres td,
+table.table-responsive-allres tr {
+	display: block;
+}
+
+/* Hide table headers (but not display: none;, for accessibility) */
+table.table-responsive-allres thead tr {
+	position: absolute;
+	top: -9999px;
+	left: -9999px;
+}
+
+table.table-responsiv-allrese tr {
+	border: 1px solid #E74C3C;
+}
+
+table.table-responsive-allres tr+table.table-responsive-allres tr {
+	margin-top: 1.5em;
+}
+
+table.table-responsive-allres td {
+	/* make like a "row" */
+	border: none;
+	border-bottom: 1px solid #eee;
+	position: relative;
+	padding-left: 50%;
+	// background-color: #F8D9D5;
+	background-color: none;
+	text-align: left;
+}
+
+table.table-responsive-allres td:before {
+	content: attr(data-label);
+	display: inline-block;
+	line-height: 1.5;
+	margin-left: -100%;
+	width: 100%;
+	white-space: nowrap;
+}
+
+.cardarea {
+	width: 500px;
+	height: 350px;
+	margin: 0 auto;
+
+}
+
+.flexpos {
+	display: flex;
+	margin: 0 auto;
+	justify-content: space-between;
+}
+
+h1,
+h2,
+h3 {
+	font-family: prompt;
+}
+
+.container-card {
+    display: flex;
+    justify-content: center;
+  }
+
+/// ==== angular arcordian ==== 
+.example-headers-align .mat-expansion-panel-header-description {
+	justify-content: space-between;
+	align-items: center;
+  }
+  
+  .example-headers-align .mat-form-field + .mat-form-field {
+	margin-left: 8px;
+  }

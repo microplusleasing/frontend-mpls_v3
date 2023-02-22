@@ -8,7 +8,7 @@ import { IResMrtaProduct } from '../interface/i-res-mrta-product';
 import { environment } from 'src/environments/environment';
 import { IResMasterMrtaSeller } from '../interface/i-res-master-mrta-seller';
 import { DOCUMENT } from '@angular/common';
-import { IMrtaQrBarcode } from '../interface/i-marta-qr-barcode';
+import { IMrtaQrBarcode } from '../interface/i-mrta-qr-barcode';
 
 @Injectable({
   providedIn: 'root'

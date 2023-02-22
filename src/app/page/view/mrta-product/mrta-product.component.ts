@@ -4,7 +4,7 @@ import { IResMrtaProductData } from 'src/app/interface/i-res-mrta-product';
 import { MasterDataService } from 'src/app/service/master.service';
 import { AbstractControl, FormBuilder, FormControl, ValidatorFn } from '@angular/forms';
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
-import { IMartaPaymentInsurance } from 'src/app/interface/i-marta-payment-insurance';
+import { IMartaPaymentInsurance } from 'src/app/interface/i-mrta-payment-insurance';
 
 @Component({
   selector: 'app-mrta-product',

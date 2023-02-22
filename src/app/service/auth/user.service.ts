@@ -41,9 +41,9 @@ export class UserService {
         }).afterClosed().subscribe(result => {
           // === not stage here ===
           if (userdataObj.channal == 'collector') {
-            this.router.navigate(['/collector'])
+            this.router.navigate(['/collector-view'])
           } else {
-            this.router.navigate(['/main'])
+            this.router.navigate(['/'])
           }
         });
       } else {

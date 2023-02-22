@@ -5,7 +5,7 @@ import { lastValueFrom, map, Observable } from 'rxjs';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { BtwService } from 'src/app/service/btw.service';
 import { Component, OnInit } from '@angular/core';
-import { IMartaPaymentInsurance } from 'src/app/interface/i-marta-payment-insurance'; // replace for Mrtapaymentisurance
+import { IMartaPaymentInsurance } from 'src/app/interface/i-mrta-payment-insurance'; // replace for Mrtapaymentisurance
 import { IReqSaveQrMrta } from 'src/app/interface/i-req-save-qr-mrta';
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 import { BreakpointObserver } from '@angular/cdk/layout';

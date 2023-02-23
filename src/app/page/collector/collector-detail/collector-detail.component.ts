@@ -6,7 +6,7 @@ import { IResGetphonenolist, IResGetphonenolistData } from 'src/app/interface/i-
 import { IUserToken, IUserTokenData } from 'src/app/interface/i-user-token'; // replace IUserToken, IUserTokenData
 import { IResGetnegotiationbyidData } from 'src/app/interface/i-res-getnegotiationbyid'; // replace IResGetnegotiationbyidData
 import { MasterDataService } from 'src/app/service/master.service';
-import { UntypedFormControl, UntypedFormGroup, Validators, UntypedFormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { IResGethistorypaymentlist, IResGethistorypaymentlistData } from 'src/app/interface/i-res-gethistorypaymentlist'; // replace IResGethistorypaymentlist, IResGethistorypaymentlistData
 import { IResGetaddresscustlist, IResGetaddresscustlistData } from 'src/app/interface/i-res-getaddresscustlist'; // replace IResGetaddresscustlist, IResGetaddresscustlistData
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
@@ -49,7 +49,7 @@ export class CollectorDetailComponent implements OnInit {
 
   // ** query param id (applicationid) = contract_no in mpls_quotation , (HP_NO) **
 
-  followupForm: UntypedFormGroup;
+  // followupForm: UntypedFormGroup;
   applicationid: string = '';
   customerid: string = '';
   citizenid: string = '';
@@ -162,27 +162,63 @@ export class CollectorDetailComponent implements OnInit {
   chkrefpaynum: boolean = false;
 
   cardLayout = this.breakpointObserver
-  .observe('(min-width: 800px)')
-  .pipe(
-    map(({ matches }) => {
-      if (matches) {
-        return {
-          columns: 12,
-          list: { maxcols: 12, cols6: 6, cols4: 4, cols3: 3, cols2: 2, col: 1 },
-          card_width: '80%'
-        };
-      }
+    .observe('(min-width: 800px)')
+    .pipe(
+      map(({ matches }) => {
+        if (matches) {
+          return {
+            columns: 12,
+            list: { maxcols: 12, cols6: 6, cols4: 4, cols3: 3, cols2: 2, col: 1 },
+            card_width: '80%',
+            rowHeight: 90
+          };
+        }
 
-      return {
-        columns: 1,
-        list: { maxcols: 1, cols6: 1, cols4: 1, cols3: 1, cols2: 1, col: 1 },
-        card_width: '90%'
-      };
-    })
-  );
+        return {
+          columns: 1,
+          list: { maxcols: 1, cols6: 1, cols4: 1, cols3: 1, cols2: 1, col: 1 },
+          card_width: '90%',
+          rowHeight: 70
+        };
+      })
+    );
+
+  // negofollowup
+  contactresultfield = new FormControl('', Validators.required)
+  appointmentdatefield = new FormControl()
+  message1field = new FormControl('', Validators.required)
+  message2field = new FormControl()
+
+  // negolalon
+
+  lalonField = new FormControl('')
+  laField = new FormControl('', Validators.required)
+  lonField = new FormControl('', Validators.required)
+
+  // negofollowup form
+  negofollowup = this.fb.group({
+    contactresultfield: this.contactresultfield,
+    appointmentdatefield: this.appointmentdatefield,
+    message1field: this.message1field,
+    message2field: this.message2field
+  })
+
+  // negolalon form
+  negolalon = this.fb.group({
+    lalonField: this.lalonField,
+    laField: this.laField,
+    lonField: this.laField
+  })
+
+  // followupForm form (Build form)
+
+  followupForm = this.fb.group({
+    negofollowup: this.negofollowup,
+    negolalon: this.negolalon
+  })
 
   constructor(
-    private fb: UntypedFormBuilder,
+    private fb: FormBuilder,
     private actRoute: ActivatedRoute,
     private negotiationService: NegotiationService,
     private dialog: MatDialog,
@@ -194,20 +230,6 @@ export class CollectorDetailComponent implements OnInit {
     private imageUtilService: ImageUtilService,
     private breakpointObserver: BreakpointObserver,
   ) {
-    this.followupForm = this.fb.group({
-      negofollowup: this.fb.group({
-        contactresultfield: new UntypedFormControl('', Validators.required),
-        appointmentdatefield: new UntypedFormControl(),
-        message1field: new UntypedFormControl('', Validators.required),
-        message2field: new UntypedFormControl()
-      }),
-      negolalon: this.fb.group({
-        lalonField: new UntypedFormControl(''),
-        laField: new UntypedFormControl('', Validators.required),
-        lonField: new UntypedFormControl('', Validators.required)
-      })
-    })
-
     // === get query params ===
     this.route.queryParams.subscribe(params => {
       this.fname = params['fname'];
@@ -261,7 +283,7 @@ export class CollectorDetailComponent implements OnInit {
               if (resultsphone.status == 200) {
                 this.phonedataList = resultsphone.data
                 this.phone_dataSource = new MatTableDataSource(this.phonedataList)
-                this.phone_dataSource.paginator = this.history_paginator
+                this.phone_dataSource.paginator = this.phone_paginator
                 this.phone_pageLength = resultsphone.rowcount
                 this.phone_pageSize = resultsphone.pagesize
                 this.phone_dataSource.sort = this.history_sort
@@ -282,7 +304,7 @@ export class CollectorDetailComponent implements OnInit {
               if (resultsphonecust.status == 200) {
                 this.phonedatacustList = resultsphonecust.data
                 this.phonecust_dataSource = new MatTableDataSource(this.phonedatacustList)
-                this.phonecust_dataSource.paginator = this.history_paginator
+                this.phonecust_dataSource.paginator = this.phonecust_paginator
                 this.phonecust_pageLength = resultsphonecust.rowcount
                 this.phonecust_pageSize = resultsphonecust.pagesize
                 this.phonecust_dataSource.sort = this.history_sort
@@ -312,7 +334,7 @@ export class CollectorDetailComponent implements OnInit {
           this.negotiationService.gethistorypaymentlist(1, this.applicationid).subscribe({
             next: (resultHistory) => {
 
-              if (resultHistory.status == 200) {
+              if (resultHistory.status == 200) { 
                 this.historydataList = resultHistory.data
                 this.history_dataSource = new MatTableDataSource(this.historydataList)
                 this.history_dataSource.paginator = this.history_paginator
@@ -328,6 +350,7 @@ export class CollectorDetailComponent implements OnInit {
               // === nex step ===
             }
           })
+
           this.negotiationService.getaddresscustlist(1, this.applicationid).subscribe({
             next: (resultAddress) => {
 
@@ -692,8 +715,8 @@ export class CollectorDetailComponent implements OnInit {
 
     this.negotiationService.updatenegolalon({
       applicationid: this.applicationid,
-      latitude: la,
-      longitude: lon
+      latitude: la ?? '',
+      longitude: lon ?? ''
     }).subscribe({
       next: (resultupdatenegolalon) => {
 

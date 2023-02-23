@@ -43,6 +43,14 @@
 		width: 100%;
 		white-space: nowrap;
 	}
+
+	// table{
+	// 	table-layout: fixed;
+	// }
+
+	// tr,td{
+	// 	word-wrap:break-word
+	// }
 }
 
 .wrapper {
@@ -122,16 +130,35 @@ h3 {
 }
 
 .container-card {
-    display: flex;
-    justify-content: center;
-  }
+	display: flex;
+	justify-content: center;
+}
 
 /// ==== angular arcordian ==== 
 .example-headers-align .mat-expansion-panel-header-description {
 	justify-content: space-between;
 	align-items: center;
+}
+
+.mat-expansion-panel-header {
+	margin-bottom: 1em;
+}
+
+.example-headers-align .mat-form-field+.mat-form-field {
+	margin-left: 8px;
+}
+
+  
+  /* Set background color when header is clicked */
+  .mat-expansion-panel-header.mat-expanded {
+	background-color: #e7f1ff;
+  }
+
+  .mat-expansion-panel-header.mat-expanded:hover {
+	background-color: #e7f1ff;
+  }
+
+  .mat-expansion-panel-header.mat-expanded:focus {
+	background-color: #e7f1ff;
   }
   
-  .example-headers-align .mat-form-field + .mat-form-field {
-	margin-left: 8px;
-  }

@@ -723,8 +723,22 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
               // *** check for stamp record data to form ====
               if (!recordExists) {
-
                 // === no record exist ===
+
+                // // === stamp dealer code ==== 
+                const sessionData = this.userSessionQuotation
+                // === checker ===
+                if (sessionData.value.channal == 'checker') {
+                  if (quoitem.sl_code) {
+                    this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code);
+                  }
+                } else {
+                  // === store ==== 
+                  if (this.userSessionQuotation.value.SELLER_ID) {
+                    this.productForm.controls.detailForm.controls.dealerCode.setValue(this.userSessionQuotation.value.SELLER_ID);
+                    this.productForm.controls.detailForm.controls.dealerCode.disable();
+                  }
+                }
               } else {
 
                 // === already have record (have quo_key_app_id) ===
@@ -883,8 +897,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     }
                   } else {
                     // === store ==== 
-                    if (this.userSessionQuotation.value.seller_id) {
-                      this.productForm.controls.detailForm.controls.dealerCode.setValue(this.userSessionQuotation.value.seller_id);
+                    if (this.userSessionQuotation.value.SELLER_ID) {
+                      this.productForm.controls.detailForm.controls.dealerCode.setValue(this.userSessionQuotation.value.SELLER_ID);
                       this.productForm.controls.detailForm.controls.dealerCode.disable();
                     }
                   }

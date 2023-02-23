@@ -42,6 +42,7 @@ export class LoginComponent extends BaseService {
   showforgetpassword: boolean = false;
   showheader: boolean = true;
   showfooter: boolean = true;
+  showheaderbar: boolean = true;
 
   showexpiretxt: boolean = true;
 
@@ -227,6 +228,7 @@ export class LoginComponent extends BaseService {
       this.showresetpassword = true
       this.showheader = false
       this.showfooter = false
+      this.showheaderbar = false
     }
   }
 

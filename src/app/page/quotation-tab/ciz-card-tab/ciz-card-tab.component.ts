@@ -153,7 +153,10 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   age = new FormControl<Number | null>(null, [Validators.min(20), Validators.required]) // === under 20 years age can't create quotation ===
   phoneValid = new FormControl<boolean>(false, Validators.requiredTrue) /// ==== Validator OTP phone status ====
   facecompareValid = new FormControl<boolean>(false, Validators.requiredTrue) /// ==== face vertify dialog ====
+  isdipchip: boolean = true; // ==== check for dipchip auto stamp or manual case (use for trigger valueChange on field that master (province, title))
+
   // *** waiting dopa status check ***
+
 
   maincitizenForm = this.fb.group({
     age: this.age,
@@ -264,30 +267,57 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       this.quotationid = params['id']
     });
 
+    // === manual ===
+    this.cizForm.controls.maincitizenForm.controls.provinceCode.valueChanges.subscribe((value) => {
+      if (!this.isdipchip) {
+        const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_code })
+        this.cizForm.controls.maincitizenForm.controls.provinceName.setValue(provSelect?.prov_name ? provSelect?.prov_name : '')
+      }
+    })
+
+    this.cizForm.controls.maincitizenForm.controls.titleCode.valueChanges.subscribe((value) => {
+      if (!this.isdipchip) {
+        const provSelect = this.masterTitle.data.find((res) => { return value == res.title_id })
+        this.cizForm.controls.maincitizenForm.controls.titleName.setValue(provSelect?.title_name ? provSelect?.title_name : '')
+      }
+    })
+
+
+    // === dipchip ===
     this.cizForm.controls.maincitizenForm.controls.provinceName.valueChanges.subscribe((value) => {
-      const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
-      this.cizForm.controls.maincitizenForm.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
+      if (this.isdipchip) {
+        const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
+        this.cizForm.controls.maincitizenForm.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
+      }
 
     })
 
     this.cizForm.controls.livingAddress.controls.provinceName.valueChanges.subscribe((value) => {
-      const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
-      this.cizForm.controls.livingAddress.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect.prov_code : '')
+      if (this.isdipchip) {
+        const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
+        this.cizForm.controls.livingAddress.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect.prov_code : '')
+      }
     })
 
     this.cizForm.controls.contactAddress.controls.provinceName.valueChanges.subscribe((value) => {
-      const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
-      this.cizForm.controls.contactAddress.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
+      if (this.isdipchip) {
+        const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
+        this.cizForm.controls.contactAddress.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
+      }
     })
 
     this.cizForm.controls.houseRegisAddress.controls.provinceName.valueChanges.subscribe((value) => {
-      const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
-      this.cizForm.controls.houseRegisAddress.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
+      if (this.isdipchip) {
+        const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
+        this.cizForm.controls.houseRegisAddress.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
+      }
     })
 
     this.cizForm.controls.workAddress.controls.provinceName.valueChanges.subscribe((value) => {
-      const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
-      this.cizForm.controls.workAddress.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
+      if (this.isdipchip) {
+        const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
+        this.cizForm.controls.workAddress.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
+      }
     })
 
     this.cizForm.controls.livingAddress.controls.lalon.valueChanges.subscribe((value) => {
@@ -818,7 +848,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
           this.dipchipRes.emit({ status: true, uuid: dipchipdata.UUID })
 
         } else if (result.number == 500) {
-
+          this.isdipchip = false
           // === handle token expire === 
           if (result.message == 'Token is Expire') {
             this.dipchipService.addtimetokendipchip().subscribe({
@@ -840,9 +870,11 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
           }
         } else {
           // === do not handle ====
+          this.isdipchip = false
         }
       }, error: (e) => {
         // === error ===
+        this.isdipchip = false
         this.loadingService.hideLoader()
         this.snackbarfail(`Error : ${e.message ? e.message : 'No return message'}`)
       }, complete: () => {

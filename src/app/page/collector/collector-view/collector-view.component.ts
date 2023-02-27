@@ -19,6 +19,7 @@ import { IUserToken } from 'src/app/interface/i-user-token'; // replace IUserTok
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { LoadingService } from 'src/app/service/loading.service';
 
 // export const atLeastOne_v2 = (validator: ValidatorFn, controlNames: string[] = []) => (
 //   control: AbstractControl,
@@ -163,6 +164,7 @@ export class CollectorViewComponent extends BaseService implements OnInit {
     private userService: UserService,
     private route: ActivatedRoute,
     private breakpointObserver: BreakpointObserver,
+    private loadingService: LoadingService,
     public override dialog: MatDialog,
     public override _snackBar: MatSnackBar,
   ) {
@@ -270,86 +272,103 @@ export class CollectorViewComponent extends BaseService implements OnInit {
   }
 
   afteroninit() {
+    this.loadingService.showLoader()
     forkJoin<[IResMasterBranch, IResCarcheckStatus, IResGetviewcontractlist]>(
       [
         this.masterDataService.getbranch(),
         this.masterDataService.getcarcheckstatus(),
         this.negotiationService.getviewcontractlist(1, '', '', '', '', '', '', '', '')
       ]
-    ).subscribe(([resultbranch, resultcarcheckp, resultcontract]) => {
-      if (
-        resultbranch.data.length !== 0 &&
-        resultcarcheckp.data.length !== 0 &&
-        resultcontract
-      ) {
+    ).subscribe({
+      next: ([resultbranch, resultcarcheckp, resultcontract]) => {
+        this.loadingService.hideLoader()
+        if (
+          resultbranch.data.length !== 0 &&
+          resultcarcheckp.data.length !== 0 &&
+          resultcontract
+        ) {
 
-        // == set branch master parameter (17/10/2022) === 
-        this.branchData = resultbranch.data
+          // == set branch master parameter (17/10/2022) === 
+          this.branchData = resultbranch.data
 
-        // === set carcheck status parameter (17/10/2022) ===
-        // this.carcheckstatusData = resultcarcheckp.data
-        this.carcheckstatusData = resultcarcheckp.data
+          // === set carcheck status parameter (17/10/2022) ===
+          // this.carcheckstatusData = resultcarcheckp.data
+          this.carcheckstatusData = resultcarcheckp.data
 
-        // === check result contract list (17/10/2022)  ===
-        if (resultcontract.data.length !== 0) {
-          this.dataList = resultcontract.data
-          this.dataSource.data = this.dataList
-          this.paginator.pageIndex = 0
-          // this.dataSource.paginator = this.paginator
-          this.pageLength = resultcontract.rowcount
-          this.pageSize = resultcontract.pagesize
-          // this.dataSource.sort = this.sort
+          // === check result contract list (17/10/2022)  ===
+          if (resultcontract.data.length !== 0) {
+            this.dataList = resultcontract.data
+            this.dataSource.data = this.dataList
+            this.paginator.pageIndex = 0
+            // this.dataSource.paginator = this.paginator
+            this.pageLength = resultcontract.rowcount
+            this.pageSize = resultcontract.pagesize
+            // this.dataSource.sort = this.sort
+          } else {
+            this.dataList = []
+
+          }
+
         } else {
           this.dataList = []
-
         }
-
-      } else {
-        this.dataList = []
+      }, error: (e) => {
+        this.loadingService.hideLoader()
+        console.log(`Error during forkjoin (getbranch, getcarcheckstatus, getviewcontractlist)`)
+        this.snackbarfail(`${e.message ? e.message : 'Error during forkjoin (getbranch, getcarcheckstatus, getviewcontractlist)'}`)
+      }, complete: () => {
+        this.loadingService.hideLoader()
+        console.log(`complete forkjoin !`)
       }
     })
 
   }
 
   filteroninit(pageno: number, fname: string, lname: string, hpno: string, due: string, branch: string, bill: string, track: string, carcheckstatus: string) {
+    try {
+      this.loadingService.showLoader()
+      forkJoin<[IResMasterBranch, IResCarcheckStatus, IResGetviewcontractlist]>(
+        [
+          this.masterDataService.getbranch(),
+          this.masterDataService.getcarcheckstatus(),
+          this.negotiationService.getviewcontractlist(pageno, fname, lname, hpno, due, branch, bill, track, carcheckstatus)
+        ]
+      ).pipe(map(([resultbranch, resultcarcheckp, resultcontract]) => {
+        if (
+          resultbranch.data.length !== 0 &&
+          resultcarcheckp.data.length !== 0 &&
+          resultcontract
+        ) {
 
-    forkJoin<[IResMasterBranch, IResCarcheckStatus, IResGetviewcontractlist]>(
-      [
-        this.masterDataService.getbranch(),
-        this.masterDataService.getcarcheckstatus(),
-        this.negotiationService.getviewcontractlist(pageno, fname, lname, hpno, due, branch, bill, track, carcheckstatus)
-      ]
-    ).pipe(map(([resultbranch, resultcarcheckp, resultcontract]) => {
-      if (
-        resultbranch.data.length !== 0 &&
-        resultcarcheckp.data.length !== 0 &&
-        resultcontract
-      ) {
+          this.loadingService.hideLoader()
+          // == set branch master parameter (17/10/2022) === 
+          this.branchData = resultbranch.data
 
-        // == set branch master parameter (17/10/2022) === 
-        this.branchData = resultbranch.data
+          // === set carcheck status parameter (17/10/2022) ===
+          // this.carcheckstatusData = resultcarcheckp.data
+          this.carcheckstatusData = resultcarcheckp.data
 
-        // === set carcheck status parameter (17/10/2022) ===
-        // this.carcheckstatusData = resultcarcheckp.data
-        this.carcheckstatusData = resultcarcheckp.data
+          // === check result contract list (17/10/2022)  ===
+          if (resultcontract.data.length !== 0) {
+            this.dataList = resultcontract.data
+            this.dataSource.data = this.dataList
+            this.paginator.pageIndex = pageno - 1
+            // this.dataSource.paginator = this.paginator
+            this.pageLength = resultcontract.rowcount
+            this.pageSize = resultcontract.pagesize
+            // this.dataSource.sort = this.sort
+          } else {
+            this.dataList = []
+          }
 
-        // === check result contract list (17/10/2022)  ===
-        if (resultcontract.data.length !== 0) {
-          this.dataList = resultcontract.data
-          this.dataSource.data = this.dataList
-          this.paginator.pageIndex = pageno - 1
-          // this.dataSource.paginator = this.paginator
-          this.pageLength = resultcontract.rowcount
-          this.pageSize = resultcontract.pagesize
-          // this.dataSource.sort = this.sort
         } else {
           this.dataList = []
         }
-
-      } else {
-        this.dataList = []
-      }
-    })).subscribe()
+      })).subscribe()
+    } catch (e: any) {
+      this.loadingService.hideLoader()
+      this.snackbarfail(`Error : ${e.message ? e.message : 'Error during call data!'}`)
+    }
 
   }
 

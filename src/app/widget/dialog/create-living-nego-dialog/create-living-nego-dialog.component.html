@@ -1,0 +1,73 @@
+<div [formGroup]="living_address">
+
+    <ng-container *ngIf="cardLayout | async as layout" style="text-align: left;">
+        <mat-grid-list [cols]="layout.columns" [rowHeight]="layout.rowHeight"
+            style="margin-left: 2em; margin-top: 2em;">
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <mat-form-field appearance="outline" style="width: 100%;">
+                    <mat-label>ที่อยู่</mat-label>
+                    <textarea matInput [formControl]="address" [rows]="1"></textarea>
+                </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile [colspan]="layout.list.cols3">
+                <mat-form-field appearance="outline" style="width: 95%;">
+                    <mat-label>แขวง/ตำบล</mat-label>
+                    <input matInput [formControl]="subDistrict">
+                </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols3">
+                <mat-form-field appearance="outline" style="width: 95%;">
+                    <mat-label>เขต/อำเภอ</mat-label>
+                    <input matInput [formControl]="district">
+                </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols3">
+                <mat-form-field appearance="outline" style="width: 95%;">
+                    <mat-select [formControl]="province_code">
+                        <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
+                        <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_code">{{item.prov_name}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-label>
+                        จังหวัด
+                    </mat-label>
+                </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols3">
+                <mat-form-field appearance="outline" style="width: 95%;">
+                    <mat-label>รหัสไปรษณีย์</mat-label>
+                    <input matInput [formControl]="postal_code">
+                </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols3">
+                <button mat-raised-button color="primary" (click)="opengooglemap()" >
+                    เปิด Google
+                    map</button>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols3">
+                <mat-form-field appearance="outline" style="width: 95%;">
+                    <mat-label>Latitude, Lontitude</mat-label>
+                    <input matInput [formControl]="lalon">
+                </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols3">
+                <mat-form-field appearance="outline" style="width: 95%;">
+                    <mat-label>Latitude</mat-label>
+                    <input matInput [formControl]="latitude">
+                </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="layout.list.cols3">
+                <mat-form-field appearance="outline" style="width: 95%;">
+                    <mat-label>Longitude</mat-label>
+                    <input matInput [formControl]="longitude">
+                </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <button mat-raised-button color="primary" (click)="onClickCreateLivingPlaceBtn()"
+                    [disabled]="!this.living_address.valid">ยืนยัน</button>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </ng-container>
+</div>

@@ -20,6 +20,8 @@ import { IResGetaddressinfo } from '../interface/i-res-getaddressinfo'; // repla
 import { Observable } from 'rxjs';
 import { IReqUpdatenegolalon } from '../interface/i-req-updatenegolalon'; // replace IReqUpdateNegoLalon
 import { IResUpdatenegolalon } from '../interface/i-res-updatenegolalon'; // add new res (old use basic.ts)
+import { IReqCreateaddressinfo } from '../interface/i-req-createaddressinfo';
+import { IResBasic } from '../interface/i-res-basic';
 
 @Injectable({
   providedIn: 'root'
@@ -61,9 +63,9 @@ export class NegotiationService {
     return this.http.get<IResGetnegotiationbyid>(url);
   }
 
-  getmotocycle(hp_no: string) {
+  getmotocyclenego(hp_no: string) {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getmotocycle?hp_no=${hp_no}`;
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getmotocycle?hp_no=${hp_no}`;
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getmotocyclenego?hp_no=${hp_no}`;
     return this.http.get<IResGetmotocycle>(url);
   }
 
@@ -137,6 +139,12 @@ export class NegotiationService {
   updatenegolalon(data: IReqUpdatenegolalon): Observable<IResUpdatenegolalon> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/updatenegolalon`;
     return this.http.post<IResUpdatenegolalon>(url, data);
+  }
+
+  createaddressInfo(data: IReqCreateaddressinfo): Observable<IResBasic> {
+    // const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/createaddressInfo?application_no=${data.application_no}&address=${data.address}&sub_district=${data.sub_district}district=${data.district}&province_name=${data.province_name}&province_code=${data.province_code}&postal_code=${data.postal_code}&la=${data.la}&lon=${data.lon}&lalon=${data.lalon}`;
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/createaddressInfo`;
+    return this.http.post<IResBasic>(url, data);
   }
 
 

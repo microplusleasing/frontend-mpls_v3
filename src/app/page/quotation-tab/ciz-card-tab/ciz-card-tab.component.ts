@@ -610,7 +610,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
     combineLatest([
       this.masterDataService.getTitle(),
-      this.masterDataService.getProvice(),
+      this.masterDataService.getMasterProvince(),
       this.masterDataService.getmariedstatus(),
       this.masterDataService.gethousetype(),
       this.masterDataService.gethouseownertype(),

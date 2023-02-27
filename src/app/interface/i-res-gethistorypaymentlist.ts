@@ -7,6 +7,11 @@ export interface IResGethistorypaymentlistData {
     out_stand: number;
     pay_name: string;
     line_number: number;
+    pay_code: string;
+    round_payment: number;
+    out_stand_main: number;
+    // client field 
+    _txt_type_field: string;
 }
 
 export interface IResGethistorypaymentlist {

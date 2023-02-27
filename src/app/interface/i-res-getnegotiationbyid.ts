@@ -62,7 +62,9 @@ export interface IResGetnegotiationbyidData {
     paymentdate: Date;
     // === add idcard on 31/08/2022 ===
     idcard_num: string;
-    
+    // === add birth_date 23/02/2023 ===
+    birth_date: Date;
+
 }
 
 export interface IResGetnegotiationbyid {

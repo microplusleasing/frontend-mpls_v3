@@ -106,9 +106,9 @@ export class MasterDataService {
     return this.http.get<IResMasterNegoStatus>(url)
   }
 
-  getProvice(): Observable<IResMasterProvince> {
+  getMasterProvince(): Observable<IResMasterProvince> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterProvince`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MasterProvince`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getMasterProvince`
     return this.http.get<IResMasterProvince>(url)
   }
 

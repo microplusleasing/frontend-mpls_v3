@@ -16,7 +16,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { BehaviorSubject, lastValueFrom, map, Subject } from 'rxjs';
+import { BehaviorSubject, forkJoin, lastValueFrom, map, Subject } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { IResGetfollowuppaymentlist, IResGetfollowuppaymentlistData } from 'src/app/interface/i-res-getfollowuppaymentlist'; // replace IResGetfollowuppaymentlist, IResGetfollowuppaymentlistData
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -25,13 +25,16 @@ import { IphonenolistcustData } from './../../../interface/iphonenocustlist'; //
 import { ImageUtilService } from 'src/app/service/image-util.service';
 import { IResMasterNegoStatusData } from 'src/app/interface/i-res-master-nego-status';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { CreateLivingNegoDialogComponent } from 'src/app/widget/dialog/create-living-nego-dialog/create-living-nego-dialog.component';
+import { BaseService } from 'src/app/service/base/base.service';
+import { LoadingService } from 'src/app/service/loading.service';
 
 @Component({
   selector: 'app-collector-detail',
   templateUrl: './collector-detail.component.html',
   styleUrls: ['./collector-detail.component.scss']
 })
-export class CollectorDetailComponent implements OnInit {
+export class CollectorDetailComponent extends BaseService implements OnInit {
 
   step = 0;
 
@@ -50,7 +53,7 @@ export class CollectorDetailComponent implements OnInit {
   // ** query param id (applicationid) = contract_no in mpls_quotation , (HP_NO) **
 
   // followupForm: UntypedFormGroup;
-  applicationid: string = '';
+  applicationid: string = ''; // ไม่ใช่ application_num เป็นเลข hp_no
   customerid: string = '';
   citizenid: string = '';
   applicationdata: IResGetnegotiationbyidData = {} as IResGetnegotiationbyidData
@@ -60,6 +63,7 @@ export class CollectorDetailComponent implements OnInit {
   phonedataList: IResGetphonenolistData[] = []
   phonedatacustList: IphonenolistcustData[] = []
   historydataList: IResGethistorypaymentlistData[] = []
+  out_stand_main: number | null = null;
   negodataList: IResGetfollowuppaymentlistData[] = []
   negoMasterList: IResMasterNegoStatusData[] = []
   // addressdataList: IResGetaddresscustlistData[] = {} as IResGetaddresscustlistData[]	
@@ -71,6 +75,7 @@ export class CollectorDetailComponent implements OnInit {
   // negodataList: IResGetfollowuppaymentlistData[] = {} as IResGetfollowuppaymentlistData[]	
   // negoMasterList: IResGetnegotiationbyidData[] = {} as IResGetnegotiationbyidData[]
   triggerlivingaddressinfo: boolean = false
+  show_create_living_place_button: boolean = false // === add-on 24/02/2023
   triggerfollowup: boolean = false
   triggerlalon: boolean = false
   usersession: IUserTokenData = {} as IUserTokenData
@@ -207,7 +212,7 @@ export class CollectorDetailComponent implements OnInit {
   negolalon = this.fb.group({
     lalonField: this.lalonField,
     laField: this.laField,
-    lonField: this.laField
+    lonField: this.lonField
   })
 
   // followupForm form (Build form)
@@ -221,15 +226,17 @@ export class CollectorDetailComponent implements OnInit {
     private fb: FormBuilder,
     private actRoute: ActivatedRoute,
     private negotiationService: NegotiationService,
-    private dialog: MatDialog,
     private router: Router,
     private masterDataService: MasterDataService,
-    private _snackBar: MatSnackBar,
+    public override dialog: MatDialog,
+    public override _snackBar: MatSnackBar,
     private userService: UserService,
     private route: ActivatedRoute,
+    private loadingService: LoadingService,
     private imageUtilService: ImageUtilService,
     private breakpointObserver: BreakpointObserver,
   ) {
+    super(dialog, _snackBar)
     // === get query params ===
     this.route.queryParams.subscribe(params => {
       this.fname = params['fname'];
@@ -248,6 +255,7 @@ export class CollectorDetailComponent implements OnInit {
 
 
   ngOnInit(): void {
+
     const queryParams = this.actRoute.snapshot.queryParamMap;
     this.applicationid = queryParams.get('id') ?? '';
     // console.log(`this is application id : ${this.applicationid}`)
@@ -265,246 +273,241 @@ export class CollectorDetailComponent implements OnInit {
     }
 
     if (this.applicationid) {
-      this.negotiationService.getnegotiationbyid(this.applicationid).subscribe({
-        next: (results) => {
-          // console.log(`this is info results : ${JSON.stringify(results)}`)
-          this.applicationdata = results.data[0]
+      this.loadingService.showLoader();
+      // **** start forkjoin *****
+      forkJoin([
+        // *** master ****
+        this.masterDataService.getMasterProvince(),
+        // ข้อมูลสัญญา (main)
+        this.negotiationService.getnegotiationbyid(this.applicationid),
+        // ประวัติการชำระเงิน
+        this.negotiationService.gethistorypaymentlist(1, this.applicationid).pipe(map(value => {
+          // แปะ ค่ารอบงวด กรณี pay_code เป็น 02, 06
+          value.data.forEach(obj => {
+            obj._txt_type_field = (obj.pay_code == '02' || obj.pay_code == '06')
+              ? `${obj.pay_name} (งวดที่ ${obj.round_payment})`
+              : obj.pay_name;
+          });
+          return value;
+        })),
+        // ประวัติการติดตาม
+        this.negotiationService.getfollowuppaymentlist(1, this.applicationid),
+        // ข้อมูลรถจักรยานยนต์
+        this.negotiationService.getmotocyclenego(this.applicationid),
+        // ที่อยู่ของลูกค้า
+        this.negotiationService.getaddresscustlist(1, this.applicationid),
+        // แผนที่
+        this.negotiationService.getaddressinfo(this.applicationid)
+      ]).subscribe({
+        next: ([
+          res_province,
+          res_nego,
+          res_history_payment,
+          res_history_follow,
+          res_motocycle,
+          res_customer_address,
+          res_address_map
+        ]) => {
 
-          // === set citizenid (31/08/2022) ===
-          this.citizenid = results.data[0].idcard_num
+          if (
+            res_nego.status == 200 &&
+            res_province.status == 200 &&
+            res_history_payment.status == 200 &&
+            res_history_follow.status == 200 &&
+            res_motocycle.status == 200 &&
+            res_customer_address.status == 200 &&
+            res_address_map.status == 200
+          ) {
 
-          // === get phone no list fron customer id ====
-          this.customerid = results.data[0].cust_no
+            // ********* res_province *********************
+            this.provinceP = res_province
+            this.provinceMasterData = this.provinceP.data
+            this.provincePData.next(this.provinceP.data);
+            // ********************************************
 
-          // เบอร์บุคคลที่เกี่ยวข้อง
-          this.negotiationService.getphonenolist(1, results.data[0].cust_no).subscribe({
-            next: (resultsphone) => {
+            // ******** res_nego ************************
+            this.applicationdata = res_nego.data[0]
+            // === set citizenid (31/08/2022) ===
+            this.citizenid = res_nego.data[0].idcard_num
+            // === get phone no list fron customer id ====
+            this.customerid = res_nego.data[0].cust_no
+            // *******************************************
 
-              if (resultsphone.status == 200) {
-                this.phonedataList = resultsphone.data
-                this.phone_dataSource = new MatTableDataSource(this.phonedataList)
-                this.phone_dataSource.paginator = this.phone_paginator
-                this.phone_pageLength = resultsphone.rowcount
-                this.phone_pageSize = resultsphone.pagesize
-                this.phone_dataSource.sort = this.history_sort
+            // ******* res_history_payment **********
+            if (res_history_payment.data.length !== 0) {
 
-              } else {
-                console.log(results.message)
+              this.out_stand_main = res_history_payment.data[0].out_stand_main
+
+              this.historydataList = res_history_payment.data
+              this.history_dataSource = new MatTableDataSource(this.historydataList)
+              this.history_dataSource.paginator = this.history_paginator
+              this.history_pageLength = res_history_payment.rowcount
+              this.history_pageSize = res_history_payment.pagesize
+              this.history_dataSource.sort = this.history_sort
+            }
+            // **************************************
+
+            // ******** res_history_follow **********
+            if (res_history_follow.data.length !== 0) {
+              this.negodataList = res_history_follow.data
+              this.nego_dataSource = new MatTableDataSource(this.negodataList)
+              this.nego_dataSource.paginator = this.nego_paginator
+              this.nego_pageLength = res_history_follow.rowcount
+              this.nego_pageSize = res_history_follow.pagesize
+              this.nego_dataSource.sort = this.nego_sort
+            }
+            // ***************************************
+
+
+            // ************* res_motocycle **********
+            this.motocycleList = res_motocycle.data
+            // **************************************
+
+            // ******** res_customer_address ********
+            if (res_customer_address.data.length !== 0) {
+              this.addressdataList = res_customer_address.data
+              this.address_dataSource = new MatTableDataSource(this.addressdataList)
+              this.address_dataSource.paginator = this.address_paginator
+              this.address_pageLength = res_customer_address.rowcount
+              this.address_pageSize = res_customer_address.pagesize
+              this.address_dataSource.sort = this.address_sort
+            }
+            // **************************************
+
+            // ********** res_address_map ***********
+            if (res_address_map.data.length !== 0) {
+              this.triggerlivingaddressinfo = true;
+              this.latitude$.next(res_address_map.data[0].latitude)
+              this.londtiude$.next(res_address_map.data[0].londtiude)
+              this.address$.next(res_address_map.data[0].address)
+              this.sub_district$.next(res_address_map.data[0].sub_district)
+              this.district$.next(res_address_map.data[0].district)
+              this.postal_code$.next(res_address_map.data[0].postal_code)
+              this.province_code$.next(res_address_map.data[0].province_code)
+
+              // set province name by province code
+              const provicneSelect = this.provinceMasterData.filter((items: ({ prov_code: string })) => {
+                return items.prov_code == this.province_code$.value ? this.province_code$.value : ''
+              })
+              if (provicneSelect.length !== 0) {
+                this.province_name$.next(provicneSelect[0].prov_name)
               }
-            }, error: (e) => {
-              console.error(e)
-            }, complete: () => {
+            } else {
+              this.triggerlivingaddressinfo = false;
+              console.log(res_address_map.message)
 
+              this.show_create_living_place_button = true;
             }
-          })
+            // **************************************
 
-          // เบอร์ลูกค้า
-          this.negotiationService.getphonenolistcust(1, results.data[0].cust_no).subscribe({
-            next: (resultsphonecust) => {
-              if (resultsphonecust.status == 200) {
-                this.phonedatacustList = resultsphonecust.data
-                this.phonecust_dataSource = new MatTableDataSource(this.phonedatacustList)
-                this.phonecust_dataSource.paginator = this.phonecust_paginator
-                this.phonecust_pageLength = resultsphonecust.rowcount
-                this.phonecust_pageSize = resultsphonecust.pagesize
-                this.phonecust_dataSource.sort = this.history_sort
-              } else {
-                console.log(results.message)
-              }
-            }, error: (e) => {
-              console.error(e)
-            }, complete: () => {
 
-            }
-          })
-        }, error: (e) => {
-          // === handle error not found here (ext. 404) ===
-          // === redirect to collector main page ===
-          this.dialog.open(MainDialogComponent, {
-            panelClass: `custom-dialog-container`,
-            data: {
-              header: ``,
-              message: `ไม่พบเลขสัญญา`,
-              button_name: `ตกลง`
-            }
-          }).afterClosed().subscribe((results) => {
-            this.router.navigate(['collector'])
-          })
-        }, complete: async () => {
-          this.negotiationService.gethistorypaymentlist(1, this.applicationid).subscribe({
-            next: (resultHistory) => {
+            // *** call chain forkJoin ***
 
-              if (resultHistory.status == 200) { 
-                this.historydataList = resultHistory.data
-                this.history_dataSource = new MatTableDataSource(this.historydataList)
-                this.history_dataSource.paginator = this.history_paginator
-                this.history_pageLength = resultHistory.rowcount
-                this.history_pageSize = resultHistory.pagesize
-                this.history_dataSource.sort = this.history_sort
-              } else {
-                console.log(resultHistory.message)
-              }
-            }, error: (e) => {
-              // === handle error ===
-            }, complete: () => {
-              // === nex step ===
-            }
-          })
+            forkJoin([
+              // เบอร์บุคคลที่เกี่ยวเบอร์ลูกค้าข้อง
+              this.negotiationService.getphonenolist(1, res_nego.data[0].cust_no),
+              // เบอร์ลูกค้า
+              this.negotiationService.getphonenolistcust(1, res_nego.data[0].cust_no),
+              // ที่อยู่จากการสืบค้น NCB
+              this.negotiationService.getaddressncblist(1, this.citizenid),
+              // QR Code ชำระค่างวด
+              this.negotiationService.genqrcodenego(this.applicationdata.ref_pay_num, '02', this.applicationdata.hp_no)
 
-          this.negotiationService.getaddresscustlist(1, this.applicationid).subscribe({
-            next: (resultAddress) => {
+            ]).subscribe({
+              next: ([
+                res_phone_ref,
+                res_phone,
+                res_ncb,
+                res_qr
+              ]) => {
+                this.loadingService.hideLoader()
+                if (
+                  res_phone_ref.status == 200 &&
+                  res_phone.status == 200 &&
+                  res_ncb.status == 200 &&
+                  res_qr.status == 200
+                ) {
+                  // === do next step ====
 
-              if (resultAddress.status == 200) {
-                this.addressdataList = resultAddress.data
-                this.address_dataSource = new MatTableDataSource(this.addressdataList)
-                this.address_dataSource.paginator = this.address_paginator
-                this.address_pageLength = resultAddress.rowcount
-                this.address_pageSize = resultAddress.pagesize
-                this.address_dataSource.sort = this.address_sort
-              } else {
-                console.log(resultAddress.message)
-              }
-            }, error: (e) => {
-              // === handle error ===
-            }, complete: () => {
-              // === nex step ===
-            }
-          })
+                  // ***** res_phone_ref ******
+                  if (res_phone_ref.data.length !== 0) {
+                    this.phonedataList = res_phone_ref.data
+                    this.phone_dataSource = new MatTableDataSource(this.phonedataList)
+                    this.phone_dataSource.paginator = this.phone_paginator
+                    this.phone_pageLength = res_phone_ref.rowcount
+                    this.phone_pageSize = res_phone_ref.pagesize
+                    this.phone_dataSource.sort = this.history_sort
+                  }
+                  // **************************
 
-          // === ที่อยู่จากการสืบค้น NCB (31/08/2022) ===
-          if (this.citizenid) {
-            this.negotiationService.getaddressncblist(1, this.citizenid).subscribe({
-              next: (resultncbAddress) => {
-                if (resultncbAddress.status == 200) {
-                  this.addressNcbdataList = resultncbAddress.data
-                  this.address_ncb_dataSource = new MatTableDataSource(this.addressNcbdataList)
-                  this.address_ncb_dataSource.paginator = this.address_ncb_paginator
-                  this.address_ncb_pageLength = resultncbAddress.rowcount
-                  this.address_ncb_pageSize = resultncbAddress.pagesize
-                  this.address_ncb_dataSource.sort = this.address_ncb_sort
+                  // *******  res_phone  *******
+                  if (res_phone.data.length !== 0) {
+                    this.phonedatacustList = res_phone.data
+                    this.phonecust_dataSource = new MatTableDataSource(this.phonedatacustList)
+                    this.phonecust_dataSource.paginator = this.phonecust_paginator
+                    this.phonecust_pageLength = res_phone.rowcount
+                    this.phonecust_pageSize = res_phone.pagesize
+                    this.phonecust_dataSource.sort = this.history_sort
+                  }
+                  // **************************
+
+                  // ******** res_ncb *********
+                  if (res_ncb.data.length !== 0) {
+                    this.addressNcbdataList = res_ncb.data
+                    this.address_ncb_dataSource = new MatTableDataSource(this.addressNcbdataList)
+                    this.address_ncb_dataSource.paginator = this.address_ncb_paginator
+                    this.address_ncb_pageLength = res_ncb.rowcount
+                    this.address_ncb_pageSize = res_ncb.pagesize
+                    this.address_ncb_dataSource.sort = this.address_ncb_sort
+                  }
+                  // **************************
+
+                  // ********* res_qr *********
+                  if (res_qr.data.length !== 0) {
+                    this.chkrefpaynum = true
+                    this.image_qr$ = new Promise((resolve) => {
+                      resolve(this.imageUtilService.getUrlImage(res_qr.data[0].image_file[1].data))
+                    })
+                  } else {
+                    this.chkrefpaynum = false
+                  }
+                  // **************************
+
                 } else {
-                  console.log(resultncbAddress.message)
+                  console.log(`call chain list data return fail`)
                 }
               }, error: (e) => {
-                // === handle error ===
+                this.loadingService.hideLoader();
+                console.log(`Error : (chain list data) with code : ${e.message ? e.messsage : 'No return message'}`)
               }, complete: () => {
-                // === nex step ===
+                this.loadingService.hideLoader();
+                console.log(`trigger complete chain list data`)
               }
             })
+          } else {
+            this.loadingService.hideLoader();
+            console.log(`call main and master data return fail`)
+            // === redirect to collector main page ===
+            this.dialog.open(MainDialogComponent, {
+              panelClass: `custom-dialog-container`,
+              data: {
+                header: ``,
+                message: `ไม่พบเลขสัญญา`,
+                button_name: `ตกลง`
+              }
+            }).afterClosed().subscribe((results) => {
+              this.router.navigate(['/collector-view'])
+            })
           }
-
-          this.negotiationService.getfollowuppaymentlist(1, this.applicationid).subscribe({
-            next: (resultnego) => {
-
-
-              if (resultnego.status == 200) {
-                this.negodataList = resultnego.data
-                this.nego_dataSource = new MatTableDataSource(this.negodataList)
-                this.nego_dataSource.paginator = this.nego_paginator
-                this.nego_pageLength = resultnego.rowcount
-                this.nego_pageSize = resultnego.pagesize
-                this.nego_dataSource.sort = this.nego_sort
-              } else {
-                console.log(resultnego.message)
-              }
-
-            }, error: (e) => {
-              // === handle error ===
-            }, complete: () => {
-              // === nex step ===
-            }
-          })
-
-          // === get motocycle detail (17/07/2022) ==== 
-          this.negotiationService.getmotocycle(this.applicationid).subscribe({
-            next: (resultmoto) => {
-
-              if (resultmoto.status == 200) {
-                this.motocycleList = resultmoto.data
-                this.nego_dataSource = new MatTableDataSource(this.motocycleList)
-                // this.nego_dataSource.paginator = this.nego_paginator
-                // this.nego_pageLength = resultmoto.rowcount
-                // this.nego_pageSize = resultmoto.pagesize
-                this.nego_dataSource.sort = this.nego_sort
-              } else {
-                console.log(resultmoto.message)
-              }
-
-            }, error: (e) => {
-              // === handle error ===
-            }, complete: () => {
-              // === nex step ===
-            }
-          })
-
-          // === get address information detail (17/08/2022) ==== 
-
-          this.provinceP = await lastValueFrom(this.masterDataService.getProvice())
-          this.provinceMasterData = this.provinceP.data
-          this.provincePData.next(this.provinceP.data);
-
-          this.negotiationService.getaddressinfo(this.applicationid).subscribe({
-            next: (resultaddressinfo) => {
-              // code here
-
-              if (resultaddressinfo.status == 200) {
-
-                this.triggerlivingaddressinfo = true;
-                this.latitude$.next(resultaddressinfo.data[0].latitude)
-                this.londtiude$.next(resultaddressinfo.data[0].londtiude)
-                this.address$.next(resultaddressinfo.data[0].address)
-                this.sub_district$.next(resultaddressinfo.data[0].sub_district)
-                this.district$.next(resultaddressinfo.data[0].district)
-                this.postal_code$.next(resultaddressinfo.data[0].postal_code)
-                this.province_code$.next(resultaddressinfo.data[0].province_code)
-
-                // set province name by province code
-                const provicneSelect = this.provinceMasterData.filter((items: ({ prov_code: string })) => {
-                  return items.prov_code == this.province_code$.value ? this.province_code$.value : ''
-                })
-                if (provicneSelect.length !== 0) {
-                  this.province_name$.next(provicneSelect[0].prov_name)
-                  // console.log(`this is province name : ${this.province_name$.value}`)
-                }
-              } else {
-                this.triggerlivingaddressinfo = false;
-                console.log(resultaddressinfo.message)
-              }
-            }, error: (e) => {
-              // === handle error ===
-              this.triggerlivingaddressinfo = false;
-            }, complete: () => {
-              // === nex step ===
-            }
-          })
-
-
-          // === gen qr payment with type '02' (19/10/2022) ===
-          this.negotiationService.genqrcodenego(
-            this.applicationdata.ref_pay_num,
-            '02',
-            this.applicationdata.hp_no
-          ).subscribe({
-            next: (resultqr) => {
-              if (resultqr.status == 200) {
-                this.chkrefpaynum = true
-                this.image_qr$ = new Promise((resolve) => {
-                  resolve(this.imageUtilService.getUrlImage(resultqr.data[0].image_file[1].data))
-                })
-              } else {
-                this.chkrefpaynum = false
-              }
-            }
-            , error: (e) => {
-              // === handle error ===
-            }, complete: () => {
-              //=== next step ===
-            }
-          })
-
-          // ====================================================
+        }, error: (e) => {
+          this.loadingService.hideLoader();
+          console.log(`Error : (main and master) with code : ${e.message ? e.messsage : 'No return message'}`)
+        }, complete: () => {
+          this.loadingService.hideLoader();
+          console.log(`trigger complete main and master data`)
         }
       })
+      // *************************
     } else {
       this.dialog.open(MainDialogComponent, {
         panelClass: `custom-dialog-container`,
@@ -514,7 +517,7 @@ export class CollectorDetailComponent implements OnInit {
           button_name: `ตกลง`
         }
       }).afterClosed().subscribe((results) => {
-        this.router.navigate(['collector'])
+        this.router.navigate(['/collector-view'])
       })
     }
   }
@@ -547,12 +550,16 @@ export class CollectorDetailComponent implements OnInit {
     items.user_name = this.usersession.USERNAME
     // === nego record === 
     items.test =
-      items.appoint_date = this.followupForm.get('negofollowup.appointmentdatefield')?.value
-    items.message1 = this.followupForm.get('negofollowup.message1field')?.value
-    items.message2 = this.followupForm.get('negofollowup.message2field')?.value
+      // items.appoint_date = this.followupForm.get('negofollowup.appointmentdatefield')?.value
+      // items.message1 = this.followupForm.get('negofollowup.message1field')?.value
+      // items.message2 = this.followupForm.get('negofollowup.message2field')?.value
+      items.appoint_date = this.followupForm.controls.negofollowup.controls.appointmentdatefield.value
+    items.message1 = this.followupForm.controls.negofollowup.controls.message1field.value
+    items.message2 = this.followupForm.controls.negofollowup.controls.message2field.value
     //=== call_track_info ==== 
     // items.con_r_code = this.followupForm.get('contactresultfield')?.value
-    items.neg_r_code = this.followupForm.get('negofollowup.contactresultfield')?.value
+    // items.neg_r_code = this.followupForm.get('negofollowup.contactresultfield')?.value
+    items.neg_r_code = this.followupForm.controls.negofollowup.controls.contactresultfield.value
 
 
     this.negotiationService.insertnegolist(items).subscribe({
@@ -667,6 +674,13 @@ export class CollectorDetailComponent implements OnInit {
       map((result: IResGethistorypaymentlist) => {
         this.address_dataSource = new MatTableDataSource(result.data);
         this.historydataList = result.data;
+        // แปะ ค่ารอบงวด กรณี pay_code เป็น 02, 06
+        result.data.forEach(obj => {
+          obj._txt_type_field = (obj.pay_code == '02' || obj.pay_code == '06')
+            ? `${obj.pay_name} (งวดที่ ${obj.round_payment})`
+            : obj.pay_name;
+        });
+        return result;
       })
     ).subscribe();
   }
@@ -709,9 +723,60 @@ export class CollectorDetailComponent implements OnInit {
     this.triggerlalon = true;
   }
 
+  createlivingplace() {
+    const applicationid = this.applicationid
+
+    this.dialog.open(CreateLivingNegoDialogComponent, {
+      panelClass: `custom-dialog-container`,
+      width: '80%',
+      height: '50%',
+      data: {
+        applicationid: applicationid
+      }
+    }).afterClosed().subscribe((value) => {
+      // === handle next step ===
+      if (value) {
+        if (value.create_status) {
+          this.snackbarsuccess(`เพิ่มรายการที่อยู่สำเร็จ`)
+          // ==== create success (reload or re call api getaddressinfo) ===
+          this.negotiationService.getaddressinfo(this.applicationid).subscribe({
+            next: (res_get_address_info) => {
+              this.triggerlivingaddressinfo = true;
+              this.show_create_living_place_button = false
+              if (res_get_address_info.status == 200) {
+                this.latitude$.next(res_get_address_info.data[0].latitude)
+                this.londtiude$.next(res_get_address_info.data[0].londtiude)
+                this.address$.next(res_get_address_info.data[0].address)
+                this.sub_district$.next(res_get_address_info.data[0].sub_district)
+                this.district$.next(res_get_address_info.data[0].district)
+                this.postal_code$.next(res_get_address_info.data[0].postal_code)
+                this.province_code$.next(res_get_address_info.data[0].province_code)
+
+                // set province name by province code
+                const provicneSelect = this.provinceMasterData.filter((items: ({ prov_code: string })) => {
+                  return items.prov_code == this.province_code$.value ? this.province_code$.value : ''
+                })
+                if (provicneSelect.length !== 0) {
+                  this.province_name$.next(provicneSelect[0].prov_name)
+                  // console.log(`this is province name : ${this.province_name$.value}`)
+                }
+              } else {
+                console.log(res_get_address_info.message)
+              }
+            }, error: (e) => {
+              console.log(`Error : ${e.message ? e.message : 'No return message'}`)
+            }, complete: () => {
+              console.log(`trigger create living page dialog close success !!`)
+            }
+          })
+        }
+      }
+    })
+  }
+
   sumbitnegolalon() {
-    const la = this.followupForm.get('negolalon.laField')?.value
-    const lon = this.followupForm.get('negolalon.lonField')?.value
+    const la = this.followupForm.controls.negolalon.controls.laField.value
+    const lon = this.followupForm.controls.negolalon.controls.lonField.value
 
     this.negotiationService.updatenegolalon({
       applicationid: this.applicationid,
@@ -769,8 +834,8 @@ export class CollectorDetailComponent implements OnInit {
     let rpString = lalonStr.replace(/[\(\)|\s]/g, "");
     let spitStr = rpString.split(",");
     if (spitStr.length > 1) {
-      this.followupForm.get('negolalon.laField')?.setValue(spitStr[0])
-      this.followupForm.get('negolalon.lonField')?.setValue(spitStr[1])
+      this.followupForm.controls.negolalon.controls.laField.setValue(spitStr[0])
+      this.followupForm.controls.negolalon.controls.lonField.setValue(spitStr[1])
     }
 
   }

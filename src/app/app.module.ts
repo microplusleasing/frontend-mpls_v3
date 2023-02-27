@@ -48,6 +48,7 @@ import { MrtaInfoComponent } from './page/view/mrta/mrta-info/mrta-info.componen
 import { CollectorViewComponent } from './page/collector/collector-view/collector-view.component';
 import { CollectorDetailComponent } from './page/collector/collector-detail/collector-detail.component';
 import { BackwardBarComponent } from './widget/backward-bar/backward-bar.component';
+import { CreateLivingNegoDialogComponent } from './widget/dialog/create-living-nego-dialog/create-living-nego-dialog.component';
 
 @NgModule({
   declarations: [
@@ -90,6 +91,7 @@ import { BackwardBarComponent } from './widget/backward-bar/backward-bar.compone
     CollectorViewComponent,
     CollectorDetailComponent,
     BackwardBarComponent,
+    CreateLivingNegoDialogComponent,
   ],
   imports: [
     BrowserModule,

@@ -62,6 +62,9 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
   subCareerSalaryPerDayField = new FormControl<number | null>(null, Validators.pattern('^(0?|[1-9][0-9]{0,7})$'))
   subCareerLeaderNameField = new FormControl('', [Validators.maxLength(150)])
   subCareerWorkPerWeekField = new FormControl<number | null>(null, Validators.pattern('^(?:[1-9]|[1-2][0-9]|3[01])$'))
+  // add on field (workplace phone) (27/02/2023)
+  mainworkplacephoneno1Field = new FormControl<string>('', [Validators.pattern('^[0-9]{8,10}')])
+  mainworkplacephoneno2Field = new FormControl<string>('', [Validators.pattern('^[0-9]{8,10}')])
 
 
   // *** purpose form ***
@@ -143,7 +146,10 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
     subCareerSalaryPerMonthField: this.subCareerSalaryPerMonthField,
     subCareerSalaryPerDayField: this.subCareerSalaryPerDayField,
     subCareerLeaderNameField: this.subCareerLeaderNameField,
-    subCareerWorkPerWeekField: this.subCareerWorkPerWeekField
+    subCareerWorkPerWeekField: this.subCareerWorkPerWeekField,
+    // === addon (27/02/2023) ====
+    mainworkplacephoneno1Field: this.mainworkplacephoneno1Field,
+    mainworkplacephoneno2Field: this.mainworkplacephoneno2Field,
   })
 
   purposeForm = this.fb.group({
@@ -314,6 +320,8 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
                   this.careerandpurposeForm.controls.careerForm.controls.mainCareerSalaryPerDayField.setValue(quoitem.cr_main_salary_per_day ?? null)
                   this.careerandpurposeForm.controls.careerForm.controls.mainCareerLeaderNameField.setValue(quoitem.cr_main_leader_name ?? '')
                   this.careerandpurposeForm.controls.careerForm.controls.mainCareerWorkPerWeekField.setValue(quoitem.cr_main_work_per_week ?? null)
+                  this.careerandpurposeForm.controls.careerForm.controls.mainworkplacephoneno1Field.setValue(quoitem.cr_main_workplace_phone_no_1 ?? '')
+                  this.careerandpurposeForm.controls.careerForm.controls.mainworkplacephoneno2Field.setValue(quoitem.cr_main_workplace_phone_no_2 ?? '')
                   this.careerandpurposeForm.controls.careerForm.controls.isSubCareerField.setValue(quoitem.cr_is_sub_career ?? false)
                   this.careerandpurposeForm.controls.careerForm.controls.subCareerCodeField.setValue(quoitem.cr_sub_career_code ?? '')
                   this.careerandpurposeForm.controls.careerForm.controls.subCareerNameField.setValue(quoitem.cr_sub_career_name ?? '')

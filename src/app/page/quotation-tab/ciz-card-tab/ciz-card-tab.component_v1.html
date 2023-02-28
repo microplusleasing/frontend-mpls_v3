@@ -138,7 +138,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>เบอร์โทรศัพท์</mat-label>
-          <input matInput required [formControl]="phoneNumber">
+          <input matInput required [formControl]="phoneNumber" type="text">
           <mat-error *ngIf="this.phoneNumber.invalid">{{getErrorMessagePhone()}}</mat-error>
         </mat-form-field>
 

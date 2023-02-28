@@ -1353,6 +1353,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     const reqcreateorupdatecareerandpurpose: any = {
       quotationid: this.quoid,
       // === Career Path ===
+      // === MAIN WORK ===
       main_career_code: this.careerandpurposetab.careerandpurposeForm.controls.careerForm.controls.mainCareerCodeField.value ? career_form.mainCareerCodeField.value : '', // career form (stamp via code , sync master data)
       main_career_name: career_form.mainCareerNameField.value ? career_form.mainCareerNameField.value : '',
       main_department: career_form.mainCareerDepartmentField.value ? career_form.mainCareerDepartmentField.value : '',
@@ -1364,6 +1365,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       main_salary_per_month: career_form.mainCareerSalaryPerMonthField.value ? career_form.mainCareerSalaryPerMonthField.value : null,
       main_work_per_week: career_form.mainCareerWorkPerWeekField.value ? career_form.mainCareerWorkPerWeekField.value : null,
       main_workplace_name: career_form.mainCareerWorkplace.value ? career_form.mainCareerWorkplace.value : '',
+      main_workplace_phone_no_1: career_form.mainworkplacephoneno1Field.value ? career_form.mainworkplacephoneno1Field.value : '',
+      main_workplace_phone_no_2: career_form.mainworkplacephoneno2Field.value ? career_form.mainworkplacephoneno2Field.value : '',
+      // ==== SUB WORK ====
       is_sub_career: career_form.isSubCareerField.value ? 1 : 0,
       sub_career_code: career_form.subCareerCodeField.value ? career_form.subCareerCodeField.value : '', // career form (stamp via code , sync master data)
       sub_career_name: career_form.subCareerNameField.value ? career_form.subCareerNameField.value : '',

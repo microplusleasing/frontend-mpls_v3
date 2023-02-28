@@ -261,6 +261,10 @@ export interface IResQuotationDetailData {
     quo_face_compare_verify: string;
     quo_image_attach_verify: string;
 
+    // === 27/02/2023 === 
+    cr_main_workplace_phone_no_1: string;
+    cr_main_workplace_phone_no_2: string;
+
 
 }
 

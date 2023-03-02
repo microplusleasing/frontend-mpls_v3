@@ -411,7 +411,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         this.cizcardtab.cizForm.controls.contactAddress.valid &&
         this.cizcardtab.cizForm.controls.houseRegisAddress.valid &&
         this.cizcardtab.cizForm.controls.workAddress.valid &&
-        this.cizcardtab.cizForm.controls.maincitizenForm.valid // (add main citizen valid on form when save (add-on 20/02/2023) *** for handle case with no contain postal code include ***)
+        (this.cizcardtab.cizForm.controls.maincitizenForm.valid || this.cizcardtab.cizForm.controls.maincitizenForm.status == 'DISABLED') // (add main citizen valid on form when save (add-on 20/02/2023) *** for handle case with no contain postal code include ***)
       ) {
         this.createorupdatecitizendataDisable = false
       } else {

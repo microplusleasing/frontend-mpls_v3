@@ -40,6 +40,7 @@ import { IResUpdateFlagImageAttach } from '../interface/i-res-update-flag-image-
 import { IResCreateConsent } from '../interface/i-res-create-consent';
 import { IResCreateSendCarAndLoyaltyConsent } from '../interface/i-res-create-send-car-and-loyalty-consent';
 import { IResGetWitnessEconsent } from '../interface/i-res-get-witness-econsent';
+import { IResStampFaceVerificationLog } from '../interface/i-res-stamp-face-verification-log';
 
 
 @Injectable({
@@ -343,6 +344,11 @@ export class QuotationService {
   MPLS_stamp_check_face_valid(formData: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_stamp_check_face_valid`
     return this.http.post<IResFaceValidStamp>(url, formData)
+  }
+
+  MPLS_stamp_face_verification_log_iapp(formData: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_stamp_face_verification_log_iapp`
+    return this.http.post<IResStampFaceVerificationLog>(url, formData)
   }
 
   MPLS_get_dopa_valid_status() {

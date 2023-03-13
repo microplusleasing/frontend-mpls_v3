@@ -28,6 +28,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { CreateLivingNegoDialogComponent } from 'src/app/widget/dialog/create-living-nego-dialog/create-living-nego-dialog.component';
 import { BaseService } from 'src/app/service/base/base.service';
 import { LoadingService } from 'src/app/service/loading.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-collector-detail',
@@ -79,6 +80,7 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
   triggerfollowup: boolean = false
   triggerlalon: boolean = false
   usersession: IUserTokenData = {} as IUserTokenData
+  formattedDate: string = '';
 
   // === Address table params === 
   address_dataSource: any;
@@ -235,6 +237,7 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
     private loadingService: LoadingService,
     private imageUtilService: ImageUtilService,
     private breakpointObserver: BreakpointObserver,
+    private datepipe: DatePipe
   ) {
     super(dialog, _snackBar)
     // === get query params ===
@@ -541,6 +544,8 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
 
   sumbitnegocreaterecord() {
     // let items: Record<string,any> = {}
+    const appointmentDate = this.followupForm.controls.negofollowup.controls.appointmentdatefield.value
+    const formattedDate = this.datepipe.transform(appointmentDate, 'dd/MM/yyyy');
     let items: any = {}
 
     items.phone_no = '0'
@@ -549,11 +554,12 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
     items.staff_id = this.usersession.USERID
     items.user_name = this.usersession.USERNAME
     // === nego record === 
-    items.test =
-      // items.appoint_date = this.followupForm.get('negofollowup.appointmentdatefield')?.value
-      // items.message1 = this.followupForm.get('negofollowup.message1field')?.value
-      // items.message2 = this.followupForm.get('negofollowup.message2field')?.value
-      items.appoint_date = this.followupForm.controls.negofollowup.controls.appointmentdatefield.value
+    // items.test =
+    // items.appoint_date = this.followupForm.get('negofollowup.appointmentdatefield')?.value
+    // items.message1 = this.followupForm.get('negofollowup.message1field')?.value
+    // items.message2 = this.followupForm.get('negofollowup.message2field')?.value
+    // items.appoint_date = this.followupForm.controls.negofollowup.controls.appointmentdatefield.value
+    items.appoint_date = formattedDate
     items.message1 = this.followupForm.controls.negofollowup.controls.message1field.value
     items.message2 = this.followupForm.controls.negofollowup.controls.message2field.value
     //=== call_track_info ==== 

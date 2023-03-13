@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   // apiurl: 'http://58.136.5.116:9989',
-  apiurl: 'api-mplus.microplusleasing.com',
+  apiurl: 'api2-mpls.microplusleasing.com',
   apiportsign: '',
   apiport: '',
   httpheader: 'https://',

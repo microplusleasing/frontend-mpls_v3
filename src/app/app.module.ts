@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule, DatePipe } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -96,6 +97,7 @@ import { CreateLivingNegoDialogComponent } from './widget/dialog/create-living-n
   imports: [
     BrowserModule,
     AppRoutingModule,
+    CommonModule,
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
@@ -105,6 +107,7 @@ import { CreateLivingNegoDialogComponent } from './widget/dialog/create-living-n
     NgOtpInputModule
   ],
   providers: [
+    DatePipe,
     FormGroupDirective, 
     {
       provide: HTTP_INTERCEPTORS,

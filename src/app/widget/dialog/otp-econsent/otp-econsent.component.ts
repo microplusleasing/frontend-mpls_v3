@@ -151,7 +151,7 @@ export class OtpEconsentComponent extends BaseService implements OnInit {
         }
 
         // ==== begin ====
-        this.confirmEconsentForm.controls.econsentvalue.disable()
+        // this.confirmEconsentForm.controls.econsentvalue.disable() // unlock on 13/03/2022
         await lastValueFrom(this.quotationService.MPLS_check_econsent(this.data.quotationid)).then((res) => {
           if (res.validation) {
 

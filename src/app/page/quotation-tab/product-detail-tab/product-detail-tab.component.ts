@@ -854,7 +854,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // this.productForm.controls.detailForm.controls.carModelField.setValue('')
                   // this.productForm.controls.detailForm.controls.carModelField.enable({ emitEvent: false })
 
-                  this.productForm.controls.detailForm.controls.carBrandNameField.setValue(qcarbrandcode, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.carBrandNameField.setValue(qcarbrandname, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.carBrandField.setValue(qcarbrandcode, { emitEvent: false });
 
                   // ***==== Car Model ====***
@@ -905,7 +905,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   // === stamp value to field ==== 
                   this.productForm.controls.detailForm.controls.dealerCode.setValue(qdealercode, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.carBrandField.setValue(qcarbrandcode, { emitEvent: false });
+                  this.productForm.controls.detailForm.controls.carBrandField.setValue(qcarbrandcode, { emitEvent: false }); /// investigate on 13/03/2023
                   this.productForm.controls.detailForm.controls.carBrandNameField.setValue(qcarbrandname, { emitEvent: false });
                   this.productForm.controls.detailForm.controls.carModelField.setValue(qcarmodelcode, { emitEvent: false });
                   this.productForm.controls.detailForm.controls.carModelNameField.setValue(qcarmodelname, { emitEvent: false });

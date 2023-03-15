@@ -1,4 +1,4 @@
 export interface IDialogEconsentValidClose {
     status?: boolean;
-    data?: string;
+    data?: 'success' | 'fail';
 }

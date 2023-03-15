@@ -128,6 +128,7 @@
                     <td mat-cell *matCellDef="let element"> {{element.branch_name}} </td>
                 </ng-container>
 
+
                 <!-- button -->
                 <ng-container matColumnDef="buttonName">
                     <th mat-header-cell *matHeaderCellDef> </th>
@@ -155,6 +156,11 @@
                 <ng-container matColumnDef="statusName">
                     <th mat-header-cell *matHeaderCellDef> สถานะ </th>
                     <td mat-cell *matCellDef="let element"> {{element._client_quo_status}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="consentStatus">
+                    <th mat-header-cell *matHeaderCellDef> Consent </th>
+                    <td mat-cell *matCellDef="let element">&nbsp; {{element._client_otp_consent_verify}} </td>
                 </ng-container>
 
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

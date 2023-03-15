@@ -17,6 +17,8 @@ import { UserService } from 'src/app/service/auth/user.service';
 import { IResMasterQuoatationStatusData } from 'src/app/interface/i-res-master-quoatation-status';
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { BaseService } from 'src/app/service/base/base.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export const atLeastOne = (validator: ValidatorFn, controls: string[] = []) => (
   group: FormGroup,
@@ -56,7 +58,7 @@ interface Status {
   templateUrl: './quotation-view.component.html',
   styleUrls: ['./quotation-view.component.scss']
 })
-export class QuotationViewComponent implements OnInit {
+export class QuotationViewComponent extends BaseService implements OnInit {
   dataListTemp: IResQuotationView = {} as IResQuotationView;
   pageEvent: PageEvent = new PageEvent;
   pageLength: number = 0;
@@ -72,7 +74,8 @@ export class QuotationViewComponent implements OnInit {
     'branchName',
     'buttonName',
     'canclebtn',
-    'statusName'
+    'statusName',
+    'consentStatus'
   ]
 
   quotationInterface: IResQuotationView = {} as IResQuotationView;
@@ -135,7 +138,8 @@ export class QuotationViewComponent implements OnInit {
   constructor(
     private quotationService: QuotationService,
     private router: Router,
-    private dialog: MatDialog,
+    public override dialog: MatDialog,
+    public override _snackBar: MatSnackBar,
     private masterDataService: MasterDataService,
     private fb: FormBuilder,
     private userService: UserService,
@@ -143,7 +147,7 @@ export class QuotationViewComponent implements OnInit {
     private loadingService: LoadingService,
     private breakpointObserver: BreakpointObserver
   ) {
-
+    super(dialog, _snackBar)
     this.searchform.get('status')?.valueChanges.subscribe((value) => {
       this.quostatus = value
       this.maprouteparam()
@@ -213,25 +217,32 @@ export class QuotationViewComponent implements OnInit {
 
 
         // === addd new text form quo_status (14/09/2022) ===
-        resultListQuotation.data.map((items) => {
+        resultListQuotation.data.map((items,i) => {
           switch (items.quo_status) {
             case 0:
-              items._client_quo_status = 'ส่งงาน'
-              return items
+              items._client_quo_status = 'ส่งงาน';
               break;
             case 1:
-              items._client_quo_status = 'Lock'
-              return items
+              items._client_quo_status = 'Lock';
               break;
             case 4:
-              items._client_quo_status = 'Draft'
-              return items
-              break;
-
-            default:
-              return items
+              items._client_quo_status = 'Draft';
               break;
           }
+
+          switch (items.otp_consent_verify) {
+            case 'Y':
+              items._client_otp_consent_verify = 'E';
+              break;
+            case 'N':
+              items._client_otp_consent_verify = 'O';
+              break;
+            case null:
+              items._client_otp_consent_verify = '-';
+              break;
+          }
+          
+          return items;
 
         })
 
@@ -321,24 +332,31 @@ export class QuotationViewComponent implements OnInit {
         resultListQuotation.data.map((items) => {
           switch (items.quo_status) {
             case 0:
-              items._client_quo_status = 'ส่งงาน'
-              return items
+              items._client_quo_status = 'ส่งงาน';
               break;
             case 1:
-              items._client_quo_status = 'Lock'
-              return items
+              items._client_quo_status = 'Lock';
               break;
             case 4:
-              items._client_quo_status = 'Draft'
-              return items
-              break;
-
-            default:
-              return items
+              items._client_quo_status = 'Draft';
               break;
           }
 
+          switch (items.otp_consent_verify) {
+            case 'Y':
+              items._client_otp_consent_verify = 'E';
+              break;
+            case 'N':
+              items._client_otp_consent_verify = 'O';
+              break;
+            case null:
+              items._client_otp_consent_verify = '-';
+              break;
+          }
+
+          return items;
         })
+
 
         this.dataListTemp = resultListQuotation
 
@@ -438,22 +456,29 @@ export class QuotationViewComponent implements OnInit {
         resultListQuotation.data.map((items) => {
           switch (items.quo_status) {
             case 0:
-              items._client_quo_status = 'ส่งงาน'
-              return items
+              items._client_quo_status = 'ส่งงาน';
               break;
             case 1:
-              items._client_quo_status = 'Lock'
-              return items
+              items._client_quo_status = 'Lock';
               break;
             case 4:
-              items._client_quo_status = 'Draft'
-              return items
-              break;
-
-            default:
-              return items
+              items._client_quo_status = 'Draft';
               break;
           }
+
+          switch (items.otp_consent_verify) {
+            case 'Y':
+              items._client_otp_consent_verify = 'E';
+              break;
+            case 'N':
+              items._client_otp_consent_verify = 'O';
+              break;
+            case null:
+              items._client_otp_consent_verify = '-';
+              break;
+          }
+
+          return items;
 
         })
         this.dataListTemp = resultListQuotation
@@ -559,27 +584,34 @@ export class QuotationViewComponent implements OnInit {
         map((result: IResQuotationView) => {
           // this.dataSource = new MatTableDataSource(result.data);
           result.data.map((items) => {
-            
+
             this.loadingService.hideLoader()
 
             switch (items.quo_status) {
               case 0:
-                items._client_quo_status = 'ส่งงาน'
-                return items
+                items._client_quo_status = 'ส่งงาน';
                 break;
               case 1:
-                items._client_quo_status = 'Lock'
-                return items
+                items._client_quo_status = 'Lock';
                 break;
               case 4:
-                items._client_quo_status = 'Draft'
-                return items
-                break;
-
-              default:
-                return items
+                items._client_quo_status = 'Draft';
                 break;
             }
+  
+            switch (items.otp_consent_verify) {
+              case 'Y':
+                items._client_otp_consent_verify = 'E';
+                break;
+              case 'N':
+                items._client_otp_consent_verify = 'O';
+                break;
+              case null:
+                items._client_otp_consent_verify = '-';
+                break;
+            }
+  
+            return items;
 
           })
           // this.dataList = result
@@ -661,37 +693,42 @@ export class QuotationViewComponent implements OnInit {
     }).afterClosed().subscribe(result => {
       // === not stage here ==== 
       if (result) {
-        this.quotationService.canclequotation(quotationid).subscribe({
+        this.quotationService.MPLS_canclequotation(quotationid).subscribe({
           next: (result) => {
             if (result.status == 200) {
               // === success cancle status ===
-              this.dialog.open(MainDialogComponent, {
-                panelClass: 'custom-dialog-container',
-                data: {
-                  header: `สำเร็จ`,
-                  message: `${result.message}`,
-                  button_name: 'ตกลง'
-                }
-              }).afterClosed().subscribe(result => {
-                // === not stage here ==== 
-                this.ngOnInit()
-              });
-            } else {
+              // this.dialog.open(MainDialogComponent, {
+              //   panelClass: 'custom-dialog-container',
+              //   data: {
+              //     header: `สำเร็จ`,
+              //     message: `${result.message}`,
+              //     button_name: 'ตกลง'
+              //   }
+              // }).afterClosed().subscribe(result => {
+              //   // === not stage here ==== 
+              //   this.ngOnInit()
+              // });
               this.ngOnInit()
+              this.snackbarsuccess(`ทำรายการสำเร็จ : ${result.message ? result.message : ''}`)
+            } else {
+              // this.ngOnInit()
+              this.snackbarfail(`ยกเลิกใบคำขอไม่สำเร็จ : ${result.message ? result.message : 'No return message'}`)
             }
           }, error: (e) => {
-            if (e.error.status == 400) {
-              this.dialog.open(MainDialogComponent, {
-                panelClass: 'custom-dialog-container',
-                data: {
-                  header: `ผิดพลาด : (status ${e.error.status})`,
-                  message: `${e.error.message ? e.error.message : 'ยกเลิกใบคำขอไม่สำเร็จ'}`,
-                  button_name: 'ตกลง'
-                }
-              }).afterClosed().subscribe(result => {
-                // === not stage here ==== 
-              });
-            }
+            // if (e.error.status == 400) {
+            //   this.dialog.open(MainDialogComponent, {
+            //     panelClass: 'custom-dialog-container',
+            //     data: {
+            //       header: `ผิดพลาด : (status ${e.error.status})`,
+            //       message: `${e.error.message ? e.error.message : 'ยกเลิกใบคำขอไม่สำเร็จ'}`,
+            //       button_name: 'ตกลง'
+            //     }
+            //   }).afterClosed().subscribe(result => {
+            //     // === not stage here ==== 
+            //   });
+            // }
+
+            this.snackbarfail(`ยกเลิกใบคำขอไม่สำเร็จ : ${e.error.message ? e.error.message : 'No return message'}`)
           }
         })
       }

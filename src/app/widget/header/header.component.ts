@@ -57,6 +57,34 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  getUserCurrentData(): IInfoDialog {
+
+    try {
+
+      const userdata = localStorage.getItem('currentUser')
+      if (userdata) {
+        const userdataObj = (JSON.parse(userdata) as IUserToken).data;
+        this.usersession = userdataObj
+        this.username = userdataObj.FULLNAME ? userdataObj.FULLNAME : 'NO USER NAME'
+
+        // === set data for send to dialog === 
+        this.dialogData.header = 'Account Information';
+        this.dialogData.fullname = userdataObj.FULLNAME ? userdataObj.FULLNAME : '-';
+        this.dialogData.email = userdataObj.EMAIL ? userdataObj.EMAIL : '-';
+        this.dialogData.role = userdataObj.ROLE ? userdataObj.ROLE : '-';
+        this.dialogData.channal = userdataObj.channal ? userdataObj.channal : '-'
+        this.dialogData.button_name = 'Close';
+
+        return this.dialogData
+      } else {
+        return {} as IInfoDialog
+      }
+    } catch (e) {
+      return {} as IInfoDialog
+    }
+
+  }
+
   logoutClick() {
     this.dialog.open(MainDialogComponent, {
       panelClass: 'custom-dialog-container',
@@ -77,7 +105,8 @@ export class HeaderComponent implements OnInit {
     this.dialog.open(InformationDialogComponent, {
       panelClass: 'custom-dialog-component',
       width: '400px',
-      data: this.dialogData
+      // data: this.dialogData
+      data: this.getUserCurrentData()
     }).afterClosed().subscribe((result) => {
       if (result) {
         // === not stage here ===
@@ -91,7 +120,8 @@ export class HeaderComponent implements OnInit {
     this.dialog.open(MrtaListComponent, {
       height: '90%',
       width: '80%',
-      data: this.dialogData
+      // data: this.dialogData
+      data: this.getUserCurrentData()
     }).afterClosed().subscribe((result) => {
       if (result) {
         // === not stage here ===

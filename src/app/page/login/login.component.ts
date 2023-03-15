@@ -3,6 +3,11 @@ import { Validators, FormGroup, FormControl, FormBuilder, AbstractControl, Valid
 import { Component, Inject } from '@angular/core';
 import { first } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { BaseService } from 'src/app/service/base/base.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
+import { LoadingService } from 'src/app/service/loading.service';
 
 
 @Component({
@@ -10,7 +15,9 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent extends BaseService {
+
+  type: string = '';
   // mainForm: FormGroup;
   showmessage: boolean = false;
   messagetext: string | undefined;
@@ -33,6 +40,9 @@ export class LoginComponent {
   showlogin: boolean = true;
   showresetpassword: boolean = false;
   showforgetpassword: boolean = false;
+  showheader: boolean = true;
+  showfooter: boolean = false;
+  showheaderbar: boolean = true;
 
   showexpiretxt: boolean = true;
 
@@ -127,9 +137,17 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private loadingService: LoadingService,
+    public override dialog: MatDialog,
+    public override _snackBar: MatSnackBar,
 
   ) {
+    super(dialog, _snackBar)
+
+    this.route.queryParams.subscribe((value) => {
+      this.type = value['type']
+    })
 
   }
 
@@ -201,9 +219,21 @@ export class LoginComponent {
         }
       }
     }
+
+    if (this.type == 'repass') {
+      // === open page change pass ===
+      this.showexpiretxt = false
+      this.showforgetpassword = false
+      this.showlogin = false
+      this.showresetpassword = true
+      this.showheader = false
+      this.showfooter = false
+      this.showheaderbar = false
+    }
   }
 
   submitForm() {
+    this.loadingService.showLoader()
     const data = {
       username: this.mainForm.controls.loginForm.controls.username.value ?? '',
       password: this.mainForm.controls.loginForm.controls.password.value ?? '',
@@ -216,13 +246,19 @@ export class LoginComponent {
       .pipe(first())
       .subscribe({
         next: (result) => {
+          this.loadingService.hideLoader();
           if (result.status == 200) {
             // === contain user in database ==== 
             if (this.returnUrl == '/') {
-              if (data.usertype == 1) {
-                this.router.navigate(['/quotation-view']);
 
+              if (data.usertype == 1) {
+                // === checker : 1 ====
+                this.router.navigate(['/quotation-view']);
               } else if (data.usertype == 2) {
+                // === fcr : 2 ====
+                this.router.navigate(['/collector-view']);
+              } else if (data.usertype == 0) {
+                // === dealer : 0  ====
                 this.router.navigate(['/quotation-view']);
               }
             } else {
@@ -235,7 +271,22 @@ export class LoginComponent {
             this.showmessage = true;
           }
         }, error: (error) => {
+          this.loadingService.hideLoader();
+          this.dialog.open(MainDialogComponent, {
+            panelClass: 'custom-dialog-container',
+            data: {
+              header: `ผิดพลาด`,
+              message: `Error : ${(error.status && error.statusText) ? error.status + ' : ' + error.statusText : 'NO return message'}`,
+              button: `close`
+            }
+          }).afterClosed().subscribe((result) => {
+            // === handle dialog close ===
+          })
           this.error = error;
+        }, complete: () => {
+          // === complete api login (fail or success) ===
+          this.loadingService.hideLoader();
+          console.log(`complete api login !!`)
         }
       });
   }

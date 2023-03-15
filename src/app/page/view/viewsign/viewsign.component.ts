@@ -2,12 +2,14 @@ import { QuotationService } from 'src/app/service/quotation.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject, filter, map } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, map } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { IConsentdata } from 'src/app/interface/i-consent';
 import { ViewsignService } from 'src/app/service/viewsign.service';
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { LoadingService } from 'src/app/service/loading.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-viewsign',
@@ -19,6 +21,12 @@ export class ViewsignComponent implements OnInit {
   // image src subject
   customersignatureimg$ = new BehaviorSubject<string>('')
   witnesssignatureimg$ = new BehaviorSubject<string>('')
+
+  // === add image customer cizcard (dipchip) and face customer compare (add on 09/02/2023) ===
+  customerdipchipimg$ = new BehaviorSubject<string>('')
+  facecustomerimg$ = new BehaviorSubject<string>('')
+  resultFaceCompare: string = ''
+  reasonFaceCompare: string = ''
 
 
   // === chk API get image work
@@ -59,6 +67,7 @@ export class ViewsignComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private loadingService: LoadingService,
     private route: ActivatedRoute,
     private viewsignService: ViewsignService,
     private dialog: MatDialog,
@@ -67,58 +76,97 @@ export class ViewsignComponent implements OnInit {
   ) {
     this.customersignatureimg$.next('/assets/image/placeholder-image.png')
     this.witnesssignatureimg$.next('/assets/image/placeholder-image.png')
+    this.customerdipchipimg$.next('/assets/image/placeholder-image.png')
+    this.facecustomerimg$.next('/assets/image/placeholder-image.png')
   }
 
   ngOnInit(): void {
 
     // === clear dopa status (11/11/2022) ===
+    this.loadingService.showLoader()
+
     this.quotationService.cleardopastatus()
-
-
-
-
     // get query param 
-    this.route.queryParams.subscribe((res) => {
-      // keep userid and quotation id from query param
-      this.quotationid.next(res['quotationid'])
-      this.userid.next(res['userid'])
 
-      //== set dopa text status (11/11/2022) ===
-      this.quotationService.setstatusdopa(res['quotationid'])
+    this.route.queryParams.subscribe({
+      next: (res) => {
+        // keep userid and quotation id from query param
+        this.quotationid.next(res['quotationid'])
+        this.userid.next(res['userid'])
 
-      this.viewsignService.getviewsignimage(this.quotationid.value).subscribe(
-        async (results) => {
-          // map customer imgae and witness image from return data
-          if (results.status == 200) {
-            this.letverify$.next(true)
-            const cussigimagebase64 = await this.getUrlImage(results.data[0])
-            this.customersignatureimg$.next(cussigimagebase64)
+        //== set dopa text status (11/11/2022) ===
+        this.quotationService.setstatusdopa_unlock(res['quotationid'])
 
-            const witnesssigimagebase64 = await this.getUrlImagWitness(results.data[0])
-            this.witnesssignatureimg$.next(witnesssigimagebase64)
+        const combinedd$ = combineLatest([
+          this.viewsignService.getviewsignimage(this.quotationid.value),
+          this.quotationService.MPLS_getimagetocompareiapp_unlock(this.quotationid.value)
+        ]).subscribe({
+          next: async ([res_viewsign, res_face_compare]) => {
+            this.loadingService.hideLoader()
+            // === handle viesign ===
+            if (res_viewsign.status == 200) {
+              this.letverify$.next(true)
+              const cussigimagebase64 = await this.getUrlImage(res_viewsign.data[0])
+              this.customersignatureimg$.next(cussigimagebase64)
 
-            // == check if aleady verify (verify_status)
-            if (results.data[0].verify_status == 1) {
-              this.alreadyverify$.next(true)
-              this.verifyby$.next(results.data[0].verify_by)
+              const witnesssigimagebase64 = await this.getUrlImagWitness(res_viewsign.data[0])
+              this.witnesssignatureimg$.next(witnesssigimagebase64)
+
+              // == check if aleady verify (verify_status)
+              if (res_viewsign.data[0].verify_status == 1) {
+                this.alreadyverify$.next(true)
+                this.verifyby$.next(res_viewsign.data[0].verify_by)
+              }
             }
+            //== set dopa text status (11/11/2022) ===
+            // this.quotationService.setstatusdopa(results.data[0].cons_quo_key_app_id)
+
+            // === handle face compare ===
+
+            if (res_face_compare.status == 200) {
+              this.customerdipchipimg$.next((res_face_compare.data.file1 == null || res_face_compare.data.file1 == '') ? `${environment.citizen_card_img_preload}` : `data:image/jpeg;base64,${res_face_compare.data.file1}`)
+              this.facecustomerimg$.next((res_face_compare.data.file2 == null || res_face_compare.data.file2 == '') ? `${environment.citizen_card_img_preload}` : `data:image/jpeg;base64,${res_face_compare.data.file2}`)
+
+              this.quotationService.MPLS_is_check_face_valid_unlock(this.quotationid.value).subscribe({
+                next: (res_check_face) => {
+                  this.resultFaceCompare = res_check_face.data.status == 'Y' ? 'ตรงกัน' : 'ไม่ตรงกัน'
+                  this.reasonFaceCompare = res_check_face.data.reason ? res_check_face.data.reason : '-'
+                }, error: (e) => {
+                  console.log(`Error : ${e.message ? e.message : 'No return message'}`)
+                }, complete: () => {
+                  console.log(`complete trigger on get check face compare (MPLS_is_check_face_valid_unlock)`)
+                }
+              })
+            } else {
+              console.log('res_face_compare status !== 200')
+            }
+
+
+          }, error: (e) => {
+
+            // === handle of viewsign ====
+            this.loadingService.hideLoader()
+            // === handle error status return ===
+            console.log(JSON.stringify(e))
+            this.iserr$.next(true)
+            this.errmsg$.next(`ไม่สามารถเรียกดูลายเซ็นต์ได้`)
+          }, complete: () => {
+            this.loadingService.hideLoader()
+            console.log(`complete combindeLasted face compare and viewsign image`)
           }
+        })
 
-
-          //== set dopa text status (11/11/2022) ===
-          // this.quotationService.setstatusdopa(results.data[0].cons_quo_key_app_id)
-
-        }, async (e) => {
-          // === handle error status return ===
-          console.log(JSON.stringify(e))
-          this.iserr$.next(true)
-          this.errmsg$.next(`ไม่สามารถเรียกดูลายเซ็นต์ได้`)
-        }
-      )
+      }, error: (e) => {
+        this.loadingService.hideLoader()
+        // === handle error status return ===
+        console.log(JSON.stringify(e))
+        this.iserr$.next(true)
+        this.errmsg$.next(`ไม่สามารถเรียกดูลายเซ็นต์ได้`)
+      }, complete: () => {
+        this.loadingService.hideLoader()
+        console.log(`trigger complete queryParams`)
+      }
     })
-
-
-
   }
 
   onselectcheckbox(event: any) {
@@ -128,44 +176,56 @@ export class ViewsignComponent implements OnInit {
 
   onclickbtn() {
 
-    this.viewsignService.verifyviewsignimage(this.quotationid.value, this.userid.value).subscribe(res => {
-      // return fail or success status 
-      // done ====
-      this.viewsignService.getviewsignimage(this.quotationid.value).subscribe(
-        async (resultsreload) => {
-          // map customer imgae and witness image from return data
-          if (resultsreload.status == 200) {
-            this.letverify$.next(true)
-            const cussigimagebase64 = await this.getUrlImage(resultsreload.data[0])
-            this.customersignatureimg$.next(cussigimagebase64)
+    this.loadingService.showLoader()
 
-            const witnesssigimagebase64 = await this.getUrlImagWitness(resultsreload.data[0])
-            this.witnesssignatureimg$.next(witnesssigimagebase64)
+    this.viewsignService.verifyviewsignimage(this.quotationid.value, this.userid.value).subscribe({
+      next: (res) => {
+        // return fail or success status 
+        // done ====
+        this.viewsignService.getviewsignimage(this.quotationid.value).subscribe({
+          next: async (resultsreload) => {
+            // map customer imgae and witness image from return data
+            this.loadingService.hideLoader()
+            if (resultsreload.status == 200) {
+              this.letverify$.next(true)
+              const cussigimagebase64 = await this.getUrlImage(resultsreload.data[0])
+              this.customersignatureimg$.next(cussigimagebase64)
 
-            // == check if aleady verify (verify_status)
-            if (resultsreload.data[0].verify_status == 1) {
-              this.alreadyverify$.next(true)
-              this.verifyby$.next(resultsreload.data[0].verify_by)
+              const witnesssigimagebase64 = await this.getUrlImagWitness(resultsreload.data[0])
+              this.witnesssignatureimg$.next(witnesssigimagebase64)
+
+              // == check if aleady verify (verify_status)
+              if (resultsreload.data[0].verify_status == 1) {
+                this.alreadyverify$.next(true)
+                this.verifyby$.next(resultsreload.data[0].verify_by)
+              }
             }
+          }, error: (e) => {
+            // === handle error status return ===
+            this.loadingService.hideLoader()
+            console.log(JSON.stringify(e))
+            this.iserr$.next(true)
+            this.errmsg$.next(`ไม่สามารถเรียกดูลายเซ็นต์ได้`)
+          }, complete: () => {
+            this.loadingService.hideLoader()
           }
-        }, async (e) => {
-          // === handle error status return ===
-          console.log(JSON.stringify(e))
-          this.iserr$.next(true)
-          this.errmsg$.next(`ไม่สามารถเรียกดูลายเซ็นต์ได้`)
-        }
-      )
-    }, err => {
-      this.dialog.open(MainDialogComponent, {
-        panelClass: 'custom-dialog-container',
-        data: {
-          header: 'Fail',
-          message: 'ไม่สามารถยืนยีนได้',
-          button_name: 'Ok'
-        }
-      }).afterClosed().subscribe(result => {
-        // === clear token and go to login page === 
-      });
+        })
+      }, error: (e) => {
+        this.loadingService.hideLoader()
+        this.dialog.open(MainDialogComponent, {
+          panelClass: 'custom-dialog-container',
+          data: {
+            header: 'Fail',
+            message: 'ไม่สามารถยืนยีนได้',
+            button_name: 'Ok'
+          }
+        }).afterClosed().subscribe(result => {
+          // === clear token and go to login page === 
+        });
+      }, complete: () => {
+        this.loadingService.hideLoader()
+        console.log(`trigger complete (verifyviewsignimage)`)
+      }
     })
   }
 

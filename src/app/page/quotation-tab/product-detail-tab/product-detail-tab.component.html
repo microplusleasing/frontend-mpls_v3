@@ -225,9 +225,9 @@
             </ng-container>
             <!-- End of Grid list -->
             <!-- <div class=flex-center> -->
-            <div class="flexbox">
+            <div class="flexbox-col">
                 <div *ngIf="is_edit">
-                    <button class="btnsubmit" mat-raised-button color="primary" (click)="onbtnpaymentcalculate()"
+                    <button  mat-raised-button color="primary" (click)="onbtnpaymentcalculate()"
                         [disabled]="(lockbtncalculate$ | async)"> คำนวณค่างวด </button>
                 </div>
                 <div *ngIf="showPrice" hidden>
@@ -240,22 +240,22 @@
                     เลือกเงื่อนไขเพื่อคำนวณค่างวด
                 </mat-error>
                 <div *ngIf="(showpaymentvalue$ | async)">
-                    <p class="h3"> ทุนประกัน {{(coverage | number)}} </p>
+                    <h2> ทุนประกัน {{(coverage | number)}} </h2>
                 </div>
                 <div *ngIf="(showpaymentvalue$ | async)">
-                    <p class="h3"> ยอดกู้สูงสุด {{(maxltvCurrent | number)}} </p>
+                    <h2> ยอดกู้สูงสุด {{(maxltvCurrent | number)}} </h2>
                 </div>
                 <div
                     *ngIf="detailForm.controls['isincludeloanamount'].value && detailForm.controls['paymentValueField'].value">
-                    <p class="h3"> ยอดกู้รวม {{(netfinance | number)}} ( {{(paymentshowvalue | number)}} +
+                    <h2> ยอดกู้รวม {{(netfinance | number)}} ( {{(paymentshowvalue | number)}} +
                         {{(biaprakan
                         |
-                        number)}})</p>
+                        number)}})</h2>
                 </div>
                 <div *ngIf="(showpaymentvalue$ | async)">
                     <mat-card style="background-color: lightgray;">
                         <mat-card-content>
-                            <p class="h1" style="color: #3f51b5;"> ค่างวด {{((paymentvalue$ | async) | number)}}</p>
+                            <h1 style="color: #3f51b5;"> ค่างวด {{((paymentvalue$ | async) | number)}}</h1>
                         </mat-card-content>
                     </mat-card>
                 </div>

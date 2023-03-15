@@ -10,7 +10,11 @@ export interface IUserTokenData {
     EXPIRE_DATE: string;
     channal: string;
     FULLNAME: string;
+    SELLER_ID: string;
     ID: string;
+    // add on 14/03/2023 
+    WITNESS_NAME: string;
+    WITNESS_LNAME: string;
 }
 
 export interface IUserToken {

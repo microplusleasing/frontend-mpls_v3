@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as moment from 'moment';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { IResMasterProvinceData } from 'src/app/interface/i-res-master-province';
 import { IResMasterTitleData } from 'src/app/interface/i-res-master-title';
 import { IUserToken, IUserTokenData } from 'src/app/interface/i-user-token';
@@ -14,11 +14,10 @@ import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dial
 export class BaseService {
 
   private _sessionUser = new Subject<string>();
-  userdata = localStorage.getItem('currentUser')
-  userSessionQuotation: IUserTokenData = {} as IUserTokenData
-  usernamefordipchip: string = ''
-  checker_id: string = ''
-
+  userdata = localStorage.getItem('currentUser');
+  userSessionQuotation: BehaviorSubject<IUserTokenData> = new BehaviorSubject<IUserTokenData>({} as IUserTokenData);
+  usernamefordipchip: string = '';
+  checker_id: string = '';
 
   constructor(
     public dialog: MatDialog,
@@ -26,16 +25,20 @@ export class BaseService {
   ) {
     if (this.userdata) {
       const userdataObj = (JSON.parse(this.userdata) as IUserToken).data;
-      const sessionUserObject = (JSON.parse(this.userdata)) as IUserToken
-      this.userSessionQuotation = userdataObj
-      this.usernamefordipchip = userdataObj.USERNAME ? userdataObj.USERNAME : ''
+      const sessionUserObject = (JSON.parse(this.userdata)) as IUserToken;
+      this.userSessionQuotation.next(userdataObj);
+      this.usernamefordipchip = userdataObj.USERNAME ? userdataObj.USERNAME : '';
 
       if (userdataObj.channal) {
         if (userdataObj.channal == 'checker') {
-          this.checker_id = userdataObj.USERID ? userdataObj.USERID : ''
+          this.checker_id = userdataObj.USERID ? userdataObj.USERID : '';
         }
       }
     }
+  }
+
+  getUserSessionQuotation() {
+    return this.userSessionQuotation.asObservable();
   }
 
   getSessionStorageUser() {

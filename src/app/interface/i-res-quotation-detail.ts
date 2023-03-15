@@ -11,7 +11,7 @@ export interface IResQuotationDetailData {
     title_name: string;
     first_name: string;
     last_name: string;
-    birth_date?: Date;
+    birth_date: Date;
     birth_date_text_th: string;
     birth_date_text_en: string;
     ciz_issued_date: Date;
@@ -260,6 +260,10 @@ export interface IResQuotationDetailData {
     quo_dopa_status: string;
     quo_face_compare_verify: string;
     quo_image_attach_verify: string;
+
+    // === 27/02/2023 === 
+    cr_main_workplace_phone_no_1: string;
+    cr_main_workplace_phone_no_2: string;
 
 
 }

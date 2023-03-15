@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule, DatePipe } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -42,6 +43,13 @@ import { TotalLossQrCodeComponent } from './page/view/total-loss-qr-code/total-l
 import { ViewsignComponent } from './page/view/viewsign/viewsign.component';
 import { BypassSignatureComponent } from './page/bypass-signature/bypass-signature.component';
 import { MrtaListComponent } from './page/view/mrta/mrta-list/mrta-list.component';
+import { CreditDisclosureConsentComponent } from './page/quotation-tab/signature-tab/consent/credit-disclosure-consent/credit-disclosure-consent.component';
+import { FinishQuotationDialogComponent } from './widget/dialog/finish-quotation-dialog/finish-quotation-dialog.component';
+import { MrtaInfoComponent } from './page/view/mrta/mrta-info/mrta-info.component';
+import { CollectorViewComponent } from './page/collector/collector-view/collector-view.component';
+import { CollectorDetailComponent } from './page/collector/collector-detail/collector-detail.component';
+import { BackwardBarComponent } from './widget/backward-bar/backward-bar.component';
+import { CreateLivingNegoDialogComponent } from './widget/dialog/create-living-nego-dialog/create-living-nego-dialog.component';
 
 @NgModule({
   declarations: [
@@ -78,10 +86,18 @@ import { MrtaListComponent } from './page/view/mrta/mrta-list/mrta-list.componen
     ViewsignComponent,
     BypassSignatureComponent,
     MrtaListComponent,
+    CreditDisclosureConsentComponent,
+    FinishQuotationDialogComponent,
+    MrtaInfoComponent,
+    CollectorViewComponent,
+    CollectorDetailComponent,
+    BackwardBarComponent,
+    CreateLivingNegoDialogComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    CommonModule,
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
@@ -91,6 +107,7 @@ import { MrtaListComponent } from './page/view/mrta/mrta-list/mrta-list.componen
     NgOtpInputModule
   ],
   providers: [
+    DatePipe,
     FormGroupDirective, 
     {
       provide: HTTP_INTERCEPTORS,

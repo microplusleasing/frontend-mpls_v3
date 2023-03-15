@@ -97,6 +97,24 @@
                                 </mat-error>
                             </mat-form-field>
                         </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.cols6">
+                            <mat-form-field appearance="outline">
+                                <mat-label>เบอร์โทรศัพท์ที่ทำงาน (เบอร์ 1)</mat-label>
+                                <input matInput color="primary" [formControl]="mainworkplacephoneno1Field" type="text"  pattern="[0-9]*">
+                                <mat-error *ngIf="mainworkplacephoneno1Field.errors?.['pattern']">
+                                    กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.cols6">
+                            <mat-form-field appearance="outline">
+                                <mat-label>เบอร์โทรศัพท์ที่ทำงาน (เบอร์ 2)</mat-label>
+                                <input matInput color="primary" [formControl]="mainworkplacephoneno2Field" type="text"  pattern="[0-9]*">
+                                <mat-error *ngIf="mainworkplacephoneno2Field.errors?.['pattern']">
+                                    กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
 
                         <!-- is Sub career -->
 

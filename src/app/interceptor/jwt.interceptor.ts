@@ -44,8 +44,8 @@ export class JwtInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((err) => {
         if (err instanceof HttpErrorResponse) {
-          console.log(`this err status : ${err.error.status}`)
-          if (err.error.status === 401) {
+          console.log(`this err status : ${err.status}`)
+          if (err.status === 401) {
             // redirect user to the logout page
             this.loadingService.hideLoader()
             this.dialog.open(MainDialogComponent, {
@@ -61,6 +61,18 @@ export class JwtInterceptor implements HttpInterceptor {
               localStorage.removeItem('currentUser');
               this.router.navigate(['/login'])
             });
+          } else if (err.status === 403) {
+            // === permission not allowed (FOrbinden set in api) === (31/01/2023)
+            this.dialog.open(MainDialogComponent, {
+              panelClass: `custom-dialog-container`,
+              data: {
+                header: `No Permission`,
+                message: `ไม่ม่สิทธิ์ในการทำรายการดังกล่าว`,
+                button_name: `Close`
+              }
+            }).afterClosed().subscribe(result => {
+              // === handle next step ===
+            })
           } else {
             // Customize as you wish:
             return throwError(() => err);

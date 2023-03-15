@@ -1,0 +1,690 @@
+<app-backward-bar [fname]="this.fname" [lname]="this.lname" [hpno]="this.hpno" [due]="this.due" [branch]="this.branch"
+    [bill]="this.bill" [status]="this.status" [pageno]="this.pageno" [ContractNo]="this.applicationid"
+    [Username]="this.usernamelogin" [carcheckstatus]="this.carcheckstatus">
+</app-backward-bar>
+<ng-container *ngIf="cardLayout | async as layout">
+    <div class="container-card" style="margin-top: 1em;">
+        <div [style.width]="layout.card_width">
+            <mat-accordion class="example-headers-align">
+                <!-- ข้อมูลสัญญาเลขที่ -->
+                <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            ข้อมูลสัญญาเลขที่ {{applicationdata.hp_no}} [{{applicationdata.bill_beg}}]
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            <!-- Type your name and age
+                            <mat-icon>account_circle</mat-icon> -->
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+
+                    <table class="table-responsive" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left;">ชื่อลูกค้า</th>
+                                <th style="text-align: left;">วันครบกำหนดชำระ</th>
+                                <th style="text-align: left;">วันที่ทำสัญญา</th>
+                                <th style="text-align: left;">ค่างวด</th>
+                                <th style="text-align: left;">ค่างวดที่ต้องชำระ</th>
+                                <th style="text-align: left;">จำนวนงวด</th>
+                                <th style="text-align: left;">ชำระค่างวดครั้งแรก</th>
+                                <th style="text-align: left;">วันเดือนปีเกิด</th>
+                            </tr>
+                        </thead>
+                        <thead>
+                            <!-- <tr> -->
+                            <td data-label="ชื่อลูกค้า">
+                                {{applicationdata.tittle_name}}&nbsp;{{applicationdata.name}}&nbsp;&nbsp;{{applicationdata.sname}}
+                            </td>
+                            <!-- <td data-label="วันครบกำหนดชำระ">{{((applicationdata.paymentdate | date: 'dd/MM/yyyy') ?
+                                (applicationdata.paymentdate | date: 'dd/MM/yyyy') : '-')}}</td> -->
+                            <td data-label="วันครบกำหนดชำระ">{{applicationdata.paymentdate !== null ?
+                                (applicationdata.paymentdate | thaidate:'main') : '-'}}</td>
+                            <!-- <td data-label="วันที่ทำสัญญา">{{((applicationdata.create_contract_date | date:
+                                'dd/MM/yyyy') ?
+                                (applicationdata.create_contract_date | date: 'dd/MM/yyyy') : '-')}}</td> -->
+                            <td data-label="วันที่ทำสัญญา">{{applicationdata.create_contract_date !== null ?
+                                (applicationdata.create_contract_date | thaidate:'main') : '-'}}</td>
+                            <td data-label="ค่างวด">{{((applicationdata.monthly ? applicationdata.monthly : 0) |
+                                number)}}&nbsp;บาท</td>
+                            <td data-label="ค่างวดที่ต้องชำระ">{{((applicationdata.will_pay_amt ?
+                                applicationdata.will_pay_amt : 0) |
+                                number)}}&nbsp;บาท&nbsp;/&nbsp;({{((applicationdata.will_pay_inst ?
+                                applicationdata.will_pay_inst : 0) |
+                                number)}}&nbsp;งวด)</td>
+                            <td data-label="จำนวนงวด">{{applicationdata.term}}&nbsp;งวด</td>
+                            <!-- <td data-label="ชำระค่างวดครั้งแรก">{{((applicationdata.first_due | date: 'dd/MM/yyyy')
+                                ?
+                                (applicationdata.first_due | date: 'dd/MM/yyyy') : '-')}}</td> -->
+                            <td data-label="ชำระค่างวดครั้งแรก">{{applicationdata.first_due !== null ?
+                                (applicationdata.first_due | thaidate:'main') : '-'}}</td>
+                            <td data-label="วันเดือนปีเกิด">{{applicationdata.birth_date !== null ?
+                                (applicationdata.birth_date | thaidate:'main') : '-'}}</td>
+                            <!-- </tr> -->
+                        </thead>
+                    </table>
+
+                    <mat-action-row>
+                        <button mat-button color="primary" (click)="nextStep()">Next</button>
+                    </mat-action-row>
+                </mat-expansion-panel>
+
+                <!-- ข้อมูลรถจักรยานยนต์ -->
+                <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" hideToggle>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            ข้อมูลรถจักรยานยนต์
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            <!-- Type the country name
+                            <mat-icon>map</mat-icon> -->
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <div *ngFor="let moto of motocycleList; index as i">
+
+                        <mat-card>
+                            <mat-card-content>
+                                <table class="table-responsive-allres" style="width: 100%; margin-top: 1em;">
+                                    <thead>
+                                        <tr>
+                                            <th>ยี่ห้อ</th>
+                                            <th>รุ่น</th>
+                                            <th>เลขเครื่อง</th>
+                                            <th>เลขตัวถัง</th>
+                                            <th>สี</th>
+                                            <th>CC</th>
+                                            <th>เลขทะเบียน</th>
+                                            <th>ร้าน</th>
+
+                                        </tr>
+                                    </thead>
+                                    <thead>
+                                        <!-- <tr> -->
+                                        <td data-label="ยี่ห้อ">{{moto.brand_name}}</td>
+                                        <td data-label="รุ่น">{{moto.model}}</td>
+                                        <td data-label="เลขเครื่อง">{{moto.engine_number}}</td>
+                                        <td data-label="เลขตัวถัง">{{moto.chassis_number}}</td>
+                                        <td data-label="สี">{{moto.color}}</td>
+                                        <td data-label="ซีซี">{{moto.cc ? moto.cc : '-'}} CC</td>
+                                        <td data-label="เลขทะเบียน">{{moto.reg_no ? moto.reg_no+' '+moto.reg_city :
+                                            '-'}}</td>
+                                        <td data-label="ร้าน">{{moto.dl_name ? moto.dl_name : '-'}}</td>
+
+                                        <!-- </tr> -->
+                                    </thead>
+                                </table>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+
+
+                    <mat-action-row>
+                        <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                        <button mat-button color="primary" (click)="nextStep()">Next</button>
+                    </mat-action-row>
+                </mat-expansion-panel>
+
+                <!-- ที่อยู่ของลูกค้า -->
+                <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)" hideToggle>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            ที่อยู่ของลูกค้า
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            <!-- Type the country name
+                            <mat-icon>map</mat-icon> -->
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <!-- <table class="table table-striped"> -->
+                    <div *ngIf="this.addressdataList.length == 0">
+                        <div style="text-align: center;">
+                            <span>ไม่พบรายการที่อยู่ของลูกค้า</span>
+                        </div>
+                    </div>
+                    <div *ngIf="this.addressdataList.length !== 0">
+                        <table style="width: 100%;">
+                            <thead style="width: 100%;">
+                                <tr>
+                                    <!-- <th scope="col">No.</th> -->
+                                    <th style="text-align: left; width: 50%;">ประเภท</th>
+                                    <th style="text-align: left; width: 50%;">ที่อยู่</th>
+                                    <!-- <th scope="col">Population</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let address of addressdataList; index as i">
+                                    <!-- <th>{{address.line_number}}</th> -->
+                                    <td style="width: 50%;"> {{ address.addr_type_name }} </td>
+                                    <td style="width: 50%;">
+                                        {{address.home_name}}&nbsp;{{address.sai}}&nbsp;{{address.trok}}&nbsp;หมู่&nbsp;{{address.mhod}}
+                                        <br>
+                                        {{address.road}}&nbsp;{{address.kwang}}&nbsp;{{address.khet}} <br>
+                                        จังหวัด&nbsp;{{address.prov_name}}&nbsp;{{address.post_code}}
+                                    </td>
+                                    <!-- <td>{{ address.population | number }}</td> -->
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <mat-paginator [length]="address_pageLength" [pageSize]="this.address_pageSize"
+                            [hidePageSize]="true"
+                            (page)="address_pageEvent = $event; onPaginationChange_address($event)">
+                        </mat-paginator>
+
+                        <!-- <mat-paginator [length]="100" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]"
+                            aria-label="Select page">
+                        </mat-paginator> -->
+                    </div>
+
+                    <mat-action-row>
+                        <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                        <button mat-button color="primary" (click)="nextStep()">Next</button>
+                    </mat-action-row>
+                </mat-expansion-panel>
+
+                <!-- ที่อยู่จากการสืบค้น NCB -->
+                <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)" hideToggle>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            ที่อยู่จากการสืบค้น NCB
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            <!-- Type the country name
+                            <mat-icon>map</mat-icon> -->
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+                    <!-- <table class="table table-striped"> -->
+                    <div *ngIf="this.addressNcbdataList.length == 0">
+                        <div style="text-align: center;">
+                            <span>ไม่มีรายการการสืบค้นจาก NCB</span>
+                        </div>
+                    </div>
+                    <div *ngIf="this.addressNcbdataList.length !== 0">
+
+                        <table style="width: 100%;">
+                            <thead style="width: 100%">
+                                <tr>
+                                    <th style="text-align: left;">ที่อยู่จากการสืบค้น NCB</th>
+                                    <!-- <th scope="col">Population</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let address of addressNcbdataList; index as i">
+                                    <!-- <th>{{address.line_number}}</th> -->
+                                    <td style="text-align: left;">
+                                        {{address.address1}}&nbsp;{{address.address2}}&nbsp;{{address.address3}}&nbsp;{{address.address4}}&nbsp;{{address.address5}}&nbsp;{{address.address6}}&nbsp;{{address.address7}}&nbsp;{{address.address8}}
+                                    </td>
+                                    <!-- <td>{{ address.population | number }}</td> -->
+                                </tr>
+                            </tbody>
+                        </table>
+                        <mat-paginator [length]="(address_ncb_pageLength)" [pageSize]="(this.address_ncb_pageSize)"
+                            [hidePageSize]="true"
+                            (page)="address_ncb_pageEvent = $event; onPaginationChange_ncb_address($event)"
+                            aria-label="Select page">
+                        </mat-paginator>
+                    </div>
+
+                    <mat-action-row>
+                        <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                        <button mat-button color="primary" (click)="nextStep()">Next</button>
+                    </mat-action-row>
+                </mat-expansion-panel>
+
+                <!-- เบอร์โทรศัพท์ -->
+                <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)" hideToggle>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            เบอร์โทรศัพท์
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            <!-- Type the country name
+                            <mat-icon>map</mat-icon> -->
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+                    <div *ngIf="this.phonedatacustList.length == 0">
+                        <div style="text-align: center;">
+                            <span>ไม่มีรายการการเบอร์โทรศัพท์</span>
+                        </div>
+                    </div>
+                    <div *ngIf="this.phonedatacustList.length !== 0">
+                        <table style="width: 100%;">
+                            <thead style="width: 100%;">
+                                <tr>
+                                    <th style="width: 50%; text-align: left;">เบอร์โทรศัพท์</th>
+                                    <th style="width: 50%; text-align: left;">ชื่อลูกค้า</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let phone of phonedatacustList; index as i">
+
+                                    <td style="width: 50%"> {{phone.phone_no}} </td>
+                                    <td style="width: 50%"> {{phone.name}}&nbsp;{{phone.sname}} </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                        <mat-paginator [length]="(phonecust_pageLength)" [pageSize]="(this.phonecust_pageSize)"
+                            [hidePageSize]="true"
+                            (page)="phonecust_pageEvent = $event; onPaginationChange_phonecust($event)"
+                            aria-label="Select page">
+                        </mat-paginator>
+                    </div>
+                    <mat-divider style="margin-top: 0.5em; margin-bottom: 0.5em;"></mat-divider>
+                    <div *ngIf="this.phonedataList.length == 0">
+                        <div style="text-align: center;">
+                            <span>ไม่มีรายการการเบอร์โทรศัพท์บุคคลอ้างอิง</span>
+                        </div>
+                    </div>
+                    <div *ngIf="this.phonedataList.length !== 0">
+                        <table style="width: 100%">
+                            <thead>
+                                <tr>
+
+                                    <th style="width: 50%; text-align: left;">เบอร์โทรศัพท์บุคคลอ้างอิง</th>
+                                    <th style="width: 50%; text-align: left;">ชื่อบุคคลอ้างอิง</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let phone of phonedataList; index as i">
+
+                                    <td> {{ phone.phone_no }} </td>
+                                    <td> {{phone.ref_customer}} </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                        <mat-paginator [length]="(phone_pageLength)" [pageSize]="(this.phone_pageSize)"
+                            [hidePageSize]="true" (page)="phone_pageEvent = $event; onPaginationChange_phone($event)"
+                            aria-label="Select page">
+                        </mat-paginator>
+                    </div>
+
+                    <mat-action-row>
+                        <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                        <button mat-button color="primary" (click)="nextStep()">Next</button>
+                    </mat-action-row>
+                </mat-expansion-panel>
+
+                <!-- ประวัติการชำระเงิน -->
+                <mat-expansion-panel [expanded]="step === 5" (opened)="setStep(5)" hideToggle>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            ประวัติการชำระเงิน {{this.out_stand_main ? '(ยอดคงเหลือ ' + this.out_stand_main + ' บาท)' :
+                            ''}}
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            <!-- Type the country name
+                            <mat-icon>map</mat-icon> -->
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+                    <div *ngIf="this.historydataList.length == 0">
+                        <div style="text-align: center;">
+                            <span>ไม่พบรายการประวัติการชำระเงิน</span>
+                        </div>
+                    </div>
+
+                    <div *ngIf="this.historydataList.length !== 0">
+                        <table style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">วันที่ชำระ</th>
+                                    <th style="width: 25%;">ประเภท</th>
+                                    <th style="width: 25%;">จำนวนเงิน</th>
+                                    <th style="width: 25%;">คงเหลือ</th>
+                                    <!-- <th scope="col">Population</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let history of historydataList; index as i">
+                                    <th style="width: 25%;">{{(history.reciept_d | date: 'dd-MM-yyyy') ?
+                                        (history.reciept_d
+                                        | date:
+                                        'dd-MM-yyyy') : '-'}}</th>
+                                    <!-- <td style="width: 25%;"> {{history.pay_name}}</td> -->
+                                    <td style="width: 25%;"> {{history._txt_type_field}}</td>
+                                    <td style="width: 25%; text-align: right;"> {{(history.cash | number)}}&nbsp;บาท
+                                    </td>
+                                    <td style="width: 25%; text-align: right;"> {{(history.out_stand |
+                                        number)}}&nbsp;บาท
+                                    </td>
+                                    <!-- <td>{{ address.population | number }}</td> -->
+                                </tr>
+                            </tbody>
+                        </table>
+                        <mat-paginator [length]="history_pageLength" [pageSize]="this.history_pageSize"
+                            [hidePageSize]="true"
+                            (page)="history_pageEvent = $event; onPaginationChange_history($event)">
+                        </mat-paginator>
+
+                        <!-- <mat-paginator [length]="100" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]"
+                            aria-label="Select page">
+                        </mat-paginator> -->
+                    </div>
+
+
+                    <mat-action-row>
+                        <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                        <button mat-button color="primary" (click)="nextStep()">Next</button>
+                    </mat-action-row>
+                </mat-expansion-panel>
+
+                <!-- ประวัติการติดตาม -->
+                <mat-expansion-panel [expanded]="step === 6" (opened)="setStep(6)" hideToggle>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            ประวัติการติดตาม
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            <!-- Type the country name
+                                            <mat-icon>map</mat-icon> -->
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+                    <button mat-flat-button color="primary" (click)="showfollowupmat()" *ngIf="!triggerfollowup">
+                        <mat-icon>note_add</mat-icon>
+                        <span>เพิ่มประวัติ</span>
+                    </button>
+
+
+                    <div [formGroup]="negofollowup">
+                        <mat-card *ngIf="triggerfollowup" style="margin-top: 1em;">
+                            <ng-container *ngIf="cardLayout | async as layout">
+                                <mat-grid-list [cols]="layout.columns" [rowHeight]="layout.rowHeight">
+                                    <mat-grid-tile [colspan]="layout.list.cols3">
+                                        <mat-form-field appearance="outline" style="width: 100%;">
+                                            <mat-label>ผลการติดต่อ</mat-label>
+                                            <mat-select [formControl]="contactresultfield">
+                                                <!-- <mat-option value=""></mat-option> -->
+                                                <mat-option [value]="undefined" disabled hidden>ผลการติดต่อ</mat-option>
+                                                <mat-option *ngFor="let nml of negoMasterList" [value]="nml.neg_r_code">
+                                                    {{nml.neg_r_detail}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </mat-grid-tile>
+                                    <mat-grid-tile [colspan]="layout.list.cols3">
+                                        <mat-form-field appearance="outline" style="width: 100%;">
+                                            <mat-label>วันที่นัดชำระ</mat-label>
+                                            <input type="date" matInput placeholder="ชื่อลูกค้า"
+                                                [formControl]="appointmentdatefield">
+                                        </mat-form-field>
+                                    </mat-grid-tile>
+                                    <mat-grid-tile [colspan]="layout.list.cols3">
+                                        <mat-form-field appearance="outline" style="width: 100%;">
+                                            <mat-label>ข้อความ 1</mat-label>
+                                            <input type="text" matInput placeholder="ชื่อลูกค้า"
+                                                [formControl]="message1field">
+                                        </mat-form-field>
+                                    </mat-grid-tile>
+                                    <mat-grid-tile [colspan]="layout.list.cols3">
+                                        <mat-form-field appearance="outline" style="width: 100%;">
+                                            <mat-label>ข้อความ 2</mat-label>
+                                            <input type="text" matInput placeholder="ชื่อลูกค้า"
+                                                [formControl]="message2field">
+                                        </mat-form-field>
+                                    </mat-grid-tile>
+                                </mat-grid-list>
+                                <mat-grid-list [cols]="layout.columns" [rowHeight]="layout.rowHeight">
+                                    <mat-grid-tile [colspan]="layout.list.maxcols">
+                                        <div class="wrapper">
+                                            <button mat-raised-button color="primary" (click)="sumbitnegocreaterecord()"
+                                                [disabled]="!followupForm.controls.negofollowup.valid">
+                                                <mat-icon>save</mat-icon>
+                                                บันทึก
+                                            </button>
+                                            <button mat-raised-button color="warn" style="margin-left: 1em;"
+                                                (click)="canclecreatefollowup()">
+                                                <mat-icon>close</mat-icon>
+                                                ยกเลิก
+                                            </button>
+                                        </div>
+                                    </mat-grid-tile>
+                                </mat-grid-list>
+                            </ng-container>
+                        </mat-card>
+                    </div>
+
+                    <div *ngIf="this.negodataList.length == 0">
+                        <div style="text-align: center;">
+                            <span>ไม่มีรายการประวัติการติดตาม</span>
+                        </div>
+                    </div>
+                    <div *ngIf="this.negodataList.length !== 0">
+                        <div *ngFor="let nego of negodataList; index as i">
+                            <mat-card style="margin-top: 1em;">
+                                <mat-card-content>
+                                    <table class="table-responsive-allres" style="width: 100%; margin-top: 1em;">
+                                        <thead>
+                                            <tr>
+                                                <th>วันเวลาที่บันทึก</th>
+                                                <th>ผลการติดต่อ</th>
+                                                <th>วันที่นัดชำระ</th>
+                                                <th>ข้อความ 1</th>
+                                                <th>ข้อความ 2</th>
+                                                <th>ชำระเงิน</th>
+                                                <th>ผู้ติดตาม</th>
+                                            </tr>
+                                        </thead>
+                                        <thead>
+                                            <!-- <tr> -->
+                                            <td data-label="วันเวลาที่บันทึก">
+                                                {{((nego.rec_day | date: 'dd/MM/yyyy HH:mm') ? (nego.rec_day | date :
+                                                'dd/MM/yy HH:mm') : '-')}}</td>
+                                            <td data-label="ผลการติดต่อ">{{nego.neg_r_detail}}</td>
+                                            <td data-label="วันที่นัดชำระ">
+                                                {{((nego.appoint_date | date: 'dd/MM/yyyy HH:mm') ? (nego.appoint_date |
+                                                date : 'dd/MM/yy') : '-')}}</td>
+                                            <td data-label="ข้อความ 1">{{nego.message1 ? nego.message1 : '-'}}</td>
+                                            <td data-label="ข้อความ 2">{{(nego.message2 ? nego.message2 : '-')}}</td>
+                                            <td data-label="ชำระเงิน">{{(nego.pay | number)}}</td>
+                                            <td data-label="ผู้ติดตาม">{{nego.emp_name}}&nbsp;{{nego.emp_lname}}</td>
+                                            <!-- </tr> -->
+                                        </thead>
+                                    </table>
+                                </mat-card-content>
+                            </mat-card>
+                        </div>
+
+                        <mat-paginator [length]="(nego_pageLength)" [pageSize]="(this.nego_pageSize)"
+                            [hidePageSize]="true" (page)="nego_pageEvent = $event; onPaginationChange_nego($event)"
+                            aria-label="Select page">
+                        </mat-paginator>
+                    </div>
+
+                    <mat-action-row>
+                        <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                        <button mat-button color="primary" (click)="nextStep()">Next</button>
+                    </mat-action-row>
+                </mat-expansion-panel>
+
+                <!-- แผนที่ -->
+                <mat-expansion-panel [expanded]="step === 7" (opened)="setStep(7)" hideToggle>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            แผนที่
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            <!-- Type the country name
+                            <mat-icon>map</mat-icon> -->
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+                    <div *ngIf="triggerlivingaddressinfo">
+                        <button mat-flat-button color="primary" (click)="opengooglemap()" style="margin-bottom: 1em;">
+                            <mat-icon>location_on</mat-icon>
+                            <span> เปิด google map</span>
+                        </button>
+                        <br>
+                        <button mat-flat-button color="primary" (click)="savenegolalon()">
+                            <mat-icon>save</mat-icon>
+                            <span> บันทึกค่า latitude, longtitude</span>
+                        </button>
+                    </div>
+
+                    <div [formGroup]="negolalon">
+                        <mat-card *ngIf="triggerlalon" style="margin-top: 1em;">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <mat-form-field appearance="outline" style="width: 100%;">
+                                        <mat-label>Latitude, Longtitude</mat-label>
+                                        <input type="text" matInput
+                                            placeholder="วางค่า Latitude , Longtitude ที่ copy มาที่นี่"
+                                            [formControl]="lalonField" (change)="concatLaLon($event)">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-sm">
+                                    <mat-form-field appearance="outline" style="width: 100%;">
+                                        <mat-label>Latitude</mat-label>
+                                        <input type="text" matInput placeholder="กรอก Latitude" [formControl]="laField">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-sm">
+                                    <mat-form-field appearance="outline" style="width: 100%;">
+                                        <mat-label>Longtitude</mat-label>
+                                        <input type="text" matInput placeholder="กรอก Longtitude"
+                                            [formControl]="lonField">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-sm">
+                                    <div class="wrapper">
+                                        <button mat-raised-button color="primary" (click)="sumbitnegolalon()"
+                                            [disabled]="!followupForm.controls.negolalon.valid">
+                                            <mat-icon>save</mat-icon>
+                                            บันทึก
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-card>
+                    </div>
+
+                    <mat-card style="margin-top: 1em;" *ngIf="triggerlivingaddressinfo">
+                        <mat-card-content>
+                            <table style="width: 100%; margin-top: 1em;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left;">LATITUDE</th>
+                                        <th style="text-align: left;">LONGITUDE</th>
+                                        <th style="text-align: left;">ที่อยู่</th>
+                                        <th style="text-align: left;">ตำบล</th>
+                                        <th style="text-align: left;">อำเภอ</th>
+                                        <th style="text-align: left;">จังหวัด</th>
+                                        <th style="text-align: left;">รหัสไปรษณีย์</th>
+                                    </tr>
+                                </thead>
+                                <thead>
+                                    <!-- <tr> -->
+                                    <td data-label="LATITUDE">{{((this.latitude$ | async) ? (this.latitude$ | async) :
+                                        '-')}}</td>
+                                    <td data-label="LONGITUDE">{{((this.londtiude$ | async) ? (this.londtiude$ | async)
+                                        : '-')}}</td>
+                                    <td data-label="ที่อยู่">{{((this.address$ | async) ? (this.address$ | async) :
+                                        '-')}}</td>
+                                    <td data-label="ตำบล">{{((this.sub_district$ | async) ? (this.sub_district$ | async)
+                                        : '-')}}</td>
+                                    <td data-label="อำเภอ">{{((this.district$ | async) ? (this.district$ | async) :
+                                        '-')}}</td>
+                                    <td data-label="จังหวัด">{{((this.province_name$ | async) ? (this.province_name$ |
+                                        async) : '-')}}</td>
+                                    <td data-label="รหัสไปรษณีย์">{{((this.postal_code$ | async) ? (this.postal_code$ |
+                                        async) : '-')}}</td>
+                                    <!-- </tr> -->
+                                </thead>
+                            </table>
+                        </mat-card-content>
+                    </mat-card>
+                    <div class="flexpos" *ngIf="!triggerlivingaddressinfo">
+                        <div></div>
+                        <div style="color: red;">
+                            <h2>ไม่พบรายการที่อยู่ปัจจุบันในระบบ</h2>
+                        </div>
+                        <div></div>
+                    </div>
+                    <div class="flexpos" *ngIf="show_create_living_place_button">
+                        <div>
+                            <button mat-raised-button color="primary" (click)="createlivingplace()" style="margin: 0.5em;">
+                                <span>เพื่มที่อยู่</span>
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <mat-action-row>
+                        <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                        <button mat-button color="primary" (click)="nextStep()">Next</button>
+                    </mat-action-row>
+                </mat-expansion-panel>
+
+
+                <!-- QR Code ชำระค่างวด -->
+                <mat-expansion-panel [expanded]="step === 8" (opened)="setStep(8)" hideToggle>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            QR Code ชำระค่างวด
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            <!-- Inform the date you wish to travel
+                            <mat-icon>date_range</mat-icon> -->
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+
+                    <div class="cardarea">
+                        <div class="flexpos" style="margin-top: 2em">
+                            <div></div>
+                            <div>
+                            </div>
+                            <div></div>
+                        </div>
+                        <div class="flexpos" style="margin-top: 1em;">
+                            <div></div>
+                            <div *ngIf="chkrefpaynum" style="text-align: center;">
+                                <img [src]="(image_qr$ | async)"
+                                    style="margin-top: 0.5em; margin-right: 0.2em; width: 75%">
+                            </div>
+                            <div *ngIf="!chkrefpaynum" style="text-align: center;">
+                                <!-- <h3 style="color:red"> ไม่พบเลข Ref pay num ไม่สามารถสร้าง QRcode ได้</h3> -->
+                                <h3 style="color:red"> ไม่พบเลขสัญญา ไม่สามารถสร้าง QRcode ได้</h3>
+                            </div>
+                            <div></div>
+                        </div>
+                        <div class="flexpos" style="margin-top: 2em;">
+                            <div></div>
+                            <div *ngIf="chkrefpaynum">
+                                <!-- <img [src]="(image_barcode$ | async)" class="barcode"><br> -->
+                                <p style="font-size: 15px; display: block;
+                    text-align: center;">
+                                    คุณ&nbsp;{{this.applicationdata.name}}&nbsp;{{this.applicationdata.sname}}<br><br>
+                                </p>
+                            </div>
+                            <div></div>
+                        </div>
+                        <div class="flexpos">
+                            <div></div>
+                            <div *ngIf="chkrefpaynum">
+                                <p style="font-size: 10px; color:red;">ชำระผ่านโมบายแบงค์กิ้ง ไม่เสียค่าธรรมเนียม
+                                    ชำระผ่าน 7/11
+                                    ค่าบริการตามที่กำหนด</p>
+                            </div>
+                            <div></div>
+                        </div>
+                    </div>
+
+
+                    <mat-action-row>
+                        <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                        <button mat-button color="primary" (click)="nextStep()">End</button>
+                    </mat-action-row>
+                </mat-expansion-panel>
+
+            </mat-accordion>
+        </div>
+    </div>
+</ng-container>

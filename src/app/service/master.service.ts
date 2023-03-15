@@ -8,7 +8,7 @@ import { IResMasterOccupation } from './../interface/i-res-master-occupation';
 import { IResPaymentValue } from './../interface/i-res-payment-value';
 import { IResMasterInsurer } from './../interface/i-res-master-insurer';
 import { IResMasterMrtaInsurance, IResMasterMrtaInsuranceData } from './../interface/i-res-master-mrta-insurance';
-import { IResMasterInsurance } from './../interface/i-res-master-insurance';
+import { IResMasterInsuranceOld } from '../interface/i-res-master-insurance-old';
 import { IResCoverageTotalLoss } from './../interface/i-res-coverage-total-loss';
 import { IResMaxLtv } from './../interface/i-res-max-ltv';
 import { IResMasterProvince } from './../interface/i-res-master-province';
@@ -36,6 +36,7 @@ import { IResMasterBrand } from '../interface/i-res-master-brand';
 import { IResMasterModel } from '../interface/i-res-master-model';
 import { IResImageTypeAttach } from '../interface/i-res-image-type-attach';
 import { IResMrtaProduct } from '../interface/i-res-mrta-product';
+import { IResMasterInsurance } from '../interface/i-res-master-insurance';
 
 
 
@@ -105,28 +106,40 @@ export class MasterDataService {
     return this.http.get<IResMasterNegoStatus>(url)
   }
 
-  getProvice(): Observable<IResMasterProvince> {
+  getMasterProvince(): Observable<IResMasterProvince> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterProvince`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MasterProvince`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getMasterProvince`
     return this.http.get<IResMasterProvince>(url)
   }
 
   getMaxLtv(factory_pirce: number, bussi_code: string, pro_code: string, brand_code: string, model_code: string, dl_code: String): Observable<IResMaxLtv> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}'`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}'`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}`
     return this.http.get<IResMaxLtv>(url)
   }
 
-  getcoverageTotalloss(p_insurance_code: string, p_max_ltv: number): Observable<IResCoverageTotalLoss> {
+  getcoverageTotallossold(p_insurance_code: string, p_max_ltv: number): Observable<IResCoverageTotalLoss> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}'`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getcoverageTotalloss?p_insurance_code=${p_insurance_code}&p_max_ltv=${p_max_ltv}`
     return this.http.get<IResCoverageTotalLoss>(url)
   }
 
+  getcoverageTotalloss(insurance_code: string, bussi_code: string, brand_code: string, model_code: string, dl_code: string, factory_price?: number): Observable<IResCoverageTotalLoss> {
+    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}'`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getcoverageTotalloss?insurance_code=${insurance_code}&factory_price=${factory_price}&bussi_code=${bussi_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}`
+    return this.http.get<IResCoverageTotalLoss>(url)
+  }
+
+
   
-  getInsurance(max_ltv: string): Observable<IResMasterInsurance> {
+  getInsuranceold2(max_ltv: string): Observable<IResMasterInsuranceOld> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getInsurance?factory_price=${factory_price}`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getInsurance?max_ltv=${max_ltv}`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getInsuranceold2?max_ltv=${max_ltv}`
+    return this.http.get<IResMasterInsuranceOld>(url)
+  }
+
+  getInsurance(factory_price: number, bussi_code: string, brand_code: string, model_code: string, dl_code: string): Observable<IResMasterInsurance> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getInsurance?factory_price=${factory_price}&bussi_code=${bussi_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}`
     return this.http.get<IResMasterInsurance>(url)
   }
   

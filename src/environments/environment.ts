@@ -5,11 +5,11 @@
 
 // === local serve === 
 export const environment = {
-  production: false,
+  production: true,
   apiurl: 'localhost',
   apiportsign: ':',
   apiport: '4000',
-  httpheader: 'http://' ,
+  httpheader: 'http://',
   // apiurl: 'http://58.136.2.53:9989'
   // apiurl: 'http://vrteminal.thddns.net:9989',
   // onfaceapi: 'https://api.iapp.co.th/thai-national-id-card/v3/front'
@@ -21,7 +21,11 @@ export const environment = {
   carcheckport: '',
 
   citizen_card_img_preload: '/assets/image/placeholder-image.png',
-  welcome_call_fcr_web: 'web-welcome-uat.microplusleasing.com/fcr'
+  welcome_call_fcr_web: 'web-welcome-uat.microplusleasing.com/fcr',
+
+  iappapikey: "F3kBa0O7D07SUYy5YmcfLeohWRxbipdn",
+  faceRecogApi: "https://api.iapp.co.th/thai-national-id-card/v3/front",
+  faceValidApi: "https://api.iapp.co.th/face-verification/v2/face_compare"
 };
 
 // === build UAT === 
@@ -56,12 +60,12 @@ export const environment = {
 //   carcheckport: ''
 // };
 
-// === build UAT (internet) (certificate 443)=== (v2)
+// // === build UAT (internet) (certificate 443)=== (v2)
 // export const environment = {
 //   production: true,
 //   // apiurl: 'http://58.136.5.116:9989',
 //   // apiurl: '43.249.69.202',
-//   apiurl: 'api2-mpls-uat.microplusleasing.com', 
+//   apiurl: 'api2-mpls-uat.microplusleasing.com',
 //   apiportsign: ':',
 //   apiport: '',
 //   httpheader: 'https://',
@@ -72,7 +76,12 @@ export const environment = {
 //   carcheckapi: 'api-repos-uat.microplusleasing.com',
 //   carcheckport: '',
 //   citizen_card_img_preload: '/assets/image/placeholder-image.png',
-//   welcome_call_fcr_web: 'web-welcome-uat.microplusleasing.com/fcr'
+//   welcome_call_fcr_web: 'web-welcome-uat.microplusleasing.com/fcr',
+
+//   iappapikey: "F3kBa0O7D07SUYy5YmcfLeohWRxbipdn",
+//   faceRecogApi: "https://api.iapp.co.th/thai-national-id-card/v3/front",
+//   faceValidApi: "https://api.iapp.co.th/face-verification/v2/face_compare"
+
 // };
 
 // === build Development === 

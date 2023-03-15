@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog'; 
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { lastValueFrom, Observable, of } from 'rxjs';
 import { LoadingService } from 'src/app/service/loading.service';
 ;
@@ -58,11 +59,12 @@ export class OtpVerifyDialogComponent implements OnInit {
     private quotationService: QuotationService,
     private loadingService: LoadingService,
     public dialogRef: MatDialogRef<OtpVerifyDialogComponent>,
+    public _snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     dialogRef.backdropClick().subscribe(() => {
       // Close the dialog
-      dialogRef.close({phone_number: this.confirmForm.controls.phone_number.value, otp_status: this.validsuccess});
+      dialogRef.close({ phone_number: this.confirmForm.controls.phone_number.value, otp_status: this.validsuccess });
     })
   }
 
@@ -86,7 +88,7 @@ export class OtpVerifyDialogComponent implements OnInit {
           this._editabletab2 = false
           // this.mainOTPForm.controls.otpactivate.controls.otp_value.setValue('temp');
           this._tabindex = 2
-        },500);
+        }, 500);
       } else {
         this.loadingService.hideLoader()
       }
@@ -99,6 +101,7 @@ export class OtpVerifyDialogComponent implements OnInit {
 
   createoptphonevalid() {
 
+    this.loadingService.showLoader()
     const quotationid = this.data.quotationid
     const currentPhonenumber = this.mainOTPForm.controls.confirmPhone.controls.phone_number.value
     const refid = this.data.refid
@@ -110,12 +113,21 @@ export class OtpVerifyDialogComponent implements OnInit {
       quotationid: quotationid,
       refid: refid,
       phone_no: currentPhonenumber ? currentPhonenumber : ''
-    }).subscribe((res) => {
-      console.log(`res otp Data : ${JSON.stringify(res)}`)
-      if(res.status == 200) {
-        this._tabindex = 1
-      } else {
-        this._createotpResMsg = res.message
+    }).subscribe({
+      next: (res) => {
+        this.loadingService.hideLoader()
+        console.log(`res otp Data : ${JSON.stringify(res)}`)
+        if (res.status == 200) {
+          this._tabindex = 1
+        } else {
+          this._createotpResMsg = res.message
+        }
+      }, error: (e) => {
+        this.loadingService.hideLoader()
+        this.snackbarfail(`ไม่สามารถทำรายการได้ : ${e.message ? e.message : 'No return message'}`)
+      }, complete: () => {
+        this.loadingService.hideLoader()
+        console.log(`MPLS_create_otp_phone complete !!`)
       }
     })
   }
@@ -152,6 +164,24 @@ export class OtpVerifyDialogComponent implements OnInit {
       phone_number: this.confirmForm.controls.phone_number.value,
       otp_status: this.validsuccess
     })
+  }
+
+  snackbarsuccess(message: string) {
+    this._snackBar.open(message, '', {
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
+      duration: 3000,
+      panelClass: 'custom-snackbar-container'
+    });
+  }
+
+  snackbarfail(message: string) {
+    this._snackBar.open(message, '', {
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
+      duration: 3000,
+      panelClass: 'fail-snackbar-container'
+    });
   }
 
 }

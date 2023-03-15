@@ -1,3 +1,23 @@
+.mat-select {
+  ::ng-deep .mat-select-content {
+    width: 100%;
+  }
+  ::ng-deep .mat-select-value {
+    color: rgba(0, 0, 0, 1) /*!important*/;
+  }
+}
+.mat-select-disabled {
+  ::ng-deep .mat-select-value {
+    color: rgba(0, 0, 0, 1) /*!important*/;
+  }
+}
+
+.mat-form-field-type-mat-native-select.mat-form-field-disabled .mat-form-field-infix::after,
+.mat-input-element:disabled {
+  color: rgba(0, 0, 0, 1) !important;
+}
+
+
 .form-container> .mat-form-field:first-child {
   margin-left: 0px;
 }

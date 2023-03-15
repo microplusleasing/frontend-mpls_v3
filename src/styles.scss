@@ -10,7 +10,7 @@
 @font-face {
   font-family: THSarabunNew;
   src: url('assets/fonts/THSarabunNew.ttf') format('truetype');
-  font-weight: 300;
+  font-weight: 500;
   font-style: normal;
 }
 
@@ -30,6 +30,7 @@ div {
 }
 
 // * angular material *
+.mat-card,
 .mat-raised-button,
 .mat-select,
 .mat-option-text,
@@ -46,6 +47,7 @@ div {
 .mat-h2, .mat-title, .mat-typography h2,
 .mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button,
 .mat-snack-bar-container,
+.mat-h3, .mat-subheading-2, .mat-typography h3,
 .mat-h4, .mat-subheading-1, .mat-typography h4 {
   font-family: Prompt;
 }

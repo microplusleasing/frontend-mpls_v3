@@ -1,6 +1,6 @@
 import { SmsService } from 'src/app/service/sms.service';
 import { MasterDataService } from 'src/app/service/master.service';
-import { IMartaPaymentInsurance } from 'src/app/interface/i-marta-payment-insurance';
+import { IMartaPaymentInsurance } from 'src/app/interface/i-mrta-payment-insurance';
 import { ImageUtilService } from 'src/app/service/image-util.service';
 import { ImageService } from 'src/app/service/image.service';
 import { Component, Input, OnInit, Output, SimpleChanges, EventEmitter } from '@angular/core';
@@ -160,6 +160,41 @@ export class QrBarcodeMrtaComponent {
             this.lockconfirmbtn = true
             this.showconfirmbtn = false
           }
+        }
+      })
+    }
+
+  }
+  onclickconfirmqrpaymentbtn_no_sms() {
+
+    // *** clone from onclickconfirmqrpaymentbtn but no send sms (add-on 20/02/2023) ***
+
+    if (this.qrpaymentdata.application_num) {
+      this.masterDataService.confirmqrpayment(
+        this.qrpaymentdata.application_num,
+        (this.qrpaymentdata.contract_no) ? this.qrpaymentdata.contract_no : ''
+      ).subscribe({
+        next: (result) => {
+          {
+            console.log(`return confirm qr payment value : ${JSON.stringify(result)}`)
+
+            if (result.status == 200) {
+
+              this.updatepaymentstatus.emit(true)
+
+              if (result.data[0].pay_status !== 1) {
+                this.showconfirmbtn = true
+              } else {
+                this.showtxtpayment = true
+                this.lockconfirmbtn = true
+                this.showconfirmbtn = false
+              }
+            }
+          }
+        }, error: (e) => {
+          console.log(`Error confirmqrpayment : ${e.message ? e.message : 'No return error message !'}`)
+        }, complete: () => {
+          console.log(`Complete confirmqrpayment!`)
         }
       })
     }

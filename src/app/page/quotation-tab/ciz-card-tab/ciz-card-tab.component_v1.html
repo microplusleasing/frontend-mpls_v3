@@ -78,52 +78,53 @@
         </mat-form-field>
 
       </div>
+      <mat-divider></mat-divider>
+
+      <div class="header-left">
+        ที่อยู่ตามบัตรประชาชน
+      </div>
+
+      <div class="flexbox">
+        <mat-form-field appearance="outline">
+          <mat-label>ที่อยู่</mat-label>
+          <input matInput required [formControl]="address">
+          <mat-error *ngIf="this.address.invalid">กรุณากรอกที่อยู่</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>แขวง/ตำบล</mat-label>
+          <input matInput required [formControl]="subDistrict">
+          <mat-error *ngIf="this.subDistrict.invalid">กรุณากรอก แขวง/ตำบล</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>เขต/อำเภอ</mat-label>
+          <input matInput required [formControl]="district">
+          <mat-error *ngIf="this.district.invalid">กรุณากรอก เขต/อำเภอ</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-select required [formControl]="provinceCode">
+            <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
+            <mat-option *ngFor="let item of masterProvince.data"
+              [value]="item.prov_code">{{item.prov_name}}</mat-option>
+          </mat-select>
+          <mat-label>
+            จังหวัด
+          </mat-label>
+          <mat-error *ngIf="this.provinceCode.invalid">กรุณากรอกจังหวัด</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>รหัสไปรษณีย์</mat-label>
+          <input matInput required [formControl]="postalCode">
+          <mat-error *ngIf="postalCode?.invalid && postalCode.errors?.['required']">กรุณากรอกรหัสไปรษณีย์</mat-error>
+          <mat-error
+            *ngIf="postalCode?.invalid && postalCode.errors?.['pattern']">กรุณากรอกรหัสไปรษณีย์ให้ถูกต้อง</mat-error>
+        </mat-form-field>
+
+      </div>
     </div>
-    <mat-divider></mat-divider>
-
-    <div class="header-left">
-      ที่อยู่ตามบัตรประชาชน
-    </div>
-
-    <div class="flexbox">
-      <mat-form-field appearance="outline">
-        <mat-label>ที่อยู่</mat-label>
-        <input matInput required [formControl]="address">
-        <mat-error *ngIf="this.address.invalid">กรุณากรอกที่อยู่</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>แขวง/ตำบล</mat-label>
-        <input matInput required [formControl]="subDistrict">
-        <mat-error *ngIf="this.subDistrict.invalid">กรุณากรอก แขวง/ตำบล</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>เขต/อำเภอ</mat-label>
-        <input matInput required [formControl]="district">
-        <mat-error *ngIf="this.district.invalid">กรุณากรอก เขต/อำเภอ</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-select required [formControl]="provinceCode">
-          <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
-          <mat-option *ngFor="let item of masterProvince.data" [value]="item.prov_code">{{item.prov_name}}</mat-option>
-        </mat-select>
-        <mat-label>
-          จังหวัด
-        </mat-label>
-        <mat-error *ngIf="this.provinceCode.invalid">กรุณากรอกจังหวัด</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>รหัสไปรษณีย์</mat-label>
-        <input matInput required [formControl]="postalCode">
-        <mat-error *ngIf="postalCode?.invalid && postalCode.errors?.['required']">กรุณากรอกรหัสไปรษณีย์</mat-error>
-        <mat-error *ngIf="postalCode?.invalid && postalCode.errors?.['pattern']">กรุณากรอกรหัสไปรษณีย์ให้ถูกต้อง</mat-error>
-      </mat-form-field>
-
-    </div>
-
     <mat-divider></mat-divider>
 
     <!-- ข้อมูลทั่วไป -->
@@ -137,7 +138,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>เบอร์โทรศัพท์</mat-label>
-          <input matInput required [formControl]="phoneNumber">
+          <input matInput required [formControl]="phoneNumber" type="text">
           <mat-error *ngIf="this.phoneNumber.invalid">{{getErrorMessagePhone()}}</mat-error>
         </mat-form-field>
 
@@ -228,7 +229,8 @@
       <div class="header-left">
         ที่อยู่ปัจจุบัน
       </div>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('living')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+        (click)="sameCitizenAddress('living')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับบัตรปชช.
       </button>
@@ -265,7 +267,8 @@
         </mat-form-field>
       </div>
 
-      <button [disabled]="lockallbtn" mat-raised-button color="primary" (click)="opengooglemap()">เปิด Google map</button>
+      <button [disabled]="lockallbtn" mat-raised-button color="primary" (click)="opengooglemap()">เปิด Google
+        map</button>
 
       <div class="flexbox">
         <mat-form-field appearance="outline" style="width: 50vh">
@@ -292,11 +295,13 @@
       <div class="header-left">
         ที่อยู่ส่งจดหมาย
       </div>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('contact')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+        (click)="sameCitizenAddress('contact')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับบัตรปชช.
       </button>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="samelivinAddress('contact')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+        (click)="samelivinAddress('contact')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ปัจจุบัน
       </button>
@@ -341,15 +346,18 @@
       <div class="header-left">
         ที่อยู่ตามทะเบียนบ้าน
       </div>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('houseregis')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+        (click)="sameCitizenAddress('houseregis')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับบัตรปชช.
       </button>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="samelivinAddress('houseregis')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+        (click)="samelivinAddress('houseregis')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ปัจจุบัน
       </button>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="samecontactAddress('houseregis')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+        (click)="samecontactAddress('houseregis')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ส่งจดหมาย
       </button>
@@ -394,15 +402,18 @@
       <div class="header-left">
         ที่อยู่ที่ทำงาน
       </div>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="sameCitizenAddress('work')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+        (click)="sameCitizenAddress('work')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับบัตรปชช.
       </button>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="samelivinAddress('work')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+        (click)="samelivinAddress('work')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ปัจจุบัน
       </button>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary" (click)="samecontactAddress('work')">
+      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+        (click)="samecontactAddress('work')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ส่งจดหมาย
       </button>

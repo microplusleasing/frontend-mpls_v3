@@ -1,0 +1,50 @@
+<form [formGroup]="creditdisclosureForm">
+    <div class="center-position">
+        <h1 style="font-family: Prompt;">
+            หนังสือยินยอมในการนำข้อมูล <br>
+            ที่ได้รับจากบริษัทข้อมูลเครดิตมาจัดทำแบบจำลองด้านเครดิต
+        </h1>
+
+    </div>
+    <div class="right-position" style="margin-top: 0.5em;">
+        <h2>
+            วันที่&nbsp;
+            {{dateValue !== null ? (dateValue | thaidate:'medium') : '-'}}
+        </h2>
+    </div>
+
+    <div class="left-position">
+        <h2>ข้าพเจ้า&nbsp;{{this.titlename}}{{this.firstname}}&nbsp;{{this.lastname}}&nbsp;&nbsp;เลขที่บัตรประชาชน&nbsp;{{this.citizenid}}
+        </h2>
+    </div>
+    <div class="left-position">
+        <span>
+            ยินยอมให้ บริษัทไมโครพลัสลิสซิ่ง จำกัด ซึ่งเป็นสมาชิกของบริษัทข้อมูลเครดิต
+            นำข้อมูลของข้าพเจ้าที่ได้รับจากบริษัทข้อมูลเครดิตเฉพาะส่วนที่ไม่สามารถระบุตัวตน เช่น ชื่อ นามสกุล
+            เลขที่บัตรประจาตัวประชาชน
+            รวมถึงข้อมูลอื่นใดที่สามารถระบุว่าเป็นของข้าพเจ้าได้ไปใช้เป็นปัจจัยหนึ่งในการจัดทำแบบจำลองด้านเครดิตตามกฎหมายว่าด้วยการประกอบธุรกิจข้อมูลเครดิตกำหนดเท่านั้น
+            และให้คู่ฉบับและบรรดาสำเนา ภาพถ่าย ข้อมูลอิเล็กทรอนิกส์ หรือโทรสาร
+            ที่ได้ทำซ้ำขึ้นจากหนังสือให้ความยินยอมฉบับนี้ โดยการถ่ายสำเนา ถ่ายภาพหรือบันทึกไว้ไม่ว่าในรูปแบบใดๆ
+            ให้ถือว่าเป็นหลักฐานในการยินยอมของข้าพเจ้าเช่นเดียวกัน ทั้งนี้
+            ข้าพเจ้าทราบว่าเจ้าของข้อมูลมีสิทธิที่จะให้ความยินยอมหรือไม่ก็ได้ และเมื่อให้ความยินยอมแล้ว
+            เจ้าของข้อมูลจะแจ้งความประสงค์ไม่ให้ความยินยอมอีกต่อไปก็ได้
+            <br>
+            <br>
+        </span>
+    </div>
+    <div class="center-position" style="margin-top: 0.5em;">
+        <div class="col-md-3" style="margin-top: 1em;   min-width: 230px;">
+            <mat-radio-group [formControl]="is_credit_disclosure" style="margin-left: 1.5em;"
+                class="example-radio-group">
+                <mat-radio-button color="primary" class="example-radio-button"
+                    [value]="1">ยินยอม&nbsp;&nbsp;</mat-radio-button>
+                <mat-radio-button color="primary" class="example-radio-button" [value]="0">ไม่ยินยอม</mat-radio-button>
+            </mat-radio-group>
+        </div>
+    </div>
+
+    <div class="center-position sp1em">
+        <button [disabled]="disableNextBtn" mat-raised-button color="primary" type="button"
+            (click)="callParent()">ต่อไป</button>
+    </div>
+</form>

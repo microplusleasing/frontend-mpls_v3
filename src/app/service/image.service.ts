@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@angular/core';
 import { IImageList } from '../interface/i-image-list';
 import { IImage } from 'src/app/interface/i-image';
 import { DOCUMENT } from '@angular/common';
-import { IMrtaQrBarcode } from '../interface/i-marta-qr-barcode';
+import { IMrtaQrBarcode } from '../interface/i-mrta-qr-barcode';
 import { IQrAdvancePayment } from 'src/app/interface/i-qr-advance-payment';
 import { IQrTotalLoss } from 'src/app/interface/i-qr-total-loss';
 import { IResCheckImageRequire } from 'src/app/interface/i-res-check-image-require';

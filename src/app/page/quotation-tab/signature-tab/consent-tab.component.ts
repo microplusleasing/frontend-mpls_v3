@@ -8,6 +8,8 @@ import { Observable } from 'rxjs';
 import { IResQuotationDetail } from 'src/app/interface/i-res-quotation-detail';
 import { BaseService } from 'src/app/service/base/base.service';
 import { LoadingService } from 'src/app/service/loading.service';
+import { QuotationService } from 'src/app/service/quotation.service';
+import { CreditDisclosureConsentComponent } from './consent/credit-disclosure-consent/credit-disclosure-consent.component';
 import { EPaperConsentComponent } from './consent/e-paper-consent/e-paper-consent.component';
 import { PersonalDisclosureConsentComponent } from './consent/personal-disclosure-consent/personal-disclosure-consent.component';
 import { SignatureConsentComponent } from './consent/signature-consent/signature-consent.component';
@@ -22,10 +24,19 @@ export class ConsentTabComponent extends BaseService implements OnInit {
   @Input() quotationReq = {} as Observable<IResQuotationDetail>;
   @Output() emitcreateconsentbtn = new EventEmitter();
 
+  personalTabDisable: boolean = true;
   epaperTabDisable: boolean = true;
   signatureTabDisable: boolean = true;
-  consentTabLabel = ['Consent First', 'Consent Second', 'Consent Third'];
+  consentTabLabel = ['Consent First', 'Consent Second', 'Consent Third', 'Consent Forth'];
   consentTabIndex: number = 0;
+
+  @ViewChild(CreditDisclosureConsentComponent) credit_consent: CreditDisclosureConsentComponent = new CreditDisclosureConsentComponent(
+    this.fb,
+    this.quotationService,
+    this.loadingService,
+    this.dialog,
+    this._snackBar
+  )
 
   @ViewChild(PersonalDisclosureConsentComponent) p_d_econsenttab: PersonalDisclosureConsentComponent = new PersonalDisclosureConsentComponent(
     this.fb,
@@ -56,6 +67,7 @@ export class ConsentTabComponent extends BaseService implements OnInit {
     private router: Router,
     private cdRef: ChangeDetectorRef,
     private fb: FormBuilder,
+    private quotationService: QuotationService,
     private loadingService: LoadingService,
     public override dialog: MatDialog,
     public override _snackBar: MatSnackBar,
@@ -72,15 +84,19 @@ export class ConsentTabComponent extends BaseService implements OnInit {
     // === unlock next consent ==== 
     switch (this.consentTabIndex) {
       case (0): {
-        // อยู่หน้าแรก (PDPA)
+        // อยู่หน้าแรก (credit)
       }
         break;
       case (1): {
-        // อยู่แถบที่ 2 (ยินยอมรับเอกสารอิเล็กทรอนิกส์)
+        // อยู่แถบที่ 2 (PDPA)
       }
         break;
       case (2): {
-        // อยู่แถบที่ 3 (ลงลายมือชื่อใบสมัคร)
+        // อยู่แถบที่ 3 (ยินยอมรับเอกสารอิเล็กทรอนิกส์)
+      }
+        break;
+      case (3): {
+        // อยู่แถบที่ 4 (ลงลายมือชื่อใบสมัคร)
       }
         break;
     }
@@ -104,6 +120,10 @@ export class ConsentTabComponent extends BaseService implements OnInit {
       left: 0,
       behavior: 'smooth'
     });
+  }
+
+  recieve_creditdisclosurevalid($event: boolean) {
+    this.personalTabDisable = $event ? false : true;
   }
 
   recieve_personaldisclosurevalid($event: boolean) {

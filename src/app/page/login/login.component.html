@@ -1,7 +1,7 @@
 <div class="parent-center">
   <div class="child-center">
     <div class="formContent">
-      <div class="formHerder" *ngIf="showforgetpassword || showresetpassword">
+      <div class="formHerder" *ngIf="(showforgetpassword || showresetpassword) && showheader">
         <button mat-icon-button color="primary" (click)="backtologin()">
           <mat-icon>arrow_back_ios_new</mat-icon>
           กลับไปหน้า Login
@@ -319,7 +319,7 @@
         </form>
 
       </div>
-      <div class="formFooter" *ngIf="false">
+      <div class="formFooter" *ngIf="this.showfooter">
         <a [routerLink]="" (click)="clickforgetpassword()" style="font-size: 10px;">ลืมรหัสผ่าน?</a>
         <br>
         <a [routerLink]="" (click)="clickresetpassword()" style="font-size: 10px;">เปลี่ยนรหัสผ่าน</a>

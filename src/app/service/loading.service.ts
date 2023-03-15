@@ -9,11 +9,12 @@ export class  LoadingService {
   loadingAction$ = this.loadingSubject.asObservable();
 
   showLoader() {
-    console.log(window.location.pathname);
+    console.log(`show loader ${window.location.pathname}`);
     this.loadingSubject.next(true);
   }
 
   hideLoader() {
+    console.log(`hide loader : ${window.location.pathname}`);
     this.loadingSubject.next(false);
   }
 }

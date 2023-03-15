@@ -71,6 +71,7 @@ export class QuotationViewComponent extends BaseService implements OnInit {
     'quotationNo',
     'customerName',
     'dealerName',
+    'branchName',
     'buttonName',
     'canclebtn',
     'statusName',

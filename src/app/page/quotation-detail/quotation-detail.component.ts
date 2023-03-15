@@ -1346,6 +1346,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   }
 
   async onclickCreateCareerandPurposeBtn() {
+    this.loadingService.showLoader()
     // *** create or save career and purpose record ***
     const career_form = this.careerandpurposetab.careerandpurposeForm.controls.careerForm.controls
     const purpose_form = this.careerandpurposetab.careerandpurposeForm.controls.purposeForm.controls
@@ -1413,6 +1414,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     const reqcreatorupdatecareerandpurpose = await lastValueFrom(this.quotationService.MPLS_create_or_update_careerandpurpose(reqcreateorupdatecareerandpurpose))
 
+    this.loadingService.hideLoader()
     if (reqcreatorupdatecareerandpurpose.status) {
       // === create or update success === 
       this.verifycareerandpurpose = true

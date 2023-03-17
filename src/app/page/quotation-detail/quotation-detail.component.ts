@@ -1236,7 +1236,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         currentDate = resultgetcurrentDate.date
       }
 
-      if (app_no !== '' && currentDate) {
+      if (app_no !== '' && app_no && currentDate) {
+      // if (app_no && currentDate) {
 
         const quotationid = this.actRoute.snapshot.queryParamMap.get('id') ?? ''
 
@@ -1309,7 +1310,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       } else {
         // === no application num value ===
         this.loadingService.hideLoader()
-        this.openMaindialog('ผิดพลาด', 'ไม่พบเลข application no', 'OK')
+        this.openMaindialog('ผิดพลาด', 'ไม่พบเลข application no ', 'OK')
       }
     } else if (dopastatus == 'N') {
       // === กรณี dopa status เป็น 'N' ไม่สามารถทำรายการ e-consent ได้ (auto flag non e-consent) ===

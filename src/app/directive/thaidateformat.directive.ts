@@ -50,7 +50,7 @@ export class ThaidateformatDirective implements PipeTransform {
     ];
 
     let outputmainformat = [
-      dataDate[1] + '/' + mainmonth[dataDate[2]] + '/' + (dataDate[3] + 543)
+      (dataDate[1].toString().length == 1 ? `0${dataDate[1]}` : `${dataDate[1]}`) + '/' + mainmonth[dataDate[2]] + '/' + (dataDate[3] + 543)
     ]
 
     let returnDate: string;

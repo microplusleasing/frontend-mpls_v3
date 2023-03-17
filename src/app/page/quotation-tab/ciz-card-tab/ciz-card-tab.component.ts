@@ -433,7 +433,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
 
     if (this.quotationid) {
-      this.loadingService.showLoader()
+      // this.loadingService.showLoader()
 
       this.getUserSessionQuotation().subscribe({
         next: (res_session) => {
@@ -450,7 +450,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                 // this.loadingService.hideLoader() // === (comment on 06/02/2023 to manage stage (timing)) ===
                 if (res_quo.data) {
 
-                  this.loadingService.hideLoader();
+                  // this.loadingService.hideLoader();
 
                   this.showdipchipbtn = false;
                   if (res_quo.data.length !== 0) {
@@ -494,7 +494,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
                   }
                 } else {
-                  this.loadingService.hideLoader();
+                  // this.loadingService.hideLoader();
 
                   if (this.userSession.RADMIN == 'Y') {
                     this.showdipchipbtn = false;
@@ -597,7 +597,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       // })
 
     } else {
-      this.loadingService.hideLoader()
+      // this.loadingService.hideLoader()
 
 
       if (this.userSession.RADMIN == 'Y') {

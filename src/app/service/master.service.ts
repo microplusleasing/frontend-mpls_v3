@@ -37,6 +37,7 @@ import { IResMasterModel } from '../interface/i-res-master-model';
 import { IResImageTypeAttach } from '../interface/i-res-image-type-attach';
 import { IResMrtaProduct } from '../interface/i-res-mrta-product';
 import { IResMasterInsurance } from '../interface/i-res-master-insurance';
+import { IResCalculateAgeDb } from '../interface/i-res-calculate-age-db';
 
 
 
@@ -195,6 +196,14 @@ export class MasterDataService {
   getagefrombirthdate(birthdatetxt: string): Observable<IResAgeCalculateFromBirthdate> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getagefrombirthdate?birthdate=${birthdatetxt}`
     return this.http.get<IResAgeCalculateFromBirthdate>(url)
+  }
+
+  calculateage_db(data: string): Observable<IResCalculateAgeDb> {
+    const data_send = {
+      birthdate: data
+    }
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/calculateage_db`
+    return this.http.post<IResCalculateAgeDb>(url, data_send)
   }
 
   getoracleoutstand(application_num: string): Observable<IResBtwOutstand> {

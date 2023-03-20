@@ -41,6 +41,8 @@ import { IResCreateConsent } from '../interface/i-res-create-consent';
 import { IResCreateSendCarAndLoyaltyConsent } from '../interface/i-res-create-send-car-and-loyalty-consent';
 import { IResGetWitnessEconsent } from '../interface/i-res-get-witness-econsent';
 import { IResStampFaceVerificationLog } from '../interface/i-res-stamp-face-verification-log';
+import { IResGenEconsentImage } from '../interface/i-res-gen-econsent-image';
+import { IReqGenEconsentImage } from '../interface/i-req-gen-econsent-image';
 
 
 @Injectable({
@@ -262,9 +264,15 @@ export class QuotationService {
     return this.http.get<IResValidastionEconsent>(url)
   }
 
+  // === deprecate (use MPLS_gen_econsent_image instead) ====
   MPLS_validation_otp_econsent(formdata: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_validation_otp_econsent`
     return this.http.post<IResValidastionEconsent>(url, formdata)
+  }
+  
+  MPLS_gen_econsent_image(data: IReqGenEconsentImage) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_gen_econsent_image`
+    return this.http.post<IResGenEconsentImage>(url, data)
   }
 
   MPLS_create_or_update_credit(data: IReqCreateCredit) {

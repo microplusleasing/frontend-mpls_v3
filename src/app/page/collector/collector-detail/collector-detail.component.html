@@ -414,6 +414,8 @@
                                             <mat-label>วันที่นัดชำระ</mat-label>
                                             <input type="date" matInput placeholder="ชื่อลูกค้า"
                                                 [formControl]="appointmentdatefield">
+                                            <!-- <input type="date" matInput placeholder="ชื่อลูกค้า"
+                                                [formControl]="appointmentdatefield" (keydown)="onKeyDown($event)" [disabled]="true">  -->
                                         </mat-form-field>
                                     </mat-grid-tile>
                                     <mat-grid-tile [colspan]="layout.list.cols3">
@@ -609,7 +611,8 @@
                     </div>
                     <div class="flexpos" *ngIf="show_create_living_place_button">
                         <div>
-                            <button mat-raised-button color="primary" (click)="createlivingplace()" style="margin: 0.5em;">
+                            <button mat-raised-button color="primary" (click)="createlivingplace()"
+                                style="margin: 0.5em;">
                                 <span>เพื่มที่อยู่</span>
                                 <mat-icon>add</mat-icon>
                             </button>

@@ -351,7 +351,8 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
           const formatbirthdatenew = moment(value).format('DD/MM/YYYY')
           if (formatbirthdatenew) {
 
-            const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
+            // const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
+            const agecalcualte = await lastValueFrom(this.masterDataService.calculateage_db(formatbirthdatenew))
             // == set age to form field ==
             this.cizForm.controls.maincitizenForm.controls.age.setValue(agecalcualte.data[0].age_year)
 
@@ -834,7 +835,8 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
             const formatbirthdatenew = moment(birthDateFormat).format('DD/MM/YYYY')
             if (formatbirthdatenew) {
 
-              const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
+              // const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
+              const agecalcualte = await lastValueFrom(this.masterDataService.calculateage_db(formatbirthdatenew))
               // == set age to form field ==
               this.cizForm.controls.maincitizenForm.controls.age.setValue(agecalcualte.data[0].age_year)
             }

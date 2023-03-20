@@ -11,6 +11,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { BaseService } from 'src/app/service/base/base.service';
 import { IUserTokenData } from 'src/app/interface/i-user-token';
 import { IDialogEconsentValidClose } from 'src/app/interface/i-dialog-econsent-valid-close';
+import { ThaidateformatDirective } from 'src/app/directive/thaidateformat.directive';
+import { DatePipe } from '@angular/common';
+import { IReqGenEconsentImage } from 'src/app/interface/i-req-gen-econsent-image';
 
 export interface econsentValue {
   value: boolean;
@@ -44,7 +47,7 @@ export class OtpEconsentComponent extends BaseService implements OnInit {
 
   econsent_valid_status: boolean = false
 
-  econsentimageblob: (Blob | null) = null;
+  econsentimage_binding: IReqGenEconsentImage = {} as IReqGenEconsentImage
 
 
 
@@ -143,12 +146,32 @@ export class OtpEconsentComponent extends BaseService implements OnInit {
               this.witness_fname = resName.data[0].fname
               this.witness_lname = resName.data[0].lname
             }, error: (e) => {
-               // === handle error ===
-            }, complete: () => {  
+              // === handle error ===
+            }, complete: () => {
               console.log(`complete stamp witness name `)
             }
           })
         }
+
+        // === binding data to generate image (api) ====
+        const thaiDatePipe = new ThaidateformatDirective();
+        const datePipe = new DatePipe('en-US');
+        const formattedDate = thaiDatePipe.transform(this.data.currentDate, 'main');
+        const formattedTime = datePipe.transform(this.data.currentDate, 'HH:mm:ss') ?? '';
+        const formattedBirthDate = this.data.birthdate ? thaiDatePipe.transform(this.data.birthdate, 'main') : '';
+        this.econsentimage_binding.quotationid = this.data.quotationid
+        this.econsentimage_binding.transaction_no = this.data.transaction_no
+        this.econsentimage_binding.consent_datetime = this.data.currentDate
+        this.econsentimage_binding.firstname = this.data.firstname
+        this.econsentimage_binding.lastname = this.data.lastname
+        this.econsentimage_binding.birthdate = formattedBirthDate
+        this.econsentimage_binding.citizenid = this.data.citizenid
+        this.econsentimage_binding.phone_number = this.data.phone_number
+        this.econsentimage_binding.application_no = this.data.application_no
+        this.econsentimage_binding.currentDate = formattedDate
+        this.econsentimage_binding.currentDateTime = formattedTime
+        this.econsentimage_binding.witness_name = resSession.WITNESS_NAME
+        this.econsentimage_binding.witness_lname = resSession.WITNESS_LNAME
 
         // ==== begin ====
         // this.confirmEconsentForm.controls.econsentvalue.disable() // unlock on 13/03/2022
@@ -221,23 +244,7 @@ export class OtpEconsentComponent extends BaseService implements OnInit {
         next: async (res) => {
           console.log(`res otp Data : ${JSON.stringify(res)}`)
           if (res.status == 200) {
-            const divfortest = document.getElementById('econsentelement2');
-
-            if (divfortest) {
-              this._tabindex = 1
-              divfortest.style.display = 'block';
-              const imageblob = await htmlToImage.toBlob(divfortest, {
-                quality: 1,
-                backgroundColor: 'white',
-                height: 1169
-              })
-
-              divfortest.style.display = 'none';
-              this.econsentimageblob = imageblob
-            } else {
-              this.loadingService.hideLoader()
-              console.log('imageblob is null')
-            }
+            this._tabindex = 1
 
           } else {
             this._createotpResMsg = res.message
@@ -303,24 +310,6 @@ export class OtpEconsentComponent extends BaseService implements OnInit {
 
   }
 
-  async test_gen_image() {
-    const divfortest = document.getElementById('econsentelement2');
-
-    if (divfortest) {
-
-      divfortest.style.display = 'block';
-      htmlToImage.toJpeg(divfortest, {
-        quality: 1, backgroundColor: 'White', height: 1169
-      })
-        .then(function (dataUrl) {
-          divfortest.style.display = 'none';
-          var link = document.createElement('a');
-          link.download = 'my-image-name.jpeg';
-          link.href = dataUrl;
-          link.click();
-        });
-    }
-  }
 
 
   async activateotpeconsent($event: any) {
@@ -337,48 +326,34 @@ export class OtpEconsentComponent extends BaseService implements OnInit {
 
       let fd = new FormData();
 
-      let itemobj = {
-        quotationid: this.data.quotationid,
-        otp_value: otpfield,
-        phone_no: this.data.phone_number,
-        // === add log econsend time ===
-        consent_datetime: this.data.currentDate,
-        application_no: this.data.application_no,
-        transaction_no: this.data.transaction_no,
-        citizen_id: this.data.citizenid
-      }
+      // === add otp value to this.econsentimage_binding ====
+      this.econsentimage_binding.otp_value = otpfield
 
-      const itemString = JSON.stringify(itemobj)
+      // const itemString = JSON.stringify(this.econsentimage_binding)
+      // fd.append('item', itemString)
 
-      if (this.econsentimageblob) {
-        fd.append('item', itemString)
-        fd.append("econsentimage", this.econsentimageblob);
-
-        await lastValueFrom(this.quotationService.MPLS_validation_otp_econsent(fd)).then((res) => {
-          this.loadingService.hideLoader()
-          if (res.status) {
-            // *** save econst image to db (oracle) ***
-            this.econsent_valid_status = true
-            this.validsuccess = true
-            this._editabletab1 = false
-            this._editabletab2 = false
-            // this._tabindex = 2
-            this.dialogRef.close({
-              status: this.econsent_valid_status,
-              data: this.econsent_valid_status ? 'success' : 'fail'
-            })
-          } else {
-            this._validationResMsg = res.message
-          }
-        }).catch((e) => {
-          this.loadingService.hideLoader()
-          console.log(`Error when Validation Phone.NO : ${e.message}`)
-        })
-      } else {
+      // === deprecate MPLS_validation_otp_econsent (change to MPLS_gen_econsent_image instead)
+      // await lastValueFrom(this.quotationService.MPLS_validation_otp_econsent(fd)).then((res) => {
+      await lastValueFrom(this.quotationService.MPLS_gen_econsent_image(this.econsentimage_binding)).then((res) => {
         this.loadingService.hideLoader()
-        console.log('imageblob is null')
-      }
-
+        if (res.status == 200) {
+          // *** save econst image to db (oracle) ***
+          this.econsent_valid_status = true
+          this.validsuccess = true
+          this._editabletab1 = false
+          this._editabletab2 = false
+          // this._tabindex = 2
+          this.dialogRef.close({
+            status: this.econsent_valid_status,
+            data: this.econsent_valid_status ? 'success' : 'fail'
+          })
+        } else {
+          this._validationResMsg = res.message
+        }
+      }).catch((e) => {
+        this.loadingService.hideLoader()
+        console.log(`Error when Validation Phone.NO : ${e.message}`)
+      })
 
     }
   }
@@ -389,23 +364,5 @@ export class OtpEconsentComponent extends BaseService implements OnInit {
       data: this.econsent_valid_status ? 'success' : 'fail'
     })
   }
-
-  // snackbarsuccess(message: string) {
-  //   this._snackBar.open(message, '', {
-  //     horizontalPosition: 'end',
-  //     verticalPosition: 'bottom',
-  //     duration: 3000,
-  //     panelClass: 'custom-snackbar-container'
-  //   });
-  // }
-
-  // snackbarfail(message: string) {
-  //   this._snackBar.open(message, '', {
-  //     horizontalPosition: 'end',
-  //     verticalPosition: 'bottom',
-  //     duration: 3000,
-  //     panelClass: 'fail-snackbar-container'
-  //   });
-  // }
 
 }

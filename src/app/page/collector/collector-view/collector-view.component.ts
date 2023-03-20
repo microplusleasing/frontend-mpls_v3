@@ -20,6 +20,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { LoadingService } from 'src/app/service/loading.service';
+import { IResHolderName, IResHolderNameData } from 'src/app/interface/i-res-holder-name';
 
 // export const atLeastOne_v2 = (validator: ValidatorFn, controlNames: string[] = []) => (
 //   control: AbstractControl,
@@ -77,6 +78,7 @@ export class CollectorViewComponent extends BaseService implements OnInit {
 
   branchData: IResMasterBranchData[] = []
   carcheckstatusData: IResCarcheckStatusData[] = []
+  cardholdernameData: IResHolderNameData[] = []
 
   // branchData: IResMasterBranchData[] = {} as IResMasterBranchData[]
   // branchData: BehaviorSubject<IResMasterBranchData[]> = new BehaviorSubject<IResMasterBranchData[]>({} as IResMasterBranchData[]);
@@ -121,6 +123,7 @@ export class CollectorViewComponent extends BaseService implements OnInit {
   dueField = new FormControl()
   trackField = new FormControl()
   carcheckstatusField = new FormControl()
+  cardholdernameField = new FormControl()
   // === set FormBuilder (migration from untypedFormControl, untypedFormBuilder) (add-on 20/02/2023) ===
   negoForm = this.fb.group({
     nameField: this.nameField,
@@ -131,7 +134,8 @@ export class CollectorViewComponent extends BaseService implements OnInit {
     dueField: this.dueField,
     trackField: this.trackField,
     carcheckstatusField: this.carcheckstatusField,
-    Validators: atLeastOne(Validators.required, ['nameField', 'surnameField', 'applicationidField', 'dueField', 'branchField', 'billField', 'trackField', 'carcheckstatusField'])
+    cardholdernameField: this.cardholdernameField,
+    Validators: atLeastOne(Validators.required, ['nameField', 'surnameField', 'applicationidField', 'dueField', 'branchField', 'billField', 'trackField', 'carcheckstatusField', 'cardholdernameField'])
   }
   )
 
@@ -273,14 +277,15 @@ export class CollectorViewComponent extends BaseService implements OnInit {
 
   afteroninit() {
     this.loadingService.showLoader()
-    forkJoin<[IResMasterBranch, IResCarcheckStatus, IResGetviewcontractlist]>(
+    forkJoin<[IResMasterBranch, IResCarcheckStatus, IResGetviewcontractlist, IResHolderName]>(
       [
         this.masterDataService.getbranch(),
         this.masterDataService.getcarcheckstatus(),
-        this.negotiationService.getviewcontractlist(1, '', '', '', '', '', '', '', '')
+        this.negotiationService.getviewcontractlist(1, '', '', '', '', '', '', '', ''),
+        this.negotiationService.getholdermaster()
       ]
     ).subscribe({
-      next: ([resultbranch, resultcarcheckp, resultcontract]) => {
+      next: ([resultbranch, resultcarcheckp, resultcontract, resultholder]) => {
         this.loadingService.hideLoader()
         if (
           resultbranch.data.length !== 0 &&
@@ -292,8 +297,12 @@ export class CollectorViewComponent extends BaseService implements OnInit {
           this.branchData = resultbranch.data
 
           // === set carcheck status parameter (17/10/2022) ===
+
           // this.carcheckstatusData = resultcarcheckp.data
           this.carcheckstatusData = resultcarcheckp.data
+
+          // === map holder name parameter to variable ===
+          this.cardholdernameData = resultholder.data
 
           // === check result contract list (17/10/2022)  ===
           if (resultcontract.data.length !== 0) {

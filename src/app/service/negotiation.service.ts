@@ -22,6 +22,7 @@ import { IReqUpdatenegolalon } from '../interface/i-req-updatenegolalon'; // rep
 import { IResUpdatenegolalon } from '../interface/i-res-updatenegolalon'; // add new res (old use basic.ts)
 import { IReqCreateaddressinfo } from '../interface/i-req-createaddressinfo';
 import { IResBasic } from '../interface/i-res-basic';
+import { IResHolderName } from '../interface/i-res-holder-name';
 
 @Injectable({
   providedIn: 'root'
@@ -55,6 +56,11 @@ export class NegotiationService {
       url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&due=${due}&branchcode=${branchcode}&billcode=${billcode}&trackcode=${trackcode}&carcheckstatus=${carcheckstatus}`
     }
     return this.http.get<IResGetviewcontractlist>(url);
+  }
+
+  getholdermaster() {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getholdermaster`;
+    return this.http.get<IResHolderName>(url)
   }
 
   getnegotiationbyid(applicationid: string) {

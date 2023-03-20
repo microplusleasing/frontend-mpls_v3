@@ -852,6 +852,12 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
       event.preventDefault(); // Disable default behavior
     }
   }
+  
+  getMaxDate() {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 10);
+    return date;
+  }
 
 
 }

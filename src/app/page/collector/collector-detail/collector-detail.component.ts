@@ -193,8 +193,8 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
   // negofollowup
   contactresultfield = new FormControl('', Validators.required)
   appointmentdatefield = new FormControl()
-  message1field = new FormControl('', Validators.required)
-  message2field = new FormControl()
+  message1field = new FormControl('', [Validators.required, Validators.maxLength(200)])
+  message2field = new FormControl('', Validators.maxLength(200))
 
   // negolalon
 

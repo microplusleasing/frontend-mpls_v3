@@ -5,7 +5,7 @@ import { IResMasterBranch, IResMasterBranchData } from 'src/app/interface/i-res-
 import { MasterDataService } from 'src/app/service/master.service';
 // import { Icontractlist, Icontractlistdata } from './../../../interface/icontractlist';
 import { Router, ActivatedRoute } from '@angular/router';
-import { map, forkJoin } from 'rxjs';
+import { map, forkJoin, Observable, startWith } from 'rxjs';
 import { UntypedFormControl, UntypedFormGroup, Validators, UntypedFormBuilder, ValidatorFn, ValidationErrors, FormBuilder, FormControl, FormGroup, AbstractControl } from '@angular/forms';
 import { NegotiationService } from 'src/app/service/negotiation.service';
 import { HttpClient } from '@angular/common/http';
@@ -78,7 +78,12 @@ export class CollectorViewComponent extends BaseService implements OnInit {
 
   branchData: IResMasterBranchData[] = []
   carcheckstatusData: IResCarcheckStatusData[] = []
+
+  holderList = [] as IResHolderNameData[]
+  holderSelect = [] as IResHolderNameData[]
+  filterHolderList?= [] as IResHolderNameData[]
   cardholdernameData: IResHolderNameData[] = []
+  holderSelectText: string = ''
 
   // branchData: IResMasterBranchData[] = {} as IResMasterBranchData[]
   // branchData: BehaviorSubject<IResMasterBranchData[]> = new BehaviorSubject<IResMasterBranchData[]>({} as IResMasterBranchData[]);
@@ -94,6 +99,7 @@ export class CollectorViewComponent extends BaseService implements OnInit {
   recentbill: any;
   recenttrack: any;
   recentcarcheckstatus: any;
+  recentholder: any;
 
   trackStatus: Status[] = [
     { value: '0', status: 'ทั้งหมด' },
@@ -113,6 +119,7 @@ export class CollectorViewComponent extends BaseService implements OnInit {
   status: string | null = '';
   carcheckstatus: string | null = '';
   pageno: number = 1;
+  holder: string | null = '';
 
   // === set field FromControl (migration from untypedFormControl) (add-on 20/02/2023) ===
   nameField = new FormControl<string>('', [Validators.minLength(2)])
@@ -213,6 +220,22 @@ export class CollectorViewComponent extends BaseService implements OnInit {
       this.carcheckstatus = value
     })
 
+    this.negoForm.controls.cardholdernameField.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterHolder(value))
+    ).subscribe(async (value: IResHolderNameData[]) => {
+      this.filterHolderList = value
+
+      const selectValue = this.holderList.find((items: { emp_id: string }) => {
+        return items.emp_id == value[0].emp_id
+      })
+
+      if (typeof selectValue !== 'undefined') {
+        // === set text of dealer select === 
+        this.holderSelectText = selectValue.emp_fullname;
+      }
+    })
+
     // === get query params ===
     this.route.queryParams.subscribe(params => {
       this.fname = params['fname'];
@@ -258,6 +281,7 @@ export class CollectorViewComponent extends BaseService implements OnInit {
       const statusfilter = this.status ? this.status : ''
       const carcheckfilter = this.carcheckstatus ? this.carcheckstatus : ''
       const pagenofilter = this.pageno ? this.pageno : 1
+      const holderfilter = this.holder ? this.holder : ''
 
       this.negoForm.controls.nameField.setValue(fnamefilter);
       this.negoForm.controls.surnameField.setValue(lnamefilter);
@@ -268,7 +292,7 @@ export class CollectorViewComponent extends BaseService implements OnInit {
       this.negoForm.controls.trackField.setValue(statusfilter);
       this.negoForm.controls.carcheckstatusField.setValue(carcheckfilter);
 
-      this.filteroninit(pagenofilter, fnamefilter, lnamefilter, hpnofilter, duefilter, branchfilter, billfilter, statusfilter, carcheckfilter)
+      this.filteroninit(pagenofilter, fnamefilter, lnamefilter, hpnofilter, duefilter, branchfilter, billfilter, statusfilter, carcheckfilter, holderfilter)
     } else {
       this.afteroninit()
     }
@@ -281,7 +305,7 @@ export class CollectorViewComponent extends BaseService implements OnInit {
       [
         this.masterDataService.getbranch(),
         this.masterDataService.getcarcheckstatus(),
-        this.negotiationService.getviewcontractlist(1, '', '', '', '', '', '', '', ''),
+        this.negotiationService.getviewcontractlist(1, '', '', '', '', '', '', '', '', ''),
         this.negotiationService.getholdermaster()
       ]
     ).subscribe({
@@ -303,6 +327,8 @@ export class CollectorViewComponent extends BaseService implements OnInit {
 
           // === map holder name parameter to variable ===
           this.cardholdernameData = resultholder.data
+          this.filterHolderList = resultholder.data
+          this.holderList = resultholder.data
 
           // === check result contract list (17/10/2022)  ===
           if (resultcontract.data.length !== 0) {
@@ -333,16 +359,17 @@ export class CollectorViewComponent extends BaseService implements OnInit {
 
   }
 
-  filteroninit(pageno: number, fname: string, lname: string, hpno: string, due: string, branch: string, bill: string, track: string, carcheckstatus: string) {
+  filteroninit(pageno: number, fname: string, lname: string, hpno: string, due: string, branch: string, bill: string, track: string, carcheckstatus: string, holder: string) {
     try {
       this.loadingService.showLoader()
-      forkJoin<[IResMasterBranch, IResCarcheckStatus, IResGetviewcontractlist]>(
+      forkJoin<[IResMasterBranch, IResCarcheckStatus, IResGetviewcontractlist, IResHolderName]>(
         [
           this.masterDataService.getbranch(),
           this.masterDataService.getcarcheckstatus(),
-          this.negotiationService.getviewcontractlist(pageno, fname, lname, hpno, due, branch, bill, track, carcheckstatus)
+          this.negotiationService.getviewcontractlist(pageno, fname, lname, hpno, due, branch, bill, track, carcheckstatus, holder),
+          this.negotiationService.getholdermaster()
         ]
-      ).pipe(map(([resultbranch, resultcarcheckp, resultcontract]) => {
+      ).pipe(map(([resultbranch, resultcarcheckp, resultcontract, resultholder]) => {
         if (
           resultbranch.data.length !== 0 &&
           resultcarcheckp.data.length !== 0 &&
@@ -356,6 +383,11 @@ export class CollectorViewComponent extends BaseService implements OnInit {
           // === set carcheck status parameter (17/10/2022) ===
           // this.carcheckstatusData = resultcarcheckp.data
           this.carcheckstatusData = resultcarcheckp.data
+
+          // === map holder name parameter to variable ===
+          this.cardholdernameData = resultholder.data
+          this.filterHolderList = resultholder.data
+          this.holderList = resultholder.data
 
           // === check result contract list (17/10/2022)  ===
           if (resultcontract.data.length !== 0) {
@@ -416,6 +448,7 @@ export class CollectorViewComponent extends BaseService implements OnInit {
     this.recentbill = this.negoForm.controls.billField.value ? this.negoForm.controls.billField.value : ''
     this.recenttrack = this.negoForm.controls.trackField.value ? this.negoForm.controls.trackField.value : ''
     this.recentcarcheckstatus = this.negoForm.controls.carcheckstatusField.value ? this.negoForm.controls.carcheckstatusField.value : ''
+    this.recentholder = this.negoForm.controls.cardholdernameField.value ? this.negoForm.controls.cardholdernameField.value : ''
 
     this.negotiationService.getviewcontractlist(
       1,
@@ -426,7 +459,9 @@ export class CollectorViewComponent extends BaseService implements OnInit {
       this.recentbranch,
       this.recentbill,
       this.recenttrack,
-      this.recentcarcheckstatus)
+      this.recentcarcheckstatus,
+      this.recentholder
+      )
       .pipe(
         map((results: IResGetviewcontractlist, e) => {
           this.dataList = results.data
@@ -446,7 +481,7 @@ export class CollectorViewComponent extends BaseService implements OnInit {
         pageno: 1
       }
     });
-    this.negotiationService.getviewcontractlist(1, '', '', '', '', '', '', '', '').subscribe({
+    this.negotiationService.getviewcontractlist(1, '', '', '', '', '', '', '', '', '').subscribe({
       next: (results: IResGetviewcontractlist) => {
         this.dataList = results.data
         this.dataSource.data = this.dataList
@@ -537,7 +572,8 @@ export class CollectorViewComponent extends BaseService implements OnInit {
       this.recentbranch,
       this.recentbill,
       this.recenttrack,
-      this.recentcarcheckstatus
+      this.recentcarcheckstatus,
+      this.recentholder
     ).pipe(
       map((results: IResGetviewcontractlist) => {
         this.dataList = results.data
@@ -549,6 +585,24 @@ export class CollectorViewComponent extends BaseService implements OnInit {
       })
 
     ).subscribe();
+  }
+
+  private _filterHolder(value: string | null): IResHolderNameData[] {
+    if (value) {
+      const filterValue = value.toLowerCase();
+      return this.holderList.filter(value => value.emp_id.includes(filterValue) || value.emp_name.toLowerCase().includes(filterValue) || value.emp_lname.toLowerCase().includes(filterValue))
+    } else {
+      return this.holderList.filter(value => value.emp_id.includes('') || value.emp_name.toLowerCase().includes(''))
+    }
+  }
+
+  validateHolderformat(listitem: IResHolderNameData[]): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const index = listitem.findIndex(items => {
+        return (new RegExp('\^' + items.emp_id + '\$')).test(control.value);
+      })
+      return index < 0 ? { 'wrongFormatHolder': { value: control.value } } : null;
+    };
   }
 
 }

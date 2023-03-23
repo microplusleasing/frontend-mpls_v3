@@ -50,6 +50,7 @@ import { CollectorViewComponent } from './page/collector/collector-view/collecto
 import { CollectorDetailComponent } from './page/collector/collector-detail/collector-detail.component';
 import { BackwardBarComponent } from './widget/backward-bar/backward-bar.component';
 import { CreateLivingNegoDialogComponent } from './widget/dialog/create-living-nego-dialog/create-living-nego-dialog.component';
+import { WaringEconsentDialogComponent } from './widget/dialog/waring-econsent-dialog/waring-econsent-dialog.component';
 
 @NgModule({
   declarations: [
@@ -93,6 +94,7 @@ import { CreateLivingNegoDialogComponent } from './widget/dialog/create-living-n
     CollectorDetailComponent,
     BackwardBarComponent,
     CreateLivingNegoDialogComponent,
+    WaringEconsentDialogComponent,
   ],
   imports: [
     BrowserModule,

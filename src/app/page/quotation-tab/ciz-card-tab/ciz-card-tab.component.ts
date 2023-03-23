@@ -20,6 +20,7 @@ import { MasterDataService } from 'src/app/service/master.service';
 import { QuotationService } from 'src/app/service/quotation.service';
 import { FaceValidDialogComponent } from 'src/app/widget/dialog/face-valid-dialog/face-valid-dialog.component';
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
+import { WaringEconsentDialogComponent } from 'src/app/widget/dialog/waring-econsent-dialog/waring-econsent-dialog.component';
 import { BasicSnackbarComponent } from 'src/app/widget/snackbar/basic-snackbar/basic-snackbar.component';
 import { environment } from 'src/environments/environment';
 
@@ -606,12 +607,18 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     } else {
       // this.loadingService.hideLoader()
 
-
       if (this.userSession.RADMIN == 'Y') {
         this.showdipchipbtn = false;
       } else {
         this.showdipchipbtn = true;
       }
+
+      // *** pop-updialog warning about rule (23/03/2023) ****
+      this.dialog.open(WaringEconsentDialogComponent, {
+      }).afterClosed().subscribe((res) => {
+        // === handle when dialogClose event === 
+      })
+
     }
 
 
@@ -807,12 +814,12 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
         next: async (result) => {
           this.loadingService.hideLoader()
           if (result.number == 200) {
-  
+
             const dipchipdata = result.data[0]
-  
+
             this.cizCardImage = 'data:image/jpeg;base64,' + dipchipdata.PERSONAL_IMAGE
             this.cizCardImage_string = dipchipdata.PERSONAL_IMAGE
-  
+
             this.cizForm.controls.maincitizenForm.controls.titleName.setValue(dipchipdata.PERSONAL_THAI_BEGIN_NAME)
             this.cizForm.controls.maincitizenForm.controls.titleCode.setValue(this.mapTitleIdByname(dipchipdata.PERSONAL_THAI_BEGIN_NAME, this.masterTitle.data))
             this.cizForm.controls.maincitizenForm.controls.firstName.setValue(dipchipdata.PERSONAL_THAI_NAME);
@@ -826,37 +833,37 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
             this.cizForm.controls.maincitizenForm.controls.postalCode.setValue(dipchipdata.POST_CODE ? dipchipdata.POST_CODE : '');
             this.cizForm.controls.maincitizenForm.controls.issuePlace.setValue(dipchipdata.ISSUE_LOCATION);
             this.cizForm.controls.maincitizenForm.controls.gender.setValue(+(dipchipdata.PERSONAL_GENDER))
-  
-  
-  
+
+
+
             const issueDateFormat = this.convertstringtodatedipchip(dipchipdata.ISSUE_DATE)
             const expiredDateFormat = this.convertstringtodatedipchip(dipchipdata.EXPIRE_DATE)
             const birthDateFormat = this.convertstringtodatedipchip(dipchipdata.PERSONAL_BIRTHDAY)
-  
+
             if (issueDateFormat) this.cizForm.controls.maincitizenForm.controls.issueDate.setValue(issueDateFormat)
             if (expiredDateFormat) this.cizForm.controls.maincitizenForm.controls.expireDate.setValue(expiredDateFormat)
             if (birthDateFormat) this.cizForm.controls.maincitizenForm.controls.birthDate.setValue(birthDateFormat)
-  
+
             // *** calculate age form bithdate *** 
-  
+
             if (dipchipdata.PERSONAL_BIRTHDAY) {
               const formatbirthdatenew = moment(birthDateFormat).format('DD/MM/YYYY')
               if (formatbirthdatenew) {
-  
+
                 // const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
                 const agecalcualte = await lastValueFrom(this.masterDataService.calculateage_db(formatbirthdatenew))
                 // == set age to form field ==
                 this.cizForm.controls.maincitizenForm.controls.age.setValue(agecalcualte.data[0].age_year)
               }
             }
-  
+
             // === set session citizen ocr API  ==== 
             const citizenSession: any = result
             citizenSession.imageUrl = this.cizCardImage
             sessionStorage.setItem('citizenSession', JSON.stringify(citizenSession));
             this.cizForm.markAsDirty()
             this.dipchipRes.emit({ status: true, uuid: dipchipdata.UUID })
-  
+
           } else if (result.number == 500) {
             this.isdipchip = false
             // === handle token expire === 
@@ -867,13 +874,13 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                   if (countround == 1) {
                     this.onClickDipchipBtn();
                   }
-  
+
                 }, error: (e) => {
-  
+
                 }
               })
             } else if (result.message == 'Not found!') {
-  
+
               this.snackbarfail(`ไม่พบข้อมูล DIPCHIP : ${result.message}`)
               this.showdipchipbtn = false
               this.cizForm.enable()

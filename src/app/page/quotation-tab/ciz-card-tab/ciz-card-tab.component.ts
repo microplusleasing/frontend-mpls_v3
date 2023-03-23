@@ -46,6 +46,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   facevalidstatus: string = ''
   quotationid: string = ''
   showdipchipbtn: boolean = false
+  dipchipButtonDisabled: boolean = true
   lockallbtn: boolean = false
 
 
@@ -265,6 +266,11 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
     this.actRoute.queryParams.subscribe(params => {
       this.quotationid = params['id']
+      if (this.quotationid) {
+        this.dipchipButtonDisabled = true
+      } else {
+        this.dipchipButtonDisabled = false
+      }
     });
 
     // === manual ===
@@ -789,100 +795,105 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
   onClickDipchipBtn() {
 
-    let countround = 0
-    this.loadingService.showLoader()
-    this.dipchipService.getdipchipinfo({
-      token: '',
-      username: this.usernamefordipchip,
-      fromBody: ''
-    }).subscribe({
-      next: async (result) => {
-        this.loadingService.hideLoader()
-        if (result.number == 200) {
-
-          const dipchipdata = result.data[0]
-
-          this.cizCardImage = 'data:image/jpeg;base64,' + dipchipdata.PERSONAL_IMAGE
-          this.cizCardImage_string = dipchipdata.PERSONAL_IMAGE
-
-          this.cizForm.controls.maincitizenForm.controls.titleName.setValue(dipchipdata.PERSONAL_THAI_BEGIN_NAME)
-          this.cizForm.controls.maincitizenForm.controls.titleCode.setValue(this.mapTitleIdByname(dipchipdata.PERSONAL_THAI_BEGIN_NAME, this.masterTitle.data))
-          this.cizForm.controls.maincitizenForm.controls.firstName.setValue(dipchipdata.PERSONAL_THAI_NAME);
-          this.cizForm.controls.maincitizenForm.controls.lastName.setValue(dipchipdata.PERSONAL_THAI_SURNAME);
-          this.cizForm.controls.maincitizenForm.controls.citizenId.setValue(dipchipdata.PERSONAL_ID);
-          this.cizForm.controls.maincitizenForm.controls.address.setValue(dipchipdata.HOUSE_NO + ' ' + dipchipdata.ALLEY + ' ' + dipchipdata.SOI + ' ' + dipchipdata.ROAD);
-          this.cizForm.controls.maincitizenForm.controls.subDistrict.setValue(dipchipdata.SUB_DISTRICT);
-          this.cizForm.controls.maincitizenForm.controls.district.setValue(dipchipdata.DISTRICT);
-          this.cizForm.controls.maincitizenForm.controls.provinceName.setValue(dipchipdata.PROVINCE);
-          this.cizForm.controls.maincitizenForm.controls.provinceCode.setValue(this.mapProvinceIdByName(dipchipdata.PROVINCE, this.masterProvince.data));
-          this.cizForm.controls.maincitizenForm.controls.postalCode.setValue(dipchipdata.POST_CODE ? dipchipdata.POST_CODE : '');
-          this.cizForm.controls.maincitizenForm.controls.issuePlace.setValue(dipchipdata.ISSUE_LOCATION);
-          this.cizForm.controls.maincitizenForm.controls.gender.setValue(+(dipchipdata.PERSONAL_GENDER))
-
-
-
-          const issueDateFormat = this.convertstringtodatedipchip(dipchipdata.ISSUE_DATE)
-          const expiredDateFormat = this.convertstringtodatedipchip(dipchipdata.EXPIRE_DATE)
-          const birthDateFormat = this.convertstringtodatedipchip(dipchipdata.PERSONAL_BIRTHDAY)
-
-          if (issueDateFormat) this.cizForm.controls.maincitizenForm.controls.issueDate.setValue(issueDateFormat)
-          if (expiredDateFormat) this.cizForm.controls.maincitizenForm.controls.expireDate.setValue(expiredDateFormat)
-          if (birthDateFormat) this.cizForm.controls.maincitizenForm.controls.birthDate.setValue(birthDateFormat)
-
-          // *** calculate age form bithdate *** 
-
-          if (dipchipdata.PERSONAL_BIRTHDAY) {
-            const formatbirthdatenew = moment(birthDateFormat).format('DD/MM/YYYY')
-            if (formatbirthdatenew) {
-
-              // const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
-              const agecalcualte = await lastValueFrom(this.masterDataService.calculateage_db(formatbirthdatenew))
-              // == set age to form field ==
-              this.cizForm.controls.maincitizenForm.controls.age.setValue(agecalcualte.data[0].age_year)
-            }
-          }
-
-          // === set session citizen ocr API  ==== 
-          const citizenSession: any = result
-          citizenSession.imageUrl = this.cizCardImage
-          sessionStorage.setItem('citizenSession', JSON.stringify(citizenSession));
-          this.cizForm.markAsDirty()
-          this.dipchipRes.emit({ status: true, uuid: dipchipdata.UUID })
-
-        } else if (result.number == 500) {
-          this.isdipchip = false
-          // === handle token expire === 
-          if (result.message == 'Token is Expire') {
-            this.dipchipService.addtimetokendipchip().subscribe({
-              next: (result) => {
-                countround++
-                if (countround == 1) {
-                  this.onClickDipchipBtn();
-                }
-
-              }, error: (e) => {
-
+    if (!this.quotationid) {
+      let countround = 0
+      this.dipchipButtonDisabled = false;
+      this.loadingService.showLoader()
+      this.dipchipService.getdipchipinfo({
+        token: '',
+        username: this.usernamefordipchip,
+        fromBody: ''
+      }).subscribe({
+        next: async (result) => {
+          this.loadingService.hideLoader()
+          if (result.number == 200) {
+  
+            const dipchipdata = result.data[0]
+  
+            this.cizCardImage = 'data:image/jpeg;base64,' + dipchipdata.PERSONAL_IMAGE
+            this.cizCardImage_string = dipchipdata.PERSONAL_IMAGE
+  
+            this.cizForm.controls.maincitizenForm.controls.titleName.setValue(dipchipdata.PERSONAL_THAI_BEGIN_NAME)
+            this.cizForm.controls.maincitizenForm.controls.titleCode.setValue(this.mapTitleIdByname(dipchipdata.PERSONAL_THAI_BEGIN_NAME, this.masterTitle.data))
+            this.cizForm.controls.maincitizenForm.controls.firstName.setValue(dipchipdata.PERSONAL_THAI_NAME);
+            this.cizForm.controls.maincitizenForm.controls.lastName.setValue(dipchipdata.PERSONAL_THAI_SURNAME);
+            this.cizForm.controls.maincitizenForm.controls.citizenId.setValue(dipchipdata.PERSONAL_ID);
+            this.cizForm.controls.maincitizenForm.controls.address.setValue(dipchipdata.HOUSE_NO + ' ' + dipchipdata.ALLEY + ' ' + dipchipdata.SOI + ' ' + dipchipdata.ROAD);
+            this.cizForm.controls.maincitizenForm.controls.subDistrict.setValue(dipchipdata.SUB_DISTRICT);
+            this.cizForm.controls.maincitizenForm.controls.district.setValue(dipchipdata.DISTRICT);
+            this.cizForm.controls.maincitizenForm.controls.provinceName.setValue(dipchipdata.PROVINCE);
+            this.cizForm.controls.maincitizenForm.controls.provinceCode.setValue(this.mapProvinceIdByName(dipchipdata.PROVINCE, this.masterProvince.data));
+            this.cizForm.controls.maincitizenForm.controls.postalCode.setValue(dipchipdata.POST_CODE ? dipchipdata.POST_CODE : '');
+            this.cizForm.controls.maincitizenForm.controls.issuePlace.setValue(dipchipdata.ISSUE_LOCATION);
+            this.cizForm.controls.maincitizenForm.controls.gender.setValue(+(dipchipdata.PERSONAL_GENDER))
+  
+  
+  
+            const issueDateFormat = this.convertstringtodatedipchip(dipchipdata.ISSUE_DATE)
+            const expiredDateFormat = this.convertstringtodatedipchip(dipchipdata.EXPIRE_DATE)
+            const birthDateFormat = this.convertstringtodatedipchip(dipchipdata.PERSONAL_BIRTHDAY)
+  
+            if (issueDateFormat) this.cizForm.controls.maincitizenForm.controls.issueDate.setValue(issueDateFormat)
+            if (expiredDateFormat) this.cizForm.controls.maincitizenForm.controls.expireDate.setValue(expiredDateFormat)
+            if (birthDateFormat) this.cizForm.controls.maincitizenForm.controls.birthDate.setValue(birthDateFormat)
+  
+            // *** calculate age form bithdate *** 
+  
+            if (dipchipdata.PERSONAL_BIRTHDAY) {
+              const formatbirthdatenew = moment(birthDateFormat).format('DD/MM/YYYY')
+              if (formatbirthdatenew) {
+  
+                // const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
+                const agecalcualte = await lastValueFrom(this.masterDataService.calculateage_db(formatbirthdatenew))
+                // == set age to form field ==
+                this.cizForm.controls.maincitizenForm.controls.age.setValue(agecalcualte.data[0].age_year)
               }
-            })
-          } else if (result.message == 'Not found!') {
-
-            this.snackbarfail(`ไม่พบข้อมูล DIPCHIP : ${result.message}`)
-            this.showdipchipbtn = false
-            this.cizForm.enable()
+            }
+  
+            // === set session citizen ocr API  ==== 
+            const citizenSession: any = result
+            citizenSession.imageUrl = this.cizCardImage
+            sessionStorage.setItem('citizenSession', JSON.stringify(citizenSession));
+            this.cizForm.markAsDirty()
+            this.dipchipRes.emit({ status: true, uuid: dipchipdata.UUID })
+  
+          } else if (result.number == 500) {
+            this.isdipchip = false
+            // === handle token expire === 
+            if (result.message == 'Token is Expire') {
+              this.dipchipService.addtimetokendipchip().subscribe({
+                next: (result) => {
+                  countround++
+                  if (countround == 1) {
+                    this.onClickDipchipBtn();
+                  }
+  
+                }, error: (e) => {
+  
+                }
+              })
+            } else if (result.message == 'Not found!') {
+  
+              this.snackbarfail(`ไม่พบข้อมูล DIPCHIP : ${result.message}`)
+              this.showdipchipbtn = false
+              this.cizForm.enable()
+            }
+          } else {
+            // === do not handle ====
+            this.isdipchip = false
           }
-        } else {
-          // === do not handle ====
+        }, error: (e) => {
+          // === error ===
           this.isdipchip = false
+          this.loadingService.hideLoader()
+          this.snackbarfail(`Error : ${e.message ? e.message : 'No return message'}`)
+        }, complete: () => {
+          this.loadingService.hideLoader()
         }
-      }, error: (e) => {
-        // === error ===
-        this.isdipchip = false
-        this.loadingService.hideLoader()
-        this.snackbarfail(`Error : ${e.message ? e.message : 'No return message'}`)
-      }, complete: () => {
-        this.loadingService.hideLoader()
-      }
-    })
+      })
+    } else {
+      console.log(`handle dup dipchip trigger (ciz-card-tab)`)
+    }
   }
 
   onClickFacecompareBtn() {

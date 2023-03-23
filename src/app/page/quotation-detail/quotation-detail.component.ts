@@ -598,70 +598,29 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
   recieve_dipchipData($event: IReqFlagDipchip) {
     // === กดปุ่ม Dipchip ===
-    if ($event.status) {
-
-      this.createquotationdopa('1', $event.uuid).then((dchk) => {
-        if (dchk.status) {
-          this.dipchipService.updatedipchipflag({
-            token: '',
-            username: this.usernamefordipchip,
-            fromBody: $event.uuid
-          }).subscribe(async (value) => {
-            this.loadingService.hideLoader()
-            console.log(`flag success : ${JSON.stringify(value)}`)
-
-            // === set router id ===
-            if (value.number == 200) {
-              this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
-
-              // ==== ปลดล๊อค form เมื่อ dipchip สำเร็จ ====
-              this.cizcardtab.cizForm.enable()
-
-              const queryParams: Params = { id: dchk.refId };
-
-              await this.router.navigate(
-                [],
-                {
-                  relativeTo: this.actRoute,
-                  queryParams: queryParams,
-                  queryParamsHandling: 'merge', // remove to replace all query params by provided
-                }
-              );
-              // === add dopa status (11/11/2022) === 
-
-              this.quotationService.setstatusdopa(dchk.refId)
-
-              this.afteroninit();
-            }
-          })
-        } else {
-          // === handle error when STATUS_CODE dipchip is '500' or null ====
-          this.dipchipService.updatedipchipflag({
-            token: '',
-            username: this.usernamefordipchip,
-            fromBody: $event.uuid
-          }).subscribe(async (value) => {
-            this.loadingService.hideLoader()
-            console.log(`flag success : ${JSON.stringify(value)}`)
-
-            // === set router id ===
-            if (value.number == 200) {
-              this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
-
-              // === status false (STATUS_CODE from dopa is null or 500 ) ===
-              this.snackbarfail(`ไม่พบข้อมูล DIPCHIP : ${dchk.message}`)
-              this.cizcardtab.showdipchipbtn = false
-              this.cizcardtab.cizForm.enable()
-              // this.cizcardtab.cizCardImage_string = ''
-              // this.cizcardtab.cizCardImage = `${environment.citizen_card_img_preload}`
-              // this.cizcardtab.cizForm.reset()
-              const returnCreateNoneconsent = await this.createquotationdopanoneconsent($event.uuid)
-              if (returnCreateNoneconsent.status) {
+    if (!this.quoid) {
+      this.loadingService.showLoader();
+      if ($event.status) {
+  
+        this.createquotationdopa('1', $event.uuid).then((dchk) => {
+          if (dchk.status) {
+            this.dipchipService.updatedipchipflag({
+              token: '',
+              username: this.usernamefordipchip,
+              fromBody: $event.uuid
+            }).subscribe(async (value) => {
+              this.loadingService.hideLoader()
+              console.log(`flag success : ${JSON.stringify(value)}`)
+  
+              // === set router id ===
+              if (value.number == 200) {
+                this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
+  
                 // ==== ปลดล๊อค form เมื่อ dipchip สำเร็จ ====
                 this.cizcardtab.cizForm.enable()
-
-                const queryParams: Params = { id: returnCreateNoneconsent.refId };
-
+  
+                const queryParams: Params = { id: dchk.refId };
+  
                 await this.router.navigate(
                   [],
                   {
@@ -671,17 +630,67 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                   }
                 );
                 // === add dopa status (11/11/2022) === 
-
+  
                 this.quotationService.setstatusdopa(dchk.refId)
-
+  
                 this.afteroninit();
-              } else {
-                this.snackbarfail('สร้างรายการ quotation ไม่สำเร็จ (non-econsent)')
               }
-            }
-          })
-        }
-      })
+            })
+          } else {
+            // === handle error when STATUS_CODE dipchip is '500' or null ====
+            this.dipchipService.updatedipchipflag({
+              token: '',
+              username: this.usernamefordipchip,
+              fromBody: $event.uuid
+            }).subscribe({next: async (value) => {
+              this.loadingService.hideLoader()
+              console.log(`flag success : ${JSON.stringify(value)}`)
+  
+              // === set router id ===
+              if (value.number == 200) {
+                this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
+  
+                // === status false (STATUS_CODE from dopa is null or 500 ) ===
+                this.snackbarfail(`ไม่พบข้อมูล DIPCHIP : ${dchk.message}`)
+                this.cizcardtab.showdipchipbtn = false
+                this.cizcardtab.cizForm.enable()
+                // this.cizcardtab.cizCardImage_string = ''
+                // this.cizcardtab.cizCardImage = `${environment.citizen_card_img_preload}`
+                // this.cizcardtab.cizForm.reset()
+                const returnCreateNoneconsent = await this.createquotationdopanoneconsent($event.uuid)
+                if (returnCreateNoneconsent.status) {
+                  // ==== ปลดล๊อค form เมื่อ dipchip สำเร็จ ====
+                  this.cizcardtab.cizForm.enable()
+  
+                  const queryParams: Params = { id: returnCreateNoneconsent.refId };
+  
+                  await this.router.navigate(
+                    [],
+                    {
+                      relativeTo: this.actRoute,
+                      queryParams: queryParams,
+                      queryParamsHandling: 'merge', // remove to replace all query params by provided
+                    }
+                  );
+                  // === add dopa status (11/11/2022) === 
+  
+                  this.quotationService.setstatusdopa(dchk.refId)
+  
+                  this.afteroninit();
+                } else {
+                  this.snackbarfail('สร้างรายการ quotation ไม่สำเร็จ (non-econsent)')
+                }
+              }
+            }, error: (e) => {
+              this.loadingService.hideLoader()
+            }, complete: () => {  
+              this.loadingService.hideLoader()
+            }})
+          }
+        })
+      }
+    } else {
+      console.log(`handle dup dipchip trigger (quotation-detail)`)
     }
   }
 

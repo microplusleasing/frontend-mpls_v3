@@ -3,7 +3,7 @@
     <div [formGroup]="maincitizenForm">
       <div class="flexbox">
         <button mat-raised-button color="primary" (click)="onClickDipchipBtn()"
-          *ngIf="this.showdipchipbtn">Dipchip</button>
+          *ngIf="this.showdipchipbtn" [disabled]="dipchipButtonDisabled">Dipchip</button>
       </div>
       <div class="flex-image-header">
         <div>

@@ -185,7 +185,7 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
           columns: 1,
           list: { maxcols: 1, cols6: 1, cols4: 1, cols3: 1, cols2: 1, col: 1 },
           card_width: '90%',
-          rowHeight: 70
+          rowHeight: 90
         };
       })
     );
@@ -193,8 +193,8 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
   // negofollowup
   contactresultfield = new FormControl('', Validators.required)
   appointmentdatefield = new FormControl()
-  message1field = new FormControl('', Validators.required)
-  message2field = new FormControl()
+  message1field = new FormControl('', [Validators.required, Validators.maxLength(200)])
+  message2field = new FormControl('', Validators.maxLength(200))
 
   // negolalon
 
@@ -844,6 +844,19 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
       this.followupForm.controls.negolalon.controls.lonField.setValue(spitStr[1])
     }
 
+  }
+
+  onKeyDown(event: KeyboardEvent) {
+    // Check if the key pressed is not the space bar
+    if (event.keyCode !== 32) {
+      event.preventDefault(); // Disable default behavior
+    }
+  }
+  
+  getMaxDate() {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 10);
+    return date;
   }
 
 

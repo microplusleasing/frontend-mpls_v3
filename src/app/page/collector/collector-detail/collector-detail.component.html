@@ -412,22 +412,35 @@
                                     <mat-grid-tile [colspan]="layout.list.cols3">
                                         <mat-form-field appearance="outline" style="width: 100%;">
                                             <mat-label>วันที่นัดชำระ</mat-label>
-                                            <input type="date" matInput placeholder="ชื่อลูกค้า"
-                                                [formControl]="appointmentdatefield">
+                                            <input type="date" matInput placeholder="วันที่นัดชำระ"
+                                                [formControl]="appointmentdatefield"
+                                                max="{{ getMaxDate() | date: 'yyyy-MM-dd' }}"
+                                                (keydown)="onKeyDown($event)" [disabled]="true">
+                                            <!-- <input type="date" matInput placeholder="ชื่อลูกค้า"
+                                                [formControl]="appointmentdatefield" (keydown)="onKeyDown($event)" [disabled]="true">  -->
                                         </mat-form-field>
                                     </mat-grid-tile>
                                     <mat-grid-tile [colspan]="layout.list.cols3">
                                         <mat-form-field appearance="outline" style="width: 100%;">
                                             <mat-label>ข้อความ 1</mat-label>
-                                            <input type="text" matInput placeholder="ชื่อลูกค้า"
+                                            <input type="text" matInput placeholder="ข้อความ 1"
                                                 [formControl]="message1field">
+                                            <mat-error *ngIf="message1field.errors?.['required']">
+                                                กรุณากรอกข้อความ 1
+                                            </mat-error>
+                                            <mat-error *ngIf="message1field.errors?.['maxlength']">
+                                                ข้อความยาวเกินกำหนด
+                                            </mat-error>
                                         </mat-form-field>
                                     </mat-grid-tile>
                                     <mat-grid-tile [colspan]="layout.list.cols3">
                                         <mat-form-field appearance="outline" style="width: 100%;">
                                             <mat-label>ข้อความ 2</mat-label>
-                                            <input type="text" matInput placeholder="ชื่อลูกค้า"
+                                            <input type="text" matInput placeholder="ข้อความ 2"
                                                 [formControl]="message2field">
+                                            <mat-error *ngIf="message2field.errors?.['maxlength']">
+                                                ข้อความยาวเกินกำหนด
+                                            </mat-error>
                                         </mat-form-field>
                                     </mat-grid-tile>
                                 </mat-grid-list>
@@ -609,7 +622,8 @@
                     </div>
                     <div class="flexpos" *ngIf="show_create_living_place_button">
                         <div>
-                            <button mat-raised-button color="primary" (click)="createlivingplace()" style="margin: 0.5em;">
+                            <button mat-raised-button color="primary" (click)="createlivingplace()"
+                                style="margin: 0.5em;">
                                 <span>เพื่มที่อยู่</span>
                                 <mat-icon>add</mat-icon>
                             </button>

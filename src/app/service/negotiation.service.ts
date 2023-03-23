@@ -22,6 +22,7 @@ import { IReqUpdatenegolalon } from '../interface/i-req-updatenegolalon'; // rep
 import { IResUpdatenegolalon } from '../interface/i-res-updatenegolalon'; // add new res (old use basic.ts)
 import { IReqCreateaddressinfo } from '../interface/i-req-createaddressinfo';
 import { IResBasic } from '../interface/i-res-basic';
+import { IResHolderName } from '../interface/i-res-holder-name';
 
 @Injectable({
   providedIn: 'root'
@@ -42,19 +43,24 @@ export class NegotiationService {
     return this.http.get<IResGetcontractlist>(url);
   }
 
-  getviewcontractlist(pageno: number, name: string, surname: string, applicationid: string, due: string, branchcode: string, billcode: string, trackcode: string, carcheckstatus: string) {
+  getviewcontractlist(pageno: number, name: string, surname: string, applicationid: string, due: string, branchcode: string, billcode: string, trackcode: string, carcheckstatus: string, holder: string, apd: Date | string) {
     let url;
     if (!due) {
       //  url = `${environment.httpheader}${this.domain}:${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&branchcode=${branchcode}`
-      url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&branchcode=${branchcode}&billcode=${billcode}&trackcode=${trackcode}&carcheckstatus=${carcheckstatus}`
+      url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&branchcode=${branchcode}&billcode=${billcode}&trackcode=${trackcode}&carcheckstatus=${carcheckstatus}&holder=${holder}&apd=${apd}`
     } else {
       // const dueValueDtype = moment(due, "DD/MM/YYYY")
       // const dateObject = dueValueDtype.toDate(); 
       //  url = `${environment.httpheader}${this.domain}:${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&due=${dateObject}`
       // url = `${environment.httpheader}${this.domain}:${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&due=${due}&branchcode=${branchcode}`
-      url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&due=${due}&branchcode=${branchcode}&billcode=${billcode}&trackcode=${trackcode}&carcheckstatus=${carcheckstatus}`
+      url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&due=${due}&branchcode=${branchcode}&billcode=${billcode}&trackcode=${trackcode}&carcheckstatus=${carcheckstatus}&holder=${holder}`
     }
     return this.http.get<IResGetviewcontractlist>(url);
+  }
+
+  getholdermaster() {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getholdermaster`;
+    return this.http.get<IResHolderName>(url)
   }
 
   getnegotiationbyid(applicationid: string) {

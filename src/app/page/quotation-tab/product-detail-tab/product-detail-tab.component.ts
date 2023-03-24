@@ -4,6 +4,7 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Vali
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, debounceTime, lastValueFrom, map, Observable, of, startWith, Subject } from 'rxjs';
+import { IResGetMasterBussinessData } from 'src/app/interface/i-res-get-master-bussiness';
 import { IResMasterBranchData } from 'src/app/interface/i-res-master-branch';
 import { IResMasterBrandData } from 'src/app/interface/i-res-master-brand';
 import { IResMasterDealer, IResMasterDealerData } from 'src/app/interface/i-res-master-dealer';
@@ -29,6 +30,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   // *** check econsent verify ***
   consentVerify = new FormControl<boolean>(false, Validators.requiredTrue)
 
+  bussinessCode = new FormControl('')
   dealerCode = new FormControl('', Validators.required)
   carBrandField = new FormControl<string | ''>('', Validators.required)
   carBrandNameField = new FormControl('', Validators.required)
@@ -63,6 +65,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   value3 = new FormControl()
 
   detailForm = this.fb.group({
+    bussinessCode: this.bussinessCode,
     dealerCode: this.dealerCode,
     carBrandField: this.carBrandField,
     carBrandNameField: this.carBrandNameField,
@@ -106,6 +109,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
   showPrice: boolean = false;
 
+  bussinessList = [] as IResGetMasterBussinessData[];
   brandList = [] as IResMasterBrandData[];
   modelList = [] as IResMasterModelData[];
   modelListFilter = [] as IResMasterModelData[];
@@ -161,7 +165,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
   @Input() cusage: number = 0
   @Input() gender: number = 0
+  
 
+   // === 2ndhand_car variable (23/03/2023) ===
+   show2ndHandMPLSBtn: boolean = false
 
 
   warningMsgPaymentValueField: boolean = false;// === subscribe on paymentValueField (valueChange) to show or hide === 
@@ -291,6 +298,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
             const quoitem = this.quotationdatatemp.data[0]
             const recordExists = (quoitem.cd_app_key_id !== '' && quoitem.cd_app_key_id !== null) ? true : false
             combineLatest([
+              this.masterDataService.getMasterBussiness(),
               this.masterDataService.getDealer('01'),
               this.masterDataService.MPLS_getbrand(),
               this.masterDataService.MPLS_getmodel()
@@ -303,9 +311,24 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 this.productForm.controls.detailForm.controls.priceincludevatField.setValue(0)
               }
 
+
+              // *** bussiness ***
+              if(res[0]) {
+                this.bussinessList = res[0].data
+                this.productForm.controls.detailForm.controls.bussinessCode.valueChanges.subscribe((value) => {
+                  // === check value and show form by type of data ===
+
+                  if (value == '002') {
+                    // === รถมือสองจัดกลับ ===
+                    // *** ค้นหาเลขทะเบียนแล้วเลือกรายการ นำค่า pass ค่าลง form ***
+                    // *** โชว์ปุ่มค้นหารถมือสอง ****
+                  }
+                })
+              }
+
               // *** dealer ***
-              if (res[0]) {
-                this.dealerList = res[0].data
+              if (res[1]) {
+                this.dealerList = res[1].data
                 // === set validate format dealer code === 
                 this.productForm.controls.detailForm.controls.dealerCode.setValidators(this.validateDealerformat(this.dealerList))
                 this.productForm.controls.detailForm.controls.dealerCode.valueChanges.pipe(
@@ -333,8 +356,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               }
 
               // *** brand ***
-              if (res[1]) {
-                this.brandList = res[1].data
+              if (res[2]) {
+                this.brandList = res[2].data
                 this.productForm.controls.detailForm.controls.carBrandField.valueChanges.pipe(
                   startWith(''),
                   map(value => this._filterBrand(value))
@@ -406,8 +429,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               }
 
               // *** model ***
-              if (res[2]) {
-                this.modelList = res[2].data
+              if (res[3]) {
+                this.modelList = res[3].data
                 this.productForm.controls.detailForm.controls.carModelField.valueChanges.pipe(
                   startWith(''),
                   map(value => this._filterModel(value))
@@ -832,8 +855,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // ***==== Car Brand ====***
 
                   // === map api with return value ====
-                  this.brandList = res[1].data
-                  this.modelList = res[2].data
+                  this.brandList = res[2].data
+                  this.modelList = res[3].data
 
 
                   // === set model select 

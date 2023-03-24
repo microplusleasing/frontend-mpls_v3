@@ -7,6 +7,29 @@
             <ng-container *ngIf="cardLayout | async as layout">
                 <mat-grid-list [cols]="layout.columns" [rowHeight]="'90px'">
                     <mat-grid-tile [colspan]="layout.list.maxcols">
+                        <!-- ประเภทผลิดภัณฑ์ -->
+                        <mat-form-field appearance="outline">
+                            <mat-select required [formControl]="bussinessCode">
+                                <mat-option [value]="null" disabled hidden>เลือกคำนำหน้า</mat-option>
+                                <mat-option *ngFor="let item of bussinessList"
+                                    [value]="item.bussiness_code">{{item.bussiness_name}}</mat-option>
+                            </mat-select>
+                            <mat-label>
+                                ประเภทผลิดภัณฑ์
+                            </mat-label>
+                            <mat-error *ngIf="this.bussinessCode.invalid">กรุณาเลือกประเภทผลิดภัณฑ์</mat-error>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.maxcols">
+                        <!-- ปุ่มค้นหารถมือสอง (MPLUS) (Bussiness code == '002') -->
+                        <button mat-raised-button color="primary">
+                            
+                        </button>
+                    </mat-grid-tile>
+                </mat-grid-list>
+                <mat-grid-list [cols]="layout.columns" [rowHeight]="'90px'">
+                    <mat-grid-tile [colspan]="layout.list.maxcols">
+                        <!-- รหัสร้านค้า -->
                         <mat-form-field appearance="outline">
                             <mat-label>รหัสร้านค้า</mat-label>
                             <input type="text" placeholder="กรอกรหัสร้านค้า" aria-label="Number" matInput
@@ -227,7 +250,7 @@
             <!-- <div class=flex-center> -->
             <div class="flexbox-col">
                 <div *ngIf="is_edit">
-                    <button  mat-raised-button color="primary" (click)="onbtnpaymentcalculate()"
+                    <button mat-raised-button color="primary" (click)="onbtnpaymentcalculate()"
                         [disabled]="(lockbtncalculate$ | async)"> คำนวณค่างวด </button>
                 </div>
                 <div *ngIf="showPrice" hidden>

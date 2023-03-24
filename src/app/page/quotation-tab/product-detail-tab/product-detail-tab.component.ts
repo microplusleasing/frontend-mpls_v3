@@ -15,6 +15,7 @@ import { IResQuotationDetail } from 'src/app/interface/i-res-quotation-detail';
 import { BaseService } from 'src/app/service/base/base.service';
 import { LoadingService } from 'src/app/service/loading.service';
 import { MasterDataService } from 'src/app/service/master.service';
+import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 
 @Component({
   selector: 'app-product-detail-tab',
@@ -165,10 +166,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
   @Input() cusage: number = 0
   @Input() gender: number = 0
-  
 
-   // === 2ndhand_car variable (23/03/2023) ===
-   show2ndHandMPLSBtn: boolean = false
+
+  // === 2ndhand_car variable (23/03/2023) ===
+  show2ndHandMPLSBtn: boolean = false
 
 
   warningMsgPaymentValueField: boolean = false;// === subscribe on paymentValueField (valueChange) to show or hide === 
@@ -313,7 +314,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
 
               // *** bussiness ***
-              if(res[0]) {
+              if (res[0]) {
                 this.bussinessList = res[0].data
                 this.productForm.controls.detailForm.controls.bussinessCode.valueChanges.subscribe((value) => {
                   // === check value and show form by type of data ===
@@ -322,6 +323,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     // === รถมือสองจัดกลับ ===
                     // *** ค้นหาเลขทะเบียนแล้วเลือกรายการ นำค่า pass ค่าลง form ***
                     // *** โชว์ปุ่มค้นหารถมือสอง ****
+                    this.show2ndHandMPLSBtn = true
                   }
                 })
               }
@@ -1299,9 +1301,16 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       }
     })
 
+  }
 
-
-
+  onclick2ndhandSearchBtn() {
+    this.dialog.open(MainDialogComponent, {
+      data: {
+        header: `test_header`,
+        data: `test_data`,
+        button_name: `test_button`
+      }
+    })
   }
 
 }

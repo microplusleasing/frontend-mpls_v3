@@ -43,17 +43,32 @@ export class NegotiationService {
     return this.http.get<IResGetcontractlist>(url);
   }
 
-  getviewcontractlist(pageno: number, name: string, surname: string, applicationid: string, due: string, branchcode: string, billcode: string, trackcode: string, carcheckstatus: string, holder: string, apd: Date | string) {
+  // getviewcontractlist(pageno: number, name: string, surname: string, applicationid: string, due: string, branchcode: string, billcode: string, trackcode: string, carcheckstatus: string, holder: string, apd: Date | string) {
+  //   let url;
+  //   if (!due) {
+  //     //  url = `${environment.httpheader}${this.domain}:${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&branchcode=${branchcode}`
+  //     url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&branchcode=${branchcode}&billcode=${billcode}&trackcode=${trackcode}&carcheckstatus=${carcheckstatus}&holder=${holder}&apd=${apd}`
+  //   } else {
+  //     // const dueValueDtype = moment(due, "DD/MM/YYYY")
+  //     // const dateObject = dueValueDtype.toDate(); 
+  //     //  url = `${environment.httpheader}${this.domain}:${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&due=${dateObject}`
+  //     // url = `${environment.httpheader}${this.domain}:${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&due=${due}&branchcode=${branchcode}`
+  //     url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&due=${due}&branchcode=${branchcode}&billcode=${billcode}&trackcode=${trackcode}&carcheckstatus=${carcheckstatus}&holder=${holder}`
+  //   }
+  //   return this.http.get<IResGetviewcontractlist>(url);
+  // }
+
+  getviewcontractlist(pageno: number, name: string, surname: string, applicationid: string, due: string, branchcode: string, billcode: string, trackcode: string, carcheckstatus: string) {
     let url;
     if (!due) {
       //  url = `${environment.httpheader}${this.domain}:${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&branchcode=${branchcode}`
-      url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&branchcode=${branchcode}&billcode=${billcode}&trackcode=${trackcode}&carcheckstatus=${carcheckstatus}&holder=${holder}&apd=${apd}`
+      url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&branchcode=${branchcode}&billcode=${billcode}&trackcode=${trackcode}&carcheckstatus=${carcheckstatus}`
     } else {
       // const dueValueDtype = moment(due, "DD/MM/YYYY")
       // const dateObject = dueValueDtype.toDate(); 
       //  url = `${environment.httpheader}${this.domain}:${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&due=${dateObject}`
       // url = `${environment.httpheader}${this.domain}:${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&due=${due}&branchcode=${branchcode}`
-      url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&due=${due}&branchcode=${branchcode}&billcode=${billcode}&trackcode=${trackcode}&carcheckstatus=${carcheckstatus}&holder=${holder}`
+      url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getviewcontractlist?pageno=${pageno}&name=${name}&surname=${surname}&applicationid=${applicationid}&due=${due}&branchcode=${branchcode}&billcode=${billcode}&trackcode=${trackcode}&carcheckstatus=${carcheckstatus}`
     }
     return this.http.get<IResGetviewcontractlist>(url);
   }

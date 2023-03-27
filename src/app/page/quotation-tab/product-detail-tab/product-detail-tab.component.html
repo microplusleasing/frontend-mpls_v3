@@ -6,7 +6,7 @@
         <div [formGroup]="detailForm">
             <ng-container *ngIf="cardLayout | async as layout">
                 <mat-grid-list [cols]="layout.columns" [rowHeight]="'90px'">
-                    <mat-grid-tile [colspan]="layout.list.cols6">
+                    <mat-grid-tile [colspan]="layout.list.maxcols">
                         <!-- ประเภทผลิดภัณฑ์ -->
                         <mat-form-field appearance="outline">
                             <mat-select required [formControl]="bussinessCode">
@@ -20,15 +20,9 @@
                             <mat-error *ngIf="this.bussinessCode.invalid">กรุณาเลือกประเภทผลิดภัณฑ์</mat-error>
                         </mat-form-field>
                     </mat-grid-tile>
-                    <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="show2ndHandMPLSBtn">
-                        <!-- ปุ่มค้นหารถมือสอง (MPLUS) (Bussiness code == '002') -->
-                        <button mat-raised-button color="primary" style="width: 50%;" (click)="onclick2ndhandSearchBtn()">
-                            ค้นหาเลขทะเบียน
-                        </button>
-                    </mat-grid-tile>
                 </mat-grid-list>
                 <mat-grid-list [cols]="layout.columns" [rowHeight]="'90px'">
-                    <mat-grid-tile [colspan]="layout.list.maxcols">
+                    <mat-grid-tile [colspan]="layout.list.cols6">
                         <!-- รหัสร้านค้า -->
                         <mat-form-field appearance="outline">
                             <mat-label>รหัสร้านค้า</mat-label>
@@ -48,6 +42,16 @@
                             </mat-error>
                             <mat-hint>{{(dealerSelectText | async)}}</mat-hint>
                         </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="show2ndHandMPLSBtn">
+                        <!-- ปุ่มค้นหารถมือสอง (MPLUS) (Bussiness code == '002') -->
+                        <button mat-raised-button color="primary" style="width: 50%;"
+                            (click)="onclick2ndhandSearchBtn()">
+                            ค้นหาเลขทะเบียน
+                        </button>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="!show2ndHandMPLSBtn">
+                        <!-- offside -->
                     </mat-grid-tile>
                     <mat-grid-tile [colspan]="layout.list.cols4">
                         <mat-form-field appearance="outline">

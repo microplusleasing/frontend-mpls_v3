@@ -324,6 +324,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     // *** ค้นหาเลขทะเบียนแล้วเลือกรายการ นำค่า pass ค่าลง form ***
                     // *** โชว์ปุ่มค้นหารถมือสอง ****
                     this.show2ndHandMPLSBtn = true
+                  } else {
+                    // *** ซ่อนปุ่มค้นหารถมือสอง ****
+                    this.show2ndHandMPLSBtn = false
                   }
                 })
               }
@@ -354,6 +357,19 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false })
 
                   // this.checkChangeMaxValuePrice();
+
+                  if (this.productForm.controls.detailForm.controls.bussinessCode.value == '002') {
+                    if (this.productForm.controls.detailForm.controls.dealerCode.valid) {
+                      // *** โชว์ปุ่มค้นหารถมือสอง ****
+                      this.show2ndHandMPLSBtn = true
+                    } else {
+                      // *** ซ่อนปุ่มค้นหารถมือสอง ****
+                      this.show2ndHandMPLSBtn = false
+                    }
+                  } else {
+                    // *** ซ่อนปุ่มค้นหารถมือสอง ****
+                    this.show2ndHandMPLSBtn = false
+                  }
                 })
               }
 
@@ -596,7 +612,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                         // === แก้ไขการเรียกข้อมูล term (จำนวนงวด) จาก paremeter ที่เพิ่มมาจาก net_finance และ rate ===
 
-                        this.masterDataService.getRate('01', result.data[0].size).subscribe((resRate) => {
+                        this.masterDataService.getRate('01', result.data[0].size, '001').subscribe((resRate) => {
                           this.rateSelect = resRate.data
                           // === set quotaion lookup data if old record ===
                           if (this.quotationdatatemp.data) {
@@ -819,7 +835,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 if (qfactoryprice && qcarbrandcode && qcarmodel && qterm && qsizemodel && qloanamount && qinsureplanpricevalue && qrate) {
 
 
-                  const resultRateMaster = await lastValueFrom(this.masterDataService.getRate(`01`, qsizemodel));
+                  const resultRateMaster = await lastValueFrom(this.masterDataService.getRate(`01`, qsizemodel, '001'));
 
                   // ==== change parameter for get insurance from factory_price to max_ltv (24/08/2022) ===
 
@@ -842,7 +858,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // const resultTerm = await lastValueFrom(this.masterDataService.getTerm(`01`, qsizemodel))
 
                   const net_finance = qloanamount + (qinsuranceplan ?? 0)
-                  const resultTerm = await lastValueFrom(this.masterDataService.getTermNew(`01`, qsizemodel, qrate, net_finance))
+                  const resultTerm = await lastValueFrom(this.masterDataService.getTermNew(`01`, qsizemodel, qrate, net_finance, '001'))
 
                   let netfinance;
                   if (qisincludealoneamount) {
@@ -1133,7 +1149,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       } else {
         netfinance = paymentvalue
       }
-      this.masterDataService.getTermNew('01', size_model, rate, netfinance).subscribe((resPayment) => {
+      this.masterDataService.getTermNew('01', size_model, rate, netfinance, '001').subscribe((resPayment) => {
         // === manage data here ===
         this.loadingService.hideLoader()
 
@@ -1232,7 +1248,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       } else {
         netfinance = paymentvalue
       }
-      this.masterDataService.getTermNew('01', size_model, rate, netfinance).subscribe((resPayment) => {
+      this.masterDataService.getTermNew('01', size_model, rate, netfinance, '001').subscribe((resPayment) => {
         // === manage data here ===
         this.loadingService.hideLoader()
 

@@ -63,10 +63,10 @@ export class MasterDataService {
     return this.http.get<IResMasterModelSize>(url)
   }
 
-  getRate(pro_code: string, size_model: string): Observable<IResMasterRate> {
+  getRate(pro_code: string, size_model: string, bussiness_code: string): Observable<IResMasterRate> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterRate?pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}`
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterRate?pro_code=${pro_code}&size_model=${size_model}`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MasterRate?pro_code=${pro_code}&size_model=${size_model}`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MasterRate?pro_code=${pro_code}&size_model=${size_model}&bussiness_code=${bussiness_code}`
     return this.http.get<IResMasterRate>(url)
   }
   getRateSheet(brand_code: string, model_code: string, dealer_code: string, busi_code: string, insurance_code: string, insurance_year: number): Observable<IResMasterRatesheet> {
@@ -83,8 +83,8 @@ export class MasterDataService {
     return this.http.get<IResMasterTerm>(url)
   }
 
-  getTermNew(pro_code: string, size_model: string, rate: number, net_finance: number): Observable<IResMasterTerm> {
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getTermNew?pro_code=${pro_code}&size_model=${size_model}&rate=${rate}&net_finance=${net_finance}`
+  getTermNew(pro_code: string, size_model: string, rate: number, net_finance: number, bussiness_code: string): Observable<IResMasterTerm> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getTermNew?pro_code=${pro_code}&size_model=${size_model}&rate=${rate}&net_finance=${net_finance}&bussiness_code=${bussiness_code}`
     return this.http.get<IResMasterTerm>(url)
   }
 

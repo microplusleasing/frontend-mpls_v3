@@ -162,6 +162,8 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
   status: string = '';
   pageno: string = '';
   carcheckstatus: string = '';
+  holder: string = ''
+  apd: string = ''
 
   usernamelogin: string = '';
 
@@ -251,6 +253,8 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
       this.status = params['status'];
       this.pageno = params['pageno'];
       this.carcheckstatus = params['carcheckstatus'];
+      this.holder = params['holder'];
+      this.apd = params['apd'];
     });
 
 

@@ -224,6 +224,12 @@ export class CollectorViewComponent extends BaseService implements OnInit {
     this.negoForm.controls.carcheckstatusField.valueChanges.subscribe((value) => {
       this.carcheckstatus = value
     })
+    this.negoForm.controls.cardholdernameField.valueChanges.subscribe((value) => {
+      this.holder = value
+    })
+    this.negoForm.controls.appointmentdatefield.valueChanges.subscribe((value) => {
+      this.apd = value
+    })
 
     this.negoForm.controls.cardholdernameField.valueChanges.pipe(
       startWith(''),
@@ -258,7 +264,9 @@ export class CollectorViewComponent extends BaseService implements OnInit {
       this.bill = params['bill'];
       this.status = params['status'];
       this.pageno = params['pageno'];
-      this.carcheckstatus = params['carcheckstatus']
+      this.carcheckstatus = params['carcheckstatus'];
+      this.holder = params['holder'];
+      this.apd = params['apd'];
     });
 
   }
@@ -304,6 +312,8 @@ export class CollectorViewComponent extends BaseService implements OnInit {
       this.negoForm.controls.dueField.setValue(duefilter);
       this.negoForm.controls.trackField.setValue(statusfilter);
       this.negoForm.controls.carcheckstatusField.setValue(carcheckfilter);
+      this.negoForm.controls.cardholdernameField.setValue(holderfilter);
+      this.negoForm.controls.appointmentdatefield.setValue(apdfilter);
 
       this.filteroninit(pagenofilter, fnamefilter, lnamefilter, hpnofilter, duefilter, branchfilter, billfilter, statusfilter, carcheckfilter, holderfilter, apdfilter)
     } else {
@@ -429,6 +439,7 @@ export class CollectorViewComponent extends BaseService implements OnInit {
   }
 
   onsearch() {
+    this.loadingService.showLoader()
     const nameValue = this.negoForm.controls.nameField.value ? this.negoForm.controls.nameField.value : ''
     const surnameValue = this.negoForm.controls.surnameField.value ? this.negoForm.controls.surnameField.value : ''
     const applicationidValue = this.negoForm.controls.applicationidField.value ? this.negoForm.controls.applicationidField.value : ''
@@ -446,7 +457,9 @@ export class CollectorViewComponent extends BaseService implements OnInit {
         bill: this.bill,
         status: this.status,
         pageno: 1,
-        carcheckstatus: this.carcheckstatus
+        carcheckstatus: this.carcheckstatus,
+        holder: this.holder,
+        apd: this.apd
       }
     });
 
@@ -488,10 +501,19 @@ export class CollectorViewComponent extends BaseService implements OnInit {
           this.pageSize = results.pagesize
           // this.dataSource.sort = this.sort))
         })
-      ).subscribe()
+      ).subscribe({
+        next: (res) => {
+          this.loadingService.hideLoader()
+        }, error: (e) => {
+          this.loadingService.hideLoader()
+        }, complete: () => {
+          this.loadingService.hideLoader()
+        }
+      })
   }
 
   onclear() {
+    this.loadingService.showLoader()
     this.negoForm.reset();
     this.router.navigate([], {
       relativeTo: this.route, queryParams: {
@@ -500,6 +522,7 @@ export class CollectorViewComponent extends BaseService implements OnInit {
     });
     this.negotiationService.getviewcontractlist(1, '', '', '', '', '', '', '', '', '', '').subscribe({
       next: (results: IResGetviewcontractlist) => {
+        this.loadingService.hideLoader()
         this.dataList = results.data
         this.dataSource.data = this.dataList
         // this.dataSource.paginator = this.paginator
@@ -510,7 +533,9 @@ export class CollectorViewComponent extends BaseService implements OnInit {
 
       }, error: (err) => {
         this.dataList = []
+        this.loadingService.hideLoader()
       }, complete: () => {
+        this.loadingService.hideLoader()
 
       }
     })
@@ -529,7 +554,9 @@ export class CollectorViewComponent extends BaseService implements OnInit {
         bill: this.bill,
         status: this.status,
         pageno: this.pageno,
-        carcheckstatus: this.carcheckstatus
+        carcheckstatus: this.carcheckstatus,
+        holder: this.holder,
+        apd: this.apd
       }
     })
 
@@ -540,6 +567,7 @@ export class CollectorViewComponent extends BaseService implements OnInit {
 
 
   onPaginationChange(event: PageEvent) {
+    this.loadingService.showLoader()
     let page = event.pageIndex;
     let size = event.pageSize;
 
@@ -553,6 +581,8 @@ export class CollectorViewComponent extends BaseService implements OnInit {
     this.recentbill = this.negoForm.controls.billField.value ? this.negoForm.controls.billField.value : ''
     this.recenttrack = this.negoForm.controls.trackField.value ? this.negoForm.controls.trackField.value : ''
     this.recentcarcheckstatus = this.negoForm.controls.carcheckstatusField.value ? this.negoForm.controls.carcheckstatusField.value : ''
+    this.recentholder = this.negoForm.controls.cardholdernameField.value ? this.negoForm.controls.cardholdernameField.value : ''
+    this.recentapd = this.negoForm.controls.appointmentdatefield.value ? this.negoForm.controls.appointmentdatefield.value : ''
 
 
     this.router.navigate([], {
@@ -564,7 +594,10 @@ export class CollectorViewComponent extends BaseService implements OnInit {
         branch: this.branch,
         bill: this.bill,
         status: this.status,
-        pageno: page
+        pageno: page,
+        carcheckstatus: this.carcheckstatus,
+        holder: this.holder,
+        apd: this.apd
       }
     });
 
@@ -602,7 +635,15 @@ export class CollectorViewComponent extends BaseService implements OnInit {
         // this.dataSource.sort = this.sort))
       })
 
-    ).subscribe();
+    ).subscribe({
+      next: (res) => {
+        this.loadingService.hideLoader()
+      }, error: (e) => {
+        this.loadingService.hideLoader()
+      }, complete: () => {
+        this.loadingService.hideLoader()
+      }
+    });
   }
 
   private _filterHolder(value: string | null): IResHolderNameData[] {

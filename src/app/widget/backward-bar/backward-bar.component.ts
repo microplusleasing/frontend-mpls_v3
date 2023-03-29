@@ -27,6 +27,8 @@ export class BackwardBarComponent {
   @Input() status: string = ''
   @Input() pageno: string = ''
   @Input() carcheckstatus: string = ''
+  @Input() holder: string = ''
+  @Input() apd: string = ''
 
   @Input() ContractNo: string = ''
   @Input() Username: string = ''
@@ -64,7 +66,9 @@ export class BackwardBarComponent {
           bill: this.bill,
           status: this.status,
           pageno: this.pageno,
-          carcheckstatus: this.carcheckstatus
+          carcheckstatus: this.carcheckstatus,
+          holder: this.holder,
+          apd: this.apd
         }
       }
     );

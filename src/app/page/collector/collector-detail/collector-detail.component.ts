@@ -548,6 +548,7 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
 
   sumbitnegocreaterecord() {
     // let items: Record<string,any> = {}
+    this.loadingService.showLoader()
     const appointmentDate = this.followupForm.controls.negofollowup.controls.appointmentdatefield.value
     const formattedDate = this.datepipe.transform(appointmentDate, 'dd/MM/yyyy');
     let items: any = {}
@@ -586,7 +587,7 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
           )
           this.negotiationService.getfollowuppaymentlist(1, this.applicationid).subscribe({
             next: (resultnego) => {
-
+              this.loadingService.hideLoader()
               console.log(`this is reuslt negotiation : ${JSON.stringify(resultnego)}`)
               this.negodataList = resultnego.data
               this.nego_dataSource = new MatTableDataSource(this.negodataList)
@@ -599,9 +600,11 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
               // === handle error ===
             }, complete: () => {
               // === nex step ===
+              this.loadingService.hideLoader()
             }
           })
         } else {
+          this.loadingService.hideLoader()
           this._snackBar.open(`เกิดข้อผิดพลาด ไม่สา่มารถสร้างใบคำขอได้ \n ${results.message}`,
             '',
             {
@@ -618,6 +621,8 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
             panelClass: 'fail-mat-snackbar'
           }
         )
+      }, complete: () => {
+        this.loadingService.hideLoader()
       }
     })
 

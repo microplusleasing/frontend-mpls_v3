@@ -16,6 +16,7 @@ import { BaseService } from 'src/app/service/base/base.service';
 import { LoadingService } from 'src/app/service/loading.service';
 import { MasterDataService } from 'src/app/service/master.service';
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
+import { SecondhandCarViewDialogComponent } from 'src/app/widget/dialog/secondhand-car-view-dialog/secondhand-car-view-dialog.component';
 
 @Component({
   selector: 'app-product-detail-tab',
@@ -1320,13 +1321,24 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   }
 
   onclick2ndhandSearchBtn() {
-    this.dialog.open(MainDialogComponent, {
-      data: {
-        header: `test_header`,
-        data: `test_data`,
-        button_name: `test_button`
-      }
-    })
+    const dealercode = this.detailForm.controls.dealerCode.value ? this.detailForm.controls.dealerCode.value : ''
+    if (dealercode) {
+      this.dialog.open(SecondhandCarViewDialogComponent, {
+        width: '100%',
+        height: `80%`,
+        data: {
+          dealer_code: dealercode
+        }
+      })
+    } else {
+      this.dialog.open(MainDialogComponent, {
+        data: {
+          header: `ไม่พบรายการ`,
+          message: 'ไม่พบรายการชื่อ dealer, กรุณาเลือก "รหัสร้านค้า" ก่อนค้นหารถ',
+          button_name: `ปิด`
+        }
+      })
+    }
   }
 
 }

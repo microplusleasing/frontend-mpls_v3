@@ -39,6 +39,7 @@ import { IResMrtaProduct } from '../interface/i-res-mrta-product';
 import { IResMasterInsurance } from '../interface/i-res-master-insurance';
 import { IResCalculateAgeDb } from '../interface/i-res-calculate-age-db';
 import { IResGetMasterBussiness } from '../interface/i-res-get-master-bussiness';
+import { IResSecondHandCarView } from '../interface/i-res-second-hand-car-view';
 
 
 
@@ -266,6 +267,17 @@ export class MasterDataService {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getmodel`
     return this.http.get<IResMasterModel>(url)
   }
+
+  MPLS_getsecondhandcarbyreg(p_reg_no: string, p_sl_code: string, page_no: number): Observable<IResSecondHandCarView> {
+    const data_send = {
+      p_reg_no: p_reg_no,
+      p_sl_code: p_sl_code,
+      page_no: page_no ? page_no : 1
+    }
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getsecondhandcarbyreg`
+    return this.http.post<IResSecondHandCarView>(url, data_send)
+  }
+
 
 
 

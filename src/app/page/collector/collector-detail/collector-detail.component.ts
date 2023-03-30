@@ -571,11 +571,12 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
     // items.con_r_code = this.followupForm.get('contactresultfield')?.value
     // items.neg_r_code = this.followupForm.get('negofollowup.contactresultfield')?.value
     items.neg_r_code = this.followupForm.controls.negofollowup.controls.contactresultfield.value
-    this.followupForm.controls.negofollowup.reset();
+    // this.followupForm.controls.negofollowup.reset();
 
     this.negotiationService.insertnegolist(items).subscribe({
       next: (results) => {
         this.loadingService.hideLoader()
+        this.followupForm.controls.negofollowup.reset();
         if (results.status == 200) {
           console.log(`this is results : ${results}`)
           this.triggerfollowup = false;

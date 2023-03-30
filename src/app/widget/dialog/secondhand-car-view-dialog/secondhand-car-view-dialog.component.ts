@@ -67,6 +67,7 @@ export class SecondhandCarViewDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.dealer_code_filter = this.data.dealer_code
+    this.secondhandcarForm.controls.dealer_code.setValue(this.data.dealer_code)
   }
 
   onSearchSecondHandCar() {
@@ -78,8 +79,22 @@ export class SecondhandCarViewDialogComponent implements OnInit {
     ).subscribe({
       next: (res_second_hand_car) => {
         this.loadingService.hideLoader()
+        if (res_second_hand_car.data.length !== 0) {
+          this.dataListTemp = res_second_hand_car
+
+          this.dataList = this.dataListTemp
+          this.dataSource.data = (res_second_hand_car.data) as IResSecondHandCarViewData[]
+          this.paginator.pageIndex = 0
+          this.pageLength = this.dataListTemp.rowcount
+          this.pageSize = this.dataListTemp.pagesize
+        } else {
+          // === no data avalible === 
+          this.dataSource.data = []
+          this.textshow = 'ไม่พบเจอรายการตามเงื่อนไขที่กำหนด'
+        }
       }, error: (e) => {
         this.loadingService.hideLoader()
+        this.dataSource.data = []
 
       }, complete: () => {
         this.loadingService.hideLoader()

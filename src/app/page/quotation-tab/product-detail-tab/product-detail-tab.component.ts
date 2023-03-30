@@ -4,6 +4,7 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Vali
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, debounceTime, lastValueFrom, map, Observable, of, startWith, Subject } from 'rxjs';
+import { IDialogSecondHandCarView } from 'src/app/interface/i-dialog-second-hand-car-view';
 import { IResGetMasterBussinessData } from 'src/app/interface/i-res-get-master-bussiness';
 import { IResMasterBranchData } from 'src/app/interface/i-res-master-branch';
 import { IResMasterBrandData } from 'src/app/interface/i-res-master-brand';
@@ -1322,13 +1323,15 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
   onclick2ndhandSearchBtn() {
     const dealercode = this.detailForm.controls.dealerCode.value ? this.detailForm.controls.dealerCode.value : ''
+    const senddata: IDialogSecondHandCarView = {
+      dealer_code: dealercode,
+      dealer_name: ''
+    }
     if (dealercode) {
       this.dialog.open(SecondhandCarViewDialogComponent, {
         width: '100%',
         height: `80%`,
-        data: {
-          dealer_code: dealercode
-        }
+        data: senddata
       })
     } else {
       this.dialog.open(MainDialogComponent, {

@@ -29,5 +29,6 @@ export interface IResSecondHandCarView {
     contract_no: string
     sl_code: string
     auction_code: string
+    model_year: string
   }
   

@@ -1,6 +1,7 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -32,6 +33,9 @@ export class SecondhandCarViewDialogComponent implements OnInit {
   pageSize: number = 0;
   pageno: number = 1;
   dataList: any;
+  selectedRowIndex: number = -1; // initialize to -1 to indicate no row is selected
+  selectedCarDetail: IResSecondHandCarViewData = {} as IResSecondHandCarViewData
+  confirmbtn: boolean = false;
 
   secondhandcarForm = this.fb.group({
     dealer_code: this.dealer_code,
@@ -72,6 +76,7 @@ export class SecondhandCarViewDialogComponent implements OnInit {
 
   onSearchSecondHandCar() {
     this.loadingService.showLoader()
+    this.confirmbtn = false
     this.masterService.MPLS_getsecondhandcarbyreg(
       this.secondhandcarForm.controls.car_reg_no.value ? this.secondhandcarForm.controls.car_reg_no.value : '',
       this.secondhandcarForm.controls.dealer_code.value ? this.secondhandcarForm.controls.dealer_code.value : '',
@@ -138,6 +143,22 @@ export class SecondhandCarViewDialogComponent implements OnInit {
         this.textshow = 'ไม่พบเจอรายการตามเงื่อนไขที่กำหนด'
       }
     })
+  }
+
+  selectRows(row: IResSecondHandCarViewData) {
+    this.selectedRowIndex = row.line_number;
+    this.selectedCarDetail = row
+    this.confirmbtn = true
+    // enable/disable button based on selected rows length
+  }
+
+  confirmCarSeclect() {
+    if(this.selectedCarDetail.contract_no) {
+      // *** parse data back to product page in quotation mpls ****
+      this.dialogRef.close(this.selectedCarDetail)
+    } else {
+      // handle error
+    }
   }
 
 }

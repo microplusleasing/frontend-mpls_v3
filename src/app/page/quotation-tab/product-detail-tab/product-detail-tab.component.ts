@@ -13,6 +13,7 @@ import { IResMasterInsuranceYearsData } from 'src/app/interface/i-res-master-ins
 import { IResMasterInsurerData } from 'src/app/interface/i-res-master-insurer';
 import { IResMasterModel, IResMasterModelData } from 'src/app/interface/i-res-master-model';
 import { IResQuotationDetail } from 'src/app/interface/i-res-quotation-detail';
+import { IResSecondHandCarViewData } from 'src/app/interface/i-res-second-hand-car-view';
 import { BaseService } from 'src/app/service/base/base.service';
 import { LoadingService } from 'src/app/service/loading.service';
 import { MasterDataService } from 'src/app/service/master.service';
@@ -67,6 +68,16 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   value2 = new FormControl()
   value3 = new FormControl()
 
+  // === second hand car field (31/03/2023) ====
+  model_year = new FormControl()
+  cc = new FormControl<number | null>(null)
+  reg_no = new FormControl()
+  reg_date = new FormControl()
+  contract_ref = new FormControl()
+  reg_mile = new FormControl<number | null>(null)
+  prov_name = new FormControl()
+  prov_code = new FormControl()
+
   detailForm = this.fb.group({
     bussinessCode: this.bussinessCode,
     dealerCode: this.dealerCode,
@@ -103,11 +114,23 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     value3: this.value3
   })
 
+  secondHandCarForm = this.fb.group({
+    model_year: this.model_year,
+    cc: this.cc,
+    reg_no: this.reg_no,
+    reg_date: this.reg_date,
+    contract_ref: this.contract_ref,
+    reg_mile: this.reg_mile,
+    prov_name: this.prov_name,
+    prov_code: this.prov_code
+  })
+
 
   // *** main Form ***
   productForm = this.fb.group({
     consentVerify: this.consentVerify,
-    detailForm: this.detailForm
+    detailForm: this.detailForm,
+    secondHandCarForm: this.secondHandCarForm
   })
 
   showPrice: boolean = false;
@@ -172,6 +195,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
   // === 2ndhand_car variable (23/03/2023) ===
   show2ndHandMPLSBtn: boolean = false
+  generalcarinfovisible: boolean = false
+  commonsecondinfotabvisiable: boolean = false
+  shwosecondhandcardetail: boolean = false
 
 
   warningMsgPaymentValueField: boolean = false;// === subscribe on paymentValueField (valueChange) to show or hide === 
@@ -319,17 +345,96 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               if (res[0]) {
                 this.bussinessList = res[0].data
                 this.productForm.controls.detailForm.controls.bussinessCode.valueChanges.subscribe((value) => {
-                  // === check value and show form by type of data ===
+                  // **** clear all form field when value of bussiness code change ****
+                  this.detailForm.controls.carBrandField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.carBrandNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.carColorField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.carModelField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.carModelNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.chassisNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.dealerCode.setValue('', { emitEvent: false });
+                  this.detailForm.controls.downPaymentField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.engineNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.insuranceCodeField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.insuranceNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.insurancePlanPriceField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.insurerCodeField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.insurerNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.interestRateField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.isincludeloanamount.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.loanAmountField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.maxltvField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.priceincludevatField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.productValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.runningchassisNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.runningengineNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.sizeModelField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.value1.setValue('', { emitEvent: false });
+                  this.detailForm.controls.value2.setValue('', { emitEvent: false });
+                  this.detailForm.controls.value3.setValue('', { emitEvent: false });
 
-                  if (value == '002') {
-                    // === รถมือสองจัดกลับ ===
-                    // *** ค้นหาเลขทะเบียนแล้วเลือกรายการ นำค่า pass ค่าลง form ***
-                    // *** โชว์ปุ่มค้นหารถมือสอง ****
-                    this.show2ndHandMPLSBtn = true
-                  } else {
-                    // *** ซ่อนปุ่มค้นหารถมือสอง ****
-                    this.show2ndHandMPLSBtn = false
+                  this.secondHandCarForm.controls.model_year.setValue('', { emitEvent: false})
+                  this.secondHandCarForm.controls.cc.setValue(null, { emitEvent: false})
+                  this.secondHandCarForm.controls.reg_no.setValue('', { emitEvent: false})
+                  this.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false})
+                  this.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false})
+                  this.secondHandCarForm.controls.reg_mile.setValue(null, { emitEvent: false})
+                  this.secondHandCarForm.controls.prov_name.setValue('', { emitEvent: false})
+                  this.secondHandCarForm.controls.prov_code.setValue('', { emitEvent: false})
+
+                  // === check value and show form by type of data ===
+                  switch (value) {
+                    case '001':
+                      {
+                        // *** รถมือหนึ่ง ***
+                        this.show2ndHandMPLSBtn = false
+                        this.generalcarinfovisible = true
+                        this.showBrandModelLoan$ = of(false)
+                        this.shwosecondhandcardetail = false
+                        this.showPrice = false
+
+                        this.productForm.controls.detailForm.controls.carBrandField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.carModelField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.engineNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.runningengineNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.chassisNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.runningchassisNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.carColorField.enable({ onlySelf: true, emitEvent: false })
+              
+                        this.productForm.controls.secondHandCarForm.controls.cc.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.secondHandCarForm.controls.model_year.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.secondHandCarForm.controls.prov_name.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.secondHandCarForm.controls.reg_date.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.secondHandCarForm.controls.reg_no.enable({ onlySelf: true, emitEvent: false })
+                      }
+                      break;
+                    case '002':
+                      {
+                        // === รถมือสองจัดกลับ ===
+                        // *** ค้นหาเลขทะเบียนแล้วเลือกรายการ นำค่า pass ค่าลง form ***
+                        // *** โชว์ปุ่มค้นหารถมือสอง ****
+                        this.show2ndHandMPLSBtn = false
+                        this.generalcarinfovisible = false
+                        this.showpaymentvalue$.next(false)
+                      }
+                      break;
+                    case '003':
+                      {
+                        // *** รถมือสองทั่วไป ****
+                        this.show2ndHandMPLSBtn = false
+                        this.generalcarinfovisible = true
+                        this.commonsecondinfotabvisiable = true
+                      }
+                      break;
+
+                    default:
+                      break;
                   }
+
                 })
               }
 
@@ -357,7 +462,13 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.productForm.controls.detailForm.controls.carBrandField.setValue('', { emitEvent: false })
                   this.productForm.controls.detailForm.controls.insurerCodeField.setValue('', { emitEvent: false })
                   this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.engineNoField.setValue('')
+                  this.productForm.controls.detailForm.controls.runningengineNoField.setValue('', { emitEvent: false})
+                  this.productForm.controls.detailForm.controls.chassisNoField.setValue('')
+                  this.productForm.controls.detailForm.controls.runningchassisNoField.setValue('', { emitEvent: false})
+                  this.productForm.controls.detailForm.controls.carColorField.setValue('', { emitEvent: false})
 
+                  this.productForm.controls.secondHandCarForm.reset()
                   // this.checkChangeMaxValuePrice();
 
                   if (this.productForm.controls.detailForm.controls.bussinessCode.value == '002') {
@@ -467,6 +578,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.productForm.controls.detailForm.controls.chassisNoField.setValue(null, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.runningengineNoField.setValue(null, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false})
+                  this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(null, { emitEvent: false})
                   this.coverage = 0
                   this.factoryprice = 0
 
@@ -1323,15 +1436,62 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
   onclick2ndhandSearchBtn() {
     const dealercode = this.detailForm.controls.dealerCode.value ? this.detailForm.controls.dealerCode.value : ''
+    const dealername = this.dealerList.find((x) => { return x.dl_code == dealercode })
     const senddata: IDialogSecondHandCarView = {
       dealer_code: dealercode,
-      dealer_name: ''
+      dealer_name: dealername ? dealername.dl_name : ''
     }
     if (dealercode) {
       this.dialog.open(SecondhandCarViewDialogComponent, {
         width: '100%',
         height: `80%`,
         data: senddata
+      }).afterClosed().subscribe((res: IResSecondHandCarViewData) => {
+        // *** parse data back from second hance car select dialog ***
+        // console.log(`parse data back success : ${JSON.stringify(res)}`)
+        if (res.contract_no) {
+          this.generalcarinfovisible = true
+          this.showchassisandengine = true
+          this.shwosecondhandcardetail = true
+
+          // *** basic car field binding ***
+          this.productForm.controls.detailForm.controls.carBrandField.setValue(res.brand_code)
+          this.productForm.controls.detailForm.controls.carModelField.setValue(res.model_code)
+          this.productForm.controls.detailForm.controls.engineNoField.setValue(res.engine_number)
+          this.productForm.controls.detailForm.controls.runningengineNoField.setValue(res.engine_no_running, { emitEvent: false})
+          this.productForm.controls.detailForm.controls.chassisNoField.setValue(res.chassis_number)
+          this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(res.chassis_no_running, { emitEvent: false})
+          this.productForm.controls.detailForm.controls.carColorField.setValue(res.color, { emitEvent: false})
+
+
+          // *** secondhand car field binding ***
+          this.productForm.controls.secondHandCarForm.controls.cc.setValue(res.cc, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.contract_ref.setValue(res.contract_no, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.model_year.setValue(res.model_year, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.prov_code.setValue(res.prov_code, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.prov_name.setValue(res.prov_name, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.reg_date.setValue(res.reg_date, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.reg_no.setValue(res.reg_no, { emitEvent: false })
+
+          // *** lock all detail field when stamp data finish ***
+          this.productForm.controls.detailForm.controls.carBrandField.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.detailForm.controls.carModelField.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.detailForm.controls.engineNoField.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.detailForm.controls.runningengineNoField.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.detailForm.controls.chassisNoField.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.detailForm.controls.runningchassisNoField.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.detailForm.controls.carColorField.disable({ onlySelf: true, emitEvent: false })
+
+          this.productForm.controls.secondHandCarForm.controls.cc.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.model_year.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.prov_name.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.reg_date.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.reg_no.disable({ onlySelf: true, emitEvent: false })
+
+
+        } else {
+          // handle error or null data parse back
+        }
       })
     } else {
       this.dialog.open(MainDialogComponent, {

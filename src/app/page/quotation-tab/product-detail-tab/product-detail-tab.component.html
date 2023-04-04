@@ -140,22 +140,30 @@
                             <!-- จังหวัด -->
                             <mat-grid-tile [colspan]="layout.list.cols4">
                                 <mat-form-field appearance="outline">
-                                    <mat-label>จังหวัด</mat-label>
-                                    <input type="text" matInput placeholder="จังหวัด" [formControl]="prov_name">
+                                    <mat-select required [formControl]="prov_code">
+                                        <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
+                                        <mat-option *ngFor="let item of masterProvinceList.data"
+                                            [value]="item.prov_code">{{item.prov_name}}</mat-option>
+                                    </mat-select>
+                                    <mat-label>
+                                        จังหวัด
+                                    </mat-label>
+                                    <mat-error *ngIf="this.prov_code.invalid">กรุณากรอกจังหวัด</mat-error>
                                 </mat-form-field>
                             </mat-grid-tile>
                             <!-- วันที่จดทะเบียน -->
                             <mat-grid-tile [colspan]="layout.list.cols4">
                                 <mat-form-field appearance="outline">
                                     <mat-label>วันที่จดทะเบียน</mat-label>
-                                    <input type="text" matInput placeholder="วันที่จดทะเบียน" [formControl]="reg_date">
+                                    <input type="date" matInput placeholder="วันที่จดทะเบียน" [formControl]="reg_date">
                                 </mat-form-field>
                             </mat-grid-tile>
                             <!-- ปีรุ่นรถ -->
                             <mat-grid-tile [colspan]="layout.list.cols4">
                                 <mat-form-field appearance="outline">
                                     <mat-label>ปีรุ่นรถ</mat-label>
-                                    <input type="number" [min]="0" matInput placeholder="ปีรุ่นรถ" [formControl]="model_year">
+                                    <input type="number" [min]="0" matInput placeholder="ปีรุ่นรถ"
+                                        [formControl]="model_year">
                                 </mat-form-field>
                             </mat-grid-tile>
                             <!-- CC -->
@@ -169,7 +177,11 @@
                             <mat-grid-tile [colspan]="layout.list.cols4">
                                 <mat-form-field appearance="outline">
                                     <mat-label>เลขไมล์</mat-label>
-                                    <input type="number" [min]="0" matInput placeholder="เลขไมล์" [formControl]="reg_mile">
+                                    <input type="number" [min]="0" matInput placeholder="เลขไมล์"
+                                        [formControl]="reg_mile">
+                                    <mat-error
+                                        *ngIf="secondHandCarForm.controls.reg_mile.hasError('required')">กรุณาระบุเลขไมล์
+                                    </mat-error>
                                 </mat-form-field>
                             </mat-grid-tile>
                         </div>

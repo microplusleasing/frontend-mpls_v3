@@ -28,6 +28,17 @@ export interface IReqCreateCredit {
     chassis_no_running: string;
     dealer_code: string;
     checker_id: string;
+
+    bussiness_code: string;
+    bussiness_name: string;
+    model_year: string;
+    cc: number | null;
+    reg_no: string;
+    reg_date: Date;
+    contract_ref: string;
+    reg_mile: number | null;
+    prov_code: string;
+    prov_name: string;
 }
 
 

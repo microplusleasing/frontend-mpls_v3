@@ -427,7 +427,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
       //  ==== เงื่อนไขแสดงปุ่มบันทึกใน tab 2 (ข้อมูลผลืตภัณฑ์/วงเงินสินเชื่อ)
 
-      if (this.productdetailtab.productForm.controls.detailForm.valid) {
+      if (this.productdetailtab.productForm.controls.detailForm.valid && this.productdetailtab.productForm.controls.secondHandCarForm.valid) {
         // this.econsentbtnDisable = false
         this.createorupdatecreditbtnDisable = false
         this.cd.detectChanges()
@@ -1187,7 +1187,20 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       chassis_number: this.productdetailtab.productForm.controls.detailForm.controls.chassisNoField.value ? this.productdetailtab.productForm.controls.detailForm.controls.chassisNoField.value : null,
       engine_no_running: this.productdetailtab.productForm.controls.detailForm.controls.runningengineNoField.value ? this.productdetailtab.productForm.controls.detailForm.controls.runningengineNoField.value : null,
       chassis_no_running: this.productdetailtab.productForm.controls.detailForm.controls.runningchassisNoField.value ? this.productdetailtab.productForm.controls.detailForm.controls.runningchassisNoField.value : null,
-      checker_id: this.checker_id
+      checker_id: this.checker_id,
+      // add second hand car field (03/04/2023) 
+      bussiness_code: this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value ? this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value : '',
+      bussiness_name: this.productdetailtab.productForm.controls.detailForm.controls.bussinessName.value ? this.productdetailtab.productForm.controls.detailForm.controls.bussinessName.value : '',
+      model_year: this.productdetailtab.productForm.controls.secondHandCarForm.controls.model_year.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.model_year.value : '',
+      cc: this.productdetailtab.productForm.controls.secondHandCarForm.controls.cc.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.cc.value : null,
+      reg_no: this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_no.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_no.value : '',
+      reg_date: this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_date_dtype.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_date_dtype.value : null,
+      contract_ref: this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value : '',
+      reg_mile: this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_mile.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_mile.value : null,
+      prov_code: this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_code.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_code.value : '',
+      prov_name: this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value : ''
+
+      
     }
 
     const reqcreatecredit = await lastValueFrom(this.quotationService.MPLS_create_or_update_credit(reqcreatecreditdata))

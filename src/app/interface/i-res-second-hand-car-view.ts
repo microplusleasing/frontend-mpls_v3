@@ -20,7 +20,7 @@ export interface IResSecondHandCarView {
     engine_no_running: string
     chassis_number: string
     chassis_no_running: string
-    reg_date: string
+    reg_date: Date
     prov_code: string
     produc: string
     brand_code: string

@@ -1194,7 +1194,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       model_year: this.productdetailtab.productForm.controls.secondHandCarForm.controls.model_year.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.model_year.value : '',
       cc: this.productdetailtab.productForm.controls.secondHandCarForm.controls.cc.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.cc.value : null,
       reg_no: this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_no.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_no.value : '',
-      reg_date: this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_date_dtype.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_date_dtype.value : null,
+      reg_date: this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_date.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_date.value : null,
       contract_ref: this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value : '',
       reg_mile: this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_mile.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_mile.value : null,
       prov_code: this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_code.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_code.value : '',
@@ -1211,6 +1211,14 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       this.snackbarsuccess(`${reqcreatecredit.message}`)
     } else {
       this.snackbarfail(`${reqcreatecredit.message}`)
+    }
+  }
+
+  async recieve_trigger_bussinesscode($event: boolean) {
+    if ($event) {
+      this.econsentbtnDisable = false
+    } else {
+      this.econsentbtnDisable = true
     }
   }
 

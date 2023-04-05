@@ -33,7 +33,7 @@
             <mat-divider></mat-divider>
             <ng-template matStepLabel>ข้อมูลผลิตภัณฑ์/วงเงินสินเชื่อ</ng-template>
             <app-product-detail-tab [quotationReq]="quotationResult$" [cusage]="cusage"
-                [gender]="gender"></app-product-detail-tab>
+                [gender]="gender" (trigger_bussinesscode)="recieve_trigger_bussinesscode($event)"></app-product-detail-tab>
             <div class="flex-center">
                 <div *ngIf="verifyeconsent">
                     <br>

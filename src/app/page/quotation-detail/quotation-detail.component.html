@@ -78,7 +78,7 @@
             <mat-divider></mat-divider>
             <ng-template matStepLabel>เอกสารประกอบการสมัครสินเชื่อ</ng-template>
             <app-image-attach [quotationReq]="quotationResult$"
-                (emitverifyimageattach)="recieve_verifyimageattach($event)"></app-image-attach>
+                (emitverifyimageattach)="recieve_verifyimageattach($event)" (emitverifysecondhandcarimage)="recieve_verifysecondhandcarimageattach($event)"></app-image-attach>
         </mat-step>
 
         <mat-step [stepControl]="this.consenttab.signaturetab.signatureForm.controls.verifySignature" state="consent" >

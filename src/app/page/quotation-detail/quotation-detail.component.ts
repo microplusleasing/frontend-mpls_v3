@@ -70,6 +70,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   verifyeconsent: boolean = false
   verifyeconsent_txt: string = ''
   verifyimageattach: boolean = false
+  secondhandcarverify: boolean = false
   verifycareerandpurpose: boolean = false
   verifysignature: boolean = false
   createorupdatecitizendataDisable: boolean = true
@@ -274,18 +275,37 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                     this.verifyimageattach = false
                   }
 
-                  // *** tab 5 **** (signature)
-                  if (quoitem.cs_app_key_id !== '' && quoitem.cs_app_key_id !== null) {
-                    // === set valid when record signature is already exits === 
-                    this.consenttab.signaturetab.signatureForm.controls.verifySignature.setValue(true)
-                    this.verifysignature = true
-                  }
 
                   // if (quoitem.quo_dopa_status == 'N') {
                   if (!this.verifyimageattach) {
                     this.imageattachtab.txtrequireimage = `*แนบไฟล์ "บัตรประชาชน" , "รูปหน้าลูกค้าพร้อมบัตรประชาชน" , "สำเนาบัตรประชาชนพร้อมลายเซ็นรับรองถูกต้อง"  และ "NCB Consent`
                   }
                   // }
+
+                  // *** tab 4 (second hand car case) ***
+                  if (quoitem.cd_bussiness_code !== '001' && quoitem.quo_secondhand_car_verify !== 'Y') {
+                    this.secondhandcarverify = false
+                    this.imageattachtab.verifySecondhandCarImageAttach.setValue(false)
+                    this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
+                  } else {
+
+                    if (quoitem.cd_bussiness_code == '001') {
+                      this.imageattachtab.showsecondhandcarimageattach = false
+                    } else {
+                      this.imageattachtab.showsecondhandcarimageattach = true
+                    }
+
+                    this.secondhandcarverify = true
+                    this.imageattachtab.verifySecondhandCarImageAttach.setValue(true)
+                    this.imageattachtab.txtrequireimagesecondhandcar = ''
+                  }
+
+                  // *** tab 5 **** (signature)
+                  if (quoitem.cs_app_key_id !== '' && quoitem.cs_app_key_id !== null) {
+                    // === set valid when record signature is already exits === 
+                    this.consenttab.signaturetab.signatureForm.controls.verifySignature.setValue(true)
+                    this.verifysignature = true
+                  }
 
                 }
               }
@@ -572,7 +592,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         case 4: {
           // *** consent tab ***
           if (this.cizcardtab.cizForm.valid) {
-            (this.verifyeconsent && this.verifycareerandpurpose && this.verifyimageattach) ? this.imageattachtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+            (this.verifyeconsent && this.verifycareerandpurpose && this.verifyimageattach && this.secondhandcarverify) ? this.imageattachtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
           } else {
             this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
           }
@@ -601,7 +621,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     if (!this.quoid) {
       this.loadingService.showLoader();
       if ($event.status) {
-  
+
         this.createquotationdopa('1', $event.uuid).then((dchk) => {
           if (dchk.status) {
             this.dipchipService.updatedipchipflag({
@@ -611,16 +631,16 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             }).subscribe(async (value) => {
               this.loadingService.hideLoader()
               console.log(`flag success : ${JSON.stringify(value)}`)
-  
+
               // === set router id ===
               if (value.number == 200) {
                 this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
-  
+
                 // ==== ปลดล๊อค form เมื่อ dipchip สำเร็จ ====
                 this.cizcardtab.cizForm.enable()
-  
+
                 const queryParams: Params = { id: dchk.refId };
-  
+
                 await this.router.navigate(
                   [],
                   {
@@ -630,9 +650,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                   }
                 );
                 // === add dopa status (11/11/2022) === 
-  
+
                 this.quotationService.setstatusdopa(dchk.refId)
-  
+
                 this.afteroninit();
               }
             })
@@ -642,50 +662,52 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               token: '',
               username: this.usernamefordipchip,
               fromBody: $event.uuid
-            }).subscribe({next: async (value) => {
-              this.loadingService.hideLoader()
-              console.log(`flag success : ${JSON.stringify(value)}`)
-  
-              // === set router id ===
-              if (value.number == 200) {
-                this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
-  
-                // === status false (STATUS_CODE from dopa is null or 500 ) ===
-                this.snackbarfail(`ไม่พบข้อมูล DIPCHIP : ${dchk.message}`)
-                this.cizcardtab.showdipchipbtn = false
-                this.cizcardtab.cizForm.enable()
-                // this.cizcardtab.cizCardImage_string = ''
-                // this.cizcardtab.cizCardImage = `${environment.citizen_card_img_preload}`
-                // this.cizcardtab.cizForm.reset()
-                const returnCreateNoneconsent = await this.createquotationdopanoneconsent($event.uuid)
-                if (returnCreateNoneconsent.status) {
-                  // ==== ปลดล๊อค form เมื่อ dipchip สำเร็จ ====
+            }).subscribe({
+              next: async (value) => {
+                this.loadingService.hideLoader()
+                console.log(`flag success : ${JSON.stringify(value)}`)
+
+                // === set router id ===
+                if (value.number == 200) {
+                  this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
+
+                  // === status false (STATUS_CODE from dopa is null or 500 ) ===
+                  this.snackbarfail(`ไม่พบข้อมูล DIPCHIP : ${dchk.message}`)
+                  this.cizcardtab.showdipchipbtn = false
                   this.cizcardtab.cizForm.enable()
-  
-                  const queryParams: Params = { id: returnCreateNoneconsent.refId };
-  
-                  await this.router.navigate(
-                    [],
-                    {
-                      relativeTo: this.actRoute,
-                      queryParams: queryParams,
-                      queryParamsHandling: 'merge', // remove to replace all query params by provided
-                    }
-                  );
-                  // === add dopa status (11/11/2022) === 
-  
-                  this.quotationService.setstatusdopa(dchk.refId)
-  
-                  this.afteroninit();
-                } else {
-                  this.snackbarfail('สร้างรายการ quotation ไม่สำเร็จ (non-econsent)')
+                  // this.cizcardtab.cizCardImage_string = ''
+                  // this.cizcardtab.cizCardImage = `${environment.citizen_card_img_preload}`
+                  // this.cizcardtab.cizForm.reset()
+                  const returnCreateNoneconsent = await this.createquotationdopanoneconsent($event.uuid)
+                  if (returnCreateNoneconsent.status) {
+                    // ==== ปลดล๊อค form เมื่อ dipchip สำเร็จ ====
+                    this.cizcardtab.cizForm.enable()
+
+                    const queryParams: Params = { id: returnCreateNoneconsent.refId };
+
+                    await this.router.navigate(
+                      [],
+                      {
+                        relativeTo: this.actRoute,
+                        queryParams: queryParams,
+                        queryParamsHandling: 'merge', // remove to replace all query params by provided
+                      }
+                    );
+                    // === add dopa status (11/11/2022) === 
+
+                    this.quotationService.setstatusdopa(dchk.refId)
+
+                    this.afteroninit();
+                  } else {
+                    this.snackbarfail('สร้างรายการ quotation ไม่สำเร็จ (non-econsent)')
+                  }
                 }
+              }, error: (e) => {
+                this.loadingService.hideLoader()
+              }, complete: () => {
+                this.loadingService.hideLoader()
               }
-            }, error: (e) => {
-              this.loadingService.hideLoader()
-            }, complete: () => {  
-              this.loadingService.hideLoader()
-            }})
+            })
           }
         })
       }
@@ -1200,12 +1222,27 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       prov_code: this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_code.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_code.value : '',
       prov_name: this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value : ''
 
-      
+
     }
 
     const reqcreatecredit = await lastValueFrom(this.quotationService.MPLS_create_or_update_credit(reqcreatecreditdata))
 
     if (reqcreatecredit.status == true) {
+
+      // *** check type of image attach (new car or second hand car) ***
+      if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
+        this.secondhandcarverify = true
+        this.imageattachtab.showsecondhandcarimageattach = false
+      } else {
+        if (this.quotationResult$.value.data[0].quo_secondhand_car_verify !== 'Y') {
+          this.secondhandcarverify = false
+          this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
+        } else {
+          this.imageattachtab.txtrequireimagesecondhandcar = ''
+        }
+        this.imageattachtab.showsecondhandcarimageattach = true
+      }
+
       this.econsentbtnDisable = false
       this.cizcardtab.cizForm.markAsPristine();
       this.snackbarsuccess(`${reqcreatecredit.message}`)
@@ -1269,7 +1306,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       }
 
       if (app_no !== '' && app_no && currentDate) {
-      // if (app_no && currentDate) {
+        // if (app_no && currentDate) {
 
         const quotationid = this.actRoute.snapshot.queryParamMap.get('id') ?? ''
 
@@ -1466,6 +1503,13 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       this.imageattachtab.txtrequireimage = `*แนบไฟล์ "บัตรประชาชน" , "รูปหน้าลูกค้าพร้อมบัตรประชาชน" , "สำเนาบัตรประชาชนพร้อมลายเซ็นรับรองถูกต้อง"  และ "NCB Consent`
     } else {
       this.verifyimageattach = false
+    }
+  }
+
+  recieve_verifysecondhandcarimageattach($event: boolean) {
+    if ($event) {
+      this.secondhandcarverify = true
+      this.imageattachtab.txtrequireimagesecondhandcar = ``
     }
   }
 

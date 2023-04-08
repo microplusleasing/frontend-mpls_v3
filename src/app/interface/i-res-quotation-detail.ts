@@ -276,6 +276,7 @@ export interface IResQuotationDetailData {
     cd_reg_mile: number;
     cd_prov_code: string;
     cd_prov_name: string;
+    quo_secondhand_car_verify: string;
 
 }
 

@@ -7,7 +7,7 @@ import { IResMasterQuoatationStatus } from './../interface/i-res-master-quoatati
 import { IResMasterOccupation } from './../interface/i-res-master-occupation';
 import { IResPaymentValue } from './../interface/i-res-payment-value';
 import { IResMasterInsurer } from './../interface/i-res-master-insurer';
-import { IResMasterMrtaInsurance, IResMasterMrtaInsuranceData } from './../interface/i-res-master-mrta-insurance';
+import { IResMasterMrtaInsurance } from './../interface/i-res-master-mrta-insurance';
 import { IResMasterInsuranceOld } from '../interface/i-res-master-insurance-old';
 import { IResCoverageTotalLoss } from './../interface/i-res-coverage-total-loss';
 import { IResMaxLtv } from './../interface/i-res-max-ltv';
@@ -40,6 +40,7 @@ import { IResMasterInsurance } from '../interface/i-res-master-insurance';
 import { IResCalculateAgeDb } from '../interface/i-res-calculate-age-db';
 import { IResGetMasterBussiness } from '../interface/i-res-get-master-bussiness';
 import { IResSecondHandCarView } from '../interface/i-res-second-hand-car-view';
+import { IResImageTypeAttachMultiple, IResImageTypeAttachMultipleData } from '../interface/i-res-image-type-attach-multiple';
 
 
 
@@ -99,6 +100,12 @@ export class MasterDataService {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterImageType`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getImageTypeAttach`
     return this.http.get<IResImageTypeAttach>(url)
+  }
+
+  getImageTypeAttachMultiple(): Observable<IResImageTypeAttachMultiple> {
+    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterImageType`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getImageTypeAttachMultiple`
+    return this.http.get<IResImageTypeAttachMultiple>(url)
   }
 
   getTitle(): Observable<IResMasterTitle> {

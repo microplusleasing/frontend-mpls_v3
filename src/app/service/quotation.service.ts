@@ -43,6 +43,10 @@ import { IResGetWitnessEconsent } from '../interface/i-res-get-witness-econsent'
 import { IResStampFaceVerificationLog } from '../interface/i-res-stamp-face-verification-log';
 import { IResGenEconsentImage } from '../interface/i-res-gen-econsent-image';
 import { IReqGenEconsentImage } from '../interface/i-req-gen-econsent-image';
+import { IResCreateImageAttachMultiple } from '../interface/i-res-create-image-attach-multiple';
+import { IResImageAttachMultiple } from '../interface/i-res-image-attach-multiple';
+import { IResUpdateImageAttachMultiple } from '../interface/i-res-update-image-attach-multiple';
+import { IResUpdateFlagImageAttachMultiple } from '../interface/i-res-update-flag-image-attach-multiple';
 
 
 @Injectable({
@@ -293,15 +297,30 @@ export class QuotationService {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimagefilebyid?quotationid=${quotationid}`
     return this.http.get<IResImageAttach>(url)
   }
+  
+  MPLS_getimage_multiple_filebyid(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimage_multiple_filebyid?quotationid=${quotationid}`
+    return this.http.get<IResImageAttachMultiple>(url)
+  }
 
   MPLS_create_image_attach_file(fd: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_image_attach_file`
     return this.http.post<IResCreateImageAttach>(url, fd)
   }
 
+  MPLS_create_image_attach_file_multiple(fd: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_image_attach_file_multiple`
+    return this.http.post<IResCreateImageAttachMultiple>(url, fd)
+  }
+
   MPLS_update_image_attach_file(fd: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_update_image_attach_file`
     return this.http.post<IResUpdateImageAttach>(url, fd)
+  }
+
+  MPLS_update_image_attach_file_multiple(fd: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_update_image_attach_file_multiple`
+    return this.http.post<IResUpdateImageAttachMultiple>(url, fd)
   }
 
   MPLS_delete_image_attach_file(fd: FormData) {
@@ -312,6 +331,11 @@ export class QuotationService {
   MPLS_update_flag_image_attach_file(quotationid: string) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_update_flag_image_attach_file?quotationid=${quotationid}`
     return this.http.get<IResUpdateFlagImageAttach>(url)
+  }
+
+  MPLS_update_flag_image_attach_file_multiple(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_update_flag_image_attach_file_multiple?quotationid=${quotationid}`
+    return this.http.get<IResUpdateFlagImageAttachMultiple>(url)
   }
 
   MPLS_create_consent(fd: FormData) {

@@ -52,6 +52,7 @@ import { BackwardBarComponent } from './widget/backward-bar/backward-bar.compone
 import { CreateLivingNegoDialogComponent } from './widget/dialog/create-living-nego-dialog/create-living-nego-dialog.component';
 import { WaringEconsentDialogComponent } from './widget/dialog/waring-econsent-dialog/waring-econsent-dialog.component';
 import { SecondhandCarViewDialogComponent } from './widget/dialog/secondhand-car-view-dialog/secondhand-car-view-dialog.component';
+import { SecondhandCarAttachImageDialogComponent } from './widget/dialog/secondhand-car-attach-image-dialog/secondhand-car-attach-image-dialog.component';
 
 @NgModule({
   declarations: [
@@ -97,6 +98,7 @@ import { SecondhandCarViewDialogComponent } from './widget/dialog/secondhand-car
     CreateLivingNegoDialogComponent,
     WaringEconsentDialogComponent,
     SecondhandCarViewDialogComponent,
+    SecondhandCarAttachImageDialogComponent,
   ],
   imports: [
     BrowserModule,

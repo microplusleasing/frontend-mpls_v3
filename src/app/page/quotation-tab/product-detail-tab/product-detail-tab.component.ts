@@ -358,6 +358,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 this.bussinessList = res[0].data
                 this.productForm.controls.detailForm.controls.bussinessCode.valueChanges.subscribe((value) => {
 
+                  // *** set filterbrandlist (08/04/2023) ****
+                  this.filterDealerList = of(res[1].data)
+                  
                   if (recordExists) {
                     this.trigger_bussinesscode.emit(false)
                   }
@@ -778,7 +781,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.secondHandCarForm.controls.prov_name.setValue('', { emitEvent: false })
                   this.secondHandCarForm.controls.prov_code.setValue('', { emitEvent: false })
 
-                  
+
                   this.coverage = 0
                   this.factoryprice = 0
 

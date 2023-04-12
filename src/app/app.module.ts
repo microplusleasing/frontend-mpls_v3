@@ -53,6 +53,7 @@ import { CreateLivingNegoDialogComponent } from './widget/dialog/create-living-n
 import { WaringEconsentDialogComponent } from './widget/dialog/waring-econsent-dialog/waring-econsent-dialog.component';
 import { SecondhandCarViewDialogComponent } from './widget/dialog/secondhand-car-view-dialog/secondhand-car-view-dialog.component';
 import { SecondhandCarAttachImageDialogComponent } from './widget/dialog/secondhand-car-attach-image-dialog/secondhand-car-attach-image-dialog.component';
+import { ConfirmDeleteSecondhandCarImageAttachComponent } from './widget/dialog/confirm-delete-secondhand-car-image-attach/confirm-delete-secondhand-car-image-attach.component';
 
 @NgModule({
   declarations: [
@@ -99,6 +100,7 @@ import { SecondhandCarAttachImageDialogComponent } from './widget/dialog/secondh
     WaringEconsentDialogComponent,
     SecondhandCarViewDialogComponent,
     SecondhandCarAttachImageDialogComponent,
+    ConfirmDeleteSecondhandCarImageAttachComponent,
   ],
   imports: [
     BrowserModule,

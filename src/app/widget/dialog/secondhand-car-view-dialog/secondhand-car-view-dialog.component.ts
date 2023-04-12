@@ -153,6 +153,9 @@ export class SecondhandCarViewDialogComponent implements OnInit {
   }
 
   confirmCarSeclect() {
+
+    // *** add check secondhand car select on this step *** (12/04/2023)
+
     if(this.selectedCarDetail.contract_no) {
       // *** parse data back to product page in quotation mpls ****
       this.dialogRef.close(this.selectedCarDetail)

@@ -47,6 +47,10 @@ import { IResCreateImageAttachMultiple } from '../interface/i-res-create-image-a
 import { IResImageAttachMultiple } from '../interface/i-res-image-attach-multiple';
 import { IResUpdateImageAttachMultiple } from '../interface/i-res-update-image-attach-multiple';
 import { IResUpdateFlagImageAttachMultiple } from '../interface/i-res-update-flag-image-attach-multiple';
+import { IResCheckSecondhandCarImageAttach } from '../interface/i-res-check-secondhand-car-image-attach';
+import { IResClearSecondhandCarImageAttach } from '../interface/i-res-clear-secondhand-car-image-attach';
+import { IImageAttachUploadMultipleList } from '../interface/i-image-attach-upload-multiple-list';
+import { IResCreateImageAttachMultipleList } from '../interface/i-res-create-image-attach-multiple-list';
 
 
 @Injectable({
@@ -273,10 +277,20 @@ export class QuotationService {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_validation_otp_econsent`
     return this.http.post<IResValidastionEconsent>(url, formdata)
   }
-  
+
   MPLS_gen_econsent_image(data: IReqGenEconsentImage) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_gen_econsent_image`
     return this.http.post<IResGenEconsentImage>(url, data)
+  }
+
+  MPLS_check_secondhand_car_image_attach(quotationid: string, contract_ref: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_check_secondhand_car_image_attach`
+    return this.http.post<IResCheckSecondhandCarImageAttach>(url, { quotationid: quotationid, contract_ref: contract_ref })
+  }
+
+  MPLS_clear_secondhand_car_image_attach(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_clear_secondhand_car_image_attach`
+    return this.http.post<IResClearSecondhandCarImageAttach>(url, { quotationid: quotationid })
   }
 
   MPLS_create_or_update_credit(data: IReqCreateCredit) {
@@ -297,7 +311,7 @@ export class QuotationService {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimagefilebyid?quotationid=${quotationid}`
     return this.http.get<IResImageAttach>(url)
   }
-  
+
   MPLS_getimage_multiple_filebyid(quotationid: string) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimage_multiple_filebyid?quotationid=${quotationid}`
     return this.http.get<IResImageAttachMultiple>(url)
@@ -310,8 +324,19 @@ export class QuotationService {
 
   MPLS_create_image_attach_file_multiple(fd: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_image_attach_file_multiple`
-    return this.http.post<IResCreateImageAttachMultiple>(url, fd)
+    return this.
+      http.post<IResCreateImageAttachMultiple>(url, fd)
   }
+  
+  MPLS_create_image_attach_file_multiple_list(fd: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_image_attach_file_multiple_list`
+    return this.http.post<IResCreateImageAttachMultipleList>(url, fd)
+  }
+
+  // MPLS_create_image_attach_file_multiple_list(data: IImageAttachUploadMultipleList[]) {
+  //   const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_image_attach_file_multiple_list`
+  //   return this.http.post<IResCreateImageAttachMultiple>(url, data)
+  // }
 
   MPLS_update_image_attach_file(fd: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_update_image_attach_file`

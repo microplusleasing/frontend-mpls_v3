@@ -4,6 +4,7 @@ export interface IResCheckSecondhandCarImageAttach {
     valid: boolean
     contract_ref_change: boolean
     message: string
+    newcase: boolean
   }
   
   export interface IResCheckSecondhandCarImageAttachData {

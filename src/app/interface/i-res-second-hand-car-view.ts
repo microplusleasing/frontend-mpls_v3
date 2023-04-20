@@ -30,5 +30,6 @@ export interface IResSecondHandCarView {
     sl_code: string
     auction_code: string
     model_year: string
+    moto_year: number
   }
   

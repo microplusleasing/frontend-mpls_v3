@@ -127,7 +127,8 @@ export class SecondhandCarAttachImageDialogComponent implements OnInit {
 
     let itemData = JSON.stringify({
       quotationid: this.data.quotationid,
-      contract_ref: this.data.contract_ref
+      contract_ref: this.data.contract_ref,
+      bussiness_code: this.data.bussiness_code
     })
     let fd = new FormData()
     fd.append('id', itemData)

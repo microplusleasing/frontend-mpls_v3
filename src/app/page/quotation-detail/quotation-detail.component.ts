@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, ErrorHandler, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, catchError, forkJoin, lastValueFrom, map, Observable, of, tap, throwError } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { StepperOrientation, StepperSelectionEvent, STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
@@ -40,6 +40,7 @@ import { IDialogFinishQuotation } from 'src/app/interface/i-dialog-finish-quotat
 import { IUserTokenData } from 'src/app/interface/i-user-token';
 import { SecondhandCarAttachImageDialogComponent } from 'src/app/widget/dialog/secondhand-car-attach-image-dialog/secondhand-car-attach-image-dialog.component';
 import { ConfirmDeleteSecondhandCarImageAttachComponent } from 'src/app/widget/dialog/confirm-delete-secondhand-car-image-attach/confirm-delete-secondhand-car-image-attach.component';
+import { IReqCheckMotoYear } from 'src/app/interface/i-req-check-moto-year';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -1223,14 +1224,37 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       contract_ref: this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value : '',
       reg_mile: this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_mile.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_mile.value : null,
       prov_code: this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_code.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_code.value : '',
-      prov_name: this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value : ''
-
-
+      prov_name: this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value : '',
+      moto_year: this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value : null
     }
+
+    // *** declare params to check moto_year valid ***
 
     if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '002' || this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '003') {
 
       // *** secondhand car ***
+
+      // *** check moto year valid (20/04/2023) ***
+      const datasendcheckmoto: IReqCheckMotoYear = {
+        moto_year: this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value : null,
+        bussines_code: this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value ? this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value : '',
+        product_code: '01', // fix
+        brand_code: this.productdetailtab.productForm.controls.detailForm.controls.carBrandField.value ?? '',
+        model_code: this.productdetailtab.productForm.controls.detailForm.controls.carModelField.value ?? '',
+        sl_code: this.productdetailtab.productForm.controls.detailForm.controls.dealerCode.value ?? '',
+      }
+
+      const checkmotoyearvalid = await lastValueFrom(
+        this.masterDataService.MPLS_check_moto_year(datasendcheckmoto).pipe(
+          catchError((err: any) => {
+            return throwError(() => {
+              this.loadingService.hideLoader()
+              this.snackbarfail(`${err.message ? err.message : 'No error msg'}`)
+            })
+          })
+        )
+      )
+
       const checksecondhandcarimgattach = await lastValueFrom(
         this.quotationService.MPLS_check_secondhand_car_image_attach(this.quoid, this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value).pipe(
           catchError((err: any) => {
@@ -1242,73 +1266,50 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         )
       )
 
-      if (checksecondhandcarimgattach.status) {
-        // *** check valid status ***
-        if (checksecondhandcarimgattach.valid) {
+      if (checkmotoyearvalid.status == 200) {
 
-          // *** update or create credit (secondhand car) ****
-          const reqcreatecredit = await lastValueFrom(
-            this.quotationService.MPLS_create_or_update_credit(reqcreatecreditdata).pipe(
-              catchError((err: any) => {
-                return throwError(() => {
-                  this.loadingService.hideLoader()
-                  this.snackbarfail(`${err.message ? err.message : 'No error msg'}`)
-                })
-              })
-            )
-          );
-          if (reqcreatecredit.status == true) {
-            this.loadingService.hideLoader()
-            if (this.quotationResult$.value.data[0].quo_secondhand_car_verify !== 'Y') {
-              this.secondhandcarverify = false
-              this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
-            } else {
-              this.imageattachtab.txtrequireimagesecondhandcar = ''
-            }
-            this.imageattachtab.showsecondhandcarimageattach = true
+        if (checkmotoyearvalid.data.result = 'Y') {
+          // *** valid moto year ***
+          if (checksecondhandcarimgattach.status) {
+            // *** check valid status ***
+            if (checksecondhandcarimgattach.valid) {
+
+              // *** update or create credit (secondhand car) ****
+              const reqcreatecredit = await lastValueFrom(
+                this.quotationService.MPLS_create_or_update_credit(reqcreatecreditdata).pipe(
+                  catchError((err: any) => {
+                    return throwError(() => {
+                      this.loadingService.hideLoader()
+                      this.snackbarfail(`${err.message ? err.message : 'No error msg'}`)
+                    })
+                  })
+                )
+              );
+
+              if (reqcreatecredit.status == true) {
+                this.loadingService.hideLoader()
+                if (this.quotationResult$.value.data[0].quo_secondhand_car_verify !== 'Y') {
+                  this.secondhandcarverify = false
+                  this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
+                } else {
+                  this.imageattachtab.txtrequireimagesecondhandcar = ''
+                }
+                this.imageattachtab.showsecondhandcarimageattach = true
 
 
-            this.econsentbtnDisable = false
-            this.cizcardtab.cizForm.markAsPristine();
-            this.snackbarsuccess(`${reqcreatecredit.message}`)
-          } else {
-            this.loadingService.hideLoader()
-            this.snackbarfail(`${reqcreatecredit.message}`)
-          }
-        } else {
-          // *** check same contract ref ***
-
-          if (!checksecondhandcarimgattach.contract_ref_change) {
-            // *** open dialog secondhand car image attach ***
-            this.loadingService.hideLoader()
-            this.dialog.open(SecondhandCarAttachImageDialogComponent, {
-              width: `100%`,
-              height: `90%`,
-              data: {
-                quotationid: this.quoid,
-                contract_ref: this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value
-              }
-            }).afterClosed().subscribe((res) => {
-              // handle data 
-              if (res) {
-                this.imageattachtab.uploadedImagesMultiple = []
-                this.imageattachtab.countload = 0
-                this.secondhandcarverify = true
-                this.imageattachtab.showsecondhandcarimageattach = false
-                this.imageattachtab.txtrequireimagesecondhandcar = ''
-                this.snackbarsuccess('ทำรายการสำเร็จ')
+                this.econsentbtnDisable = false
+                this.cizcardtab.cizForm.markAsPristine();
+                this.snackbarsuccess(`${reqcreatecredit.message}`)
               } else {
-                // == do nothing ==
+                this.loadingService.hideLoader()
+                this.snackbarfail(`${reqcreatecredit.message}`)
               }
-            })
-          } else {
-            // *** clear recent image attach when contract reg change ***
-            this.loadingService.hideLoader()
-            this.dialog.open(ConfirmDeleteSecondhandCarImageAttachComponent).afterClosed().subscribe(async (res) => {
-              if (res) {
-                this.loadingService.showLoader()
-                const deleterecentimageattach = await lastValueFrom(
-                  this.quotationService.MPLS_clear_secondhand_car_image_attach(this.quoid).pipe(
+            } else {
+              // *** check is newcase ***
+              if (checksecondhandcarimgattach.newcase) {
+
+                const reqcreatecredit = await lastValueFrom(
+                  this.quotationService.MPLS_create_or_update_credit(reqcreatecreditdata).pipe(
                     catchError((err: any) => {
                       return throwError(() => {
                         this.loadingService.hideLoader()
@@ -1316,52 +1317,264 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                       })
                     })
                   )
-                )
+                );
 
-                if (deleterecentimageattach.status) {
-                  // *** delete recent image attach success ***
-                  // *** update flag secondhand car image attach (no verify) ***
+                if (reqcreatecredit.status == true) {
+                  this.loadingService.hideLoader()
+                  if (this.quotationResult$.value.data[0].quo_secondhand_car_verify !== 'Y') {
+                    // this.secondhandcarverify = false
+                    // this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
+                    this.dialog.open(SecondhandCarAttachImageDialogComponent, {
+                      width: `100%`,
+                      height: `90%`,
+                      data: {
+                        quotationid: this.quoid,
+                        contract_ref: this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value,
+                        bussiness_code: this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value ?? ''
+                      }
+                    })
+                  } else {
+                    this.imageattachtab.txtrequireimagesecondhandcar = ''
+                  }
+                  this.imageattachtab.showsecondhandcarimageattach = true
+
+
+                  this.econsentbtnDisable = false
+                  this.cizcardtab.cizForm.markAsPristine();
+                  this.snackbarsuccess(`${reqcreatecredit.message}`)
+                } else {
+                  this.loadingService.hideLoader()
+                  this.snackbarfail(`${reqcreatecredit.message}`)
+                }
+
+
+              } else {
+
+                // *** check same contract ref ***
+
+                if (!checksecondhandcarimgattach.contract_ref_change) {
                   // *** open dialog secondhand car image attach ***
                   this.loadingService.hideLoader()
-
-                  this.secondhandcarverify = false
-                  this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
-
                   this.dialog.open(SecondhandCarAttachImageDialogComponent, {
                     width: `100%`,
                     height: `90%`,
                     data: {
                       quotationid: this.quoid,
-                      contract_ref: this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value
+                      contract_ref: this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value,
+                      bussiness_code: this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value ?? ''
                     }
-                  }).afterClosed().subscribe((res) => {
+                  }).afterClosed().subscribe(async (res) => {
                     // handle data 
                     if (res) {
-                      this.imageattachtab.uploadedImagesMultiple = []
-                      this.imageattachtab.countload = 0
-                      this.secondhandcarverify = true
-                      this.imageattachtab.showsecondhandcarimageattach = false
-                      this.imageattachtab.txtrequireimagesecondhandcar = ''
-                      this.snackbarsuccess('ทำรายการสำเร็จ')
+                      const reqcreatecredit = await lastValueFrom(
+                        this.quotationService.MPLS_create_or_update_credit(reqcreatecreditdata).pipe(
+                          catchError((err: any) => {
+                            return throwError(() => {
+                              this.loadingService.hideLoader()
+                              this.snackbarfail(`${err.message ? err.message : 'No error msg'}`)
+                            })
+                          })
+                        )
+                      );
+
+                      this.loadingService.hideLoader()
+                      if (reqcreatecredit.status == true) {
+
+                        // *** check type of image attach (new car or second hand car) ***
+                        if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
+                          this.secondhandcarverify = true
+                          this.imageattachtab.showsecondhandcarimageattach = false
+                        } else {
+                          this.imageattachtab.uploadedImagesMultiple = []
+                          this.imageattachtab.countload = 0
+                          this.secondhandcarverify = true
+                          this.imageattachtab.showsecondhandcarimageattach = false
+                          this.imageattachtab.txtrequireimagesecondhandcar = ''
+                        }
+
+                        this.econsentbtnDisable = false
+                        this.cizcardtab.cizForm.markAsPristine();
+                        this.snackbarsuccess(`${reqcreatecredit.message}`)
+                      } else {
+                        this.snackbarfail(`${reqcreatecredit.message}`)
+                      }
+
+
                     } else {
                       // == do nothing ==
                     }
                   })
                 } else {
+                  // *** clear recent image attach when contract reg change ***
                   this.loadingService.hideLoader()
-                  this.snackbarfail(`${deleterecentimageattach.message ? deleterecentimageattach.message : 'No return msg'}`)
-                }
-              } else {
-                // === do nothing ===
+                  this.dialog.open(ConfirmDeleteSecondhandCarImageAttachComponent).afterClosed().subscribe(async (res) => {
+                    if (res) {
+                      this.loadingService.showLoader()
 
-              }
-            })
+                      // *** delete recent image attach success ***
+                      // *** update flag secondhand car image attach (no verify) ***
+                      // *** open dialog secondhand car image attach ***
+                      this.loadingService.hideLoader()
+
+                      this.secondhandcarverify = false
+                      this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
+
+                      this.dialog.open(SecondhandCarAttachImageDialogComponent, {
+                        width: `100%`,
+                        height: `90%`,
+                        data: {
+                          quotationid: this.quoid,
+                          contract_ref: this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value,
+                          bussiness_code: this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value ?? ''
+                        }
+                      }).afterClosed().subscribe(async (res) => {
+                        // handle data 
+                        if (res) {
+                          const reqcreatecredit = await lastValueFrom(
+                            this.quotationService.MPLS_create_or_update_credit(reqcreatecreditdata).pipe(
+                              catchError((err: any) => {
+                                return throwError(() => {
+                                  this.loadingService.hideLoader()
+                                  this.snackbarfail(`${err.message ? err.message : 'No error msg'}`)
+                                })
+                              })
+                            )
+                          );
+
+                          this.loadingService.hideLoader()
+                          if (reqcreatecredit.status == true) {
+
+                            // *** check type of image attach (new car or second hand car) ***
+                            if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
+                              this.secondhandcarverify = true
+                              this.imageattachtab.showsecondhandcarimageattach = false
+                            } else {
+                              this.imageattachtab.uploadedImagesMultiple = []
+                              this.imageattachtab.countload = 0
+                              this.secondhandcarverify = true
+                              this.imageattachtab.showsecondhandcarimageattach = false
+                              this.imageattachtab.txtrequireimagesecondhandcar = ''
+                            }
+
+                            this.econsentbtnDisable = false
+                            this.cizcardtab.cizForm.markAsPristine();
+                            this.snackbarsuccess(`${reqcreatecredit.message}`)
+                          } else {
+                            this.snackbarfail(`${reqcreatecredit.message}`)
+                          }
+
+
+                        } else {
+                          // == do nothing ==
+                        }
+                      })
+
+                    } else {
+                      // === do nothing ===
+
+                    }
+                  })
+                }
+              } // end checksecondhandcarimgattach.newcase = false 
+            } // end checksecondhandcarimgattach.valid = false
+          } else {
+            // *** fail ***
+            this.loadingService.hideLoader()
+            this.snackbarfail(`${checksecondhandcarimgattach.message}`)
           }
+        } else {
+          // *** non valid moto year (at now more year thand minimum year parameter) ****
+          this.dialog.open(MainDialogComponent, {
+            data: {
+              header: `อายุรถเกินกำหนด`,
+              message: `วันที่จดจะเบียนเกินกำหนดไม่สามารถทำรายการได้`,
+              button_name: `ปิด`
+            }
+          }).afterClosed().subscribe((res_dialog_close) => {
+
+            // *** handle clear data on 2 condition (bussiness_code == '002' or bussiness_code == '003') ***
+
+            switch (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value) {
+              case '002':
+                this.productdetailtab.detailForm.controls.carBrandNameField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.carColorField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.carModelField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.carModelNameField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.chassisNoField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.downPaymentField.setValue(null, { emitEvent: false });
+                this.productdetailtab.detailForm.controls.engineNoField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false });
+                this.productdetailtab.detailForm.controls.insuranceCodeField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.insuranceNameField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.insurancePlanPriceField.setValue(null, { emitEvent: false });
+                this.productdetailtab.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false });
+                this.productdetailtab.detailForm.controls.insurerCodeField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.insurerNameField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.interestRateField.setValue(null, { emitEvent: false });
+                this.productdetailtab.detailForm.controls.isincludeloanamount.setValue(null, { emitEvent: false });
+                this.productdetailtab.detailForm.controls.loanAmountField.setValue(null, { emitEvent: false });
+                this.productdetailtab.detailForm.controls.maxltvField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false });
+                this.productdetailtab.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false });
+                this.productdetailtab.detailForm.controls.priceincludevatField.setValue(null, { emitEvent: false });
+                this.productdetailtab.detailForm.controls.productValueField.setValue(null, { emitEvent: false });
+                this.productdetailtab.detailForm.controls.runningchassisNoField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.runningengineNoField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.sizeModelField.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.value1.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.value2.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.value3.setValue('', { emitEvent: false });
+                this.productdetailtab.detailForm.controls.paymentValueField.setValue(null)
+                this.productdetailtab.showpaymentvalue$.next(false)
+
+                this.productdetailtab.secondHandCarForm.controls.model_year.setValue('', { emitEvent: false })
+                this.productdetailtab.secondHandCarForm.controls.cc.setValue(null, { emitEvent: false })
+                this.productdetailtab.secondHandCarForm.controls.reg_no.setValue('', { emitEvent: false })
+                this.productdetailtab.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false })
+                this.productdetailtab.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false })
+                this.productdetailtab.secondHandCarForm.controls.reg_mile.setValue(null, { emitEvent: false })
+                this.productdetailtab.secondHandCarForm.controls.prov_name.setValue('', { emitEvent: false })
+                this.productdetailtab.secondHandCarForm.controls.prov_code.setValue('', { emitEvent: false })
+                this.productdetailtab.secondHandCarForm.controls.model_year.setValue(null, { emitEvent: false })
+
+
+                this.productdetailtab.showdealerfield = true
+                this.productdetailtab.showdealerfield = true
+                this.productdetailtab.showgeneralcarinfovisible = false
+                // this.showpaymentvalue$.next(false)
+
+                this.productdetailtab.lockbtncalculate$.next(true)
+                this.productdetailtab.productForm.controls.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false })
+                this.productdetailtab.paymentvalue$.next(0);
+                this.productdetailtab.out_stand = 0
+                this.productdetailtab.showpaymentvalue$.next(false)
+
+                // *** set Require to some field of second hand car (MPLS) ***
+                this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(Validators.required)
+                this.productdetailtab.productForm.controls.secondHandCarForm.controls.model_year.setValidators(Validators.required)
+                this.productdetailtab.productForm.controls.secondHandCarForm.controls.cc.setValidators(Validators.required)
+                this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_no.setValidators(Validators.required)
+                this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_date.setValidators(Validators.required)
+                this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.setValidators(Validators.required)
+                this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(Validators.required)
+                this.productdetailtab.productForm.controls.secondHandCarForm.updateValueAndValidity()
+
+                break;
+
+              case '003':
+                this.productdetailtab.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false })
+                this.productdetailtab.secondHandCarForm.controls.model_year.setValue(null, { emitEvent: false })
+                break;
+              default:
+                break;
+            }
+          })
         }
+
       } else {
-        // *** fail ***
-        this.loadingService.hideLoader()
-        this.snackbarfail(`${checksecondhandcarimgattach.message}`)
+        // *** error to check moto year (return status !== 200) ***
+        this.loadingService.hideLoader();
+        this.snackbarfail(`ไม่สามารถคำนวณหาค่าปีจดทะเบียนได้ : ${checkmotoyearvalid.message ? checkmotoyearvalid.message : 'No return msg'}`)
       }
 
     } else {

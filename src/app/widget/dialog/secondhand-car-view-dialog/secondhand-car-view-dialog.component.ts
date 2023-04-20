@@ -76,17 +76,21 @@ export class SecondhandCarViewDialogComponent implements OnInit {
 
   onSearchSecondHandCar() {
     this.loadingService.showLoader()
+    this.dataSource.data = []
+    this.selectedRowIndex = -1
     this.confirmbtn = false
+
     this.masterService.MPLS_getsecondhandcarbyreg(
       this.secondhandcarForm.controls.car_reg_no.value ? this.secondhandcarForm.controls.car_reg_no.value : '',
       this.secondhandcarForm.controls.dealer_code.value ? this.secondhandcarForm.controls.dealer_code.value : '',
-      1
+      1,
+      this.data.quo_key_app_id ? this.data.quo_key_app_id : ''
     ).subscribe({
       next: (res_second_hand_car) => {
         this.loadingService.hideLoader()
         if (res_second_hand_car.data.length !== 0) {
-          this.dataListTemp = res_second_hand_car
 
+          this.dataListTemp = res_second_hand_car
           this.dataList = this.dataListTemp
           this.dataSource.data = (res_second_hand_car.data) as IResSecondHandCarViewData[]
           this.paginator.pageIndex = 0
@@ -120,16 +124,17 @@ export class SecondhandCarViewDialogComponent implements OnInit {
     this.masterService.MPLS_getsecondhandcarbyreg(
       car_reg_value,
       dealer_code_value,
-      page
-    ).subscribe({
-      next: (result) => {
+      page,
+      this.data.quo_key_app_id ? this.data.quo_key_app_id : ''
+    ).pipe(
+      map((result) => {
         if (result.data.length !== 0) {
 
           this.dataListTemp = result
           // === add index to client page === 
           this.dataList = this.dataListTemp
           this.dataSource.data = (result.data) as IResSecondHandCarViewData[]
-          this.paginator.pageIndex = this.pageno - 1
+          this.paginator.pageIndex = page - 1
           this.pageLength = this.dataListTemp.rowcount
           this.pageSize = this.dataListTemp.pagesize
         } else {
@@ -137,12 +142,18 @@ export class SecondhandCarViewDialogComponent implements OnInit {
           this.dataSource.data = []
           this.textshow = 'ไม่พบเจอรายการตามเงื่อนไขที่กำหนด'
         }
-      }, error: (e) => {
-        // === handle error ===
-        this.dataSource.data = []
-        this.textshow = 'ไม่พบเจอรายการตามเงื่อนไขที่กำหนด'
-      }
-    })
+      })).subscribe({
+        next: (result) => {
+          this.loadingService.hideLoader()
+        }, error: (e) => {
+          // === handle error ===
+          this.loadingService.hideLoader()
+          this.dataSource.data = []
+          this.textshow = 'ไม่พบเจอรายการตามเงื่อนไขที่กำหนด'
+        }, complete: () => {
+          this.loadingService.hideLoader()
+        }
+      })
   }
 
   selectRows(row: IResSecondHandCarViewData) {
@@ -156,7 +167,7 @@ export class SecondhandCarViewDialogComponent implements OnInit {
 
     // *** add check secondhand car select on this step *** (12/04/2023)
 
-    if(this.selectedCarDetail.contract_no) {
+    if (this.selectedCarDetail.contract_no) {
       // *** parse data back to product page in quotation mpls ****
       this.dialogRef.close(this.selectedCarDetail)
     } else {

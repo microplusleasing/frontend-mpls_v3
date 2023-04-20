@@ -41,6 +41,9 @@ import { IResCalculateAgeDb } from '../interface/i-res-calculate-age-db';
 import { IResGetMasterBussiness } from '../interface/i-res-get-master-bussiness';
 import { IResSecondHandCarView } from '../interface/i-res-second-hand-car-view';
 import { IResImageTypeAttachMultiple, IResImageTypeAttachMultipleData } from '../interface/i-res-image-type-attach-multiple';
+import { IResCalculateMotoYear } from '../interface/i-res-calculate-moto-year';
+import { IResCheckMotoYear } from '../interface/i-res-check-moto-year';
+import { IReqCheckMotoYear } from '../interface/i-req-check-moto-year';
 
 
 
@@ -126,9 +129,9 @@ export class MasterDataService {
     return this.http.get<IResMasterProvince>(url)
   }
 
-  getMaxLtv(factory_pirce: number, bussi_code: string, pro_code: string, brand_code: string, model_code: string, dl_code: String): Observable<IResMaxLtv> {
+  getMaxLtv(factory_pirce: number, bussi_code: string, pro_code: string, brand_code: string, model_code: string, dl_code: String, moto_year: number): Observable<IResMaxLtv> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}'`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}&moto_year=${moto_year}`
     return this.http.get<IResMaxLtv>(url)
   }
 
@@ -275,14 +278,25 @@ export class MasterDataService {
     return this.http.get<IResMasterModel>(url)
   }
 
-  MPLS_getsecondhandcarbyreg(p_reg_no: string, p_sl_code: string, page_no: number): Observable<IResSecondHandCarView> {
+  MPLS_getsecondhandcarbyreg(p_reg_no: string, p_sl_code: string, page_no: number, quotationid: string): Observable<IResSecondHandCarView> {
     const data_send = {
       p_reg_no: p_reg_no,
       p_sl_code: p_sl_code,
-      page_no: page_no ? page_no : 1
+      page_no: page_no ? page_no : 1,
+      quotationid: quotationid
     }
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getsecondhandcarbyreg`
     return this.http.post<IResSecondHandCarView>(url, data_send)
+  }
+
+  MPLS_calculate_moto_year(reg_date: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_calculate_moto_year`
+    return this.http.post<IResCalculateMotoYear>(url, { reg_date: reg_date })
+  }
+
+  MPLS_check_moto_year(datasend: IReqCheckMotoYear) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_check_moto_year`
+    return this.http.post<IResCheckMotoYear>(url, datasend)
   }
 
 

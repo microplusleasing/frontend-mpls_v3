@@ -92,12 +92,13 @@ export interface IResQuotationDetailData {
     // new max ltv field of credit (24/08/2022)
     cd_max_ltv: number;
     // new field form total loss (29/08/2022)
-    cd_coverage_total_loss: number,
-    cd_price_include_vat: number,
-    cd_engine_number: string,
-    cd_chassis_number: string,
-    cd_engine_no_running: string,
-    cd_chassis_no_running: string,
+    cd_coverage_total_loss: number;
+    cd_price_include_vat: number;
+    cd_engine_number: string;
+    cd_chassis_number: string;
+    cd_engine_no_running: string;
+    cd_chassis_no_running: string;
+    cd_moto_year: number;
     cr_app_key_id: string;
     cr_main_career_name?: string;
     cr_main_career_code?: string;

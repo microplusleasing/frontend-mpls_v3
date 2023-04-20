@@ -39,6 +39,7 @@ export interface IReqCreateCredit {
     reg_mile: number | null;
     prov_code: string;
     prov_name: string;
+    moto_year: number | null;
 }
 
 

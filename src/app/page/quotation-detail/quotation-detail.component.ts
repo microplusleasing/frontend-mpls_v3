@@ -38,6 +38,7 @@ import { ImageService } from 'src/app/service/image.service';
 import { FinishQuotationDialogComponent } from 'src/app/widget/dialog/finish-quotation-dialog/finish-quotation-dialog.component';
 import { IDialogFinishQuotation } from 'src/app/interface/i-dialog-finish-quotation';
 import { IUserTokenData } from 'src/app/interface/i-user-token';
+import { EConsentImageDialogComponent } from 'src/app/widget/dialog/e-consent-image-dialog/e-consent-image-dialog.component';
 import { SecondhandCarAttachImageDialogComponent } from 'src/app/widget/dialog/secondhand-car-attach-image-dialog/secondhand-car-attach-image-dialog.component';
 import { ConfirmDeleteSecondhandCarImageAttachComponent } from 'src/app/widget/dialog/confirm-delete-secondhand-car-image-attach/confirm-delete-secondhand-car-image-attach.component';
 import { IReqCheckMotoYear } from 'src/app/interface/i-req-check-moto-year';
@@ -246,6 +247,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                       this.verifyeconsent_txt = 'ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ตเรียบร้อย'
                     } else {
                       this.verifyeconsent_txt = 'ไม่ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ต'
+                    }
+
+                    if (quoitem.otp_consent_verify == 'Y') {
+                      this.productdetailtab.showeconsentimagebutton = true
                     }
                   }
 
@@ -859,6 +864,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
   async onclickSavecitizendata() {
 
+
     // บันทึกค่าข้อมูลที่วไปเกี่ยวกับลูกค้า 
     // (MPLS_QUOTATION, MPSL_LIVING_PLACE, MPLS_HOUSE_REGIS_PLACE, MPLS_CONTACT_PLACE, MPLS_WORK_PLACE)
 
@@ -967,6 +973,31 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       this.loadingService.hideLoader()
       console.log(`error create e-consent quotation : ${e.message}`)
     }
+
+  }
+
+  async onClickEconsentImageView() {
+    // *** show image e-consent by id ***
+    // *** requirent on 20/04/2023 ****
+    this.dialog.open(EConsentImageDialogComponent, {
+      panelClass: 'custom-dialog-header',
+      width: `80%`,
+      height: `90%`,
+      data: {
+        quotationid: this.quoid
+      }
+    }).afterClosed().subscribe((res) => {
+      // do nothing 
+      if (res) {
+        this.dialog.open(MainDialogComponent, {
+          data: {
+            header: `ไม่พบรูปภาพ`,
+            message: `ไม่พบรายการเอกสาร E-consent ภายใตรายการนี้`,
+            button_name: `ปิด`
+          }
+        })
+      }
+    })
 
   }
 
@@ -1712,6 +1743,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             if (reseconsentdialog.data == 'success') {
 
               this.snackbarsuccess('ทำรายการสำเร็จ')
+              this.productdetailtab.showeconsentimagebutton = true
               this.productdetailtab.productForm.controls.consentVerify.setValue(true)
               this.verifyeconsent = true
               // === set image attach valid (econsent non require image) === 

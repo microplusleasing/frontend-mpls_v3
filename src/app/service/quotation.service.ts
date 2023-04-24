@@ -43,6 +43,7 @@ import { IResGetWitnessEconsent } from '../interface/i-res-get-witness-econsent'
 import { IResStampFaceVerificationLog } from '../interface/i-res-stamp-face-verification-log';
 import { IResGenEconsentImage } from '../interface/i-res-gen-econsent-image';
 import { IReqGenEconsentImage } from '../interface/i-req-gen-econsent-image';
+import { IResGeteconsentimagebyid } from '../interface/i-res-geteconsentimagebyid';
 import { IResCreateImageAttachMultiple } from '../interface/i-res-create-image-attach-multiple';
 import { IResImageAttachMultiple } from '../interface/i-res-image-attach-multiple';
 import { IResUpdateImageAttachMultiple } from '../interface/i-res-update-image-attach-multiple';
@@ -371,6 +372,11 @@ export class QuotationService {
   MPLS_create_send_car_deliver_and_loyalty_consent(formData: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_send_car_deliver_and_loyalty_consent`
     return this.http.post<IResCreateSendCarAndLoyaltyConsent>(url, formData)
+  }
+
+  MPLS_geteconsentimagebyid(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_geteconsentimagebyid`
+    return this.http.post<IResGeteconsentimagebyid>(url, { quotationid: quotationid })
   }
 
   MPLS_getimagetocompareiapp(quotationid: string) {

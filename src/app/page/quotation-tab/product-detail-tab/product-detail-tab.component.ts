@@ -194,6 +194,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   // === show chasis and engine (29/08/2022) === 
   showchassisandengine: boolean = false
 
+
+  // === show econsent image button (20/04/2023) ===
+  showeconsentimagebutton: boolean = false
+
   // === variable (out_stand) (22/09/2022) ===
   out_stand: number = 0
 
@@ -1502,7 +1506,16 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     qdealercode,
                     qmotoyear
                   ))
+                  // this.maxltvCurrent = resultMaxLtv.data[0].maxltv
+
+                  console.log(`this is max ltv value : ${resultMaxLtv.data[0].maxltv}`)
+                  const maxlvtnumber = (resultMaxLtv.data[0].maxltv ?? 0).toString();
+                  const maxlvtsetFormat = this.numberWithCommas(resultMaxLtv.data[0].maxltv)
+                  const maxlvttext = `(สูงสุด ${maxlvtsetFormat} บาท)`
+                  this.maxltvValue$ = of(resultMaxLtv.data[0].maxltv)
+                  this.maxlvtmessage$ = of(maxlvttext)
                   this.maxltvCurrent = resultMaxLtv.data[0].maxltv
+
                   // === set max ltv field (29/08/2022) ===
                   this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
 

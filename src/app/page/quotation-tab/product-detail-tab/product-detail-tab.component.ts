@@ -1160,32 +1160,33 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
               // *** moto_year (19/04/2023) *** 
               // *** if (bussiness_code == '002' recieve this value from getsecondcar api , if (bussiness_code == '003' get this value from calcualte year from select reg_date field)) ***
-              this.productForm.controls.secondHandCarForm.controls.moto_year.valueChanges.subscribe(async (res) => {
+              this.productForm.controls.secondHandCarForm.controls.moto_year.valueChanges.subscribe(async (res_moto_year) => {
 
 
                 // *** calculate max ltv trigger when second hand car bussiness_code = '003' (require moto_year) ***
 
+                if (this.productForm.controls.detailForm.controls.bussinessCode.value == `003`) {
+                  const resultMaxLtv = await lastValueFrom(this.masterDataService.getMaxLtv(
+                    this.valuepricetemp,
+                    this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
+                    '01',
+                    this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
+                    this.selectModelCodeValueTemp,
+                    this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
+                    this.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : 0
+                  ))
 
+                  console.log(`this is max ltv value : ${resultMaxLtv.data[0].maxltv}`)
+                  const maxlvtsetFormat = this.numberWithCommas(resultMaxLtv.data[0].maxltv)
+                  const maxlvttext = `(สูงสุด ${maxlvtsetFormat} บาท)`
+                  this.maxltvValue$ = of(resultMaxLtv.data[0].maxltv)
+                  this.maxlvtmessage$ = of(maxlvttext)
+                  this.maxltvCurrent = resultMaxLtv.data[0].maxltv
 
-                const resultMaxLtv = await lastValueFrom(this.masterDataService.getMaxLtv(
-                  this.valuepricetemp,
-                  this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
-                  '01',
-                  this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
-                  this.selectModelCodeValueTemp,
-                  this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
-                  this.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : 0
-                ))
+                  // === set max ltv field ===
+                  this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
+                }
 
-                console.log(`this is max ltv value : ${resultMaxLtv.data[0].maxltv}`)
-                const maxlvtsetFormat = this.numberWithCommas(resultMaxLtv.data[0].maxltv)
-                const maxlvttext = `(สูงสุด ${maxlvtsetFormat} บาท)`
-                this.maxltvValue$ = of(resultMaxLtv.data[0].maxltv)
-                this.maxlvtmessage$ = of(maxlvttext)
-                this.maxltvCurrent = resultMaxLtv.data[0].maxltv
-
-                // === set max ltv field ===
-                this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
 
 
                 // *** (remove check valid moto year date to save button) ***

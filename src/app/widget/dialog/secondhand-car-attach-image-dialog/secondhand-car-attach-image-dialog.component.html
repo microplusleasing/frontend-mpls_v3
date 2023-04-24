@@ -1,0 +1,46 @@
+<form [formGroup]="imageAttachForm" style="margin-top: 1em;">
+    <div [formGroup]="uploadForm" style="margin-top: 2em;">
+        <div class="flex-center">
+            <div style="margin-bottom: 1em;">
+                <span>
+                    <h1>
+                        {{this.txtsecondhandcarheader}}
+                    </h1>
+                </span>
+            </div>
+            <div class="card" style="width: 80%;">
+                <div style="text-align: center;">
+                    <span style="color: red;">{{this.txtsecondhandcarheader}}</span>
+                </div>
+
+                <button mat-raised-button color="primary" (click)="fileInput.click();" style="margin-left: 1em;;">
+                    <mat-icon>photo_library</mat-icon>
+                    แนบไฟล์ภาพ
+                </button>
+
+                <input type="file" accept="image/jpeg" capture="environment" (change)="onFileChange($event)" #fileInput
+                    style="visibility: hidden;">
+                <input #hiddenInput style="visibility: hidden;">
+
+            </div>
+            <br>
+        </div>
+
+        <div class="card-list-image" *ngFor="let image of uploadedImages">
+            <mat-expansion-panel style="min-width: 600px; margin-top: 0.5em;">
+                <mat-expansion-panel-header>
+                    {{ image.image_header }}
+                </mat-expansion-panel-header>
+                <img [src]="image.urlsanitizer" [alt]="'ha'" style="max-width: 400px; max-height: 400px;">
+                <br>
+            </mat-expansion-panel>
+        </div>
+        <div style="margin-top: 1em; text-align: center;">
+            <button mat-raised-button color="primary" [disabled]="this.uploadedImages.length < 2"
+                (click)="savesecondhandcarimagelist()">
+                บันทึกภาพ
+            </button>
+        </div>
+
+    </div>
+</form>

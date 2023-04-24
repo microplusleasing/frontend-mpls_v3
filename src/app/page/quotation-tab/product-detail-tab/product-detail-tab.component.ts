@@ -1,19 +1,27 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { DatePipe } from '@angular/common';
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, debounceTime, lastValueFrom, map, Observable, of, startWith, Subject } from 'rxjs';
+import { ThaidateformatDirective } from 'src/app/directive/thaidateformat.directive';
+import { IDialogSecondHandCarView } from 'src/app/interface/i-dialog-second-hand-car-view';
+import { IResGetMasterBussinessData } from 'src/app/interface/i-res-get-master-bussiness';
 import { IResMasterBranchData } from 'src/app/interface/i-res-master-branch';
 import { IResMasterBrandData } from 'src/app/interface/i-res-master-brand';
 import { IResMasterDealer, IResMasterDealerData } from 'src/app/interface/i-res-master-dealer';
 import { IResMasterInsuranceYearsData } from 'src/app/interface/i-res-master-insurance-years';
 import { IResMasterInsurerData } from 'src/app/interface/i-res-master-insurer';
 import { IResMasterModel, IResMasterModelData } from 'src/app/interface/i-res-master-model';
+import { IResMasterProvince } from 'src/app/interface/i-res-master-province';
 import { IResQuotationDetail } from 'src/app/interface/i-res-quotation-detail';
+import { IResSecondHandCarViewData } from 'src/app/interface/i-res-second-hand-car-view';
 import { BaseService } from 'src/app/service/base/base.service';
 import { LoadingService } from 'src/app/service/loading.service';
 import { MasterDataService } from 'src/app/service/master.service';
+import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
+import { SecondhandCarViewDialogComponent } from 'src/app/widget/dialog/secondhand-car-view-dialog/secondhand-car-view-dialog.component';
 
 @Component({
   selector: 'app-product-detail-tab',
@@ -29,6 +37,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   // *** check econsent verify ***
   consentVerify = new FormControl<boolean>(false, Validators.requiredTrue)
 
+  bussinessCode = new FormControl('')
+  bussinessName = new FormControl('')
   dealerCode = new FormControl('', Validators.required)
   carBrandField = new FormControl<string | ''>('', Validators.required)
   carBrandNameField = new FormControl('', Validators.required)
@@ -62,7 +72,20 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   value2 = new FormControl()
   value3 = new FormControl()
 
+  // === second hand car field (31/03/2023) ====
+  model_year = new FormControl()
+  cc = new FormControl<number | null>(null)
+  reg_no = new FormControl()
+  reg_date = new FormControl()
+  contract_ref = new FormControl()
+  reg_mile = new FormControl<number | null>(null)
+  prov_name = new FormControl()
+  prov_code = new FormControl()
+  moto_year = new FormControl()
+
   detailForm = this.fb.group({
+    bussinessCode: this.bussinessCode,
+    bussinessName: this.bussinessName,
     dealerCode: this.dealerCode,
     carBrandField: this.carBrandField,
     carBrandNameField: this.carBrandNameField,
@@ -97,17 +120,32 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     value3: this.value3
   })
 
+  secondHandCarForm = this.fb.group({
+    model_year: this.model_year,
+    cc: this.cc,
+    reg_no: this.reg_no,
+    reg_date: this.reg_date,
+    contract_ref: this.contract_ref,
+    reg_mile: this.reg_mile,
+    prov_name: this.prov_name,
+    prov_code: this.prov_code,
+    moto_year: this.moto_year
+  })
+
 
   // *** main Form ***
   productForm = this.fb.group({
     consentVerify: this.consentVerify,
-    detailForm: this.detailForm
+    detailForm: this.detailForm,
+    secondHandCarForm: this.secondHandCarForm
   })
 
   showPrice: boolean = false;
 
+  bussinessList = [] as IResGetMasterBussinessData[];
   brandList = [] as IResMasterBrandData[];
   modelList = [] as IResMasterModelData[];
+  masterProvinceList: IResMasterProvince = {} as IResMasterProvince
   modelListFilter = [] as IResMasterModelData[];
   modelSelect = [] as IResMasterModelData[];
   InsuranceListTemp = [] as IResMasterInsurerData[];
@@ -163,9 +201,21 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   // === variable (out_stand) (22/09/2022) ===
   out_stand: number = 0
 
+  // *** add some temp param of getMaxLtv for call agiant when moto year change (handle secondhand car that bussiness_code = 003) (20/04/2023) *** 
+  valuepricetemp: number = 0
+  selectModelCodeValueTemp: string = ''
+
+
   @Input() cusage: number = 0
   @Input() gender: number = 0
+  @Output() trigger_bussinesscode = new EventEmitter<boolean>();
 
+
+  // === 2ndhand_car variable (23/03/2023) ===
+  show2ndHandMPLSBtn: boolean = false
+  showdealerfield: boolean = false
+  showgeneralcarinfovisible: boolean = false
+  shwosecondhandcardetail: boolean = false
 
 
   warningMsgPaymentValueField: boolean = false;// === subscribe on paymentValueField (valueChange) to show or hide === 
@@ -295,9 +345,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
             const quoitem = this.quotationdatatemp.data[0]
             const recordExists = (quoitem.cd_app_key_id !== '' && quoitem.cd_app_key_id !== null) ? true : false
             combineLatest([
+              this.masterDataService.getMasterBussiness(),
               this.masterDataService.getDealer('01'),
               this.masterDataService.MPLS_getbrand(),
-              this.masterDataService.MPLS_getmodel()
+              this.masterDataService.MPLS_getmodel(),
+              this.masterDataService.getMasterProvince()
             ]).subscribe(async (res) => {
               // console.log(`this is master Data : ${JSON.stringify(res)}`)
               // === set master to variable ===
@@ -307,9 +359,210 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 this.productForm.controls.detailForm.controls.priceincludevatField.setValue(0)
               }
 
-              // *** dealer ***
+              // *** province master ****
+              if (res[4]) {
+                this.masterProvinceList = res[4]
+              }
+
+              // *** bussiness ***
               if (res[0]) {
-                this.dealerList = res[0].data
+                this.bussinessList = res[0].data
+                this.productForm.controls.detailForm.controls.bussinessCode.valueChanges.subscribe((value) => {
+
+                  // *** set filterbrandlist (08/04/2023) ****
+                  this.filterDealerList = of(res[1].data)
+
+                  if (recordExists) {
+                    this.trigger_bussinesscode.emit(false)
+                  }
+
+                  // *** set bussiness name by bussiness code (03/04/2023) ***
+                  const busi_name_value = this.bussinessList.find((res) => res.bussiness_code == value)
+                  this.productForm.controls.detailForm.controls.bussinessName.setValue(busi_name_value?.bussiness_name ?? '')
+
+                  // *** check is checker or dealer (for dealer not clear dealercode when bussiness code value change) (03/04/2023) ***
+                  const sessionData = this.userSessionQuotation
+                  sessionData.value.channal == 'checker' ? this.detailForm.controls.dealerCode.setValue('', { emitEvent: false }) : null
+
+                  // **** clear all form field when value of bussiness code change ****
+                  this.detailForm.controls.carBrandField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.carBrandNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.carColorField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.carModelField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.carModelNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.chassisNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.dealerCode.setValue('', { emitEvent: false });
+                  this.detailForm.controls.downPaymentField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.engineNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.insuranceCodeField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.insuranceNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.insurancePlanPriceField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.insurerCodeField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.insurerNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.interestRateField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.isincludeloanamount.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.loanAmountField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.maxltvField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.priceincludevatField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.productValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.runningchassisNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.runningengineNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.sizeModelField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.value1.setValue('', { emitEvent: false });
+                  this.detailForm.controls.value2.setValue('', { emitEvent: false });
+                  this.detailForm.controls.value3.setValue('', { emitEvent: false });
+                  this.detailForm.controls.paymentValueField.setValue(null)
+                  this.showpaymentvalue$.next(false)
+
+                  this.secondHandCarForm.controls.model_year.setValue('', { emitEvent: false })
+                  this.secondHandCarForm.controls.cc.setValue(null, { emitEvent: false })
+                  this.secondHandCarForm.controls.reg_no.setValue('', { emitEvent: false })
+                  this.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false })
+                  this.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false })
+                  this.secondHandCarForm.controls.reg_mile.setValue(null, { emitEvent: false })
+                  this.secondHandCarForm.controls.prov_name.setValue('', { emitEvent: false })
+                  this.secondHandCarForm.controls.prov_code.setValue('', { emitEvent: false })
+
+                  // === check value and show form by type of data ===enable
+                  switch (value) {
+                    case '001':
+                      {
+                        // *** รถมือหนึ่ง ***
+                        this.show2ndHandMPLSBtn = false
+                        this.showdealerfield = true
+                        this.showgeneralcarinfovisible = true
+                        this.showBrandModelLoan$ = of(false)
+                        this.shwosecondhandcardetail = false
+                        this.showPrice = false
+
+                        this.productForm.controls.detailForm.controls.carBrandField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.carModelField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.engineNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.runningengineNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.chassisNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.runningchassisNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.carColorField.enable({ onlySelf: true, emitEvent: false })
+
+                        this.productForm.controls.secondHandCarForm.controls.model_year.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.secondHandCarForm.controls.cc.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.secondHandCarForm.controls.prov_code.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.secondHandCarForm.controls.reg_date.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.secondHandCarForm.controls.reg_no.enable({ onlySelf: true, emitEvent: false })
+
+                        this.lockbtncalculate$.next(true)
+                        this.productForm.controls.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false })
+                        this.paymentvalue$.next(0);
+                        this.out_stand = 0
+                        this.showpaymentvalue$.next(false)
+
+                        // *** unset Require to some field of second hand car (MPLS) with select new car ***
+                        this.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.model_year.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.cc.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.reg_no.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.reg_date.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.contract_ref.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.prov_name.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.updateValueAndValidity()
+
+                        this.productForm.controls.detailForm.controls.engineNoField.setValidators(null)
+                        this.productForm.controls.detailForm.controls.runningengineNoField.setValidators(null)
+                        this.productForm.controls.detailForm.controls.chassisNoField.setValidators(null)
+                        this.productForm.controls.detailForm.controls.runningchassisNoField.setValidators(null)
+                        this.productForm.controls.detailForm.updateValueAndValidity()
+                      }
+                      break;
+                    case '002':
+                      {
+                        // === รถมือสองจัดกลับ ===
+                        // *** ค้นหาเลขทะเบียนแล้วเลือกรายการ นำค่า pass ค่าลง form ***
+                        // *** โชว์ปุ่มค้นหารถมือสอง ****
+
+                        (sessionData.value.channal !== 'checker' && value == '002') ? this.show2ndHandMPLSBtn = true : this.show2ndHandMPLSBtn = false
+
+                        this.showdealerfield = true
+                        this.showgeneralcarinfovisible = false
+                        // this.showpaymentvalue$.next(false)
+
+                        this.lockbtncalculate$.next(true)
+                        this.productForm.controls.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false })
+                        this.paymentvalue$.next(0);
+                        this.out_stand = 0
+                        this.showpaymentvalue$.next(false)
+
+                        // *** set Require to some field of second hand car (MPLS) ***
+                        this.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.controls.model_year.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.controls.cc.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.controls.reg_no.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.controls.reg_date.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.controls.prov_name.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.updateValueAndValidity()
+                      }
+                      break;
+                    case '003':
+                      {
+                        // *** รถมือสองทั่วไป ***
+                        this.show2ndHandMPLSBtn = false
+                        this.showdealerfield = true
+                        this.showgeneralcarinfovisible = true
+                        this.showchassisandengine = true
+                        this.shwosecondhandcardetail = true
+
+                        this.productForm.controls.detailForm.controls.carBrandField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.carModelField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.engineNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.runningengineNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.chassisNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.runningchassisNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.carColorField.enable({ onlySelf: true, emitEvent: false })
+
+                        this.productForm.controls.secondHandCarForm.controls.model_year.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.secondHandCarForm.controls.cc.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.secondHandCarForm.controls.prov_code.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.secondHandCarForm.controls.reg_date.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.secondHandCarForm.controls.reg_no.enable({ onlySelf: true, emitEvent: false })
+
+                        this.lockbtncalculate$.next(true)
+                        this.productForm.controls.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false })
+                        this.paymentvalue$.next(0);
+                        this.out_stand = 0
+                        this.showpaymentvalue$.next(false)
+
+                        // *** set Require to some field of second hand car (normal) ***
+                        this.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.controls.model_year.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.controls.cc.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.controls.reg_no.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.controls.reg_date.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.controls.prov_name.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(Validators.required)
+                        this.productForm.controls.secondHandCarForm.updateValueAndValidity()
+
+                        this.productForm.controls.detailForm.controls.engineNoField.setValidators(Validators.required)
+                        this.productForm.controls.detailForm.controls.runningengineNoField.setValidators(Validators.required)
+                        this.productForm.controls.detailForm.controls.chassisNoField.setValidators(Validators.required)
+                        this.productForm.controls.detailForm.controls.runningchassisNoField.setValidators(Validators.required)
+                        this.productForm.controls.detailForm.updateValueAndValidity()
+                      }
+                      break;
+
+                    default:
+                      break;
+                  }
+
+                })
+              }
+
+              // *** dealer ***
+              if (res[1]) {
+                this.dealerList = res[1].data
                 // === set validate format dealer code === 
                 this.productForm.controls.detailForm.controls.dealerCode.setValidators(this.validateDealerformat(this.dealerList))
                 this.productForm.controls.detailForm.controls.dealerCode.valueChanges.pipe(
@@ -331,26 +584,95 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.productForm.controls.detailForm.controls.carBrandField.setValue('', { emitEvent: false })
                   this.productForm.controls.detailForm.controls.insurerCodeField.setValue('', { emitEvent: false })
                   this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.engineNoField.setValue('')
+                  this.productForm.controls.detailForm.controls.runningengineNoField.setValue('', { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.chassisNoField.setValue('')
+                  this.productForm.controls.detailForm.controls.runningchassisNoField.setValue('', { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.carColorField.setValue('', { emitEvent: false })
 
+                  this.productForm.controls.secondHandCarForm.reset()
                   // this.checkChangeMaxValuePrice();
+                  if (this.productForm.controls.detailForm.controls.bussinessCode.value == '002') {
+                    if (this.productForm.controls.detailForm.controls.dealerCode.valid) {
+                      // *** โชว์ปุ่มค้นหารถมือสอง ****
+                      this.show2ndHandMPLSBtn = true
+                    } else {
+                      // *** ซ่อนปุ่มค้นหารถมือสอง ****
+                      this.show2ndHandMPLSBtn = false
+                    }
+                  } else {
+
+                    if (recordExists && (quoitem.cd_bussiness_code == '002')) {
+                      if (this.productForm.controls.detailForm.controls.bussinessCode.value == '001' || this.productForm.controls.detailForm.controls.bussinessCode.value == '003') {
+                        this.show2ndHandMPLSBtn = false
+                      } else {
+                        this.show2ndHandMPLSBtn = true
+                      }
+                    } else {
+                      // *** ซ่อนปุ่มค้นหารถมือสอง ****
+                      this.show2ndHandMPLSBtn = false
+                    }
+                  }
                 })
               }
 
               // *** brand ***
-              if (res[1]) {
-                this.brandList = res[1].data
+              if (res[2]) {
+                this.brandList = res[2].data
                 this.productForm.controls.detailForm.controls.carBrandField.valueChanges.pipe(
                   startWith(''),
                   map(value => this._filterBrand(value))
                 ).subscribe(async (value: IResMasterBrandData[]) => {
                   this.filterBrandList = of(value)
 
-                  this.productForm.controls.detailForm.controls.carModelField.setValue(null, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.productValueField.setValue(null, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.interestRateField.setValue(null, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null, { emitEvent: false })
+                  // *** comment on 05/04/2023 use below code instead ***
+                  // this.productForm.controls.detailForm.controls.carModelField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.productValueField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.interestRateField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null, { emitEvent: false })
+
+                  // *** set more null field (secondhand car include) (05/04/2023) ***
+                  this.detailForm.controls.carBrandNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.carColorField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.carModelField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.carModelNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.chassisNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.downPaymentField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.engineNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.insuranceCodeField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.insuranceNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.insurancePlanPriceField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.insurerCodeField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.insurerNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.interestRateField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.isincludeloanamount.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.loanAmountField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.maxltvField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.priceincludevatField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.productValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.runningchassisNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.runningengineNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.sizeModelField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.value1.setValue('', { emitEvent: false });
+                  this.detailForm.controls.value2.setValue('', { emitEvent: false });
+                  this.detailForm.controls.value3.setValue('', { emitEvent: false });
+                  this.detailForm.controls.paymentValueField.setValue(null)
+                  this.showpaymentvalue$.next(false)
+
+                  this.secondHandCarForm.controls.model_year.setValue('', { emitEvent: false })
+                  this.secondHandCarForm.controls.cc.setValue(null, { emitEvent: false })
+                  this.secondHandCarForm.controls.reg_no.setValue('', { emitEvent: false })
+                  this.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false })
+                  this.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false })
+                  this.secondHandCarForm.controls.reg_mile.setValue(null, { emitEvent: false })
+                  this.secondHandCarForm.controls.prov_name.setValue('', { emitEvent: false })
+                  this.secondHandCarForm.controls.prov_code.setValue('', { emitEvent: false })
 
                   this.maxlvtmessage$ = of('');
 
@@ -410,24 +732,67 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               }
 
               // *** model ***
-              if (res[2]) {
-                this.modelList = res[2].data
+              if (res[3]) {
+                this.modelList = res[3].data
                 this.productForm.controls.detailForm.controls.carModelField.valueChanges.pipe(
                   startWith(''),
                   map(value => this._filterModel(value))
                 ).subscribe(async (value: IResMasterModelData[]) => {
                   this.filterModelList = of(value)
 
-                  this.productForm.controls.detailForm.controls.interestRateField.enable()
-                  this.productForm.controls.detailForm.controls.interestRateField.setValue(null, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.productValueField.setValue(null, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.engineNoField.setValue(null, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.chassisNoField.setValue(null, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.runningengineNoField.setValue(null, { emitEvent: false })
-                  this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(null, { emitEvent: false })
+                  // *** comment on 05/04/2023 use below code instead ***
+                  // this.productForm.controls.detailForm.controls.interestRateField.enable()
+                  // this.productForm.controls.detailForm.controls.interestRateField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.productValueField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.engineNoField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.chassisNoField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.runningengineNoField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false })
+                  // this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(null, { emitEvent: false })
+
+                  // *** set more null field (secondhand car include) (05/04/2023) ***
+                  this.detailForm.controls.carColorField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.chassisNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.downPaymentField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.engineNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.insuranceCodeField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.insuranceNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.insurancePlanPriceField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.insurerCodeField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.insurerNameField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.interestRateField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.isincludeloanamount.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.loanAmountField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.maxltvField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.priceincludevatField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.productValueField.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.runningchassisNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.runningengineNoField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.sizeModelField.setValue('', { emitEvent: false });
+                  this.detailForm.controls.value1.setValue('', { emitEvent: false });
+                  this.detailForm.controls.value2.setValue('', { emitEvent: false });
+                  this.detailForm.controls.value3.setValue('', { emitEvent: false });
+                  this.detailForm.controls.paymentValueField.setValue(null)
+                  this.showpaymentvalue$.next(false)
+
+                  this.secondHandCarForm.controls.model_year.setValue('', { emitEvent: false })
+                  this.secondHandCarForm.controls.cc.setValue(null, { emitEvent: false })
+                  this.secondHandCarForm.controls.reg_no.setValue('', { emitEvent: false })
+                  this.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false })
+                  this.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false })
+                  this.secondHandCarForm.controls.reg_mile.setValue(null, { emitEvent: false })
+                  this.secondHandCarForm.controls.prov_name.setValue('', { emitEvent: false })
+                  this.secondHandCarForm.controls.prov_code.setValue('', { emitEvent: false })
+
+
                   this.coverage = 0
                   this.factoryprice = 0
 
@@ -455,11 +820,12 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       //=== call max lvt vaue === 
                       const resultMaxLtv = await lastValueFrom(this.masterDataService.getMaxLtv(
                         valuePrice,
-                        '001',
+                        this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
                         '01',
                         this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
                         selectValue[0].model_code,
-                        this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : ''
+                        this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
+                        this.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : 0
                       ))
 
                       console.log(`this is max ltv value : ${resultMaxLtv.data[0].maxltv}`)
@@ -487,9 +853,14 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       // })
 
                       // === new api of getInsurance (5 params : (factory_price, bussi_code, brand_code, model_code, dl_code)) ====
+                      // *** stamp some temp param of getMaxLtv for call agiant when moto year change (handle secondhand car that bussiness_code = 003) (20/04/2023) *** 
+
+                      this.valuepricetemp = valuePrice
+                      this.selectModelCodeValueTemp = selectValue[0].model_code
+
                       this.masterDataService.getInsurance(
                         valuePrice,
-                        '001', // bussi_code
+                        this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',// '001', // bussi_code
                         this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',  // brand_code
                         selectValue[0].model_code, // model_code
                         this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '' // dealer_code
@@ -575,7 +946,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                         // === แก้ไขการเรียกข้อมูล term (จำนวนงวด) จาก paremeter ที่เพิ่มมาจาก net_finance และ rate ===
 
-                        this.masterDataService.getRate('01', result.data[0].size).subscribe((resRate) => {
+                        this.masterDataService.getRate('01', result.data[0].size, '001').subscribe((resRate) => {
                           this.rateSelect = resRate.data
                           // === set quotaion lookup data if old record ===
                           if (this.quotationdatatemp.data) {
@@ -603,6 +974,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     }
                   }
                 })
+              } else {
+                // === Clear all temp (20/04/2023) ===
+
+                this.valuepricetemp = 0
+                this.selectModelCodeValueTemp = ''
               }
 
               // *** interestRateField ***
@@ -722,6 +1098,239 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 this.checkvalidpaymentCount();
               })
 
+              // *** reg_mile (03/04/2023) ***
+              this.productForm.controls.secondHandCarForm.controls.reg_mile.valueChanges.subscribe((res) => {
+
+                this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+                this.showpaymentvalue$.next(false);
+                this.checkforstamppaymentvalue();
+
+              })
+
+              // *** model_year (04/04/2023) ****
+              this.productForm.controls.secondHandCarForm.controls.model_year.valueChanges.subscribe((res) => {
+                this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+                this.showpaymentvalue$.next(false);
+                this.checkforstamppaymentvalue();
+              })
+              // *** cc (04/04/2023) ****
+              this.productForm.controls.secondHandCarForm.controls.cc.valueChanges.subscribe((res) => {
+                this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+                this.showpaymentvalue$.next(false);
+                this.checkforstamppaymentvalue();
+              })
+              // *** reg_no (04/04/2023) ****
+              this.productForm.controls.secondHandCarForm.controls.reg_no.valueChanges.subscribe((res) => {
+                this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+                this.showpaymentvalue$.next(false);
+                this.checkforstamppaymentvalue();
+              })
+              // *** reg_date (04/04/2023) ****
+              this.productForm.controls.secondHandCarForm.controls.reg_date.valueChanges.subscribe(async (res) => {
+
+
+                // *** chec moto year from valueChange in case of bussiness_code == '003' 
+
+                if (res) {
+                  if (this.productForm.controls.detailForm.controls.bussinessCode.value == '003') {
+                    const motoyearresult = await lastValueFrom(this.masterDataService.MPLS_calculate_moto_year(res))
+
+                    if (motoyearresult.status == 200) {
+                      this.productForm.controls.secondHandCarForm.controls.moto_year.setValue(motoyearresult.data.moto_year)
+                    } else {
+                      this.dialog.open(MainDialogComponent, {
+                        data: {
+                          header: `ผิดพลาด`,
+                          message: `ไม่สามารถคำนวณหาค่า Moto year ได้, กรุณาเลือกวันจดทะเบียนให้ถูกต้อง`,
+                          button_name: `ปิด`
+                        }
+                      }).afterClosed().subscribe((res_dialog_close) => {
+                        // *** clear reg_date with no trigger valueChange (19/04/2023) ****
+                        this.productForm.controls.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false })
+                      })
+                    }
+                  }
+                }
+
+
+                this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+                this.showpaymentvalue$.next(false);
+                this.checkforstamppaymentvalue();
+              })
+
+              // *** moto_year (19/04/2023) *** 
+              // *** if (bussiness_code == '002' recieve this value from getsecondcar api , if (bussiness_code == '003' get this value from calcualte year from select reg_date field)) ***
+              this.productForm.controls.secondHandCarForm.controls.moto_year.valueChanges.subscribe(async (res) => {
+
+
+                // *** calculate max ltv trigger when second hand car bussiness_code = '003' (require moto_year) ***
+
+
+
+                const resultMaxLtv = await lastValueFrom(this.masterDataService.getMaxLtv(
+                  this.valuepricetemp,
+                  this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
+                  '01',
+                  this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
+                  this.selectModelCodeValueTemp,
+                  this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
+                  this.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : 0
+                ))
+
+                console.log(`this is max ltv value : ${resultMaxLtv.data[0].maxltv}`)
+                const maxlvtsetFormat = this.numberWithCommas(resultMaxLtv.data[0].maxltv)
+                const maxlvttext = `(สูงสุด ${maxlvtsetFormat} บาท)`
+                this.maxltvValue$ = of(resultMaxLtv.data[0].maxltv)
+                this.maxlvtmessage$ = of(maxlvttext)
+                this.maxltvCurrent = resultMaxLtv.data[0].maxltv
+
+                // === set max ltv field ===
+                this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
+
+
+                // *** (remove check valid moto year date to save button) ***
+
+                // if (recordExists) {
+                //   this.trigger_bussinesscode.emit(false)
+                // }
+
+                // if (
+                //   this.productForm.controls.detailForm.controls.bussinessCode.value == '002' ||
+                //   this.productForm.controls.detailForm.controls.bussinessCode.value == '003'
+                // ) {
+                // *** check moto_year least than 4 years *** 
+                // if (res >= 4) {
+                //   // *** clear value on form ***
+                //   this.dialog.open(MainDialogComponent, {
+                //     data: {
+                //       header: `อายุรถไม่อยู่ในเงื่อนไข`,
+                //       message: `อายุรถที่เลือกเกิน 4 ปีกรุณาระบุวันที่จดทะเบียนให้ถูกต้อง`
+                //     }
+                //   }).afterClosed().subscribe((res) => {
+                //     // *** clear value on form ***
+
+                //     switch (this.productForm.controls.detailForm.controls.bussinessCode.value) {
+                //       case '002':
+                //         this.detailForm.controls.carBrandNameField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.carColorField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.carModelField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.carModelNameField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.chassisNoField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.downPaymentField.setValue(null, { emitEvent: false });
+                //         this.detailForm.controls.engineNoField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false });
+                //         this.detailForm.controls.insuranceCodeField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.insuranceNameField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.insurancePlanPriceField.setValue(null, { emitEvent: false });
+                //         this.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false });
+                //         this.detailForm.controls.insurerCodeField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.insurerNameField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.interestRateField.setValue(null, { emitEvent: false });
+                //         this.detailForm.controls.isincludeloanamount.setValue(null, { emitEvent: false });
+                //         this.detailForm.controls.loanAmountField.setValue(null, { emitEvent: false });
+                //         this.detailForm.controls.maxltvField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false });
+                //         this.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false });
+                //         this.detailForm.controls.priceincludevatField.setValue(null, { emitEvent: false });
+                //         this.detailForm.controls.productValueField.setValue(null, { emitEvent: false });
+                //         this.detailForm.controls.runningchassisNoField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.runningengineNoField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.sizeModelField.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.value1.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.value2.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.value3.setValue('', { emitEvent: false });
+                //         this.detailForm.controls.paymentValueField.setValue(null)
+                //         this.showpaymentvalue$.next(false)
+
+                //         this.secondHandCarForm.controls.model_year.setValue('', { emitEvent: false })
+                //         this.secondHandCarForm.controls.cc.setValue(null, { emitEvent: false })
+                //         this.secondHandCarForm.controls.reg_no.setValue('', { emitEvent: false })
+                //         this.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false })
+                //         this.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false })
+                //         this.secondHandCarForm.controls.reg_mile.setValue(null, { emitEvent: false })
+                //         this.secondHandCarForm.controls.prov_name.setValue('', { emitEvent: false })
+                //         this.secondHandCarForm.controls.prov_code.setValue('', { emitEvent: false })
+                //         this.secondHandCarForm.controls.model_year.setValue(null, { emitEvent: false })
+
+
+                //         this.showdealerfield = true
+                //         this.showdealerfield = true
+                //         this.showgeneralcarinfovisible = false
+                //         // this.showpaymentvalue$.next(false)
+
+                //         this.lockbtncalculate$.next(true)
+                //         this.productForm.controls.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false })
+                //         this.paymentvalue$.next(0);
+                //         this.out_stand = 0
+                //         this.showpaymentvalue$.next(false)
+
+                //         // *** set Require to some field of second hand car (MPLS) ***
+                //         this.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(Validators.required)
+                //         this.productForm.controls.secondHandCarForm.controls.model_year.setValidators(Validators.required)
+                //         this.productForm.controls.secondHandCarForm.controls.cc.setValidators(Validators.required)
+                //         this.productForm.controls.secondHandCarForm.controls.reg_no.setValidators(Validators.required)
+                //         this.productForm.controls.secondHandCarForm.controls.reg_date.setValidators(Validators.required)
+                //         this.productForm.controls.secondHandCarForm.controls.prov_name.setValidators(Validators.required)
+                //         this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(Validators.required)
+                //         this.productForm.controls.secondHandCarForm.updateValueAndValidity()
+
+                //         break;
+
+                //       case '003':
+                //         this.secondHandCarForm.controls.reg_date.setValue(null , { emitEvent: false})
+                //         this.secondHandCarForm.controls.model_year.setValue(null, { emitEvent: false })
+                //         break;
+                //       default:
+                //         break;
+                //     }
+                //   })
+                // }
+                // }
+              })
+
+
+              // *** prov_code (04/04/2023) ****
+              this.productForm.controls.secondHandCarForm.controls.prov_code.valueChanges.subscribe((res) => {
+
+                // *** set Prov_name value ***
+                const selectProv = this.masterProvinceList.data.find((item) => item.prov_code == res)
+                if (selectProv) {
+                  this.productForm.controls.secondHandCarForm.controls.prov_name.setValue(selectProv.prov_name, { emitEvent: false })
+                }
+
+                this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+                this.showpaymentvalue$.next(false);
+                this.checkforstamppaymentvalue();
+              })
+
+              // *** old valueChange (general info) (04/04/2023) ***
+              // *** engineNoField ****
+              this.productForm.controls.detailForm.controls.engineNoField.valueChanges.subscribe((res) => {
+                this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+                this.showpaymentvalue$.next(false);
+                this.checkforstamppaymentvalue();
+              })
+              // *** runningengineNoField ****
+              this.productForm.controls.detailForm.controls.runningengineNoField.valueChanges.subscribe((res) => {
+                this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+                this.showpaymentvalue$.next(false);
+                this.checkforstamppaymentvalue();
+              })
+              // *** chassisNoField ****
+              this.productForm.controls.detailForm.controls.chassisNoField.valueChanges.subscribe((res) => {
+                this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+                this.showpaymentvalue$.next(false);
+                this.checkforstamppaymentvalue();
+              })
+              // *** runningchassisNoField ****
+              this.productForm.controls.detailForm.controls.runningchassisNoField.valueChanges.subscribe((res) => {
+                this.productForm.controls.detailForm.controls.paymentValueField.setValue(null)
+                this.showpaymentvalue$.next(false);
+                this.checkforstamppaymentvalue();
+              })
+
+
+
 
               // ==== new check MPLS record already exits ====
 
@@ -756,6 +1365,19 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
 
                 // === parameter for call api master === 
+
+                // === second hand car field (03/04/2023) ===
+                const qbussinesscode = quoitem.cd_bussiness_code ?? '';
+                const qmodelyear = quoitem.cd_model_year ?? '';
+                const qcc = quoitem.cd_cc ?? null;
+                const qregno = quoitem.cd_reg_no ?? '';
+                const qregdate = quoitem.cd_reg_date ?? null;
+                const clinet_format_qregdate = quoitem.cd_reg_date ? this.changeDateFormat(quoitem.cd_reg_date) : null;
+                const qcontractref = quoitem.cd_contract_ref ?? '';
+                const qregmile = quoitem.cd_reg_mile ?? '';
+                const qprovcode = quoitem.cd_prov_code ?? '';
+                const qprovname = quoitem.cd_prov_name ?? '';
+
                 const qcarbrandcode = quoitem.cd_brand_code ?? '';
                 const qcarbrandname = quoitem.cd_brand_name ?? '';
                 const qcarmodelcode = quoitem.cd_model_code ?? '';
@@ -787,6 +1409,79 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 const qchassisnorunning = quoitem.cd_chassis_no_running
                 // === add parameter for change getinsurance from factory_price to max_ltv (24/08/2022) === 
                 const qdealercode = quoitem.sl_code
+                const qmotoyear = quoitem.cd_moto_year ? quoitem.cd_moto_year : 0
+
+                // === check form layout depend on bussiness code (03/04/2023) ===
+                switch (qbussinesscode) {
+                  case '001':
+                    {
+                      this.showdealerfield = true
+                      this.showgeneralcarinfovisible = true
+                      this.showBrandModelLoan$ = of(true)
+                      this.shwosecondhandcardetail = false
+                      this.showpaymentvalue$.next(true)
+
+                      // *** unset Require to some field of second hand car (MPLS) with select new car ***
+                      this.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.model_year.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.cc.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.reg_no.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.reg_date.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.contract_ref.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.prov_name.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.updateValueAndValidity()
+                    }
+                    break;
+                  case '002':
+                    {
+                      this.showdealerfield = true
+                      this.showgeneralcarinfovisible = true
+                      this.showBrandModelLoan$ = of(true)
+                      this.shwosecondhandcardetail = true
+                      this.showpaymentvalue$.next(true)
+
+                      // *** set Require to some field of second hand car (MPLS) ***
+                      this.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.controls.model_year.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.controls.cc.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.controls.reg_no.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.controls.reg_date.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.controls.prov_name.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.updateValueAndValidity()
+                    }
+                    break;
+                  case '003':
+                    {
+                      // waiting ...
+                      this.showdealerfield = true
+                      this.showgeneralcarinfovisible = true
+                      this.showBrandModelLoan$ = of(true)
+                      this.shwosecondhandcardetail = true
+                      this.showpaymentvalue$.next(true)
+
+                      // *** set Require to some field of second hand car (MPLS) ***
+                      this.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.controls.model_year.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.controls.cc.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.controls.reg_no.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.controls.reg_date.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.controls.prov_name.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(Validators.required)
+                      this.productForm.controls.secondHandCarForm.updateValueAndValidity()
+
+                      this.productForm.controls.detailForm.controls.engineNoField.setValidators(Validators.required)
+                      this.productForm.controls.detailForm.controls.runningengineNoField.setValidators(Validators.required)
+                      this.productForm.controls.detailForm.controls.chassisNoField.setValidators(Validators.required)
+                      this.productForm.controls.detailForm.controls.runningchassisNoField.setValidators(Validators.required)
+                      this.productForm.controls.detailForm.updateValueAndValidity()
+                    }
+                    break;
+
+                  default:
+                    break;
+                }
 
                 // === unlock field === 
                 if (qrate) this.productForm.controls.detailForm.controls.interestRateField.enable({ emitEvent: false });
@@ -798,17 +1493,18 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 if (qfactoryprice && qcarbrandcode && qcarmodel && qterm && qsizemodel && qloanamount && qinsureplanpricevalue && qrate) {
 
 
-                  const resultRateMaster = await lastValueFrom(this.masterDataService.getRate(`01`, qsizemodel));
+                  const resultRateMaster = await lastValueFrom(this.masterDataService.getRate(`01`, qsizemodel, '001'));
 
                   // ==== change parameter for get insurance from factory_price to max_ltv (24/08/2022) ===
 
                   const resultMaxLtv = await lastValueFrom(this.masterDataService.getMaxLtv(
                     qfactoryprice,
-                    '001',
+                    qbussinesscode, // '001',
                     '01',
                     qcarbrandcode,
                     qcarmodelcode,
-                    qdealercode
+                    qdealercode,
+                    qmotoyear
                   ))
                   // this.maxltvCurrent = resultMaxLtv.data[0].maxltv
 
@@ -830,7 +1526,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // const resultTerm = await lastValueFrom(this.masterDataService.getTerm(`01`, qsizemodel))
 
                   const net_finance = qloanamount + (qinsuranceplan ?? 0)
-                  const resultTerm = await lastValueFrom(this.masterDataService.getTermNew(`01`, qsizemodel, qrate, net_finance))
+                  // const resultTerm = await lastValueFrom(this.masterDataService.getTermNew(`01`, qsizemodel, qrate, net_finance, '001'))
+                  const resultTerm = await lastValueFrom(this.masterDataService.getTermNew(`01`, qsizemodel, qrate, net_finance, qbussinesscode))
 
                   let netfinance;
                   if (qisincludealoneamount) {
@@ -845,8 +1542,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // ***==== Car Brand ====***
 
                   // === map api with return value ====
-                  this.brandList = res[1].data
-                  this.modelList = res[2].data
+                  this.brandList = res[2].data
+                  this.modelList = res[3].data
 
 
                   // === set model select 
@@ -917,6 +1614,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   }
 
                   // === stamp value to field ==== 
+                  this.productForm.controls.detailForm.controls.bussinessCode.setValue(qbussinesscode, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.dealerCode.setValue(qdealercode, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.carBrandField.setValue(qcarbrandcode, { emitEvent: false }); /// investigate on 13/03/2023
                   this.productForm.controls.detailForm.controls.carBrandNameField.setValue(qcarbrandname, { emitEvent: false });
@@ -939,13 +1637,42 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.productForm.controls.detailForm.controls.isincludeloanamount.setValue(qisincludealoneamount, { emitEvent: false });
                   // this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(qfactoryprice, { emitEvent: false });
                   this.productForm.controls.detailForm.controls.paymentValueField.setValue(qpaymentvalue, { emitEvent: false });
+
+                  // *** secondhand car field binding ***
+                  this.productForm.controls.secondHandCarForm.controls.cc.setValue(qcc, { emitEvent: false })
+                  this.productForm.controls.secondHandCarForm.controls.contract_ref.setValue(qcontractref, { emitEvent: false })
+                  this.productForm.controls.secondHandCarForm.controls.model_year.setValue(qmodelyear, { emitEvent: false })
+                  this.productForm.controls.secondHandCarForm.controls.prov_code.setValue(qprovcode, { emitEvent: false })
+                  this.productForm.controls.secondHandCarForm.controls.prov_name.setValue(qprovname, { emitEvent: false })
+                  this.productForm.controls.secondHandCarForm.controls.reg_date.setValue(clinet_format_qregdate, { emitEvent: false })
+                  this.productForm.controls.secondHandCarForm.controls.reg_no.setValue(qregno, { emitEvent: false })
+                  this.productForm.controls.secondHandCarForm.controls.reg_mile.setValue(qregmile, { emitEvent: false })
+
+                  if (qbussinesscode == '002') {
+
+                    // *** lock all detail field when stamp data finish ***
+                    this.productForm.controls.detailForm.controls.carBrandField.disable({ onlySelf: true, emitEvent: false })
+                    this.productForm.controls.detailForm.controls.carModelField.disable({ onlySelf: true, emitEvent: false })
+                    this.productForm.controls.detailForm.controls.engineNoField.disable({ onlySelf: true, emitEvent: false })
+                    this.productForm.controls.detailForm.controls.runningengineNoField.disable({ onlySelf: true, emitEvent: false })
+                    this.productForm.controls.detailForm.controls.chassisNoField.disable({ onlySelf: true, emitEvent: false })
+                    this.productForm.controls.detailForm.controls.runningchassisNoField.disable({ onlySelf: true, emitEvent: false })
+                    this.productForm.controls.detailForm.controls.carColorField.disable({ onlySelf: true, emitEvent: false })
+
+                    this.productForm.controls.secondHandCarForm.controls.cc.disable({ onlySelf: true, emitEvent: false })
+                    this.productForm.controls.secondHandCarForm.controls.model_year.disable({ onlySelf: true, emitEvent: false })
+                    this.productForm.controls.secondHandCarForm.controls.prov_code.disable({ onlySelf: true, emitEvent: false })
+                    this.productForm.controls.secondHandCarForm.controls.reg_date.disable({ onlySelf: true, emitEvent: false })
+                    this.productForm.controls.secondHandCarForm.controls.reg_no.disable({ onlySelf: true, emitEvent: false })
+                  }
+
                   // === for show coverage (24/08/2022) ===
                   // this.coverage = qfactoryprice;
                   // === new coverage total loss from DB function (29/08/2022) ===
                   // const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss(qinsurancecode, (resultMaxLtv.data[0].maxltv)))
                   const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss(
                     qinsurancecode,
-                    '001',
+                    qbussinesscode, //'001',
                     qcarbrandcode,
                     qcarmodelcode,
                     qdealercode,
@@ -958,8 +1685,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // === stamp new field form total-loss phase to field (29/08/2022) ===
                   this.coverage = qcoveragetotalloss
                   this.productForm.controls.detailForm.controls.maxltvField.setValue(qmaxltv, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.engineNoField.setValue(qenginenumber, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.chassisNoField.setValue(qchassisnumber, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.engineNoField.setValue(qenginenumber, { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.chassisNoField.setValue(qchassisnumber, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.runningengineNoField.setValue(qenginenorunning, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(qchassisnorunning, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.priceincludevatField.setValue(qpriceincludevat, { emitEvent: false })
@@ -1075,12 +1802,53 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   }
 
   checkforstamppaymentvalue() {
+    // *** add check reg_mile if bussicode is '002' and '003' *** (03/04/2023) 
+
+    // const chkrequireregmile = 
+    // (this.productForm.controls.detailForm.controls.bussinessCode.value == '001') ||
+    // ((this.productForm.controls.detailForm.controls.bussinessCode.value == '002' || this.productForm.controls.detailForm.controls.bussinessCode.value == '003') && this.productForm.controls.secondHandCarForm.controls.reg_mile.value)
+    // ? true : false
+
+    const { detailForm, secondHandCarForm } = this.productForm.controls;
+    const bussinessCode = detailForm.controls.bussinessCode.value;
+    const regMile = secondHandCarForm.controls.reg_mile.value;
+
+    const modelYear = secondHandCarForm.controls.model_year.value;
+    const cc = secondHandCarForm.controls.cc.value;
+    const regNo = secondHandCarForm.controls.reg_no.value;
+    const regDate = secondHandCarForm.controls.cc.value;
+    const provCode = secondHandCarForm.controls.prov_code.value;
+
+    const engineNo = detailForm.controls.engineNoField.value;
+    const engineNoRunning = detailForm.controls.runningengineNoField.value;
+    const chassisNo = detailForm.controls.chassisNoField.value;
+    const chasssisNoRunning = detailForm.controls.runningchassisNoField.value;
+
+
+    const chkrequireregmile =
+      (
+        bussinessCode === '001' || (['002'].includes(bussinessCode ? bussinessCode : '') && regMile) ||
+        ((['003'].includes(bussinessCode ? bussinessCode : '') &&
+          regMile &&
+          modelYear &&
+          cc &&
+          regNo &&
+          regDate &&
+          provCode &&
+          engineNo &&
+          engineNoRunning &&
+          chassisNo &&
+          chasssisNoRunning
+        ))
+      ) ? true : false;
+
     if (
       this.productForm.controls.detailForm.controls.factoryPriceValueField.value &&
       this.productForm.controls.detailForm.controls.interestRateField.value &&
       this.productForm.controls.detailForm.controls.paymentRoundCountValueField.value &&
       this.productForm.controls.detailForm.controls.loanAmountField.value &&
-      this.productForm.controls.detailForm.controls.insurerCodeField.value
+      this.productForm.controls.detailForm.controls.insurerCodeField.value &&
+      chkrequireregmile
     ) {
       this.lockbtncalculate$.next(false)
     }
@@ -1115,13 +1883,15 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       const isincludeloanamount = this.productForm.controls.detailForm.controls.isincludeloanamount.value
       const paymentvalue = this.productForm.controls.detailForm.controls.loanAmountField.value
       const insuranceplan = (this.productForm.controls.detailForm.controls.insurancePlanPriceField.value ?? 0)
+      const busicode = this.productForm.controls.detailForm.controls.bussinessCode.value ?? ''
 
       if (isincludeloanamount) {
         netfinance = paymentvalue + insuranceplan
       } else {
         netfinance = paymentvalue
       }
-      this.masterDataService.getTermNew('01', size_model, rate, netfinance).subscribe((resPayment) => {
+      // this.masterDataService.getTermNew('01', size_model, rate, netfinance, '001').subscribe((resPayment) => {
+      this.masterDataService.getTermNew('01', size_model, rate, netfinance, busicode).subscribe((resPayment) => {
         // === manage data here ===
         this.loadingService.hideLoader()
 
@@ -1157,8 +1927,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
   async onbtnpaymentcalculate() {
     // === create net finance
-
-    const test = this.productForm.valid;
+    // 
+    // const test = this.productForm.valid;
     if (this.productForm.controls.detailForm.controls.isincludeloanamount.value) {
       let loanValue = this.productForm.controls.detailForm.controls.loanAmountField.value ?? 0
       loanValue = 1 * loanValue
@@ -1214,13 +1984,15 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       const isincludeloanamount = this.productForm.controls.detailForm.controls.isincludeloanamount.value
       const paymentvalue = this.productForm.controls.detailForm.controls.loanAmountField.value
       const insuranceplan = (this.productForm.controls.detailForm.controls.insurancePlanPriceField.value ?? 0)
+      const busicode = this.productForm.controls.detailForm.controls.bussinessCode.value ?? ''
 
       if (isincludeloanamount) {
         netfinance = paymentvalue + insuranceplan
       } else {
         netfinance = paymentvalue
       }
-      this.masterDataService.getTermNew('01', size_model, rate, netfinance).subscribe((resPayment) => {
+      // this.masterDataService.getTermNew('01', size_model, rate, netfinance, '001').subscribe((resPayment) => {
+      this.masterDataService.getTermNew('01', size_model, rate, netfinance, busicode).subscribe((resPayment) => {
         // === manage data here ===
         this.loadingService.hideLoader()
 
@@ -1289,9 +2061,94 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       }
     })
 
+  }
 
+  onclick2ndhandSearchBtn() {
+    const dealercode = this.detailForm.controls.dealerCode.value ? this.detailForm.controls.dealerCode.value : ''
+    const dealername = this.dealerList.find((x) => { return x.dl_code == dealercode })
+    const senddata: IDialogSecondHandCarView = {
+      dealer_code: dealercode,
+      dealer_name: dealername ? dealername.dl_name : '',
+      quo_key_app_id: this.quotationdatatemp.data[0].quo_key_app_id
+    }
+    if (dealercode) {
+      this.dialog.open(SecondhandCarViewDialogComponent, {
+        width: '100%',
+        height: `80%`,
+        data: senddata
+      }).afterClosed().subscribe((res: IResSecondHandCarViewData) => {
+        // *** parse data back from second hance car select dialog ***
+        // console.log(`parse data back success : ${JSON.stringify(res)}`)
+        if (res.contract_no) {
+          this.showgeneralcarinfovisible = true
+          this.showchassisandengine = true
+          this.shwosecondhandcardetail = true
 
+          // *** set date format ***
+          const clinet_format_regdate = res.reg_date ? this.changeDateFormat(res.reg_date) : null;
 
+          // *** clear recent data secondhand car info ****
+          this.productForm.controls.detailForm.controls.interestRateField.setValue(null, { emitEvent: false })
+          this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
+          this.productForm.controls.detailForm.controls.loanAmountField.setValue(null, { emitEvent: false })
+          this.productForm.controls.detailForm.controls.priceincludevatField.setValue(null, { emitEvent: false })
+          this.productForm.controls.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.reg_mile.setValue(null, { emitEvent: false })
+
+          // *** basic car field binding ***
+          this.productForm.controls.detailForm.controls.carBrandField.setValue(res.brand_code)
+          this.productForm.controls.detailForm.controls.carModelField.setValue(res.model_code)
+          this.productForm.controls.detailForm.controls.engineNoField.setValue(res.engine_number)
+          this.productForm.controls.detailForm.controls.runningengineNoField.setValue(res.engine_no_running, { emitEvent: false })
+          this.productForm.controls.detailForm.controls.chassisNoField.setValue(res.chassis_number)
+          this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(res.chassis_no_running, { emitEvent: false })
+          this.productForm.controls.detailForm.controls.carColorField.setValue(res.color, { emitEvent: false })
+
+          // *** secondhand car field binding ***
+          this.productForm.controls.secondHandCarForm.controls.cc.setValue(res.cc, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.contract_ref.setValue(res.contract_no, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.model_year.setValue(res.model_year, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.prov_code.setValue(res.prov_code, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.prov_name.setValue(res.prov_name, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.reg_date.setValue(clinet_format_regdate, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.reg_no.setValue(res.reg_no, { emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.moto_year.setValue(res.moto_year) // *** check valueChange of moto_year ***
+
+          // *** lock all detail field when stamp data finish ***
+          this.productForm.controls.detailForm.controls.carBrandField.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.detailForm.controls.carModelField.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.detailForm.controls.engineNoField.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.detailForm.controls.runningengineNoField.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.detailForm.controls.chassisNoField.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.detailForm.controls.runningchassisNoField.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.detailForm.controls.carColorField.disable({ onlySelf: true, emitEvent: false })
+
+          this.productForm.controls.secondHandCarForm.controls.cc.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.model_year.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.prov_name.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.reg_date.disable({ onlySelf: true, emitEvent: false })
+          this.productForm.controls.secondHandCarForm.controls.reg_no.disable({ onlySelf: true, emitEvent: false })
+
+        } else {
+          // handle error or null data parse back
+        }
+      })
+    } else {
+      this.dialog.open(MainDialogComponent, {
+        data: {
+          header: `ไม่พบรายการ`,
+          message: 'ไม่พบรายการชื่อ dealer, กรุณาเลือก "รหัสร้านค้า" ก่อนค้นหารถ',
+          button_name: `ปิด`
+        }
+      })
+    }
+  }
+
+  onKeyDown(event: KeyboardEvent) {
+    // Check if the key pressed is not the space bar
+    if (event.keyCode !== 32) {
+      event.preventDefault(); // Disable default behavior
+    }
   }
 
 }

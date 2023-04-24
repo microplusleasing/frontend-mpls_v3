@@ -92,12 +92,13 @@ export interface IResQuotationDetailData {
     // new max ltv field of credit (24/08/2022)
     cd_max_ltv: number;
     // new field form total loss (29/08/2022)
-    cd_coverage_total_loss: number,
-    cd_price_include_vat: number,
-    cd_engine_number: string,
-    cd_chassis_number: string,
-    cd_engine_no_running: string,
-    cd_chassis_no_running: string,
+    cd_coverage_total_loss: number;
+    cd_price_include_vat: number;
+    cd_engine_number: string;
+    cd_chassis_number: string;
+    cd_engine_no_running: string;
+    cd_chassis_no_running: string;
+    cd_moto_year: number;
     cr_app_key_id: string;
     cr_main_career_name?: string;
     cr_main_career_code?: string;
@@ -265,6 +266,18 @@ export interface IResQuotationDetailData {
     cr_main_workplace_phone_no_1: string;
     cr_main_workplace_phone_no_2: string;
 
+    // === second hand car add-on field (03/04/2023) ===
+    cd_bussiness_code: string;
+    cd_bussiness_name: string;
+    cd_model_year: string;
+    cd_cc: number;
+    cd_reg_no: string;
+    cd_reg_date: Date;
+    cd_contract_ref: string;
+    cd_reg_mile: number;
+    cd_prov_code: string;
+    cd_prov_name: string;
+    quo_secondhand_car_verify: string;
 
 }
 

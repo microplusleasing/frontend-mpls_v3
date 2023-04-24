@@ -75,6 +75,21 @@
             <a>{{reasonFaceCompare}}</a>
         </div>
 
+        <!-- E-consent image (requirement on 20/04/2023)  -->
+
+        <mat-grid-list [cols]="layout.columns" [rowHeight]="'1200px'">
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <img src="{{(econsentimage$ | async)}}" >
+            </mat-grid-tile>
+        </mat-grid-list>
+        <mat-grid-list [cols]="layout.columns" [rowHeight]="'50px'">
+            <mat-grid-tile [colspan]="layout.list.maxcols">
+                <div class="textcenter-viewsign">
+                    <a>รูปภาพ E-consent</a>
+                </div>
+            </mat-grid-tile>
+        </mat-grid-list>
+
         <!-- verify tab -->
 
         <mat-grid-list [cols]="layout.columns" [rowHeight]="'120px'">

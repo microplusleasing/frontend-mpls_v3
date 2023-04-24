@@ -44,23 +44,35 @@
                     <span></span>
                     <br>
                 </div>
-                <div class="flex-center" style="margin-top: 1em;">
-                    <button mat-raised-button color="primary" (click)="onclickCreateCreditBtn()"
-                        [disabled]="this.createorupdatecreditbtnDisable">
-                        บันทึกข้อมูล
-                    </button><br>
-                </div>
-                <div *ngIf="!verifyeconsent" class="flex-center">
-                    <!-- <button mat-raised-button color="primary" (click)="onclickEconsentBtn()" [disabled]="!this.productdetailtab.productForm.controls.detailForm.valid"> -->
-                    <button mat-raised-button color="primary" (click)="onclickEconsentBtn()"
-                        [disabled]="this.econsentbtnDisable">
-                        ยืนยันการสมัคร
-                    </button>
+                <div class="flexbox" style="margin-top: 1em;">
+                    <div class="flex-center">
+                        <button mat-raised-button color="primary" (click)="onclickCreateCreditBtn()"
+                            [disabled]="this.createorupdatecreditbtnDisable">
+                            บันทึกข้อมูล
+                        </button>
+                    </div>
+                    <div class="flex-center">
+                        <div *ngIf="productdetailtab.showeconsentimagebutton">
+                            <button mat-raised-button color="primary" (click)="onClickEconsentImageView()">
+                                ดูเอกสาร E-consent
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex-center">
+                        <div *ngIf="!verifyeconsent" class="flex-center">
+                            <!-- <button mat-raised-button color="primary" (click)="onclickEconsentBtn()" [disabled]="!this.productdetailtab.productForm.controls.detailForm.valid"> -->
+                            <button mat-raised-button color="primary" (click)="onclickEconsentBtn()"
+                                [disabled]="this.econsentbtnDisable">
+                                ยืนยันการสมัคร
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </mat-step>
 
-        <mat-step [stepControl]="this.careerandpurposetab.careerandpurposeForm.controls.verifyCareerandpurpose" state="careerandpurpose">
+        <mat-step [stepControl]="this.careerandpurposetab.careerandpurposeForm.controls.verifyCareerandpurpose"
+            state="careerandpurpose">
             <mat-divider></mat-divider>
             <ng-template matStepLabel>อาชีพ และ รายได้</ng-template>
             <app-career-and-purpose [quotationReq]="quotationResult$"></app-career-and-purpose>
@@ -81,7 +93,7 @@
                 (emitverifyimageattach)="recieve_verifyimageattach($event)"></app-image-attach>
         </mat-step>
 
-        <mat-step [stepControl]="this.consenttab.signaturetab.signatureForm.controls.verifySignature" state="consent" >
+        <mat-step [stepControl]="this.consenttab.signaturetab.signatureForm.controls.verifySignature" state="consent">
             <mat-divider></mat-divider>
             <ng-template matStepLabel>เอกสารสัญญา</ng-template>
             <app-consent-tab [quotationReq]="quotationResult$"

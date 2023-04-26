@@ -649,7 +649,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.detailForm.controls.insurerCodeField.setValue('', { emitEvent: false });
                   this.detailForm.controls.insurerNameField.setValue('', { emitEvent: false });
                   this.detailForm.controls.interestRateField.setValue(null, { emitEvent: false });
-                  this.detailForm.controls.isincludeloanamount.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.isincludeloanamount.setValue(true, { emitEvent: false });
                   this.detailForm.controls.loanAmountField.setValue(null, { emitEvent: false });
                   this.detailForm.controls.maxltvField.setValue('', { emitEvent: false });
                   this.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false });
@@ -767,7 +767,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.detailForm.controls.insurerCodeField.setValue('', { emitEvent: false });
                   this.detailForm.controls.insurerNameField.setValue('', { emitEvent: false });
                   this.detailForm.controls.interestRateField.setValue(null, { emitEvent: false });
-                  this.detailForm.controls.isincludeloanamount.setValue(null, { emitEvent: false });
+                  this.detailForm.controls.isincludeloanamount.setValue(true, { emitEvent: false });
                   this.detailForm.controls.loanAmountField.setValue(null, { emitEvent: false });
                   this.detailForm.controls.maxltvField.setValue('', { emitEvent: false });
                   this.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false });
@@ -1338,6 +1338,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               // *** check for stamp record data to form ====
               if (!recordExists) {
                 // === no record exist ===
+
+                // === set default isincludeloanamount to ture (25/04/2023) ===
+                this.detailForm.controls.isincludeloanamount.setValue(true, { emitEvent: false });
 
                 // // === stamp dealer code ==== 
                 const sessionData = this.userSessionQuotation

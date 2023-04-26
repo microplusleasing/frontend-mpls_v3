@@ -11,6 +11,7 @@ import { BypassSignatureComponent } from './page/bypass-signature/bypass-signatu
 import { MrtaInfoComponent } from './page/view/mrta/mrta-info/mrta-info.component';
 import { CollectorViewComponent } from './page/collector/collector-view/collector-view.component';
 import { CollectorDetailComponent } from './page/collector/collector-detail/collector-detail.component';
+import { ViewCarAttachComponent } from './page/view/view-car-attach/view-car-attach.component';
 
 const routes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthGuardService] },
@@ -25,13 +26,15 @@ const routes: Routes = [
   { path: 'collector-view', component: CollectorViewComponent, canActivate: [AuthGuardService] },
   { path: 'collector-detail', component: CollectorDetailComponent, canActivate: [AuthGuardService] },
   { path: 'collector-detail/:id', component: CollectorDetailComponent, canActivate: [AuthGuardService] },
-  { path: 'viewsign', component: ViewsignComponent },
-  { path: 'notfound', component: NotFoundComponent },
-  { path: '**', redirectTo: 'notfound', pathMatch: 'full' }
+  { path: 'viewsign', component: ViewsignComponent }, 
+  { path: 'viewimg_used_moto', component: ViewCarAttachComponent }, 
+  { path: 'viewimg_used_moto/:application_num', component: ViewCarAttachComponent }, 
+  { path: 'notfound', component: NotFoundComponent }, 
+  { path: '**', redirectTo: 'notfound', pathMatch: 'full' } 
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  imports: [RouterModule.forRoot(routes)], 
+  exports: [RouterModule] 
 })
 export class AppRoutingModule { }

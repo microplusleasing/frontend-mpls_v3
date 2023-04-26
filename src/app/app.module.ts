@@ -54,6 +54,7 @@ import { EConsentImageDialogComponent } from './widget/dialog/e-consent-image-di
 import { SecondhandCarViewDialogComponent } from './widget/dialog/secondhand-car-view-dialog/secondhand-car-view-dialog.component';
 import { SecondhandCarAttachImageDialogComponent } from './widget/dialog/secondhand-car-attach-image-dialog/secondhand-car-attach-image-dialog.component';
 import { ConfirmDeleteSecondhandCarImageAttachComponent } from './widget/dialog/confirm-delete-secondhand-car-image-attach/confirm-delete-secondhand-car-image-attach.component';
+import { ViewCarAttachComponent } from './page/view/view-car-attach/view-car-attach.component';
 
 
 @NgModule({
@@ -103,6 +104,7 @@ import { ConfirmDeleteSecondhandCarImageAttachComponent } from './widget/dialog/
     SecondhandCarViewDialogComponent,
     SecondhandCarAttachImageDialogComponent,
     ConfirmDeleteSecondhandCarImageAttachComponent,
+    ViewCarAttachComponent,
   ],
   imports: [
     BrowserModule,

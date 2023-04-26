@@ -52,6 +52,7 @@ import { IResCheckSecondhandCarImageAttach } from '../interface/i-res-check-seco
 import { IResClearSecondhandCarImageAttach } from '../interface/i-res-clear-secondhand-car-image-attach';
 import { IImageAttachUploadMultipleList } from '../interface/i-image-attach-upload-multiple-list';
 import { IResCreateImageAttachMultipleList } from '../interface/i-res-create-image-attach-multiple-list';
+import { IResImageAttachMultipleByAppid } from '../interface/i-res-image-attach-multiple-by-appid';
 
 
 @Injectable({
@@ -318,6 +319,11 @@ export class QuotationService {
     return this.http.get<IResImageAttachMultiple>(url)
   }
 
+  MPLS_getimage_multiple_filebyappid(appid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimage_multiple_filebyappid?applicationid=${appid}`
+    return this.http.get<IResImageAttachMultipleByAppid>(url)
+  }
+
   MPLS_create_image_attach_file(fd: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_image_attach_file`
     return this.http.post<IResCreateImageAttach>(url, fd)
@@ -328,7 +334,7 @@ export class QuotationService {
     return this.
       http.post<IResCreateImageAttachMultiple>(url, fd)
   }
-  
+
   MPLS_create_image_attach_file_multiple_list(fd: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_image_attach_file_multiple_list`
     return this.http.post<IResCreateImageAttachMultipleList>(url, fd)

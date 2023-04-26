@@ -101,9 +101,9 @@
                             พนักงานถือการ์ดลูกหนี้
                         </mat-label>
                         <input type="text" placeholder="" aria-label="Number" matInput
-                            [formControl]="cardholdernameField" [matAutocomplete]="autoBrand" [required]="true">
+                            [formControl]="cardholdernameField" [matAutocomplete]="autoBrand">
                         <mat-autocomplete autoActiveFirstOption #autoBrand="matAutocomplete">
-                            <mat-option matNativeControl required *ngFor="let fbl of filterHolderList"
+                            <mat-option matNativeControl *ngFor="let fbl of filterHolderList"
                                 [value]="fbl.emp_id">
                                 {{fbl.emp_fullname}}
                             </mat-option>

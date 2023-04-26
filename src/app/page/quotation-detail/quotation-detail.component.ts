@@ -38,6 +38,7 @@ import { ImageService } from 'src/app/service/image.service';
 import { FinishQuotationDialogComponent } from 'src/app/widget/dialog/finish-quotation-dialog/finish-quotation-dialog.component';
 import { IDialogFinishQuotation } from 'src/app/interface/i-dialog-finish-quotation';
 import { IUserTokenData } from 'src/app/interface/i-user-token';
+import { EConsentImageDialogComponent } from 'src/app/widget/dialog/e-consent-image-dialog/e-consent-image-dialog.component';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -242,6 +243,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                       this.verifyeconsent_txt = 'ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ตเรียบร้อย'
                     } else {
                       this.verifyeconsent_txt = 'ไม่ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ต'
+                    }
+
+                    if (quoitem.otp_consent_verify == 'Y') {
+                      this.productdetailtab.showeconsentimagebutton = true
                     }
                   }
 
@@ -601,7 +606,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     if (!this.quoid) {
       this.loadingService.showLoader();
       if ($event.status) {
-  
+
         this.createquotationdopa('1', $event.uuid).then((dchk) => {
           if (dchk.status) {
             this.dipchipService.updatedipchipflag({
@@ -611,16 +616,16 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             }).subscribe(async (value) => {
               this.loadingService.hideLoader()
               console.log(`flag success : ${JSON.stringify(value)}`)
-  
+
               // === set router id ===
               if (value.number == 200) {
                 this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
-  
+
                 // ==== ปลดล๊อค form เมื่อ dipchip สำเร็จ ====
                 this.cizcardtab.cizForm.enable()
-  
+
                 const queryParams: Params = { id: dchk.refId };
-  
+
                 await this.router.navigate(
                   [],
                   {
@@ -630,9 +635,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                   }
                 );
                 // === add dopa status (11/11/2022) === 
-  
+
                 this.quotationService.setstatusdopa(dchk.refId)
-  
+
                 this.afteroninit();
               }
             })
@@ -642,50 +647,52 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               token: '',
               username: this.usernamefordipchip,
               fromBody: $event.uuid
-            }).subscribe({next: async (value) => {
-              this.loadingService.hideLoader()
-              console.log(`flag success : ${JSON.stringify(value)}`)
-  
-              // === set router id ===
-              if (value.number == 200) {
-                this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
-  
-                // === status false (STATUS_CODE from dopa is null or 500 ) ===
-                this.snackbarfail(`ไม่พบข้อมูล DIPCHIP : ${dchk.message}`)
-                this.cizcardtab.showdipchipbtn = false
-                this.cizcardtab.cizForm.enable()
-                // this.cizcardtab.cizCardImage_string = ''
-                // this.cizcardtab.cizCardImage = `${environment.citizen_card_img_preload}`
-                // this.cizcardtab.cizForm.reset()
-                const returnCreateNoneconsent = await this.createquotationdopanoneconsent($event.uuid)
-                if (returnCreateNoneconsent.status) {
-                  // ==== ปลดล๊อค form เมื่อ dipchip สำเร็จ ====
+            }).subscribe({
+              next: async (value) => {
+                this.loadingService.hideLoader()
+                console.log(`flag success : ${JSON.stringify(value)}`)
+
+                // === set router id ===
+                if (value.number == 200) {
+                  this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
+
+                  // === status false (STATUS_CODE from dopa is null or 500 ) ===
+                  this.snackbarfail(`ไม่พบข้อมูล DIPCHIP : ${dchk.message}`)
+                  this.cizcardtab.showdipchipbtn = false
                   this.cizcardtab.cizForm.enable()
-  
-                  const queryParams: Params = { id: returnCreateNoneconsent.refId };
-  
-                  await this.router.navigate(
-                    [],
-                    {
-                      relativeTo: this.actRoute,
-                      queryParams: queryParams,
-                      queryParamsHandling: 'merge', // remove to replace all query params by provided
-                    }
-                  );
-                  // === add dopa status (11/11/2022) === 
-  
-                  this.quotationService.setstatusdopa(dchk.refId)
-  
-                  this.afteroninit();
-                } else {
-                  this.snackbarfail('สร้างรายการ quotation ไม่สำเร็จ (non-econsent)')
+                  // this.cizcardtab.cizCardImage_string = ''
+                  // this.cizcardtab.cizCardImage = `${environment.citizen_card_img_preload}`
+                  // this.cizcardtab.cizForm.reset()
+                  const returnCreateNoneconsent = await this.createquotationdopanoneconsent($event.uuid)
+                  if (returnCreateNoneconsent.status) {
+                    // ==== ปลดล๊อค form เมื่อ dipchip สำเร็จ ====
+                    this.cizcardtab.cizForm.enable()
+
+                    const queryParams: Params = { id: returnCreateNoneconsent.refId };
+
+                    await this.router.navigate(
+                      [],
+                      {
+                        relativeTo: this.actRoute,
+                        queryParams: queryParams,
+                        queryParamsHandling: 'merge', // remove to replace all query params by provided
+                      }
+                    );
+                    // === add dopa status (11/11/2022) === 
+
+                    this.quotationService.setstatusdopa(dchk.refId)
+
+                    this.afteroninit();
+                  } else {
+                    this.snackbarfail('สร้างรายการ quotation ไม่สำเร็จ (non-econsent)')
+                  }
                 }
+              }, error: (e) => {
+                this.loadingService.hideLoader()
+              }, complete: () => {
+                this.loadingService.hideLoader()
               }
-            }, error: (e) => {
-              this.loadingService.hideLoader()
-            }, complete: () => {  
-              this.loadingService.hideLoader()
-            }})
+            })
           }
         })
       }
@@ -834,6 +841,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
   async onclickSavecitizendata() {
 
+
     // บันทึกค่าข้อมูลที่วไปเกี่ยวกับลูกค้า 
     // (MPLS_QUOTATION, MPSL_LIVING_PLACE, MPLS_HOUSE_REGIS_PLACE, MPLS_CONTACT_PLACE, MPLS_WORK_PLACE)
 
@@ -942,6 +950,31 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       this.loadingService.hideLoader()
       console.log(`error create e-consent quotation : ${e.message}`)
     }
+
+  }
+
+  async onClickEconsentImageView() {
+    // *** show image e-consent by id ***
+    // *** requirent on 20/04/2023 ****
+    this.dialog.open(EConsentImageDialogComponent, {
+      panelClass: 'custom-dialog-header',
+      width: `80%`,
+      height: `90%`,
+      data: {
+        quotationid: this.quoid
+      }
+    }).afterClosed().subscribe((res) => {
+      // do nothing 
+      if (res) {
+        this.dialog.open(MainDialogComponent, {
+          data: {
+            header: `ไม่พบรูปภาพ`,
+            message: `ไม่พบรายการเอกสาร E-consent ภายใตรายการนี้`,
+            button_name: `ปิด`
+          }
+        })
+      }
+    })
 
   }
 
@@ -1248,7 +1281,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       }
 
       if (app_no !== '' && app_no && currentDate) {
-      // if (app_no && currentDate) {
+        // if (app_no && currentDate) {
 
         const quotationid = this.actRoute.snapshot.queryParamMap.get('id') ?? ''
 
@@ -1288,6 +1321,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             if (reseconsentdialog.data == 'success') {
 
               this.snackbarsuccess('ทำรายการสำเร็จ')
+              this.productdetailtab.showeconsentimagebutton = true
               this.productdetailtab.productForm.controls.consentVerify.setValue(true)
               this.verifyeconsent = true
               // === set image attach valid (econsent non require image) === 

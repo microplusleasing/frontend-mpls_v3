@@ -10,6 +10,8 @@ import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dial
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { LoadingService } from 'src/app/service/loading.service';
 import { environment } from 'src/environments/environment';
+import { EConsentImageDialogComponent } from 'src/app/widget/dialog/e-consent-image-dialog/e-consent-image-dialog.component';
+import { IResGeteconsentimagebyidData } from 'src/app/interface/i-res-geteconsentimagebyid';
 
 @Component({
   selector: 'app-viewsign',
@@ -21,6 +23,7 @@ export class ViewsignComponent implements OnInit {
   // image src subject
   customersignatureimg$ = new BehaviorSubject<string>('')
   witnesssignatureimg$ = new BehaviorSubject<string>('')
+  econsentimage$ = new BehaviorSubject<string>('')
 
   // === add image customer cizcard (dipchip) and face customer compare (add on 09/02/2023) ===
   customerdipchipimg$ = new BehaviorSubject<string>('')
@@ -78,6 +81,7 @@ export class ViewsignComponent implements OnInit {
     this.witnesssignatureimg$.next('/assets/image/placeholder-image.png')
     this.customerdipchipimg$.next('/assets/image/placeholder-image.png')
     this.facecustomerimg$.next('/assets/image/placeholder-image.png')
+    this.econsentimage$.next('/assets/image/placeholder-image.png')
   }
 
   ngOnInit(): void {
@@ -99,9 +103,10 @@ export class ViewsignComponent implements OnInit {
 
         const combinedd$ = combineLatest([
           this.viewsignService.getviewsignimage(this.quotationid.value),
-          this.quotationService.MPLS_getimagetocompareiapp_unlock(this.quotationid.value)
+          this.quotationService.MPLS_getimagetocompareiapp_unlock(this.quotationid.value),
+          this.quotationService.MPLS_geteconsentimagebyid(this.quotationid.value)
         ]).subscribe({
-          next: async ([res_viewsign, res_face_compare]) => {
+          next: async ([res_viewsign, res_face_compare, res_econsent_image]) => {
             this.loadingService.hideLoader()
             // === handle viesign ===
             if (res_viewsign.status == 200) {
@@ -139,6 +144,13 @@ export class ViewsignComponent implements OnInit {
               })
             } else {
               console.log('res_face_compare status !== 200')
+            }
+
+            if (res_econsent_image.status == 200) {
+              const econsentimagebase64 = await this.getUrlEconsentImage(res_econsent_image.data[0])
+              this.econsentimage$.next(econsentimagebase64)
+            } else {
+              console.log('res_econsent_image !== 200')
             }
 
 
@@ -233,6 +245,20 @@ export class ViewsignComponent implements OnInit {
   getUrlImage(data: IConsentdata): Promise<string> {
     return new Promise((resolve, reject) => {
       const buf = data.signature_image.data;
+      const base64format = `data:image/jpeg;base64,`
+      const base64data = this._arrayBufferToBase64(buf)
+      const strurl = `${base64format}${base64data}`
+      if (strurl) {
+        resolve(strurl);
+      } else {
+        reject(`/assets/image/placeholder-image.png`);
+      }
+    })
+  }
+
+  getUrlEconsentImage(data: IResGeteconsentimagebyidData): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const buf = data.econsent_image.data;
       const base64format = `data:image/jpeg;base64,`
       const base64data = this._arrayBufferToBase64(buf)
       const strurl = `${base64format}${base64data}`

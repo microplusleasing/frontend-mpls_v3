@@ -162,6 +162,8 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
   status: string = '';
   pageno: string = '';
   carcheckstatus: string = '';
+  holder: string = ''
+  apd: string = ''
 
   usernamelogin: string = '';
 
@@ -251,6 +253,8 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
       this.status = params['status'];
       this.pageno = params['pageno'];
       this.carcheckstatus = params['carcheckstatus'];
+      this.holder = params['holder'];
+      this.apd = params['apd'];
     });
 
 
@@ -544,6 +548,7 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
 
   sumbitnegocreaterecord() {
     // let items: Record<string,any> = {}
+    this.loadingService.showLoader()
     const appointmentDate = this.followupForm.controls.negofollowup.controls.appointmentdatefield.value
     const formattedDate = this.datepipe.transform(appointmentDate, 'dd/MM/yyyy');
     let items: any = {}
@@ -566,10 +571,12 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
     // items.con_r_code = this.followupForm.get('contactresultfield')?.value
     // items.neg_r_code = this.followupForm.get('negofollowup.contactresultfield')?.value
     items.neg_r_code = this.followupForm.controls.negofollowup.controls.contactresultfield.value
-
+    // this.followupForm.controls.negofollowup.reset();
 
     this.negotiationService.insertnegolist(items).subscribe({
       next: (results) => {
+        this.loadingService.hideLoader()
+        this.followupForm.controls.negofollowup.reset();
         if (results.status == 200) {
           console.log(`this is results : ${results}`)
           this.triggerfollowup = false;
@@ -582,7 +589,7 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
           )
           this.negotiationService.getfollowuppaymentlist(1, this.applicationid).subscribe({
             next: (resultnego) => {
-
+              this.loadingService.hideLoader()
               console.log(`this is reuslt negotiation : ${JSON.stringify(resultnego)}`)
               this.negodataList = resultnego.data
               this.nego_dataSource = new MatTableDataSource(this.negodataList)
@@ -595,9 +602,11 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
               // === handle error ===
             }, complete: () => {
               // === nex step ===
+              this.loadingService.hideLoader()
             }
           })
         } else {
+          this.loadingService.hideLoader()
           this._snackBar.open(`เกิดข้อผิดพลาด ไม่สา่มารถสร้างใบคำขอได้ \n ${results.message}`,
             '',
             {
@@ -614,6 +623,8 @@ export class CollectorDetailComponent extends BaseService implements OnInit {
             panelClass: 'fail-mat-snackbar'
           }
         )
+      }, complete: () => {
+        this.loadingService.hideLoader()
       }
     })
 

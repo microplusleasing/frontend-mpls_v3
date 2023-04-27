@@ -48,7 +48,7 @@
                 <mat-select formControlName="usertype">
                   <mat-option [value]="null" disabled hidden>เลือกประเภทการใช้งาน</mat-option>
                   <mat-option [value]="1">Checker</mat-option>
-                  <mat-option [value]="2">FCR</mat-option>
+                  <!-- <mat-option [value]="2">FCR</mat-option> -->
                   <mat-option [value]="0">Dealer</mat-option>
                 </mat-select>
                 <mat-error *ngIf="this.usertype.invalid">

@@ -54,36 +54,37 @@ export class UserService {
 
   checkpermissionbyrole(pagename: string, role: string) {
 
-    let chkrole = false;
-    for (const [key, value] of Object.entries(this.pagepermission)) {
-      // console.log(`${key}: ${value}`);
-      if (key == role) {
-        for (let i = 0; i < value.length; i++) {
-          if (pagename == '/') {
-            if (pagename == value[i]) {
-              chkrole = true
-            }
-          } else {
-            if (pagename.includes('collector-detail') || pagename.includes('collector')) {
-              if (role.includes('collector')) {
-                if (pagename.includes(value[i])) {
-                  chkrole = true
-                }
-              }
-            } else if (pagename.includes('quotation') || pagename.includes('home')) {
-              if (pagename.includes(value[i])) {
-                chkrole = true
-              }
-            } else {
-              if (pagename == value[i]) {
-                chkrole = true
-              }
-            }
-          }
+    let chkrole = true
+    // let chkrole = false;
+    // for (const [key, value] of Object.entries(this.pagepermission)) {
+    //   // console.log(`${key}: ${value}`);
+    //   if (key == role) {
+    //     for (let i = 0; i < value.length; i++) {
+    //       if (pagename == '/') {
+    //         if (pagename == value[i]) {
+    //           chkrole = true
+    //         }
+    //       } else {
+    //         if (pagename.includes('collector-detail') || pagename.includes('collector')) {
+    //           if (role.includes('collector')) {
+    //             if (pagename.includes(value[i])) {
+    //               chkrole = true
+    //             }
+    //           }
+    //         } else if (pagename.includes('quotation') || pagename.includes('home')) {
+    //           if (pagename.includes(value[i])) {
+    //             chkrole = true
+    //           }
+    //         } else {
+    //           if (pagename == value[i]) {
+    //             chkrole = true
+    //           }
+    //         }
+    //       }
 
-        }
-      }
-    }
+    //     }
+    //   }
+    // }
 
     return chkrole;
 

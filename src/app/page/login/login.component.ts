@@ -254,9 +254,9 @@ export class LoginComponent extends BaseService {
               if (data.usertype == 1) {
                 // === checker : 1 ====
                 this.router.navigate(['/quotation-view']);
-              } else if (data.usertype == 2) {
-                // === fcr : 2 ====
-                this.router.navigate(['/collector-view']);
+                // } else if (data.usertype == 2) {
+                //   // === fcr : 2 ====
+                //   this.router.navigate(['/collector-view']);
               } else if (data.usertype == 0) {
                 // === dealer : 0  ====
                 this.router.navigate(['/quotation-view']);

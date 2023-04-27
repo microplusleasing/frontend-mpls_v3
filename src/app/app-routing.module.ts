@@ -13,7 +13,8 @@ import { CollectorViewComponent } from './page/collector/collector-view/collecto
 import { CollectorDetailComponent } from './page/collector/collector-detail/collector-detail.component';
 
 const routes: Routes = [
-  { path: '', component: DashboardComponent, canActivate: [AuthGuardService] },
+  // { path: '', component: DashboardComponent, canActivate: [AuthGuardService] },
+  { path: '', component: QuotationViewComponent, canActivate: [AuthGuardService] },
   { path: 'login', component: LoginComponent },
   { path: 'quotation-view', component: QuotationViewComponent, canActivate: [AuthGuardService] },
   { path: 'quotation-detail', component: QuotationDetailComponent, canActivate: [AuthGuardService] },
@@ -22,9 +23,9 @@ const routes: Routes = [
   { path: 'bypass/:id', component: BypassSignatureComponent, canActivate: [AuthGuardService] },
   { path: 'mrta-info', component: MrtaInfoComponent, canActivate: [AuthGuardService]},
   { path: 'mrta-info/:id', component: MrtaInfoComponent, canActivate: [AuthGuardService] },
-  { path: 'collector-view', component: CollectorViewComponent, canActivate: [AuthGuardService] },
-  { path: 'collector-detail', component: CollectorDetailComponent, canActivate: [AuthGuardService] },
-  { path: 'collector-detail/:id', component: CollectorDetailComponent, canActivate: [AuthGuardService] },
+  // { path: 'collector-view', component: CollectorViewComponent, canActivate: [AuthGuardService] },
+  // { path: 'collector-detail', component: CollectorDetailComponent, canActivate: [AuthGuardService] },
+  // { path: 'collector-detail/:id', component: CollectorDetailComponent, canActivate: [AuthGuardService] },
   { path: 'viewsign', component: ViewsignComponent },
   { path: 'notfound', component: NotFoundComponent },
   { path: '**', redirectTo: 'notfound', pathMatch: 'full' }

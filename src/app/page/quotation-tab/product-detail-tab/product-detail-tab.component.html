@@ -10,7 +10,7 @@
                         <!-- ประเภทผลิดภัณฑ์ -->
                         <mat-form-field appearance="outline">
                             <mat-select required [formControl]="bussinessCode">
-                                <mat-option [value]="null" disabled hidden>เลือกคำนำหน้า</mat-option>
+                                <mat-option [value]="null" disabled hidden>เลือกผลิตภัณฑ์</mat-option>
                                 <mat-option *ngFor="let item of bussinessList"
                                     [value]="item.bussiness_code">{{item.bussiness_name}}</mat-option>
                             </mat-select>

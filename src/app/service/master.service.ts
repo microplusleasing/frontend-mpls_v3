@@ -62,16 +62,16 @@ export class MasterDataService {
     return this.http.get<IResGetMasterBussiness>(url)
   }
 
-  getSizeModel(pro_code: string, brand_code: string, model_code: string, dealer_code: string, busi_code: string, factory_price: number): Observable<IResMasterModelSize> {
+  getSizeModel(pro_code: string, brand_code: string, model_code: string, dealer_code: string, busi_code: string, factory_price: number, moto_year: number | string): Observable<IResMasterModelSize> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getSizeModel?pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dealer_code=${dealer_code}&busi_code=${busi_code}&&factory_price=${factory_price}`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getSizeModel?pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dealer_code=${dealer_code}&busi_code=${busi_code}&&factory_price=${factory_price}`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getSizeModel?pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dealer_code=${dealer_code}&busi_code=${busi_code}&factory_price=${factory_price}&moto_year=${moto_year}`
     return this.http.get<IResMasterModelSize>(url)
   }
 
-  getRate(pro_code: string, size_model: string, bussiness_code: string): Observable<IResMasterRate> {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterRate?pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}`
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterRate?pro_code=${pro_code}&size_model=${size_model}`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MasterRate?pro_code=${pro_code}&size_model=${size_model}&bussiness_code=${bussiness_code}`
+  getMasterRate(pro_code: string, size_model: string, bussiness_code: string): Observable<IResMasterRate> {
+    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getMasterRate?pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}`
+    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getMasterRate?pro_code=${pro_code}&size_model=${size_model}`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getMasterRate?pro_code=${pro_code}&size_model=${size_model}&bussiness_code=${bussiness_code}`
     return this.http.get<IResMasterRate>(url)
   }
   getRateSheet(brand_code: string, model_code: string, dealer_code: string, busi_code: string, insurance_code: string, insurance_year: number): Observable<IResMasterRatesheet> {

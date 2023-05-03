@@ -255,7 +255,16 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                   }
 
                   if (quoitem.cd_app_key_id !== '' && quoitem.cd_app_key_id !== null) {
-                    this.econsentbtnDisable = false
+
+                    // *** check 2ndhand car contain image ***
+
+                    if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value !== '002' && this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value !== '003') {
+                      if (quoitem.quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                        this.econsentbtnDisable = false
+                      }
+                    } else {
+                      this.econsentbtnDisable = false
+                    }
                   }
 
                   if (quoitem.quo_status == 3) {
@@ -1328,7 +1337,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                 this.imageattachtab.showsecondhandcarimageattach = true
 
 
-                this.econsentbtnDisable = false
+                if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                  this.econsentbtnDisable = false
+                }
                 this.cizcardtab.cizForm.markAsPristine();
                 this.snackbarsuccess(`${reqcreatecredit.message}`)
               } else {
@@ -1370,7 +1381,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                   this.imageattachtab.showsecondhandcarimageattach = true
 
 
-                  this.econsentbtnDisable = false
+                  if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                    this.econsentbtnDisable = false
+                  }
                   this.cizcardtab.cizForm.markAsPristine();
                   this.snackbarsuccess(`${reqcreatecredit.message}`)
                 } else {
@@ -1423,7 +1436,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                           this.imageattachtab.txtrequireimagesecondhandcar = ''
                         }
 
-                        this.econsentbtnDisable = false
+                        if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                          this.econsentbtnDisable = false
+                        }
                         this.cizcardtab.cizForm.markAsPristine();
                         this.snackbarsuccess(`${reqcreatecredit.message}`)
                       } else {
@@ -1487,7 +1502,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                               this.imageattachtab.txtrequireimagesecondhandcar = ''
                             }
 
-                            this.econsentbtnDisable = false
+                            if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                              this.econsentbtnDisable = false
+                            }
                             this.cizcardtab.cizForm.markAsPristine();
                             this.snackbarsuccess(`${reqcreatecredit.message}`)
                           } else {
@@ -1638,7 +1655,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           this.imageattachtab.showsecondhandcarimageattach = true
         }
 
-        this.econsentbtnDisable = false
+        if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+          this.econsentbtnDisable = false
+        }
         this.cizcardtab.cizForm.markAsPristine();
         this.snackbarsuccess(`${reqcreatecredit.message}`)
       } else {
@@ -1650,7 +1669,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
   async recieve_trigger_bussinesscode($event: boolean) {
     if ($event) {
-      this.econsentbtnDisable = false
+      if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+        this.econsentbtnDisable = false
+      }
     } else {
       this.econsentbtnDisable = true
     }

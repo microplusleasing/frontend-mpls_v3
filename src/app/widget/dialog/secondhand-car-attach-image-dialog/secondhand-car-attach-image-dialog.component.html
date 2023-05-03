@@ -10,13 +10,17 @@
             </div>
             <div class="card" style="width: 80%;">
                 <div style="text-align: center;">
-                    <span style="color: red;">{{this.txtsecondhandcarheader}}</span>
+                    <span [ngStyle]="{'color':this.uploadedImages.length == 2 ? 'green' : 'red' }">
+                        {{this.txtsecondhandcarheaderstatus}}
+                    </span>
                 </div>
 
-                <button mat-raised-button color="primary" (click)="fileInput.click();" style="margin-left: 1em;;">
-                    <mat-icon>photo_library</mat-icon>
-                    แนบไฟล์ภาพ
-                </button>
+                <!-- <div *ngIf="this.uploadedImages.length < 2"> -->
+                    <button mat-raised-button color="primary" (click)="fileInput.click();" style="margin-left: 1em;;">
+                        <mat-icon>photo_library</mat-icon>
+                        แนบไฟล์ภาพ
+                    </button>
+                <!-- </div> -->
 
                 <input type="file" accept="image/jpeg" capture="environment" (change)="onFileChange($event)" #fileInput
                     style="visibility: hidden;">

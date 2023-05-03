@@ -786,7 +786,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.secondHandCarForm.controls.model_year.setValue('', { emitEvent: false })
                   this.secondHandCarForm.controls.cc.setValue(null, { emitEvent: false })
                   this.secondHandCarForm.controls.reg_no.setValue('', { emitEvent: false })
-                  this.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false })
+                  // this.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false })
+                  this.secondHandCarForm.controls.reg_date.setValue(null)
                   this.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false })
                   this.secondHandCarForm.controls.reg_mile.setValue(null, { emitEvent: false })
                   this.secondHandCarForm.controls.prov_name.setValue('', { emitEvent: false })
@@ -916,6 +917,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                     // ==== get Rate and PaymentCount select from service ==== 
 
+                    const busicode = this.productForm.controls.detailForm.controls.bussinessCode.value
+
                     if (bcSelect && bmSelect && modelPrice) {
 
                       this.masterDataService.getSizeModel(
@@ -923,14 +926,16 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         bcSelect,
                         bmSelect,
                         this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
-                        '001',
-                        modelPrice
+                        this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
+                        // '001',
+                        modelPrice,
+                        (busicode == '003' && this.productForm.controls.secondHandCarForm.controls.moto_year.value) ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : ''
                       ).subscribe((result) => {
                         this.productForm.controls.detailForm.controls.sizeModelField.setValue(result.data[0].size);
                         // this.masterDataService.getTerm('01', result.data[0].size).subscribe((resPayment) => {
                         //   console.log(`sol1 : ${JSON.stringify(resPayment.data)}`)
                         //   this.paymentCountSelect = resPayment.data
-                        //   this.masterDataService.getRate('01', result.data[0].size).subscribe((resRate) => {
+                        //   this.masterDataService.getMasterRate('01', result.data[0].size).subscribe((resRate) => {
                         //     this.rateSelect = resRate.data
 
                         //     // === set quotaion lookup data if old record ===
@@ -946,7 +951,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                         // === แก้ไขการเรียกข้อมูล term (จำนวนงวด) จาก paremeter ที่เพิ่มมาจาก net_finance และ rate ===
 
-                        this.masterDataService.getRate('01', result.data[0].size, '001').subscribe((resRate) => {
+                        const bussinessCode = this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : ``
+                        this.masterDataService.getMasterRate('01', result.data[0].size, bussinessCode).subscribe((resRate) => {
                           this.rateSelect = resRate.data
                           // === set quotaion lookup data if old record ===
                           if (this.quotationdatatemp.data) {
@@ -972,6 +978,15 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.productForm.controls.detailForm.controls.carModelNameField.setValue(carModelNameSelect)
                       }
                     }
+                  }
+
+                  // === stamp model year by model select (02/05/2023) ===
+                  if (this.productForm.controls.detailForm.controls.carModelField.value) {
+                    this.secondHandCarForm.controls.model_year.setValue(selectValue[0].model_year)
+                    this.secondHandCarForm.controls.cc.setValue(selectValue[0].cc)
+                  } else {
+                    this.secondHandCarForm.controls.model_year.setValue('')
+                    this.secondHandCarForm.controls.cc.setValue(null)
                   }
                 })
               } else {
@@ -1068,7 +1083,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss
                     (
                       this.productForm.controls.detailForm.controls.insuranceCodeField.value ? this.productForm.controls.detailForm.controls.insuranceCodeField.value : '',
-                      '001',
+                      // '001',
+                      this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
                       this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
                       this.productForm.controls.detailForm.controls.carModelField.value ? this.productForm.controls.detailForm.controls.carModelField.value : '',
                       this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
@@ -1150,6 +1166,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       })
                     }
                   }
+                } else {
+                  this.productForm.controls.secondHandCarForm.controls.moto_year.setValue(null)
                 }
 
 
@@ -1166,27 +1184,103 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 // *** calculate max ltv trigger when second hand car bussiness_code = '003' (require moto_year) ***
 
                 if (this.productForm.controls.detailForm.controls.bussinessCode.value == `003`) {
-                  const resultMaxLtv = await lastValueFrom(this.masterDataService.getMaxLtv(
-                    this.valuepricetemp,
-                    this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
-                    '01',
-                    this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
-                    this.selectModelCodeValueTemp,
-                    this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
-                    this.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : 0
-                  ))
+                  if (res_moto_year) {
 
-                  console.log(`this is max ltv value : ${resultMaxLtv.data[0].maxltv}`)
-                  const maxlvtsetFormat = this.numberWithCommas(resultMaxLtv.data[0].maxltv)
-                  const maxlvttext = `(สูงสุด ${maxlvtsetFormat} บาท)`
-                  this.maxltvValue$ = of(resultMaxLtv.data[0].maxltv)
-                  this.maxlvtmessage$ = of(maxlvttext)
-                  this.maxltvCurrent = resultMaxLtv.data[0].maxltv
+                    const busicode = this.productForm.controls.detailForm.controls.bussinessCode.value
+                    const bcSelect = this.productForm.controls.detailForm.controls.carBrandField.value
+                    const bmSelect = this.productForm.controls.detailForm.controls.carModelField.value
+                    let modelprice = this.modelListFilter.filter((items: { model_code: any; brand_code: any }) => {
+                      return items.model_code == this.productForm.controls.detailForm.controls.carModelField.value && items.brand_code == this.productForm.controls.detailForm.controls.carBrandField.value
+                    })
+                    // === get price from model select ==== 
+                    let fPirce;
+                    let modelPrice;
+                    if (bmSelect) {
 
-                  // === set max ltv field ===
-                  this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
+                      fPirce = this.modelSelect.filter((items: { brand_code: any; model_code: any }) => {
+                        return items.brand_code == bcSelect && items.model_code == bmSelect
+                      })
+
+
+                      if (fPirce.length !== 0) {
+
+                        modelPrice = fPirce[0].price;
+
+                        // ==== set factory price to field ===
+                        this.factoryprice = modelPrice
+
+                        const valuePrice = modelprice[0].price
+
+                        this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(valuePrice)
+                      }
+
+                    }
+
+                    if (bcSelect && bmSelect && modelPrice) {
+                      combineLatest([
+                        this.masterDataService.getMaxLtv(
+                          this.valuepricetemp,
+                          this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
+                          '01',
+                          this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
+                          this.selectModelCodeValueTemp,
+                          this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
+                          this.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : 0
+                        ),
+                        this.masterDataService.getSizeModel(
+                          '01',
+                          this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
+                          this.productForm.controls.detailForm.controls.carModelField.value ? this.productForm.controls.detailForm.controls.carModelField.value : '',
+                          this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
+                          this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
+                          // '001',
+                          modelPrice,
+                          (busicode == '003' && this.productForm.controls.secondHandCarForm.controls.moto_year.value) ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : ''
+                        )
+                      ]).subscribe({
+                        next: (res) => {
+                          // *** res[0] = result getMaxLtv ***
+                          // *** res[1] = result getSizeModel ***
+
+                          if (res[0].data.length !== 0) {
+                            // === getMaxLtv ====
+                            const maxlvtsetFormat = this.numberWithCommas(res[0].data[0].maxltv)
+                            const maxlvttext = `(สูงสุด ${maxlvtsetFormat} บาท)`
+                            this.maxltvValue$ = of(res[0].data[0].maxltv)
+                            this.maxlvtmessage$ = of(maxlvttext)
+                            this.maxltvCurrent = res[0].data[0].maxltv
+
+                            // === set max ltv field ===
+                            this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
+                          }
+
+                          if (res[1].data.length !== 0) {
+                            // === getSizeModel === 
+
+                            this.productForm.controls.detailForm.controls.sizeModelField.setValue(res[1].data[0].size);
+                            // === แก้ไขการเรียกข้อมูล term (จำนวนงวด) จาก paremeter ที่เพิ่มมาจาก net_finance และ rate ===
+
+                            const bussinessCode = this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : ``
+                            this.masterDataService.getMasterRate('01', res[1].data[0].size, bussinessCode).subscribe((resRate) => {
+                              this.rateSelect = resRate.data
+                              // === set quotaion lookup data if old record ===
+                              if (this.quotationdatatemp.data) {
+                                const quoitem = this.quotationdatatemp.data[0]
+                                this.productForm.controls.detailForm.controls.interestRateField.setValue((quoitem.cd_interest_rate ? quoitem.cd_interest_rate : null), { emitEvent: false })
+                                this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(quoitem.cd_payment_round_count ? quoitem.cd_payment_round_count : null, { emitEvent: false })
+                                this.showlistInsurancePlan();
+                              }
+                            })
+                          }
+                        }
+                      })
+                    }
+
+                  } else {
+                    this.rateSelect = []
+                    this.productForm.controls.detailForm.controls.interestRateField.setValue(null)
+                  }
                 }
-
 
 
                 // *** (remove check valid moto year date to save button) ***
@@ -1359,12 +1453,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               } else {
 
                 // === already have record (have quo_key_app_id) ===
-
-                // ==== show all condition validtor === 
-                this.showPrice = true;
-                this.showchassisandengine = true
-                this.showBrandModelLoan$ = of(true);
-                this.showInsuranceSelect$ = of(true);
                 // === load and call master data ===
 
 
@@ -1386,10 +1474,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 const qcarbrandname = quoitem.cd_brand_name ?? '';
                 const qcarmodelcode = quoitem.cd_model_code ?? '';
                 const qcarmodelname = quoitem.cd_model_name ?? '';
-                const qcolor = quoitem.cd_color_name ?? ''
+                const qcolor = quoitem.cd_color_name ?? '';
                 const qcarmodel = quoitem.cd_model_code ?? '';
                 const qsizemodel = quoitem.cd_size_model ?? '';
-                const qfactoryprice = quoitem.cd_factory_price ?? null
+                const qfactoryprice = quoitem.cd_factory_price ?? null;
                 const qrate = quoitem.cd_interest_rate ?? null;
                 const qterm = quoitem.cd_payment_round_count ?? null;
                 const qisincludealoneamount = quoitem.cd_is_include_loanamount ? true : false;
@@ -1497,7 +1585,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 if (qfactoryprice && qcarbrandcode && qcarmodel && qterm && qsizemodel && qloanamount && qinsureplanpricevalue && qrate) {
 
 
-                  const resultRateMaster = await lastValueFrom(this.masterDataService.getRate(`01`, qsizemodel, '001'));
+                  const resultRateMaster = await lastValueFrom(this.masterDataService.getMasterRate(`01`, qsizemodel, qbussinesscode));
 
                   // ==== change parameter for get insurance from factory_price to max_ltv (24/08/2022) ===
 
@@ -1520,11 +1608,18 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.maxlvtmessage$ = of(maxlvttext)
                   this.maxltvCurrent = resultMaxLtv.data[0].maxltv
 
+                  // ==== show all condition validtor === 
+                  this.showPrice = true;
+                  this.showchassisandengine = true
+                  this.showBrandModelLoan$ = of(true);
+                  this.showInsuranceSelect$ = of(true);
+
                   // === set max ltv field (29/08/2022) ===
                   this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
 
                   // const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsuranceold2((resultMaxLtv.data[0].maxltv.toString())));
-                  const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsurance(qfactoryprice, '001', qcarbrandcode, qcarmodelcode, qdealercode));
+                  // const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsurance(qfactoryprice, '001', qcarbrandcode, qcarmodelcode, qdealercode));
+                  const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsurance(qfactoryprice, qbussinesscode, qcarbrandcode, qcarmodelcode, qdealercode));
 
                   // === chage from getTerm to getTermNew 03/01/2023 ===
                   // const resultTerm = await lastValueFrom(this.masterDataService.getTerm(`01`, qsizemodel))

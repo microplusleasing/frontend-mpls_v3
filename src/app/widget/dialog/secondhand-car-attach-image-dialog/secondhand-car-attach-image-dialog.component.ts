@@ -25,6 +25,7 @@ export class SecondhandCarAttachImageDialogComponent implements OnInit {
   @ViewChild('fileInput') fileInput: ElementRef;
   uploadedImages: IImageAttachUploadMultipleList[] = [];
   txtsecondhandcarheader: string = 'รูปภาพแนบสำหรับรถมือสอง (ขั้นต่ำ 2 ภาพ)'
+  txtsecondhandcarheaderstatus: string = `รูปภาพแนบสำหรับรถมือสอง (ขั้นต่ำ 2 ภาพ) (จำนวนภาพที่แนบ: ${this.uploadedImages.length} ภาพ)`
   categories: IResImageTypeAttachMultipleData[] = [];
   recent_image_data: IResImageAttachMultipleData[] = [];
   temp_master_categories: IResImageTypeAttachMultipleData[] = [];
@@ -105,6 +106,13 @@ export class SecondhandCarAttachImageDialogComponent implements OnInit {
             arrayBlob: await this._base64toblob(this.selectImage),
             src: this.selectImage
           })
+
+          // *** check image require *** (28/04/2023) 
+          if (this.uploadedImages.length >= 2) {
+            this.txtsecondhandcarheaderstatus = `จำนวนไฟล์แนบผ่านขั้นต่ำแล้ว  (จำนวนภาพที่แนบ: ${this.uploadedImages.length} ภาพ)`
+          } else {
+            this.txtsecondhandcarheaderstatus = `รูปภาพแนบสำหรับรถมือสอง (ขั้นต่ำ 2 ภาพ) (จำนวนภาพที่แนบ: ${this.uploadedImages.length} ภาพ)`
+          }
           this.imageindex++
         }
       };

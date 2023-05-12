@@ -11,9 +11,12 @@ import { IResMasterInsuranceYearsData } from 'src/app/interface/i-res-master-ins
 import { IResMasterInsurerData } from 'src/app/interface/i-res-master-insurer';
 import { IResMasterModel, IResMasterModelData } from 'src/app/interface/i-res-master-model';
 import { IResQuotationDetail } from 'src/app/interface/i-res-quotation-detail';
+import { IUserToken } from 'src/app/interface/i-user-token';
 import { BaseService } from 'src/app/service/base/base.service';
+import { ImageUtilService } from 'src/app/service/image-util.service';
 import { LoadingService } from 'src/app/service/loading.service';
 import { MasterDataService } from 'src/app/service/master.service';
+import { DealerGradeImageDialogComponent } from 'src/app/widget/dialog/dealer-grade-image-dialog/dealer-grade-image-dialog.component';
 
 @Component({
   selector: 'app-product-detail-tab',
@@ -192,6 +195,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     private fb: FormBuilder,
     private cdRef: ChangeDetectorRef,
     private masterDataService: MasterDataService,
+    private imageUtilService: ImageUtilService,
     private loadingService: LoadingService,
     public override dialog: MatDialog,
     public override _snackBar: MatSnackBar,
@@ -314,8 +318,58 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 this.productForm.controls.detailForm.controls.dealerCode.setValidators(this.validateDealerformat(this.dealerList))
                 this.productForm.controls.detailForm.controls.dealerCode.valueChanges.pipe(
                   startWith(''),
+                  map(value => {
+
+                    // *** check dealer grade (09/05/2023) ***
+
+                    this.masterDataService.getDealergrade(value ? value : ``).subscribe({
+                      next: (resultDealerGrade) => {
+                        if (resultDealerGrade.status == 200) {
+                          if (resultDealerGrade.data.active_notice == 'Y') {
+
+
+                            let userdata = localStorage.getItem('currentUser');
+                            if (userdata) {
+
+                              const userdataObj = (JSON.parse(userdata) as IUserToken).data;
+                              if (userdataObj.channal == 'checker') {
+
+                                // *** check image contain data ****
+                                if (resultDealerGrade.data.notice_image.data.length !== 0) {
+
+                                  this.imageUtilService.getUrlImage(resultDealerGrade.data.notice_image.data).then(imageurldealergrade => {
+                                    // *** show dialog of image dealer grade ***
+                                    this.dialog.open(DealerGradeImageDialogComponent, {
+                                      disableClose: true,
+                                      width: `500`,
+                                      height: `700`,
+                                      data: {
+                                        imageurl: imageurldealergrade
+                                      }
+                                    }).afterClosed().subscribe((res_dealer_grage_dialog_close) => {
+                                      // console.log(`Close dialog dealer grade image !!`)
+                                    })
+                                  })
+                                }
+
+                              }
+                            }
+                          }
+                        }
+                      }, error: (e) => {
+
+                      }, complete: () => {
+
+                      }
+                    })
+
+                    // ***************************************
+
+                    return value
+                  }),
                   map(value => this._filterDealer(value))
                 ).subscribe(async (value: IResMasterDealerData[]) => {
+
                   this.filterDealerList = of(value)
 
                   const selectValue = this.dealerList.find((items: { dl_code: string }) => {

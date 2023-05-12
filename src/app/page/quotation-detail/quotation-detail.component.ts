@@ -39,6 +39,7 @@ import { FinishQuotationDialogComponent } from 'src/app/widget/dialog/finish-quo
 import { IDialogFinishQuotation } from 'src/app/interface/i-dialog-finish-quotation';
 import { IUserTokenData } from 'src/app/interface/i-user-token';
 import { EConsentImageDialogComponent } from 'src/app/widget/dialog/e-consent-image-dialog/e-consent-image-dialog.component';
+import { ImageUtilService } from 'src/app/service/image-util.service';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -112,6 +113,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.fb,
     this.cd,
     this.masterDataService,
+    this.imageUtilService,
     this.loadingService,
     this.dialog,
     this._snackBar,
@@ -174,6 +176,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     private breakpointObserver: BreakpointObserver,
     private loadingService: LoadingService,
     private masterDataService: MasterDataService,
+    private imageUtilService: ImageUtilService,
     private imageService: ImageService,
     private dipchipService: DipchipService,
     private actRoute: ActivatedRoute,

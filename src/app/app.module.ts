@@ -52,6 +52,7 @@ import { BackwardBarComponent } from './widget/backward-bar/backward-bar.compone
 import { CreateLivingNegoDialogComponent } from './widget/dialog/create-living-nego-dialog/create-living-nego-dialog.component';
 import { WaringEconsentDialogComponent } from './widget/dialog/waring-econsent-dialog/waring-econsent-dialog.component';
 import { EConsentImageDialogComponent } from './widget/dialog/e-consent-image-dialog/e-consent-image-dialog.component';
+import { DealerGradeImageDialogComponent } from './widget/dialog/dealer-grade-image-dialog/dealer-grade-image-dialog.component';
 
 @NgModule({
   declarations: [
@@ -97,6 +98,7 @@ import { EConsentImageDialogComponent } from './widget/dialog/e-consent-image-di
     CreateLivingNegoDialogComponent,
     WaringEconsentDialogComponent,
     EConsentImageDialogComponent,
+    DealerGradeImageDialogComponent,
   ],
   imports: [
     BrowserModule,

@@ -119,8 +119,8 @@ export class MrtaInfoComponent implements OnInit {
 
           const formatbirthdatenew = this.mrtainfodata.birth_date_th
           if (formatbirthdatenew) {
-            // const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
-            const agecalcualte = await lastValueFrom(this.masterDataService.calculateage_db(formatbirthdatenew))
+            const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
+            // const agecalcualte = await lastValueFrom(this.masterDataService.calculateage_db(formatbirthdatenew))
             this.age = agecalcualte.data[0].age_year
 
           }

@@ -166,6 +166,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   // === variable (out_stand) (22/09/2022) ===
   out_stand: number = 0
 
+  // === variable to check dealer grade dialog is open ====
+  isDialogOpen: boolean = false;
+
+  @Input() insurance_age: number = 0
   @Input() cusage: number = 0
   @Input() gender: number = 0
 
@@ -339,16 +343,20 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                                   this.imageUtilService.getUrlImage(resultDealerGrade.data.notice_image.data).then(imageurldealergrade => {
                                     // *** show dialog of image dealer grade ***
-                                    this.dialog.open(DealerGradeImageDialogComponent, {
-                                      disableClose: true,
-                                      width: `500`,
-                                      height: `700`,
-                                      data: {
-                                        imageurl: imageurldealergrade
-                                      }
-                                    }).afterClosed().subscribe((res_dealer_grage_dialog_close) => {
-                                      // console.log(`Close dialog dealer grade image !!`)
-                                    })
+                                    if (!this.isDialogOpen) {
+                                      this.isDialogOpen = true; // Set the flag to indicate that the dialog is open
+                                      // Open the dialog
+                                      this.dialog.open(DealerGradeImageDialogComponent, {
+                                        disableClose: true,
+                                        width: `500`,
+                                        height: `700`,
+                                        data: {
+                                          imageurl: imageurldealergrade
+                                        }
+                                      }).afterClosed().subscribe((res_dealer_grage_dialog_close) => {
+                                        this.isDialogOpen = false; // Reset the flag when the dialog is closed
+                                      })
+                                    }
                                   })
                                 }
 

@@ -87,10 +87,15 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
 
   // === variable from citizenpage (age, gender) (22/09/2022) ===
+
+  // === add insurance age (24/05/2023) ====
+  insurance_age: number = 0;
   cusage: number = 0;
   gender: number = 0;
 
 
+
+  @Output() insurance_age_send = new EventEmitter<number>();
   @Output() age_send = new EventEmitter<number>();
   @Output() gender_send = new EventEmitter<number>();
 
@@ -1602,6 +1607,15 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.sendcarActive$.next($event)
   }
 
+
+  // === add on (24/05/2023) ===
+  updateage_insurance($event: number) {
+    this.insurance_age = $event
+
+    // console.log(`this is age from ciz page (quotaion) : ${this.age}`)
+
+    this.insurance_age_send.emit($event)
+  }
   updateage($event: number) {
     this.cusage = $event
 

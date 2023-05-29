@@ -104,7 +104,8 @@
             <mat-divider></mat-divider>
             <ng-template matStepLabel>ส่งมอบรถ</ng-template>
             <app-send-car-tab [quotationReq]="quotationResult$" (changeEvent)="checkIsSendCar($event)" [gender]="gender"
-                [age]="cusage"></app-send-car-tab>
+                [age]="insurance_age"></app-send-car-tab>
+                <!-- [age]="cusage"></app-send-car-tab> -->
         </mat-step>
 
 

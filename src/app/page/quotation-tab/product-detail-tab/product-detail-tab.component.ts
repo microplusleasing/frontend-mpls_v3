@@ -4,7 +4,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnIni
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, debounceTime, lastValueFrom, map, Observable, of, startWith, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, lastValueFrom, map, Observable, of, startWith, Subject, tap } from 'rxjs';
 import { ThaidateformatDirective } from 'src/app/directive/thaidateformat.directive';
 import { IDialogSecondHandCarView } from 'src/app/interface/i-dialog-second-hand-car-view';
 import { IResGetMasterBussinessData } from 'src/app/interface/i-res-get-master-bussiness';
@@ -204,6 +204,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   // *** add some temp param of getMaxLtv for call agiant when moto year change (handle secondhand car that bussiness_code = 003) (20/04/2023) *** 
   valuepricetemp: number = 0
   selectModelCodeValueTemp: string = ''
+
+  // *** add current select brand and model value (30/05/2023) ***
+  currentSelectBrand: IResMasterBrandData[] = []
+  currentSelectModel: IResMasterModelData[] = []
 
 
   @Input() cusage: number = 0
@@ -422,7 +426,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.secondHandCarForm.controls.cc.setValue(null, { emitEvent: false })
                   this.secondHandCarForm.controls.reg_no.setValue('', { emitEvent: false })
                   this.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false })
-                  this.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false })
+
+                  // *** check bussiness code === 002 don't clear contract_ref value (30/05/2023) ***
+                  if (value !== '002') {
+                    this.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false })
+                  }
                   this.secondHandCarForm.controls.reg_mile.setValue(null, { emitEvent: false })
                   this.secondHandCarForm.controls.prov_name.setValue('', { emitEvent: false })
                   this.secondHandCarForm.controls.prov_code.setValue('', { emitEvent: false })
@@ -621,6 +629,12 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 this.brandList = res[2].data
                 this.productForm.controls.detailForm.controls.carBrandField.valueChanges.pipe(
                   startWith(''),
+                  tap(async value => {
+                    this.currentSelectBrand = this.brandList.filter((items: { brand_code: any; }) => {
+                      return items.brand_code == value
+                    }
+                    );
+                  }),
                   map(value => this._filterBrand(value))
                 ).subscribe(async (value: IResMasterBrandData[]) => {
                   this.filterBrandList = of(value)
@@ -669,7 +683,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.secondHandCarForm.controls.cc.setValue(null, { emitEvent: false })
                   this.secondHandCarForm.controls.reg_no.setValue('', { emitEvent: false })
                   this.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false })
-                  this.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false })
+                  // *** check bussiness code === 002 don't clear contract_ref value (30/05/2023) ***
+                  // this.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false })
                   this.secondHandCarForm.controls.reg_mile.setValue(null, { emitEvent: false })
                   this.secondHandCarForm.controls.prov_name.setValue('', { emitEvent: false })
                   this.secondHandCarForm.controls.prov_code.setValue('', { emitEvent: false })
@@ -678,7 +693,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   this.rateSelect = [];
                   this.paymentCountSelect = [];
-                  const selectValue = value
+                  // const selectValue = value
+                  // **** user this.currentSelectBrand instead of value (30/05/2023) ***
+                  const selectValue = this.currentSelectBrand
                   if (selectValue != null) {
                     this.modelSelect = this.modelList.filter((items: { brand_code: any; }) => {
                       return items.brand_code == selectValue[0].brand_code
@@ -736,6 +753,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 this.modelList = res[3].data
                 this.productForm.controls.detailForm.controls.carModelField.valueChanges.pipe(
                   startWith(''),
+                  tap(async value => {
+                    this.currentSelectModel = this.modelList.filter((items: { model_code: any; }) => {
+                      return items.model_code == value
+                    })
+                  }),
                   map(value => this._filterModel(value))
                 ).subscribe(async (value: IResMasterModelData[]) => {
                   this.filterModelList = of(value)
@@ -788,7 +810,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.secondHandCarForm.controls.reg_no.setValue('', { emitEvent: false })
                   // this.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false })
                   this.secondHandCarForm.controls.reg_date.setValue(null)
-                  this.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false })
+                  // *** check bussiness code === 002 don't clear contract_ref value (30/05/2023) ***
+                  // this.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false })
                   this.secondHandCarForm.controls.reg_mile.setValue(null, { emitEvent: false })
                   this.secondHandCarForm.controls.prov_name.setValue('', { emitEvent: false })
                   this.secondHandCarForm.controls.prov_code.setValue('', { emitEvent: false })
@@ -797,7 +820,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.coverage = 0
                   this.factoryprice = 0
 
-                  const selectValue = value
+                  // const selectValue = value
+                  // *** user this.currentSelectModel instead of value (30/05/2023) ***
+                  const selectValue = this.currentSelectModel
                   if (selectValue.length !== 0) {
 
                     // ==== get model price from model select value ===
@@ -826,7 +851,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
                         selectValue[0].model_code,
                         this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
-                        this.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : 0
+                        this.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : 0,
+                        this.productForm.controls.secondHandCarForm.controls.contract_ref.value ? this.productForm.controls.secondHandCarForm.controls.contract_ref.value : ''
+
                       ))
 
                       console.log(`this is max ltv value : ${resultMaxLtv.data[0].maxltv}`)
@@ -1225,7 +1252,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                           this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
                           this.selectModelCodeValueTemp,
                           this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
-                          this.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : 0
+                          this.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : 0,
+                          this.productForm.controls.secondHandCarForm.controls.contract_ref.value ? this.productForm.controls.secondHandCarForm.controls.contract_ref.value : ''
                         ),
                         this.masterDataService.getSizeModel(
                           '01',
@@ -1596,7 +1624,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     qcarbrandcode,
                     qcarmodelcode,
                     qdealercode,
-                    qmotoyear
+                    qmotoyear,
+                    qcontractref
                   ))
                   // this.maxltvCurrent = resultMaxLtv.data[0].maxltv
 
@@ -2183,6 +2212,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
           this.showchassisandengine = true
           this.shwosecondhandcardetail = true
 
+          // *** field in secondhand car that need to use call other master data (contract_ref = *for getMaxLtv incase business_code = '002') ***
+          this.productForm.controls.secondHandCarForm.controls.contract_ref.setValue(res.contract_no, { emitEvent: false })
+
           // *** set date format ***
           const clinet_format_regdate = res.reg_date ? this.changeDateFormat(res.reg_date) : null;
 
@@ -2205,7 +2237,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
           // *** secondhand car field binding ***
           this.productForm.controls.secondHandCarForm.controls.cc.setValue(res.cc, { emitEvent: false })
-          this.productForm.controls.secondHandCarForm.controls.contract_ref.setValue(res.contract_no, { emitEvent: false })
           this.productForm.controls.secondHandCarForm.controls.model_year.setValue(res.model_year, { emitEvent: false })
           this.productForm.controls.secondHandCarForm.controls.prov_code.setValue(res.prov_code, { emitEvent: false })
           this.productForm.controls.secondHandCarForm.controls.prov_name.setValue(res.prov_name, { emitEvent: false })

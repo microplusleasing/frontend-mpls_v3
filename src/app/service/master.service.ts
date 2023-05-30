@@ -129,9 +129,9 @@ export class MasterDataService {
     return this.http.get<IResMasterProvince>(url)
   }
 
-  getMaxLtv(factory_pirce: number, bussi_code: string, pro_code: string, brand_code: string, model_code: string, dl_code: String, moto_year: number): Observable<IResMaxLtv> {
+  getMaxLtv(factory_pirce: number, bussi_code: string, pro_code: string, brand_code: string, model_code: string, dl_code: String, moto_year: number, con_ref: string): Observable<IResMaxLtv> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}'`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}&moto_year=${moto_year}`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}&moto_year=${moto_year}&con_ref=${con_ref}`
     return this.http.get<IResMaxLtv>(url)
   }
 

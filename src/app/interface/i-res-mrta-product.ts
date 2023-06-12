@@ -7,6 +7,7 @@ export interface IResMrtaProductData {
     years_insur: number;
     rate_insur: number;
     premium_insur: number;
+    plan: string;
 }
 
 export interface IResMrtaProduct {

@@ -23,7 +23,8 @@
                 <mat-select formControlName="mrtafieldValue" (valueChange)="onchagemrtainsurance($event)">
                     <mat-option [value]="undefined" disabled hidden>ระบุจำนวนงวด</mat-option>
                     <mat-option *ngFor="let mrta of mrtainsurancedata" [value]="mrta.insurance_code">
-                        {{mrta.insurer_name}}
+                        <!-- {{mrta.insurer_name}} {{mrta.plan}} -->
+                        {{mrta.plan}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>

@@ -105,6 +105,16 @@ export class MrtaProductComponent {
         )
         this.mrtainsurancedata = filterresult
 
+        this.mrtainsurancedata = this.mrtainsurancedata.sort((a, b) => {
+          if (a.plan > b.plan) {
+            return 1; // swap positions if 'a' comes after 'b'
+          }
+          if (a.plan < b.plan) {
+            return -1; // keep positions if 'a' comes before 'b'
+          }
+          return 0; // keep positions if 'a' and 'b' are equal
+        })
+
       } else {
         this.textshow = 'ไม่พบประกัน MRTA ตามเงื่อนไขที่กำหนด'
         this.valuevalid = false
@@ -190,6 +200,7 @@ export class MrtaProductComponent {
   }
 
   onchagemrtainsurance($event: any) {
+    this.showmrtapayment = false
     this.mrtaForm.controls.mrtayearfieldValue.setValue('')
     this.mrtainsurancedatayear = this.mrtamainresult.filter((items) => {
       return items.insurance_code === $event

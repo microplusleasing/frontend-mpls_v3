@@ -172,7 +172,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   @Input() insurance_age: number = 0
   @Input() cusage: number = 0
   @Input() gender: number = 0
-
+  @Input() birth_date: Date | null = null
 
 
   warningMsgPaymentValueField: boolean = false;// === subscribe on paymentValueField (valueChange) to show or hide === 

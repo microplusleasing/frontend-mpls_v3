@@ -92,12 +92,14 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   insurance_age: number = 0;
   cusage: number = 0;
   gender: number = 0;
+  birth_date: Date | null = null;
 
 
 
   @Output() insurance_age_send = new EventEmitter<number>();
   @Output() age_send = new EventEmitter<number>();
   @Output() gender_send = new EventEmitter<number>();
+  @Output() birth_date_send = new EventEmitter<Date | null>();
 
 
 
@@ -1622,6 +1624,14 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     // console.log(`this is age from ciz page (quotaion) : ${this.age}`)
 
     this.age_send.emit($event)
+  }
+
+  updatebirthdate($event: Date | null) {
+    this.birth_date = $event
+
+    // console.log(`this is birth_date_send from ciz page (quotaion) : ${this.birth_date}`)
+
+    this.birth_date_send.emit($event)
   }
 
   updategender($event: number) {

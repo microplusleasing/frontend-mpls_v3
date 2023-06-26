@@ -44,6 +44,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
   @Output() ciz_age = new EventEmitter<number>();
   @Output() ciz_gender = new EventEmitter<number>();
+  @Output() birth_date = new EventEmitter<Date | null>();
 
   quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
   phonevalidstatus: string = ''
@@ -356,6 +357,9 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       debounceTime(1500)
     ).subscribe({
       next: async (value: any) => {
+
+        // *** emit birh_date to quotation-tab (14/06/2023) ***
+        this.birth_date.emit(value ?? null)
         // === wait for calculate age from birthdate ===
         if (value) {
           const formatbirthdatenew = moment(value).format('DD/MM/YYYY')

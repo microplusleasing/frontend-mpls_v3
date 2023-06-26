@@ -52,6 +52,7 @@ export class JwtInterceptor implements HttpInterceptor {
               panelClass: 'custom-dialog-container',
               data: {
                 header: 'Token Expire',
+                // message: `${err.error.message}`,
                 message: 'Token was expire, please login',
                 button_name: 'Ok'
               }

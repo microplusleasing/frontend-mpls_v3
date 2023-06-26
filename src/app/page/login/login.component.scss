@@ -81,7 +81,7 @@ mat-form-field.mat-form-field {
 }
 
 .wrapper-content {
-    padding: 3em;
+    padding: 1em;
 }
 
 .leftVerticalAlign {
@@ -91,3 +91,7 @@ mat-form-field.mat-form-field {
     transform: translate(0px, -50%);
     margin: 0;
 }
+
+a:hover {
+    text-decoration: underline;
+  }

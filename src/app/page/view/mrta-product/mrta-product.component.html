@@ -11,7 +11,7 @@
 
     <div *ngIf="valuevalid" class="row">
 
-        <h2>ประกัน MRTA</h2><br>
+        <h2>ประกัน MRTA</h2>
         <div>
             <button *ngIf="showseller" [disabled]="!showgenQRbtn" mat-raised-button color="primary"
                 (click)="onclickgenqrpayment()">สร้าง QR
@@ -22,7 +22,7 @@
                 <mat-label>ประกัน MRTA</mat-label>
                 <mat-select formControlName="mrtafieldValue" (valueChange)="onchagemrtainsurance($event)">
                     <mat-option [value]="undefined" disabled hidden>ระบุจำนวนงวด</mat-option>
-                    <mat-option *ngFor="let mrta of mrtainsurancedata" [value]="mrta.insurance_code">
+                    <mat-option *ngFor="let mrta of mrtamasterresult" [value]="mrta.insurance_code">
                         <!-- {{mrta.insurer_name}} {{mrta.plan}} -->
                         {{mrta.plan}}
                     </mat-option>
@@ -40,7 +40,7 @@
             </mat-form-field>
         </div>
         <div>
-            <mat-form-field *ngIf="showseller" appearance="outline" style="width: 80%;">
+            <mat-form-field *ngIf="showseller" appearance="outline" style="width: 80%; height: 100%;">
                 <mat-label>พนักงานขาย</mat-label>
                 <input type="text" placeholder="กรอกรหัสพนักงานขาย" aria-label="Number" matInput
                     formControlName="mrtasellerfieldValue" [matAutocomplete]="autoDealer"
@@ -57,16 +57,19 @@
                 <mat-error *ngIf="this.mrtaForm.get('mrtasellerfieldValue')?.hasError('wrongFormatSeller')">
                     กรอกรหัสพนักงานขายให้ถูกต้อง
                 </mat-error>
-                <mat-hint class="hint-color">
-                    <h2>{{SellerSelectText }}</h2>
-                </mat-hint>
+                <!-- <mat-hint class="hint-color">
+                    <div>
+                        <h5>{{SellerSelectText }}</h5>
+                    </div>
+                </mat-hint> -->
             </mat-form-field>
+            <h2>{{SellerSelectText }}</h2>
         </div>
         <div *ngIf="showmrtapayment" style="margin-top: 1.5em;">
             <div>
                 <mat-card style="background-color: lightgray; width: 100%;">
                     <mat-card-content>
-                        <p class="h2" style="color: #3f51b5;"> ค่างวด MRTA: {{(paymentvalue | number)}} บาท</p>
+                        <p class="h2" style="color: #3f51b5;"> ค่าเบี้ยประกัน MRTA: {{(paymentvalue | number)}} บาท</p>
                     </mat-card-content>
                 </mat-card>
             </div>

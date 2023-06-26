@@ -6,7 +6,7 @@
             <ng-template matStepLabel>ข้อมูลบัตรประชาชน</ng-template>
             <app-ciz-card-tab [quotationReq]="(quotationResult$)" (dipchipRes)="recieve_dipchipData($event)"
                 (facevalid)="recieve_dialogfacevalid()" (phonenumbervalue)="recieve_phonenumber()"
-                (ciz_age)="updateage($event)" (ciz_age_insurance)="updateage_insurance($event)" (ciz_gender)="updategender($event)">
+                (ciz_age)="updateage($event)" (ciz_age_insurance)="updateage_insurance($event)" (ciz_gender)="updategender($event)" (birth_date)="updatebirthdate($event)">
             </app-ciz-card-tab>
             <div class="flex-center" *ngIf="!canclequest">
                 <div>
@@ -32,7 +32,7 @@
         <mat-step [stepControl]="this.productdetailtab.productForm.controls.consentVerify" state="product">
             <mat-divider></mat-divider>
             <ng-template matStepLabel>ข้อมูลผลิตภัณฑ์/วงเงินสินเชื่อ</ng-template>
-            <app-product-detail-tab [quotationReq]="quotationResult$" [insurance_age]="insurance_age" [cusage]="cusage"
+            <app-product-detail-tab [quotationReq]="quotationResult$" [insurance_age]="insurance_age" [cusage]="cusage" [birth_date]="birth_date"
                 [gender]="gender"></app-product-detail-tab>
             <div class="flex-center">
                 <div *ngIf="verifyeconsent">

@@ -418,8 +418,19 @@ export class LoginComponent extends BaseService {
       }).subscribe({
         next: (result) => {
           if (result.status == 200) {
-            this.successresetpassword = true
-            this.errorresetpassword = result.message
+            // this.successresetpassword = true
+            // this.errorresetpassword = result.message
+
+            // ==== handle to redirect login page and clear value in form resetpassword (03/07/2023) ===
+            this.snackbarsuccess(`${result.message}`)
+            // === clear value in form changepasswordForm ====
+            this.changepasswordForm.reset()
+            // === redirect to login (code form backtologin())
+            this.showexpiretxt = true
+            this.showlogin = true
+            this.showresetpassword = false
+            this.showforgetpassword = false
+
           } else {
             this.successresetpassword = false
             this.errorresetpassword = result.message

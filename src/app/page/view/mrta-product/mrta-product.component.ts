@@ -9,6 +9,7 @@ import { MrtaService } from 'src/app/service/mrta.service';
 import { IReqMrtaAge } from 'src/app/interface/i-req-mrta-age';
 import { IResMrtaMasterData } from 'src/app/interface/i-res-mrta-master';
 import * as moment from 'moment';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-mrta-product',
@@ -65,10 +66,29 @@ export class MrtaProductComponent {
     mrtasellerfieldValue: this.mrtasellerfieldValue
   })
 
+  cardLayout = this.breakpointObserver
+    .observe('(min-width: 800px)')
+    .pipe(
+      map(({ matches }) => {
+        if (matches) {
+          return {
+            columns: 12,
+            list: { maxcols: 12, cols6: 6, cols4: 4, cols3: 3, cols2: 2, col: 1 }
+          };
+        }
+
+        return {
+          columns: 1,
+          list: { maxcols: 1, cols6: 1, cols4: 1, cols3: 1, cols2: 1, col: 1 }
+        };
+      })
+    );
+
   constructor(
     private fb: FormBuilder,
     private masterDataService: MasterDataService,
-    private mrtaService: MrtaService
+    private mrtaService: MrtaService,
+    private breakpointObserver: BreakpointObserver
   ) {
 
     this.mrtaForm.valueChanges.subscribe((value) => {

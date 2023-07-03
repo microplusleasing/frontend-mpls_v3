@@ -8,6 +8,7 @@ import { IResForgetPassword } from 'src/app/interface/i-res-forget-password';
 import { IReqForgetPassword } from 'src/app/interface/i-req-forget-password';
 import { IResResetPassword } from 'src/app/interface/i-res-reset-password';
 import { IReqRestPassword } from 'src/app/interface/i-req-rest-password';
+import { IReqUserlogin } from 'src/app/interface/i-req-userlogin';
 // import * as buffer from 'buffer';
 
 
@@ -56,7 +57,13 @@ export class AuthService {
 
     // === user new config for certificate ssl (22/07/2022) ===
 
-    return this.http.get<IUserToken>(`${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/loginuser?username=${username}&password=${password}&channal=${channal}`)
+    const data: IReqUserlogin = {
+      username: username,
+      password: password,
+      channal: channal
+    }
+
+    return this.http.post<IUserToken>(`${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/loginuser`, data)
       .pipe(map(user => {
         // store user details and jwt token in local storage to keep user logged in between page refreshes
         if (user.status == 200) {

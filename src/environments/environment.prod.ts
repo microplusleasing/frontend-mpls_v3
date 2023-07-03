@@ -15,7 +15,8 @@ export const environment = {
   welcome_call_fcr_web: 'web-welcome.microplusleasing.com/fcr',
   iappapikey: "F3kBa0O7D07SUYy5YmcfLeohWRxbipdn",
   faceRecogApi: "https://api.iapp.co.th/thai-national-id-card/v3/front",
-  faceValidApi: "https://api.iapp.co.th/face-verification/v2/face_compare"
+  faceValidApi: "https://api.iapp.co.th/face-verification/v2/face_compare",
+  version: "version  1.01"
   
 };
 

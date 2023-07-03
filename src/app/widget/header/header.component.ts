@@ -23,6 +23,7 @@ export class HeaderComponent implements OnInit {
   usersession: IUserTokenData = {} as IUserTokenData
   dialogData: IInfoDialog = {} as IInfoDialog
   username: string = '';
+  version: string = `${environment.version}`
 
 
 

@@ -1,0 +1,15 @@
+<div style="margin-top: 2em;">
+    <div class="card-list-image" *ngFor="let image of uploadedImagesMultiple">
+        <mat-expansion-panel style="min-width: 600px;">
+            <mat-expansion-panel-header>
+                {{ image.image_header }}
+            </mat-expansion-panel-header>
+            <img [src]="image.urlsanitizer" [alt]="'ha'" style="max-width: 400px; max-height: 400px;"
+                (click)="openimageMultipledialog(image)"><br>
+        </mat-expansion-panel>
+    </div>
+    <!-- Handle no image data -->
+    <div class="card-list-image" *ngIf="uploadedImagesMultiple.length == 0">
+        <h2>ไม่พบรูปภาพรถมือสอง</h2>
+    </div>
+</div>

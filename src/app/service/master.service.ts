@@ -7,7 +7,7 @@ import { IResMasterQuoatationStatus } from './../interface/i-res-master-quoatati
 import { IResMasterOccupation } from './../interface/i-res-master-occupation';
 import { IResPaymentValue } from './../interface/i-res-payment-value';
 import { IResMasterInsurer } from './../interface/i-res-master-insurer';
-import { IResMasterMrtaInsurance, IResMasterMrtaInsuranceData } from './../interface/i-res-master-mrta-insurance';
+import { IResMasterMrtaInsurance } from './../interface/i-res-master-mrta-insurance';
 import { IResMasterInsuranceOld } from '../interface/i-res-master-insurance-old';
 import { IResCoverageTotalLoss } from './../interface/i-res-coverage-total-loss';
 import { IResMaxLtv } from './../interface/i-res-max-ltv';
@@ -39,6 +39,12 @@ import { IResMrtaProduct } from '../interface/i-res-mrta-product';
 import { IResMasterInsurance } from '../interface/i-res-master-insurance';
 import { IResCalculateAgeDb } from '../interface/i-res-calculate-age-db';
 import { IResDealerGrade } from '../interface/i-res-dealer-grade';
+import { IResGetMasterBussiness } from '../interface/i-res-get-master-bussiness';
+import { IResSecondHandCarView } from '../interface/i-res-second-hand-car-view';
+import { IResImageTypeAttachMultiple, IResImageTypeAttachMultipleData } from '../interface/i-res-image-type-attach-multiple';
+import { IResCalculateMotoYear } from '../interface/i-res-calculate-moto-year';
+import { IResCheckMotoYear } from '../interface/i-res-check-moto-year';
+import { IReqCheckMotoYear } from '../interface/i-req-check-moto-year';
 
 
 
@@ -52,17 +58,21 @@ export class MasterDataService {
     private http: HttpClient
   ) { }
 
+  getMasterBussiness(): Observable<IResGetMasterBussiness> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getMasterBussiness`
+    return this.http.get<IResGetMasterBussiness>(url)
+  }
 
-  getSizeModel(pro_code: string, brand_code: string, model_code: string, dealer_code: string, busi_code: string, factory_price: number): Observable<IResMasterModelSize> {
+  getSizeModel(pro_code: string, brand_code: string, model_code: string, dealer_code: string, busi_code: string, factory_price: number, moto_year: number | string): Observable<IResMasterModelSize> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getSizeModel?pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dealer_code=${dealer_code}&busi_code=${busi_code}&&factory_price=${factory_price}`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getSizeModel?pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dealer_code=${dealer_code}&busi_code=${busi_code}&&factory_price=${factory_price}`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getSizeModel?pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dealer_code=${dealer_code}&busi_code=${busi_code}&factory_price=${factory_price}&moto_year=${moto_year}`
     return this.http.get<IResMasterModelSize>(url)
   }
 
-  getRate(pro_code: string, size_model: string): Observable<IResMasterRate> {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterRate?pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}`
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterRate?pro_code=${pro_code}&size_model=${size_model}`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MasterRate?pro_code=${pro_code}&size_model=${size_model}`
+  getMasterRate(pro_code: string, size_model: string, bussiness_code: string): Observable<IResMasterRate> {
+    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getMasterRate?pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}`
+    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getMasterRate?pro_code=${pro_code}&size_model=${size_model}`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getMasterRate?pro_code=${pro_code}&size_model=${size_model}&bussiness_code=${bussiness_code}`
     return this.http.get<IResMasterRate>(url)
   }
   getRateSheet(brand_code: string, model_code: string, dealer_code: string, busi_code: string, insurance_code: string, insurance_year: number): Observable<IResMasterRatesheet> {
@@ -79,8 +89,8 @@ export class MasterDataService {
     return this.http.get<IResMasterTerm>(url)
   }
 
-  getTermNew(pro_code: string, size_model: string, rate: number, net_finance: number): Observable<IResMasterTerm> {
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getTermNew?pro_code=${pro_code}&size_model=${size_model}&rate=${rate}&net_finance=${net_finance}`
+  getTermNew(pro_code: string, size_model: string, rate: number, net_finance: number, bussiness_code: string): Observable<IResMasterTerm> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getTermNew?pro_code=${pro_code}&size_model=${size_model}&rate=${rate}&net_finance=${net_finance}&bussiness_code=${bussiness_code}`
     return this.http.get<IResMasterTerm>(url)
   }
 
@@ -94,6 +104,12 @@ export class MasterDataService {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterImageType`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getImageTypeAttach`
     return this.http.get<IResImageTypeAttach>(url)
+  }
+
+  getImageTypeAttachMultiple(): Observable<IResImageTypeAttachMultiple> {
+    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterImageType`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getImageTypeAttachMultiple`
+    return this.http.get<IResImageTypeAttachMultiple>(url)
   }
 
   getTitle(): Observable<IResMasterTitle> {
@@ -114,9 +130,9 @@ export class MasterDataService {
     return this.http.get<IResMasterProvince>(url)
   }
 
-  getMaxLtv(factory_pirce: number, bussi_code: string, pro_code: string, brand_code: string, model_code: string, dl_code: String): Observable<IResMaxLtv> {
+  getMaxLtv(factory_pirce: number, bussi_code: string, pro_code: string, brand_code: string, model_code: string, dl_code: String, moto_year: number, con_ref: string): Observable<IResMaxLtv> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}'`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}&moto_year=${moto_year}&con_ref=${con_ref}`
     return this.http.get<IResMaxLtv>(url)
   }
 
@@ -151,6 +167,7 @@ export class MasterDataService {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getmrtainsurance?out_stand=${out_stand}&age=${age}&gender=${gender}`
     return this.http.get<IResMrtaProduct>(url)
   }
+
 
   getInsurer(): Observable<IResMasterInsurer> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getInsurer`
@@ -223,7 +240,7 @@ export class MasterDataService {
     return this.http.get<IResMasterMrtaInsurance>(url)
   }
 
-  confirmqrpayment(application_num: string, contract_no: string): Observable<IResConfirmQrPayment> {
+  confirmqrpayment(application_num: string, contract_no: string): Observable<IResConfirmQrPayment>  {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/confirmqrpayment?application_num=${application_num}&contract_no=${contract_no}`
     return this.http.get<IResConfirmQrPayment>(url)
   }
@@ -267,6 +284,28 @@ export class MasterDataService {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getDealergrade`
     return this.http.post<IResDealerGrade>(url, { dl_code: dl_code })
   }
+
+  MPLS_getsecondhandcarbyreg(p_reg_no: string, p_sl_code: string, page_no: number, quotationid: string): Observable<IResSecondHandCarView> {
+    const data_send = {
+      p_reg_no: p_reg_no,
+      p_sl_code: p_sl_code,
+      page_no: page_no ? page_no : 1,
+      quotationid: quotationid
+    }
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getsecondhandcarbyreg`
+    return this.http.post<IResSecondHandCarView>(url, data_send)
+  }
+
+  MPLS_calculate_moto_year(reg_date: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_calculate_moto_year`
+    return this.http.post<IResCalculateMotoYear>(url, { reg_date: reg_date })
+  }
+
+  MPLS_check_moto_year(datasend: IReqCheckMotoYear) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_check_moto_year`
+    return this.http.post<IResCheckMotoYear>(url, datasend)
+  }
+
 
 
 

@@ -51,7 +51,8 @@ export class MrtaProductComponent {
   @Input() showseller: boolean = false
   // *** new input for new cal age for mrta (14/06/2023) ***
   @Input() birth_date: Date | null = null;
-  @Input() busi_code: string = '001'; // *** waiting send busi_code from product-detail page (14/06/2023) ***
+  // @Input() busi_code: string = '001'; // *** waiting send busi_code from product-detail page (14/06/2023) ***
+  @Input() busi_code: string | null = null; // *** waiting send busi_code from product-detail page (14/06/2023) ***
 
   @Output() emitqrtoparentclickbtn = new EventEmitter<IMartaPaymentInsurance>()
   @Output() emitqrtoparentshowqr = new EventEmitter<IMartaPaymentInsurance>()
@@ -145,7 +146,7 @@ export class MrtaProductComponent {
         ) {
           this.mrtaService.getmrtaage({
             insur_code: this.current_insur_code.insurer_code,
-            busi_code: '001',
+            busi_code: this.busi_code ? this.busi_code : '',
             birth_date: birth_date_str,
             request_date: request_date_str
           }).subscribe({
@@ -261,7 +262,7 @@ export class MrtaProductComponent {
 
     this.mrtaService.getmrtaage({
       insur_code: this.insurance_code,
-      busi_code: '001',
+      busi_code: this.busi_code ? this.busi_code : '',
       birth_date: birth_date,
       request_date: request_date
     }).subscribe({
@@ -404,7 +405,7 @@ export class MrtaProductComponent {
     // *** new call list of mrta by new 4 field (insur_code, busi_code, birth_date, request_date) (14/06/2023) (P Angon) ***
     const fd: IReqMrtaAge = {
       insur_code: $event,
-      busi_code: '001',
+      busi_code: this.busi_code ? this.busi_code : '',
       birth_date: '',
       request_date: ''
     }
@@ -415,7 +416,7 @@ export class MrtaProductComponent {
 
     this.mrtaService.getmrtaage({
       insur_code: $event,
-      busi_code: '001',
+      busi_code: this.busi_code ? this.busi_code : '',
       birth_date: birth_date,
       request_date: request_date
     }).subscribe({

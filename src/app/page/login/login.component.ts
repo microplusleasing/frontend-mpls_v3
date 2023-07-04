@@ -1,13 +1,14 @@
 import { AuthService } from 'src/app/service/auth/auth.service';
 import { Validators, FormGroup, FormControl, FormBuilder, AbstractControl, ValidationErrors, ValidatorFn, AbstractControlOptions } from '@angular/forms';
 import { Component, Inject } from '@angular/core';
-import { first } from 'rxjs';
+import { first, map } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { BaseService } from 'src/app/service/base/base.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 import { LoadingService } from 'src/app/service/loading.service';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 
 @Component({
@@ -41,7 +42,8 @@ export class LoginComponent extends BaseService {
   showresetpassword: boolean = false;
   showforgetpassword: boolean = false;
   showheader: boolean = true;
-  showfooter: boolean = false;
+  // showfooter: boolean = false;
+  showfooter: boolean = true;
   showheaderbar: boolean = true;
 
   showexpiretxt: boolean = true;
@@ -131,6 +133,36 @@ export class LoginComponent extends BaseService {
     forgetpasswordForm: this.forgetpasswordForm
   })
 
+  cardLayout = this.breakpointObserver
+    .observe('(min-width: 450px)')
+    .pipe(
+      map(({ matches }) => {
+        if (matches) {
+          return {
+            columns: 12,
+            list: { maxcols: 12, cols6: 6, cols4: 4, cols3: 3, cols2: 2, col: 1 },
+            rowHeight: 90,
+            reset_card_width: `450px`,
+            reset_card_font: '14px',
+            reset_card_f_high: '30px',
+            reset_pass_match_f_high: '60px',
+            mobile: false
+          };
+        }
+
+        return {
+          columns: 1,
+          list: { maxcols: 1, cols6: 1, cols4: 1, cols3: 1, cols2: 1, col: 1 },
+          rowHeight: 90,
+          reset_card_width: `300px`,
+          reset_card_font: '8px',
+          reset_card_f_high: '20px',
+          reset_pass_match_f_high: '40px',
+          mobile: true
+        };
+      })
+    );
+
 
   constructor(
 
@@ -141,6 +173,7 @@ export class LoginComponent extends BaseService {
     private loadingService: LoadingService,
     public override dialog: MatDialog,
     public override _snackBar: MatSnackBar,
+    private breakpointObserver: BreakpointObserver,
 
   ) {
     super(dialog, _snackBar)
@@ -254,9 +287,9 @@ export class LoginComponent extends BaseService {
               if (data.usertype == 1) {
                 // === checker : 1 ====
                 this.router.navigate(['/quotation-view']);
-              } else if (data.usertype == 2) {
-                // === fcr : 2 ====
-                this.router.navigate(['/collector-view']);
+                // } else if (data.usertype == 2) {
+                //   // === fcr : 2 ====
+                //   this.router.navigate(['/collector-view']);
               } else if (data.usertype == 0) {
                 // === dealer : 0  ====
                 this.router.navigate(['/quotation-view']);
@@ -265,10 +298,42 @@ export class LoginComponent extends BaseService {
               // this.router.navigate([this.returnUrl]);
               this.router.navigateByUrl(this.returnUrl)
             }
+          } else if (result.status == 202) {
+            // *** add check status for handle password expired (09/08/2023) ***
+            this.dialog.open(MainDialogComponent, {
+              panelClass: 'custom-dialog-container',
+              data: {
+                header: 'ผิดพลาด',
+                // message: `${err.error.message}`,
+                message: `${result.message}`,
+                button_name: 'Ok'
+              }
+            }).afterClosed().subscribe(result => {
+              // === clear token and go to login page === 
+              // localStorage.clear();
+              localStorage.removeItem('currentUser');
+              this.router.navigate(['/login'])
+            });
           } else if (result.status == 201) {
             // === Not found user id on database
             this.messagetext = `ไม่เจอผู้ใช้งานในระบบ หรือรหัสผ่านไม่ถูกต้อง`
             this.showmessage = true;
+          } else if (result.status == 401) {
+            // *** add on other vertify error or etc (09/08/2023) ***
+            this.dialog.open(MainDialogComponent, {
+              panelClass: 'custom-dialog-container',
+              data: {
+                header: 'ผิดพลาด',
+                // message: `${err.error.message}`,
+                message: `${result.message}`,
+                button_name: 'Ok'
+              }
+            }).afterClosed().subscribe(result => {
+              // === clear token and go to login page === 
+              // localStorage.clear();
+              localStorage.removeItem('currentUser');
+              this.router.navigate(['/login'])
+            });
           }
         }, error: (error) => {
           this.loadingService.hideLoader();
@@ -353,8 +418,19 @@ export class LoginComponent extends BaseService {
       }).subscribe({
         next: (result) => {
           if (result.status == 200) {
-            this.successresetpassword = true
-            this.errorresetpassword = result.message
+            // this.successresetpassword = true
+            // this.errorresetpassword = result.message
+
+            // ==== handle to redirect login page and clear value in form resetpassword (03/07/2023) ===
+            this.snackbarsuccess(`${result.message}`)
+            // === clear value in form changepasswordForm ====
+            this.changepasswordForm.reset()
+            // === redirect to login (code form backtologin())
+            this.showexpiretxt = true
+            this.showlogin = true
+            this.showresetpassword = false
+            this.showforgetpassword = false
+
           } else {
             this.successresetpassword = false
             this.errorresetpassword = result.message

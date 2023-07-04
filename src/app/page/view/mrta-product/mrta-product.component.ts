@@ -5,6 +5,11 @@ import { MasterDataService } from 'src/app/service/master.service';
 import { AbstractControl, FormBuilder, FormControl, ValidatorFn } from '@angular/forms';
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { IMartaPaymentInsurance } from 'src/app/interface/i-mrta-payment-insurance';
+import { MrtaService } from 'src/app/service/mrta.service';
+import { IReqMrtaAge } from 'src/app/interface/i-req-mrta-age';
+import { IResMrtaMasterData } from 'src/app/interface/i-res-mrta-master';
+import * as moment from 'moment';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-mrta-product',
@@ -20,6 +25,10 @@ export class MrtaProductComponent {
   mrtasellerdata = [] as IResMasterMrtaSellerData[]
   filterSellerList?: Observable<IResMasterMrtaSellerData[]>
   SellerSelectText = ''
+
+  // *** new master mrta list new requirement (14/06/2023) ****
+  mrtamasterresult = [] as IResMrtaMasterData[]
+  current_insur_code = {} as IResMrtaMasterData | undefined
 
 
 
@@ -40,6 +49,9 @@ export class MrtaProductComponent {
   @Input() age: number = 0
   @Input() gender: number = 0
   @Input() showseller: boolean = false
+  // *** new input for new cal age for mrta (14/06/2023) ***
+  @Input() birth_date: Date | null = null;
+  @Input() busi_code: string = '001'; // *** waiting send busi_code from product-detail page (14/06/2023) ***
 
   @Output() emitqrtoparentclickbtn = new EventEmitter<IMartaPaymentInsurance>()
   @Output() emitqrtoparentshowqr = new EventEmitter<IMartaPaymentInsurance>()
@@ -54,9 +66,29 @@ export class MrtaProductComponent {
     mrtasellerfieldValue: this.mrtasellerfieldValue
   })
 
+  cardLayout = this.breakpointObserver
+    .observe('(min-width: 800px)')
+    .pipe(
+      map(({ matches }) => {
+        if (matches) {
+          return {
+            columns: 12,
+            list: { maxcols: 12, cols6: 6, cols4: 4, cols3: 3, cols2: 2, col: 1 }
+          };
+        }
+
+        return {
+          columns: 1,
+          list: { maxcols: 1, cols6: 1, cols4: 1, cols3: 1, cols2: 1, col: 1 }
+        };
+      })
+    );
+
   constructor(
     private fb: FormBuilder,
-    private masterDataService: MasterDataService
+    private masterDataService: MasterDataService,
+    private mrtaService: MrtaService,
+    private breakpointObserver: BreakpointObserver
   ) {
 
     this.mrtaForm.valueChanges.subscribe((value) => {
@@ -80,7 +112,7 @@ export class MrtaProductComponent {
     };
   }
 
-  getmrtainsurance(out_stand: number, age: number, gender: number) {
+  getmrtainsurance(out_stand: number, gender: number, birth_date: Date | null) {
     this.paymentvalue = 0
     this.showmrtapayment = false
     this.mrtaForm.controls.mrtafieldValue.setValue('');
@@ -89,25 +121,90 @@ export class MrtaProductComponent {
 
     forkJoin(
       [
-        this.masterDataService.getmrtainsurance(out_stand, age, gender),
+        // this.masterDataService.getmrtainsurance(out_stand, age, gender),
+        this.mrtaService.getmrtamaster({ busi_code: '001' }),
         this.masterDataService.getmrtaseller()
       ]
     ).subscribe((results) => {
-      // === for mrta product ====
-      this.mrtamainresult = results[0].data
 
-      if (results[0].data.length !== 0) {
-        this.valuevalid = true;
-        const filterresult = results[0].data.filter((value, index, self) =>
-          index === self.findIndex((t) => (
-            t.insurance_code === value.insurance_code
-          ))
-        )
-        this.mrtainsurancedata = filterresult
+      // *** mrta master new list (14/06/2023) ***
+      this.mrtamasterresult = results[0].data
+      if (results[0].data) {
 
-      } else {
-        this.textshow = 'ไม่พบประกัน MRTA ตามเงื่อนไขที่กำหนด'
-        this.valuevalid = false
+        // *** calculate age by insur_code (new requirment 14/06/2023) ***
+
+        // *** create request_date , birth_date and set to string (now date) ***
+        const request_date_str = moment().format('DD/MM/yyyy')
+        const birth_date_str = moment(this.birth_date).format('DD/MM/yyyy')
+
+        if (
+          this.current_insur_code !== undefined &&
+          (this.current_insur_code && Object.keys(this.current_insur_code).length > 0) &&
+          birth_date_str !== null &&
+          request_date_str !== null
+        ) {
+          this.mrtaService.getmrtaage({
+            insur_code: this.current_insur_code.insurer_code,
+            busi_code: '001',
+            birth_date: birth_date_str,
+            request_date: request_date_str
+          }).subscribe({
+            next: (res_age) => {
+              const mrta_age = res_age.data.mrta_age
+
+              if (mrta_age !== 0 && mrta_age !== null && mrta_age !== undefined && out_stand !== 0) {
+
+                // *** get getmrtainsurance and filter result with insurance_code ***
+                this.masterDataService.getmrtainsurance(
+                  out_stand, mrta_age, gender
+                ).subscribe({
+                  next: (res_mrta_insurance_list) => {
+
+                    if (res_mrta_insurance_list.data.length !== 0) {
+                      this.valuevalid = true;
+                      const filterresult = res_mrta_insurance_list.data.filter((value, index, self) =>
+                        index === self.findIndex((t) => (
+                          t.insurance_code === value.insurance_code
+                        ))
+                      )
+                      this.mrtainsurancedata = filterresult
+
+                      this.mrtainsurancedata = this.mrtainsurancedata.sort((a, b) => {
+                        if (a.plan > b.plan) {
+                          return 1; // swap positions if 'a' comes after 'b'
+                        }
+                        if (a.plan < b.plan) {
+                          return -1; // keep positions if 'a' comes before 'b'
+                        }
+                        return 0; // keep positions if 'a' and 'b' are equal
+                      })
+
+                    } else {
+                      this.textshow = 'ไม่พบประกัน MRTA ตามเงื่อนไขที่กำหนด'
+                      this.valuevalid = false
+                    }
+                  }, error: (e) => {
+                    // handle get mrta insurance missing here
+                    // *******************************
+                  }, complete: () => {
+
+                  }
+                })
+
+              } else {
+                // handle calculate age missing here
+                // *******************************
+                console.log(`Ja ja`)
+              }
+            }, error: (e) => {
+
+            }, complete: () => {
+
+            }
+          })
+        } else {
+          this.valuevalid = true
+        }
       }
 
 
@@ -135,11 +232,13 @@ export class MrtaProductComponent {
 
   ngOnChanges(changes: SimpleChanges) {
     if (
-      this.out_stand &&
+      this.out_stand && this.out_stand !== 0 &&
       this.age &&
-      this.gender
+      this.gender &&
+      // this.busi_code &&
+      this.birth_date
     ) {
-      this.getmrtainsurance(this.out_stand, this.age, this.gender)
+      this.getmrtainsurance(this.out_stand, this.gender, this.birth_date)
     } else {
       this.textshow = 'ข้อมูลไม่เพียงพอในการเลือกประกัน MRTA'
       this.paymentvalue = 0
@@ -155,6 +254,101 @@ export class MrtaProductComponent {
   }
 
   stampmrtarecent() {
+
+    // *** create request_date , birth_date and set to string (now date) ***
+    const request_date = moment().format('DD/MM/yyyy')
+    const birth_date = moment(this.birth_date).format('DD/MM/yyyy')
+
+    this.mrtaService.getmrtaage({
+      insur_code: this.insurance_code,
+      busi_code: '001',
+      birth_date: birth_date,
+      request_date: request_date
+    }).subscribe({
+      next: (res_age) => {
+        const mrta_age = res_age.data.mrta_age
+
+        if (mrta_age !== 0 && mrta_age !== null && mrta_age !== undefined && this.out_stand !== 0) {
+
+          // *** get getmrtainsurance and filter result with insurance_code ***
+          this.masterDataService.getmrtainsurance(
+            this.out_stand, mrta_age, this.gender
+          ).subscribe({
+            next: (res_mrta_insurance_list) => {
+
+              if (res_mrta_insurance_list.data.length !== 0) {
+                this.valuevalid = true;
+                const filterresult = res_mrta_insurance_list.data.filter((value, index, self) =>
+                  index === self.findIndex((t) => (
+                    t.insurance_code === value.insurance_code
+                  ))
+                )
+                this.mrtamasterresult = filterresult
+                this.mrtainsurancedata = res_mrta_insurance_list.data
+
+                // *** old stage *** 
+                this.mrtaForm.controls.mrtafieldValue.setValue(this.insurance_code);
+                if (this.mrtaForm.controls.mrtafieldValue.value) {
+                  this.mrtaForm.controls.mrtayearfieldValue.setValue('')
+                  this.mrtainsurancedatayear = this.mrtainsurancedata.filter((items) => {
+                    return items.insurance_code === this.insurance_code
+                  })
+
+                  if (this.pay_status !== 1) {
+                    this.mrtaForm.controls.mrtayearfieldValue.enable();
+                  }
+                }
+                this.mrtaForm.controls.mrtayearfieldValue.setValue(this.insurance_year);
+
+                const selectPlan = this.mrtainsurancedata.find((items) => {
+                  return items.insurance_code == this.insurance_code && items.years_insur == this.insurance_year
+                })
+
+                if (selectPlan) {
+                  this.paymentvalue = selectPlan.premium_insur
+                  this.insurer_code = selectPlan.insurer_code
+                  this.mrtaForm.controls.mrtasellerfieldValue.setValue(this.insurance_seller);
+                  if (
+                    this.mrtaForm.controls.mrtafieldValue.value &&
+                    this.mrtaForm.controls.mrtayearfieldValue.value &&
+                    this.mrtaForm.controls.mrtasellerfieldValue.value
+                  ) {
+                    this.showmrtapayment = true
+                    // this.onclickgenqrpayment()
+
+                    this.showqrcoderecord()
+                  }
+                }
+
+                console.log('end')
+
+              } else {
+                this.textshow = 'ไม่พบประกัน MRTA ตามเงื่อนไขที่กำหนด'
+                this.valuevalid = false
+              }
+            }, error: (e) => {
+              // handle get mrta insurance missing here
+              // *******************************
+              console.log(`error : ${e.message}`)
+            }, complete: () => {
+              console.log('complete!')
+            }
+          })
+
+        } else {
+          // handle calculate age missing here
+          // *******************************
+          console.log(`jajastamp`)
+        }
+      }, error: (e) => {
+
+      }, complete: () => {
+
+      }
+    })
+
+
+    // *****************************************************************
     this.mrtaForm.controls.mrtafieldValue.setValue(this.insurance_code);
     if (this.mrtaForm.controls.mrtafieldValue.value) {
       this.mrtaForm.controls.mrtayearfieldValue.setValue('')
@@ -190,22 +384,114 @@ export class MrtaProductComponent {
   }
 
   onchagemrtainsurance($event: any) {
-    this.mrtaForm.controls.mrtayearfieldValue.setValue('')
-    this.mrtainsurancedatayear = this.mrtamainresult.filter((items) => {
-      return items.insurance_code === $event
+    this.showmrtapayment = false
+
+    // *** set current insur_code for use calculate age (14/06/2023) ***
+    this.current_insur_code = this.mrtamasterresult.find((item) => {
+      return item.insurance_code === $event
     })
+    // *****************************************************************
+
+    // this.mrtaForm.controls.mrtayearfieldValue.setValue('')
+    // this.mrtainsurancedatayear = this.mrtamainresult.filter((items) => {
+    //   return items.insurance_code === $event
+    // })
 
     if (this.pay_status !== 1) {
       this.mrtaForm.controls.mrtayearfieldValue.enable();
     }
+
+    // *** new call list of mrta by new 4 field (insur_code, busi_code, birth_date, request_date) (14/06/2023) (P Angon) ***
+    const fd: IReqMrtaAge = {
+      insur_code: $event,
+      busi_code: '001',
+      birth_date: '',
+      request_date: ''
+    }
+
+    // *** create request_date , birth_date and set to string (now date) ***
+    const request_date = moment().format('DD/MM/yyyy')
+    const birth_date = moment(this.birth_date).format('DD/MM/yyyy')
+
+    this.mrtaService.getmrtaage({
+      insur_code: $event,
+      busi_code: '001',
+      birth_date: birth_date,
+      request_date: request_date
+    }).subscribe({
+      next: (res_age) => {
+        const mrta_age = res_age.data.mrta_age
+
+        if (mrta_age !== 0 && mrta_age !== null) {
+
+          // *** get getmrtainsurance and filter result with insurance_code ***
+          this.masterDataService.getmrtainsurance(
+            this.out_stand, mrta_age, this.gender
+          ).subscribe({
+            next: (res_mrta_insurance_list) => {
+
+              if (res_mrta_insurance_list.data.length !== 0) {
+                this.valuevalid = true;
+                let filterresult = res_mrta_insurance_list.data.filter((value, index, self) =>
+                  index === self.findIndex((t) => (
+                    t.insurance_code === value.insurance_code
+                  ))
+                )
+
+                filterresult = filterresult.sort((a, b) => {
+                  if (a.plan > b.plan) {
+                    return 1; // swap positions if 'a' comes after 'b'
+                  }
+                  if (a.plan < b.plan) {
+                    return -1; // keep positions if 'a' comes before 'b'
+                  }
+                  return 0; // keep positions if 'a' and 'b' are equal
+                })
+
+                this.mrtamasterresult = filterresult
+
+                this.mrtainsurancedata = res_mrta_insurance_list.data
+
+                this.mrtaForm.controls.mrtayearfieldValue.setValue('')
+                this.mrtainsurancedatayear = this.mrtainsurancedata.filter((items) => {
+                  return items.insurance_code === $event
+                })
+
+                console.log('end')
+
+              } else {
+                this.textshow = 'ไม่พบประกัน MRTA ตามเงื่อนไขที่กำหนด'
+                this.valuevalid = false
+              }
+            }, error: (e) => {
+              // handle get mrta insurance missing here
+              // *******************************
+              console.log(`error : ${e.message}`)
+            }, complete: () => {
+              console.log('complete!')
+            }
+          })
+
+        } else {
+          // handle calculate age missing here
+          // *******************************
+        }
+      }, error: (e) => {
+
+      }, complete: () => {
+
+      }
+    })
+
   }
 
   onchangemrtayearinsurance($event: any) {
+    // *** can use this.mrtaForm.controls.mrtayearfieldValue.valuechange().subscribe(item) instead ***
     // === get premium_insur from list ===
     const insurance_code = this.mrtaForm.controls.mrtafieldValue.value
     const insur_year = $event
 
-    const selectPlan = this.mrtamainresult.find((items) => {
+    const selectPlan = this.mrtainsurancedata.find((items) => {
       return items.insurance_code == insurance_code && items.years_insur == insur_year
     })
 
@@ -228,6 +514,8 @@ export class MrtaProductComponent {
     if (typeof selectValue !== 'undefined') {
       // === set text of dealer select === 
       this.SellerSelectText = selectValue.fullname;
+    } else {
+      this.SellerSelectText = ''
     }
   }
 

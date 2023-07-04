@@ -110,6 +110,9 @@ export class SendCarTabComponent extends BaseService implements OnInit {
   active_status: number = 0
   pay_status: number = 0
 
+  // **** (19/06/2023) ****
+  birth_date: Date | null = null;
+
   lockqrpage: boolean = true
 
   application_num_qr: string = ''
@@ -215,11 +218,16 @@ export class SendCarTabComponent extends BaseService implements OnInit {
                     this.insurance_code = recentmrtavalue.insurance_code
                     this.insurance_year = recentmrtavalue.insurance_year
                     this.out_stand = recentmrtavalue.out_stand
+
+                    // *** set birth_date (19/06/2023) ***
+                    this.birth_date = this.quotationresultData.data[0].birth_date
                   } else {
                     this.masterDataService.getoracleoutstand(this.quotationresultData.data[0].application_num).subscribe((value) => {
                       if (value.data.length !== 0) {
                         // === set out stand return value from oracle (api) ===
                         this.out_stand = value.data[0].out_stand
+                        // *** set birth_date (19/06/2023) ***
+                        this.birth_date = this.quotationresultData.data[0].birth_date
                       }
                     })
                   }
@@ -228,6 +236,8 @@ export class SendCarTabComponent extends BaseService implements OnInit {
                     if (value.data.length !== 0) {
                       // === set out stand return value from oracle (api) ===
                       this.out_stand = value.data[0].out_stand
+                      // *** set birth_date (19/06/2023) ***
+                      this.birth_date = this.quotationresultData.data[0].birth_date
                     }
                   })
                 }

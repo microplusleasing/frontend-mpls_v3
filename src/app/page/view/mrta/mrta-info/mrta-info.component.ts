@@ -36,6 +36,9 @@ export class MrtaInfoComponent implements OnInit {
   active_status: number = 0
   pay_status: number = 0
 
+  // *** (15/06/2023) ***
+  birth_date: Date | null = null;
+
   textnotfound: string
 
   cardLayout = this.breakpointObserver
@@ -119,9 +122,12 @@ export class MrtaInfoComponent implements OnInit {
 
           const formatbirthdatenew = this.mrtainfodata.birth_date_th
           if (formatbirthdatenew) {
-            // const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
-            const agecalcualte = await lastValueFrom(this.masterDataService.calculateage_db(formatbirthdatenew))
+            const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
+            // const agecalcualte = await lastValueFrom(this.masterDataService.calculateage_db(formatbirthdatenew))
             this.age = agecalcualte.data[0].age_year
+
+            // *** (15/06/2023) birth_date set ***
+            this.birth_date = result.data[0].birth_date
 
           }
           const checkmrtarecent = await lastValueFrom(this.masterDataService.checkmrtarecent(this.mrtainfodata.quo_key_app_id))
@@ -135,6 +141,7 @@ export class MrtaInfoComponent implements OnInit {
               this.insurance_code = recentmrtavalue.insurance_code
               this.insurance_year = recentmrtavalue.insurance_year
               this.out_stand = recentmrtavalue.out_stand
+
             } else {
               this.out_stand = this.mrtainfodata.out_stand
             }

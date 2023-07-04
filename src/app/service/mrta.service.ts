@@ -9,6 +9,10 @@ import { environment } from 'src/environments/environment';
 import { IResMasterMrtaSeller } from '../interface/i-res-master-mrta-seller';
 import { DOCUMENT } from '@angular/common';
 import { IMrtaQrBarcode } from '../interface/i-mrta-qr-barcode';
+import { IReqMrtaAge } from '../interface/i-req-mrta-age';
+import { IResMrtaAge } from '../interface/i-res-mrta-age';
+import { IReqMrtaMaster } from '../interface/i-req-mrta-master';
+import { IResMrtaMaster } from '../interface/i-res-mrta-master';
 
 @Injectable({
   providedIn: 'root'
@@ -51,6 +55,18 @@ export class MrtaService {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getDealerSignaturebyid/${quotation_id}`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/gentotallossqrpayment?application_num=${application_num}`
     return this.http.get<IQrTotalLoss>(url)
+  }
+
+  getmrtaage(formData: IReqMrtaAge): Observable<IResMrtaAge> {
+    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getDealerSignaturebyid/${quotation_id}`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getmrtaage`
+    return this.http.post<IResMrtaAge>(url, formData)
+  }
+
+  getmrtamaster(formData: IReqMrtaMaster): Observable<IResMrtaMaster> {
+    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getDealerSignaturebyid/${quotation_id}`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getmrtamaster`
+    return this.http.post<IResMrtaMaster>(url, formData)
   }
 
 

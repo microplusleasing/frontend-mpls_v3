@@ -39,8 +39,12 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   userSession: IUserTokenData = {} as IUserTokenData
 
 
+  // === add ciz_age_insurance (24/05/2023) ===
+  @Output() ciz_age_insurance = new EventEmitter<number>();
+
   @Output() ciz_age = new EventEmitter<number>();
   @Output() ciz_gender = new EventEmitter<number>();
+  @Output() birth_date = new EventEmitter<Date | null>();
 
   quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
   phonevalidstatus: string = ''
@@ -353,64 +357,136 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       debounceTime(1500)
     ).subscribe({
       next: async (value: any) => {
+
+        // *** emit birh_date to quotation-tab (14/06/2023) ***
+        this.birth_date.emit(value ?? null)
         // === wait for calculate age from birthdate ===
         if (value) {
           const formatbirthdatenew = moment(value).format('DD/MM/YYYY')
+          // if (formatbirthdatenew) {
+
+          //   // const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
+          //   const agecalcualte = await lastValueFrom(this.masterDataService.calculateage_db(formatbirthdatenew))
+          //   // == set age to form field ==
+          //   this.cizForm.controls.maincitizenForm.controls.age.setValue(agecalcualte.data[0].age_year)
+
+
+          //   this.quotationReq.subscribe((value) => {
+          //     if (value.data && value.data[0].ciz_age && value.data[0].ciz_age < 20) {
+          //       // code to execute if value.data[0].ciz_age is less than 20 (no valid)
+          //       this.quotationService.MPLS_cancle_quotation(value.data[0].quo_key_app_id).subscribe((response) => {
+          //         if (response.status == 200) {
+
+          //           // === Warning dialog and navigate dashboard ===
+          //           this.dialog.open(MainDialogComponent, {
+          //             panelClass: 'custom-dialog-container',
+          //             data: {
+          //               header: 'ไม่สามารถทำรายการได้',
+          //               message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
+          //               button_name: 'ปิด'
+          //             }
+          //           }).afterClosed().subscribe(result => {
+          //             // === redirect to home page === 
+          //             this.router.navigate(['/quotation-view']);
+          //           });
+          //         } else {
+          //           this.snackbarfail(`Error : ${response.message}`)
+          //         }
+          //       })
+          //     } else {
+
+          //       if (agecalcualte.data.length !== 0) {
+          //         this.ciz_age.emit(agecalcualte.data[0].age_year)
+
+          //         // code to execute if value.data[0].ciz_age is not less than 20 
+          //         // === case that new case (no quo_key_app_id) ====
+          //         if (agecalcualte.data[0].age_year < 20) {
+          //           // === กรณีอายุไม่ถึง 20 ปี และไม่มี quo_key_app_id ====
+          //           this.dialog.open(MainDialogComponent, {
+          //             panelClass: `custom-dialog-container`,
+          //             data: {
+          //               header: `ไม่สามารถทำรายการได้`,
+          //               message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
+          //               button_name: `ปิด`
+          //             }
+          //           }).afterClosed().subscribe((result) => {
+          //             // === redirect to home page === 
+          //             this.router.navigate(['/quotation-view'])
+          //           })
+          //         } else { }
+
+          //       }
+          //     }
+          //   });
+          // }
+
           if (formatbirthdatenew) {
+            forkJoin([
+              this.masterDataService.calculateage_db(formatbirthdatenew),
+              this.masterDataService.getagefrombirthdate(formatbirthdatenew)
+            ]).subscribe({
+              next: (age_array) => {
+                const agecalculate = age_array[0]
+                const agecalculate_insurance = age_array[1]
 
-            // const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
-            const agecalcualte = await lastValueFrom(this.masterDataService.calculateage_db(formatbirthdatenew))
-            // == set age to form field ==
-            this.cizForm.controls.maincitizenForm.controls.age.setValue(agecalcualte.data[0].age_year)
+                // == set age to form field ==
+                this.cizForm.controls.maincitizenForm.controls.age.setValue(agecalculate.data[0].age_year)
 
 
-            this.quotationReq.subscribe((value) => {
-              if (value.data && value.data[0].ciz_age && value.data[0].ciz_age < 20) {
-                // code to execute if value.data[0].ciz_age is less than 20 (no valid)
-                this.quotationService.MPLS_cancle_quotation(value.data[0].quo_key_app_id).subscribe((response) => {
-                  if (response.status == 200) {
+                this.quotationReq.subscribe((value) => {
+                  if (value.data && value.data[0].ciz_age && value.data[0].ciz_age < 20) {
+                    // code to execute if value.data[0].ciz_age is less than 20 (no valid)
+                    this.quotationService.MPLS_cancle_quotation(value.data[0].quo_key_app_id).subscribe((response) => {
+                      if (response.status == 200) {
 
-                    // === Warning dialog and navigate dashboard ===
-                    this.dialog.open(MainDialogComponent, {
-                      panelClass: 'custom-dialog-container',
-                      data: {
-                        header: 'ไม่สามารถทำรายการได้',
-                        message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
-                        button_name: 'ปิด'
+                        // === Warning dialog and navigate dashboard ===
+                        this.dialog.open(MainDialogComponent, {
+                          panelClass: 'custom-dialog-container',
+                          data: {
+                            header: 'ไม่สามารถทำรายการได้',
+                            message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
+                            button_name: 'ปิด'
+                          }
+                        }).afterClosed().subscribe(result => {
+                          // === redirect to home page === 
+                          this.router.navigate(['/quotation-view']);
+                        });
+                      } else {
+                        this.snackbarfail(`Error : ${response.message}`)
                       }
-                    }).afterClosed().subscribe(result => {
-                      // === redirect to home page === 
-                      this.router.navigate(['/quotation-view']);
-                    });
-                  } else {
-                    this.snackbarfail(`Error : ${response.message}`)
-                  }
-                })
-              } else {
-
-                if (agecalcualte.data.length !== 0) {
-                  this.ciz_age.emit(agecalcualte.data[0].age_year)
-
-                  // code to execute if value.data[0].ciz_age is not less than 20 
-                  // === case that new case (no quo_key_app_id) ====
-                  if (agecalcualte.data[0].age_year < 20) {
-                    // === กรณีอายุไม่ถึง 20 ปี และไม่มี quo_key_app_id ====
-                    this.dialog.open(MainDialogComponent, {
-                      panelClass: `custom-dialog-container`,
-                      data: {
-                        header: `ไม่สามารถทำรายการได้`,
-                        message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
-                        button_name: `ปิด`
-                      }
-                    }).afterClosed().subscribe((result) => {
-                      // === redirect to home page === 
-                      this.router.navigate(['/quotation-view'])
                     })
-                  } else { }
+                  } else {
 
-                }
+                    if (agecalculate.data.length !== 0 && agecalculate_insurance.data.length !== 0) {
+                      this.ciz_age.emit(agecalculate.data[0].age_year)
+                      this.ciz_age_insurance.emit(agecalculate_insurance.data[0].age_year)
+
+                      // code to execute if value.data[0].ciz_age is not less than 20 
+                      // === case that new case (no quo_key_app_id) ====
+                      if (agecalculate.data[0].age_year < 20) {
+                        // === กรณีอายุไม่ถึง 20 ปี และไม่มี quo_key_app_id ====
+                        this.dialog.open(MainDialogComponent, {
+                          panelClass: `custom-dialog-container`,
+                          data: {
+                            header: `ไม่สามารถทำรายการได้`,
+                            message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
+                            button_name: `ปิด`
+                          }
+                        }).afterClosed().subscribe((result) => {
+                          // === redirect to home page === 
+                          this.router.navigate(['/quotation-view'])
+                        })
+                      } else { }
+
+                    }
+                  }
+                });
+              }, error: (e) => {
+
+              }, complete: () => {
+
               }
-            });
+            })
           }
         }
       }, error: (e) => {

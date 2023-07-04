@@ -39,6 +39,7 @@ import { FinishQuotationDialogComponent } from 'src/app/widget/dialog/finish-quo
 import { IDialogFinishQuotation } from 'src/app/interface/i-dialog-finish-quotation';
 import { IUserTokenData } from 'src/app/interface/i-user-token';
 import { EConsentImageDialogComponent } from 'src/app/widget/dialog/e-consent-image-dialog/e-consent-image-dialog.component';
+import { ImageUtilService } from 'src/app/service/image-util.service';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -86,12 +87,19 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
 
   // === variable from citizenpage (age, gender) (22/09/2022) ===
+
+  // === add insurance age (24/05/2023) ====
+  insurance_age: number = 0;
   cusage: number = 0;
   gender: number = 0;
+  birth_date: Date | null = null;
 
 
+
+  @Output() insurance_age_send = new EventEmitter<number>();
   @Output() age_send = new EventEmitter<number>();
   @Output() gender_send = new EventEmitter<number>();
+  @Output() birth_date_send = new EventEmitter<Date | null>();
 
 
 
@@ -112,6 +120,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.fb,
     this.cd,
     this.masterDataService,
+    this.imageUtilService,
     this.loadingService,
     this.dialog,
     this._snackBar,
@@ -174,6 +183,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     private breakpointObserver: BreakpointObserver,
     private loadingService: LoadingService,
     private masterDataService: MasterDataService,
+    private imageUtilService: ImageUtilService,
     private imageService: ImageService,
     private dipchipService: DipchipService,
     private actRoute: ActivatedRoute,
@@ -1599,12 +1609,29 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.sendcarActive$.next($event)
   }
 
+
+  // === add on (24/05/2023) ===
+  updateage_insurance($event: number) {
+    this.insurance_age = $event
+
+    // console.log(`this is age from ciz page (quotaion) : ${this.age}`)
+
+    this.insurance_age_send.emit($event)
+  }
   updateage($event: number) {
     this.cusage = $event
 
     // console.log(`this is age from ciz page (quotaion) : ${this.age}`)
 
     this.age_send.emit($event)
+  }
+
+  updatebirthdate($event: Date | null) {
+    this.birth_date = $event
+
+    // console.log(`this is birth_date_send from ciz page (quotaion) : ${this.birth_date}`)
+
+    this.birth_date_send.emit($event)
   }
 
   updategender($event: number) {

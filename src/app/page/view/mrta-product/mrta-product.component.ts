@@ -237,7 +237,8 @@ export class MrtaProductComponent {
       this.age &&
       this.gender &&
       // this.busi_code &&
-      this.birth_date
+      this.birth_date &&
+      this.busi_code
     ) {
       this.getmrtainsurance(this.out_stand, this.gender, this.birth_date)
     } else {
@@ -545,7 +546,8 @@ export class MrtaProductComponent {
       insurance_code: this.mrtaForm.controls.mrtafieldValue.value,
       insurance_year: this.mrtaForm.controls.mrtayearfieldValue.value,
       insurance_seller: this.mrtaForm.controls.mrtasellerfieldValue.value,
-      insurer_code: this.insurer_code
+      insurer_code: this.insurer_code,
+      busi_code: this.busi_code ? this.busi_code : ''
     })
   }
 

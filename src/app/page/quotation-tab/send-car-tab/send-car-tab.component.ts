@@ -112,6 +112,8 @@ export class SendCarTabComponent extends BaseService implements OnInit {
 
   // **** (19/06/2023) ****
   birth_date: Date | null = null;
+  // *** (05/07/2023) ****
+  busi_code: string | null = null;
 
   lockqrpage: boolean = true
 
@@ -221,6 +223,8 @@ export class SendCarTabComponent extends BaseService implements OnInit {
 
                     // *** set birth_date (19/06/2023) ***
                     this.birth_date = this.quotationresultData.data[0].birth_date
+                    // *** set busi_code from quotaionresult (05/07/2023) ***
+                    this.busi_code = this.quotationresultData.data[0].cd_bussiness_code
                   } else {
                     this.masterDataService.getoracleoutstand(this.quotationresultData.data[0].application_num).subscribe((value) => {
                       if (value.data.length !== 0) {
@@ -228,6 +232,8 @@ export class SendCarTabComponent extends BaseService implements OnInit {
                         this.out_stand = value.data[0].out_stand
                         // *** set birth_date (19/06/2023) ***
                         this.birth_date = this.quotationresultData.data[0].birth_date
+                        // *** set busi_code from quotaionresult (05/07/2023) ***
+                        this.busi_code = this.quotationresultData.data[0].cd_bussiness_code
                       }
                     })
                   }
@@ -693,7 +699,6 @@ export class SendCarTabComponent extends BaseService implements OnInit {
 
 
     // === save qr mrta gen ===
-
     this._ireqsaveqrmrta.age = $event.age
     this._ireqsaveqrmrta.application_num = this.quotationresultData.data[0].application_num
     this._ireqsaveqrmrta.gender = $event.gender

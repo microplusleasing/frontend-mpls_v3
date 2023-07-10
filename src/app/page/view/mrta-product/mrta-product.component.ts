@@ -123,7 +123,7 @@ export class MrtaProductComponent {
     forkJoin(
       [
         // this.masterDataService.getmrtainsurance(out_stand, age, gender),
-        this.mrtaService.getmrtamaster({ busi_code: '001' }),
+        this.mrtaService.getmrtamaster({ busi_code: this.busi_code ? this.busi_code : '' }),
         this.masterDataService.getmrtaseller()
       ]
     ).subscribe((results) => {

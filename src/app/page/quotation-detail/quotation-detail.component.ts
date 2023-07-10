@@ -1392,6 +1392,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                         this.secondhandcarverify = true
 
                         // *** add condition ***
+
+                        // *** set this.imageattachtab.countload = 0 for reload new upload image (07/10/2023) ***
+                        this.imageattachtab.countload = 0
                         this.imageattachtab.showsecondhandcarimageattach = true
 
 
@@ -1502,7 +1505,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                           contract_ref: this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value,
                           bussiness_code: this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value ?? ''
                         }
-                      }).afterClosed().subscribe(async (res) => {
+                      }).afterClosed().subscribe(async (res: IResDialog2ndhandCarImageAttach) => {
                         // handle data 
                         if (res) {
                           const reqcreatecredit = await lastValueFrom(
@@ -1524,18 +1527,34 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                               this.secondhandcarverify = true
                               this.imageattachtab.showsecondhandcarimageattach = false
                             } else {
-                              this.imageattachtab.uploadedImagesMultiple = []
-                              this.imageattachtab.countload = 0
-                              this.secondhandcarverify = true
-                              this.imageattachtab.showsecondhandcarimageattach = false
-                              this.imageattachtab.txtrequireimagesecondhandcar = ''
-                            }
 
-                            if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
-                              this.econsentbtnDisable = false
+                              // *** comment on (07/10/2023) ***
+                              // this.imageattachtab.uploadedImagesMultiple = []
+                              // this.imageattachtab.countload = 0
+                              // this.secondhandcarverify = true
+                              // this.imageattachtab.showsecondhandcarimageattach = false
+                              // this.imageattachtab.txtrequireimagesecondhandcar = ''
                             }
-                            this.cizcardtab.cizForm.markAsPristine();
-                            this.snackbarsuccess(`${reqcreatecredit.message}`)
+                            // *** chage into same SecondhandCarAttachImageDialogComponent for new case (07/10/2023) ***
+                            if (res.upload_status == true) {
+                              this.secondhandcarverify = true
+
+                              // *** add condition ***
+                              
+                              // *** set this.imageattachtab.countload = 0 for reload new upload image (07/10/2023) ***
+                              this.imageattachtab.countload = 0
+                              this.imageattachtab.showsecondhandcarimageattach = true
+                              this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
+
+
+                              if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                                this.econsentbtnDisable = false
+                              }
+                              this.cizcardtab.cizForm.markAsPristine();
+                              this.snackbarsuccess(`${reqcreatecredit.message}`)
+                              // *** end 2ndhand car image attach success *** 
+                              // *** add-on 10/07/2023 ***
+                            }
                           } else {
                             this.snackbarfail(`${reqcreatecredit.message}`)
                           }
@@ -1655,7 +1674,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       }
 
     } else {
-      // *** new car save or create ***
+      // *** new car save or create  (รถมือหนึ่ง) ***
       const reqcreatecredit = await lastValueFrom(
         this.quotationService.MPLS_create_or_update_credit(reqcreatecreditdata).pipe(
           catchError((err: any) => {
@@ -1672,7 +1691,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
         // *** check type of image attach (new car or second hand car) ***
         if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
-          this.secondhandcarverify = true
+
+          this.secondhandcarverify = false
+          this.imageattachtab.countload = 0
+          this.imageattachtab.txtrequireimagesecondhandcar = ''
           this.imageattachtab.showsecondhandcarimageattach = false
         } else {
           if (this.quotationResult$.value.data[0].quo_secondhand_car_verify !== 'Y') {

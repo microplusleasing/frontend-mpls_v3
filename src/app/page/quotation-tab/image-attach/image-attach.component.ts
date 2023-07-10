@@ -117,6 +117,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
     if (this.countload == 0) {
 
+      this.uploadedImagesMultiple = []
       this.quotationReq.subscribe({
         next: (resquo) => {
           this.loadingService.showLoader();
@@ -128,7 +129,8 @@ export class ImageAttachComponent extends BaseService implements OnInit {
             const recordExists = '';
 
             // (quoitem.cd_bussiness_code !== '001') ? this.showsecondhandcarimageattach = true : this.showsecondhandcarimageattach = false
-            (quoitem.cd_bussiness_code == '002' || quoitem.cd_bussiness_code == '003') ? this.showsecondhandcarimageattach = true : null
+            // (quoitem.cd_bussiness_code == '002' || quoitem.cd_bussiness_code == '003') ? this.showsecondhandcarimageattach = true : null
+            // console.log(`this.showsecondhandcarimageattach : ${this.showsecondhandcarimageattach}`)
 
             // === call parameter data (single and multiple type) ===
             forkJoin([

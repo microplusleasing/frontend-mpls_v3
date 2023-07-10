@@ -600,26 +600,26 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                               if (userdataObj.channal == 'checker') {
 
                                 // *** check image contain data ****
-                                if (resultDealerGrade.data.notice_image.data.length !== 0) {
+                                  if (resultDealerGrade.data.notice_image.data.length !== 0) {
 
-                                  this.imageUtilService.getUrlImage(resultDealerGrade.data.notice_image.data).then(imageurldealergrade => {
-                                    // *** show dialog of image dealer grade ***
-                                    if (!this.isDialogOpen) {
-                                      this.isDialogOpen = true; // Set the flag to indicate that the dialog is open
-                                      // Open the dialog
-                                      this.dialog.open(DealerGradeImageDialogComponent, {
-                                        disableClose: true,
-                                        width: `500`,
-                                        height: `700`,
-                                        data: {
-                                          imageurl: imageurldealergrade
-                                        }
-                                      }).afterClosed().subscribe((res_dealer_grage_dialog_close) => {
-                                        this.isDialogOpen = false; // Reset the flag when the dialog is closed
-                                      })
-                                    }
-                                  })
-                                }
+                                    this.imageUtilService.getUrlImage(resultDealerGrade.data.notice_image.data).then(imageurldealergrade => {
+                                      // *** show dialog of image dealer grade ***
+                                      if (!this.isDialogOpen) {
+                                        this.isDialogOpen = true; // Set the flag to indicate that the dialog is open
+                                        // Open the dialog
+                                        this.dialog.open(DealerGradeImageDialogComponent, {
+                                          disableClose: true,
+                                          width: `500`,
+                                          height: `700`,
+                                          data: {
+                                            imageurl: imageurldealergrade
+                                          }
+                                        }).afterClosed().subscribe((res_dealer_grage_dialog_close) => {
+                                          this.isDialogOpen = false; // Reset the flag when the dialog is closed
+                                        })
+                                      }
+                                    })
+                                  }
 
                               }
                             }
@@ -1531,7 +1531,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 // === checker ===
                 if (sessionData.value.channal == 'checker') {
                   if (quoitem.sl_code) {
-                    this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code);
+                    // *** comment this line on 10/07/2023 ***
+                    // this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code);
+                    this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code, { emitEvent: false })
                   }
                 } else {
                   // === store ==== 

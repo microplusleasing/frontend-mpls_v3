@@ -43,6 +43,7 @@ import { ImageUtilService } from 'src/app/service/image-util.service';
 import { SecondhandCarAttachImageDialogComponent } from 'src/app/widget/dialog/secondhand-car-attach-image-dialog/secondhand-car-attach-image-dialog.component';
 import { ConfirmDeleteSecondhandCarImageAttachComponent } from 'src/app/widget/dialog/confirm-delete-secondhand-car-image-attach/confirm-delete-secondhand-car-image-attach.component';
 import { IReqCheckMotoYear } from 'src/app/interface/i-req-check-moto-year';
+import { IResDialog2ndhandCarImageAttach } from 'src/app/interface/dialog-return/i-res-dialog-2ndhand-car-image-attach';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -1383,6 +1384,24 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                         quotationid: this.quoid,
                         contract_ref: this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value,
                         bussiness_code: this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value ?? ''
+                      }
+                    }).afterClosed().subscribe((res: IResDialog2ndhandCarImageAttach) => {
+                      console.log(`อิอิ`)
+                      // *** set this.secondhandcarverify = true when return upload image 2ndhand car success (10/07/2023) ***
+                      if (res.upload_status == true) {
+                        this.secondhandcarverify = true
+
+                        // *** add condition ***
+                        this.imageattachtab.showsecondhandcarimageattach = true
+
+
+                        if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                          this.econsentbtnDisable = false
+                        }
+                        this.cizcardtab.cizForm.markAsPristine();
+                        this.snackbarsuccess(`${reqcreatecredit.message}`)
+                        // *** end 2ndhand car image attach success *** 
+                        // *** add-on 10/07/2023 ***
                       }
                     })
                   } else {

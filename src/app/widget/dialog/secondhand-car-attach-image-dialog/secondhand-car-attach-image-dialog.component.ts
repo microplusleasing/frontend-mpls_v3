@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import imageCompression from 'browser-image-compression';
 import { lastValueFrom } from 'rxjs';
+import { IResDialog2ndhandCarImageAttach } from 'src/app/interface/dialog-return/i-res-dialog-2ndhand-car-image-attach';
 import { IDialogSecondhandCarImageAttach } from 'src/app/interface/i-dialog-secondhand-car-image-attach';
 import { IImageAttachUploadMultiple } from 'src/app/interface/i-image-attach-upload-multiple';
 import { IImageAttachUploadMultipleList } from 'src/app/interface/i-image-attach-upload-multiple-list';
@@ -154,7 +155,10 @@ export class SecondhandCarAttachImageDialogComponent implements OnInit {
           } catch (e: any) {
             this.snackbarfail(`Eror update Flag : ${e.message ? e.message : 'No return msg'}`)
           }
-          this.dialogRef.close(true)
+          const iresdialog_2ndhandcar: IResDialog2ndhandCarImageAttach = {
+            upload_status: true
+          }
+          this.dialogRef.close(iresdialog_2ndhandcar)
         } else {
           this.snackbarfail(`Error : ${res_create_image_list.message ? res_create_image_list.message : 'No return msg'}`)
         }

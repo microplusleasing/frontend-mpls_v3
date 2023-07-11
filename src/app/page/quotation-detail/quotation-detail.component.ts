@@ -1393,7 +1393,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
                         // *** add condition ***
 
-                        // *** set this.imageattachtab.countload = 0 for reload new upload image (07/10/2023) ***
+                        // *** set this.imageattachtab.countload = 0 for reload new upload image (10/07/2023) ***
                         this.imageattachtab.countload = 0
                         this.imageattachtab.showsecondhandcarimageattach = true
 
@@ -1528,20 +1528,20 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                               this.imageattachtab.showsecondhandcarimageattach = false
                             } else {
 
-                              // *** comment on (07/10/2023) ***
+                              // *** comment on (10/07/2023) ***
                               // this.imageattachtab.uploadedImagesMultiple = []
                               // this.imageattachtab.countload = 0
                               // this.secondhandcarverify = true
                               // this.imageattachtab.showsecondhandcarimageattach = false
                               // this.imageattachtab.txtrequireimagesecondhandcar = ''
                             }
-                            // *** chage into same SecondhandCarAttachImageDialogComponent for new case (07/10/2023) ***
+                            // *** chage into same SecondhandCarAttachImageDialogComponent for new case (10/07/2023) ***
                             if (res.upload_status == true) {
                               this.secondhandcarverify = true
 
                               // *** add condition ***
                               
-                              // *** set this.imageattachtab.countload = 0 for reload new upload image (07/10/2023) ***
+                              // *** set this.imageattachtab.countload = 0 for reload new upload image (10/07/2023) ***
                               this.imageattachtab.countload = 0
                               this.imageattachtab.showsecondhandcarimageattach = true
                               this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'

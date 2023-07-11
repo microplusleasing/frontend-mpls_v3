@@ -114,7 +114,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
 
   // livingAddress 
-  _l_address = new FormControl('')
+  _l_address = new FormControl('', Validators.maxLength(70))
   _l_subDistrict = new FormControl('')
   _l_district = new FormControl('')
   _l_provinceName = new FormControl<string | undefined>('')
@@ -125,7 +125,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   _l_longitude = new FormControl('')
 
   // contactAddress 
-  _c_address = new FormControl('')
+  _c_address = new FormControl('', Validators.maxLength(70))
   _c_subDistrict = new FormControl('')
   _c_district = new FormControl('')
   _c_provinceName = new FormControl<string | undefined>('')
@@ -133,7 +133,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   _c_postalCode = new FormControl('', Validators.pattern('^[0-9]{5}$'))
 
   // houseRegisAddress 
-  _h_address = new FormControl('')
+  _h_address = new FormControl('', Validators.maxLength(70))
   _h_subDistrict = new FormControl('')
   _h_district = new FormControl('')
   _h_provinceName = new FormControl<string | undefined>('')
@@ -141,7 +141,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   _h_postalCode = new FormControl('', Validators.pattern('^[0-9]{5}$'))
 
   // livingAddress 
-  _w_address = new FormControl('')
+  _w_address = new FormControl('', Validators.maxLength(70))
   _w_subDistrict = new FormControl('')
   _w_district = new FormControl('')
   _w_provinceName = new FormControl<string | undefined>('')

@@ -238,6 +238,7 @@
         <mat-form-field appearance="outline" style="width: 90%;">
           <mat-label>ที่อยู่</mat-label>
           <textarea matInput [formControl]="_l_address" [rows]="1"></textarea>
+          <mat-error *ngIf="_l_address.errors?.['maxlength']">ข้อความยาวเกินกำหนด</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -309,6 +310,7 @@
         <mat-form-field appearance="outline" style="width: 90%;">
           <mat-label>ที่อยู่</mat-label>
           <textarea matInput [formControl]="_c_address" [rows]="1"></textarea>
+          <mat-error *ngIf="_c_address.errors?.['maxlength']">ข้อความยาวเกินกำหนด</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -365,6 +367,7 @@
         <mat-form-field appearance="outline" style="width: 90%;">
           <mat-label>ที่อยู่</mat-label>
           <textarea matInput [formControl]="_h_address" [rows]="1"></textarea>
+          <mat-error *ngIf="_h_address.errors?.['maxlength']">ข้อความยาวเกินกำหนด</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -421,6 +424,7 @@
         <mat-form-field appearance="outline" style="width: 90%;">
           <mat-label>ที่อยู่</mat-label>
           <textarea matInput [formControl]="_w_address" type="textarea" [rows]="1"></textarea>
+          <mat-error *ngIf="_w_address.errors?.['maxlength']">ข้อความยาวเกินกำหนด</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">

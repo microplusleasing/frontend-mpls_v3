@@ -10,6 +10,8 @@ import { IReqMrtaAge } from 'src/app/interface/i-req-mrta-age';
 import { IResMrtaMasterData } from 'src/app/interface/i-res-mrta-master';
 import * as moment from 'moment';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { MatDialog } from '@angular/material/dialog';
+import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 
 @Component({
   selector: 'app-mrta-product',
@@ -89,7 +91,8 @@ export class MrtaProductComponent {
     private fb: FormBuilder,
     private masterDataService: MasterDataService,
     private mrtaService: MrtaService,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+    public dialog: MatDialog
   ) {
 
     this.mrtaForm.valueChanges.subscribe((value) => {
@@ -450,16 +453,37 @@ export class MrtaProductComponent {
                   return 0; // keep positions if 'a' and 'b' are equal
                 })
 
-                this.mrtamasterresult = filterresult
+                // *** check insurance is enable in master mrta (11/07/2023) ***
 
-                this.mrtainsurancedata = res_mrta_insurance_list.data
+                const checkmrtainclude = filterresult.some((x) => x.insurance_code == $event)
 
-                this.mrtaForm.controls.mrtayearfieldValue.setValue('')
-                this.mrtainsurancedatayear = this.mrtainsurancedata.filter((items) => {
-                  return items.insurance_code === $event
-                })
+                if (checkmrtainclude) {
+                  // *** mrta insurance is enable ***
+                  // this.mrtamasterresult = filterresult
 
-                console.log('end')
+                  this.mrtainsurancedata = res_mrta_insurance_list.data
+
+                  this.mrtaForm.controls.mrtayearfieldValue.setValue('')
+                  this.mrtainsurancedatayear = this.mrtainsurancedata.filter((items) => {
+                    return items.insurance_code === $event
+                  })
+
+                  console.log('end')
+                } else {
+                  // *** mrta insurance not found with condition ****
+                  this.dialog.open(MainDialogComponent, {
+                    panelClass: `custom-dialog-container`,
+                    data: {
+                      header: ``,
+                      message: `ประกันที่เลือกไม่อยู่ในเงื่อนไขที่กำหนด`,
+                      button_name: `ตกลง`
+                    }
+                  }).afterClosed().subscribe((results) => {
+                    // *** handle dialog close here ***
+                    this.mrtaForm.controls.mrtafieldValue.setValue(null, {emitEvent: false})
+                    this.mrtaForm.controls.mrtayearfieldValue.setValue(null, {emitEvent: false})
+                  })
+                }
 
               } else {
                 this.textshow = 'ไม่พบประกัน MRTA ตามเงื่อนไขที่กำหนด'

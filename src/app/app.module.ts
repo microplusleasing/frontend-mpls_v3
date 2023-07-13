@@ -56,6 +56,7 @@ import { SecondhandCarViewDialogComponent } from './widget/dialog/secondhand-car
 import { SecondhandCarAttachImageDialogComponent } from './widget/dialog/secondhand-car-attach-image-dialog/secondhand-car-attach-image-dialog.component';
 import { ConfirmDeleteSecondhandCarImageAttachComponent } from './widget/dialog/confirm-delete-secondhand-car-image-attach/confirm-delete-secondhand-car-image-attach.component';
 import { ViewCarAttachComponent } from './page/view/view-car-attach/view-car-attach.component';
+import { MrtaProductNewComponent } from './page/view/mrta-product-new/mrta-product-new.component';
 
 
 @NgModule({
@@ -107,6 +108,7 @@ import { ViewCarAttachComponent } from './page/view/view-car-attach/view-car-att
     ConfirmDeleteSecondhandCarImageAttachComponent,
     ViewCarAttachComponent,
     DealerGradeImageDialogComponent,
+    MrtaProductNewComponent,
   ],
   imports: [
     BrowserModule,

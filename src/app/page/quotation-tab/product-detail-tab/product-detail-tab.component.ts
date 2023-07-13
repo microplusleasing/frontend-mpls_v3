@@ -394,7 +394,21 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   // *** check is checker or dealer (for dealer not clear dealercode when bussiness code value change) (03/04/2023) ***
                   const sessionData = this.userSessionQuotation
-                  sessionData.value.channal == 'checker' ? this.detailForm.controls.dealerCode.setValue('', { emitEvent: false }) : null
+                  // sessionData.value.channal == 'checker' ? this.detailForm.controls.dealerCode.setValue('', { emitEvent: false }) : null
+                  // *** switch check channal checker and dealer (replace on up line) (13/07/2023) ***
+
+                  switch (sessionData.value.channal) {
+                    case 'checker':
+                      this.productForm.controls.detailForm.controls.dealerCode.setValue('', { emitEvent: false })
+                      break;
+                    case 'dealer':
+                      const dealer_seller_id = sessionData.value.SELLER_ID ? sessionData.value.SELLER_ID : ''
+                      this.productForm.controls.detailForm.controls.dealerCode.setValue(dealer_seller_id, { emitEvent: false })
+                      break;
+
+                    default:
+                      break;
+                  }
 
                   // **** clear all form field when value of bussiness code change ****
                   this.detailForm.controls.carBrandField.setValue('', { emitEvent: false });
@@ -403,7 +417,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.detailForm.controls.carModelField.setValue('', { emitEvent: false });
                   this.detailForm.controls.carModelNameField.setValue('', { emitEvent: false });
                   this.detailForm.controls.chassisNoField.setValue('', { emitEvent: false });
-                  this.detailForm.controls.dealerCode.setValue('', { emitEvent: false });
+                  // *** use switch condition check instead cause of fix in dealer case (comment on 13/07/2023) ***
+                  // this.detailForm.controls.dealerCode.setValue('', { emitEvent: false });
                   this.detailForm.controls.downPaymentField.setValue(null, { emitEvent: false });
                   this.detailForm.controls.engineNoField.setValue('', { emitEvent: false });
                   this.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false });
@@ -600,26 +615,26 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                               if (userdataObj.channal == 'checker') {
 
                                 // *** check image contain data ****
-                                  if (resultDealerGrade.data.notice_image.data.length !== 0) {
+                                if (resultDealerGrade.data.notice_image.data.length !== 0) {
 
-                                    this.imageUtilService.getUrlImage(resultDealerGrade.data.notice_image.data).then(imageurldealergrade => {
-                                      // *** show dialog of image dealer grade ***
-                                      if (!this.isDialogOpen) {
-                                        this.isDialogOpen = true; // Set the flag to indicate that the dialog is open
-                                        // Open the dialog
-                                        this.dialog.open(DealerGradeImageDialogComponent, {
-                                          disableClose: true,
-                                          width: `500`,
-                                          height: `700`,
-                                          data: {
-                                            imageurl: imageurldealergrade
-                                          }
-                                        }).afterClosed().subscribe((res_dealer_grage_dialog_close) => {
-                                          this.isDialogOpen = false; // Reset the flag when the dialog is closed
-                                        })
-                                      }
-                                    })
-                                  }
+                                  this.imageUtilService.getUrlImage(resultDealerGrade.data.notice_image.data).then(imageurldealergrade => {
+                                    // *** show dialog of image dealer grade ***
+                                    if (!this.isDialogOpen) {
+                                      this.isDialogOpen = true; // Set the flag to indicate that the dialog is open
+                                      // Open the dialog
+                                      this.dialog.open(DealerGradeImageDialogComponent, {
+                                        disableClose: true,
+                                        width: `500`,
+                                        height: `700`,
+                                        data: {
+                                          imageurl: imageurldealergrade
+                                        }
+                                      }).afterClosed().subscribe((res_dealer_grage_dialog_close) => {
+                                        this.isDialogOpen = false; // Reset the flag when the dialog is closed
+                                      })
+                                    }
+                                  })
+                                }
 
                               }
                             }
@@ -1372,105 +1387,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   }
                 }
 
-
-                // *** (remove check valid moto year date to save button) ***
-
-                // if (recordExists) {
-                //   this.trigger_bussinesscode.emit(false)
-                // }
-
-                // if (
-                //   this.productForm.controls.detailForm.controls.bussinessCode.value == '002' ||
-                //   this.productForm.controls.detailForm.controls.bussinessCode.value == '003'
-                // ) {
-                // *** check moto_year least than 4 years *** 
-                // if (res >= 4) {
-                //   // *** clear value on form ***
-                //   this.dialog.open(MainDialogComponent, {
-                //     data: {
-                //       header: `อายุรถไม่อยู่ในเงื่อนไข`,
-                //       message: `อายุรถที่เลือกเกิน 4 ปีกรุณาระบุวันที่จดทะเบียนให้ถูกต้อง`
-                //     }
-                //   }).afterClosed().subscribe((res) => {
-                //     // *** clear value on form ***
-
-                //     switch (this.productForm.controls.detailForm.controls.bussinessCode.value) {
-                //       case '002':
-                //         this.detailForm.controls.carBrandNameField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.carColorField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.carModelField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.carModelNameField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.chassisNoField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.downPaymentField.setValue(null, { emitEvent: false });
-                //         this.detailForm.controls.engineNoField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false });
-                //         this.detailForm.controls.insuranceCodeField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.insuranceNameField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.insurancePlanPriceField.setValue(null, { emitEvent: false });
-                //         this.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false });
-                //         this.detailForm.controls.insurerCodeField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.insurerNameField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.interestRateField.setValue(null, { emitEvent: false });
-                //         this.detailForm.controls.isincludeloanamount.setValue(null, { emitEvent: false });
-                //         this.detailForm.controls.loanAmountField.setValue(null, { emitEvent: false });
-                //         this.detailForm.controls.maxltvField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false });
-                //         this.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false });
-                //         this.detailForm.controls.priceincludevatField.setValue(null, { emitEvent: false });
-                //         this.detailForm.controls.productValueField.setValue(null, { emitEvent: false });
-                //         this.detailForm.controls.runningchassisNoField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.runningengineNoField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.sizeModelField.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.value1.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.value2.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.value3.setValue('', { emitEvent: false });
-                //         this.detailForm.controls.paymentValueField.setValue(null)
-                //         this.showpaymentvalue$.next(false)
-
-                //         this.secondHandCarForm.controls.model_year.setValue('', { emitEvent: false })
-                //         this.secondHandCarForm.controls.cc.setValue(null, { emitEvent: false })
-                //         this.secondHandCarForm.controls.reg_no.setValue('', { emitEvent: false })
-                //         this.secondHandCarForm.controls.reg_date.setValue(null, { emitEvent: false })
-                //         this.secondHandCarForm.controls.contract_ref.setValue('', { emitEvent: false })
-                //         this.secondHandCarForm.controls.reg_mile.setValue(null, { emitEvent: false })
-                //         this.secondHandCarForm.controls.prov_name.setValue('', { emitEvent: false })
-                //         this.secondHandCarForm.controls.prov_code.setValue('', { emitEvent: false })
-                //         this.secondHandCarForm.controls.model_year.setValue(null, { emitEvent: false })
-
-
-                //         this.showdealerfield = true
-                //         this.showdealerfield = true
-                //         this.showgeneralcarinfovisible = false
-                //         // this.showpaymentvalue$.next(false)
-
-                //         this.lockbtncalculate$.next(true)
-                //         this.productForm.controls.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false })
-                //         this.paymentvalue$.next(0);
-                //         this.out_stand = 0
-                //         this.showpaymentvalue$.next(false)
-
-                //         // *** set Require to some field of second hand car (MPLS) ***
-                //         this.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(Validators.required)
-                //         this.productForm.controls.secondHandCarForm.controls.model_year.setValidators(Validators.required)
-                //         this.productForm.controls.secondHandCarForm.controls.cc.setValidators(Validators.required)
-                //         this.productForm.controls.secondHandCarForm.controls.reg_no.setValidators(Validators.required)
-                //         this.productForm.controls.secondHandCarForm.controls.reg_date.setValidators(Validators.required)
-                //         this.productForm.controls.secondHandCarForm.controls.prov_name.setValidators(Validators.required)
-                //         this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(Validators.required)
-                //         this.productForm.controls.secondHandCarForm.updateValueAndValidity()
-
-                //         break;
-
-                //       case '003':
-                //         this.secondHandCarForm.controls.reg_date.setValue(null , { emitEvent: false})
-                //         this.secondHandCarForm.controls.model_year.setValue(null, { emitEvent: false })
-                //         break;
-                //       default:
-                //         break;
-                //     }
-                //   })
-                // }
-                // }
               })
 
 
@@ -1800,6 +1716,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   } else {
                     // === store ==== 
                     if (this.userSessionQuotation.value.SELLER_ID) {
+                      console.log(`trigger this : ${this.userSessionQuotation.value.SELLER_ID}`)
                       this.productForm.controls.detailForm.controls.dealerCode.setValue(this.userSessionQuotation.value.SELLER_ID);
                       this.productForm.controls.detailForm.controls.dealerCode.disable();
                     }
@@ -2047,7 +1964,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     else {
       // === clear payment value when condition out match ===
       this.lockbtncalculate$.next(true)
-      console.log('975')
+      // console.log('975')
       this.productForm.controls.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false })
       this.paymentvalue$.next(0);
       this.out_stand = 0

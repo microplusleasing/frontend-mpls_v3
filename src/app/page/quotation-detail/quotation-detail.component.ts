@@ -955,6 +955,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       work_province_code: ciz_form.controls.workAddress.controls.provinceCode.value ? ciz_form.controls.workAddress.controls.provinceCode.value : '',
       work_province_name: ciz_form.controls.workAddress.controls.provinceName.value ? this.mapProvinceNameById(ciz_form.controls.workAddress.controls.provinceCode.value ?? '', this.cizcardtab.masterProvince.data) : '',
       work_postal_code: ciz_form.controls.workAddress.controls.postalCode.value ? ciz_form.controls.workAddress.controls.postalCode.value : '',
+      work_description: ciz_form.controls.workAddress.controls.description.value ? ciz_form.controls.workAddress.controls.description.value : '',
 
     }
 
@@ -1099,6 +1100,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       work_province_code: ciz_form.controls.workAddress.controls.provinceCode.value ? ciz_form.controls.workAddress.controls.provinceCode.value : '',
       work_province_name: work_provnameValue,
       work_postal_code: ciz_form.controls.workAddress.controls.postalCode.value ? ciz_form.controls.workAddress.controls.postalCode.value : '',
+      work_description: ciz_form.controls.workAddress.controls.description.value ? ciz_form.controls.workAddress.controls.description.value : '',
 
     }
 
@@ -1288,7 +1290,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       // *** check moto year valid (20/04/2023) ***
       const datasendcheckmoto: IReqCheckMotoYear = {
         moto_year: this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value : null,
-        bussines_code: this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value ? this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value : '',
+        bussiness_code: this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value ? this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value : '',
         product_code: '01', // fix
         brand_code: this.productdetailtab.productForm.controls.detailForm.controls.carBrandField.value ?? '',
         model_code: this.productdetailtab.productForm.controls.detailForm.controls.carModelField.value ?? '',
@@ -1319,7 +1321,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
       if (checkmotoyearvalid.status == 200) {
 
-        if (checkmotoyearvalid.data.result = 'Y') {
+        if (checkmotoyearvalid.data.result == 'Y') {
           // *** valid moto year ***
           if (checksecondhandcarimgattach.status) {
             // *** check valid status ***
@@ -1385,8 +1387,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                         contract_ref: this.productdetailtab.productForm.controls.secondHandCarForm.controls.contract_ref.value,
                         bussiness_code: this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value ?? ''
                       }
-                    }).afterClosed().subscribe((res: IResDialog2ndhandCarImageAttach) => {
-                      console.log(`อิอิ`)
+                    }).afterClosed().subscribe( async (res: IResDialog2ndhandCarImageAttach) => {
+                      // console.log(`อิอิ`)
                       // *** set this.secondhandcarverify = true when return upload image 2ndhand car success (10/07/2023) ***
                       if (res.upload_status == true) {
                         this.secondhandcarverify = true
@@ -1521,19 +1523,15 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
                           this.loadingService.hideLoader()
                           if (reqcreatecredit.status == true) {
-
+                            
                             // *** check type of image attach (new car or second hand car) ***
                             if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
                               this.secondhandcarverify = true
                               this.imageattachtab.showsecondhandcarimageattach = false
                             } else {
 
-                              // *** comment on (10/07/2023) ***
-                              // this.imageattachtab.uploadedImagesMultiple = []
-                              // this.imageattachtab.countload = 0
-                              // this.secondhandcarverify = true
-                              // this.imageattachtab.showsecondhandcarimageattach = false
-                              // this.imageattachtab.txtrequireimagesecondhandcar = ''
+                              this.imageattachtab.showsecondhandcarimageattach = true
+                              this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
                             }
                             // *** chage into same SecondhandCarAttachImageDialogComponent for new case (10/07/2023) ***
                             if (res.upload_status == true) {
@@ -1541,11 +1539,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
                               // *** add condition ***
                               
-                              // *** set this.imageattachtab.countload = 0 for reload new upload image (10/07/2023) ***
                               this.imageattachtab.countload = 0
-                              this.imageattachtab.showsecondhandcarimageattach = true
-                              this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
-
 
                               if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
                                 this.econsentbtnDisable = false
@@ -1580,6 +1574,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           }
         } else {
           // *** non valid moto year (at now more year thand minimum year parameter) ****
+          this.loadingService.hideLoader()
           this.dialog.open(MainDialogComponent, {
             data: {
               header: `อายุรถเกินกำหนด`,
@@ -1692,10 +1687,11 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         // *** check type of image attach (new car or second hand car) ***
         if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
 
-          this.secondhandcarverify = false
+          this.secondhandcarverify = true
           this.imageattachtab.countload = 0
           this.imageattachtab.txtrequireimagesecondhandcar = ''
           this.imageattachtab.showsecondhandcarimageattach = false
+          this.econsentbtnDisable = false
         } else {
           if (this.quotationResult$.value.data[0].quo_secondhand_car_verify !== 'Y') {
             this.secondhandcarverify = false

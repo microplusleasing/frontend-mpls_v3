@@ -28,7 +28,7 @@
                             <mat-form-field appearance="outline">
                                 <mat-label>รหัสร้านค้า</mat-label>
                                 <input type="text" placeholder="กรอกรหัสร้านค้า" aria-label="Number" matInput
-                                    formControlName="dealerCode" [matAutocomplete]="autoDealer">
+                                    [formControl]="dealerCode" [matAutocomplete]="autoDealer">
                                 <mat-autocomplete autoActiveFirstOption #autoDealer="matAutocomplete">
                                     <mat-option matNativeControl required *ngFor="let fdl of filterDealerList | async"
                                         [value]="fdl.dl_code">
@@ -60,7 +60,7 @@
                             <mat-form-field appearance="outline">
                                 <mat-label>ยี่ห้อ</mat-label>
                                 <input type="text" placeholder="กรอกยี่ห้อ" aria-label="Number" matInput
-                                    formControlName="carBrandField" [matAutocomplete]="autoBrand" [required]="true">
+                                    [formControl]="carBrandField" [matAutocomplete]="autoBrand" [required]="true">
                                 <mat-autocomplete autoActiveFirstOption #autoBrand="matAutocomplete">
                                     <mat-option matNativeControl required *ngFor="let fbl of filterBrandList | async"
                                         [value]="fbl.brand_code">
@@ -80,7 +80,7 @@
                             <mat-form-field appearance="outline">
                                 <mat-label>รุ่น</mat-label>
                                 <input type="text" placeholder="กรอกรหัสโมเดล" aria-label="Number" matInput
-                                    formControlName="carModelField" [matAutocomplete]="autoModel" [required]="true">
+                                    [formControl]="carModelField" [matAutocomplete]="autoModel" [required]="true">
                                 <mat-autocomplete autoActiveFirstOption #autoModel="matAutocomplete">
                                     <mat-option matNativeControl required *ngFor="let fml of filterModelList | async"
                                         [value]="fml.model_code">
@@ -99,34 +99,34 @@
                         <mat-grid-tile [colspan]="layout.list.cols4">
                             <mat-form-field appearance="outline">
                                 <mat-label>สี</mat-label>
-                                <input type="text" matInput placeholder="สีรถ" formControlName="carColorField">
+                                <input type="text" matInput placeholder="สีรถ" [formControl]="carColorField">
                             </mat-form-field>
                         </mat-grid-tile>
 
                         <mat-grid-tile [colspan]="layout.list.cols3" *ngIf="showchassisandengine">
                             <mat-form-field appearance="outline">
                                 <mat-label>เลขเครื่อง</mat-label>
-                                <input type="text" matInput placeholder="เลขเครื่อง" formControlName="engineNoField">
+                                <input type="text" matInput placeholder="เลขเครื่อง" [formControl]="engineNoField">
                             </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols3">
                             <mat-form-field appearance="outline">
                                 <mat-label>เลขเครื่อง (running)</mat-label>
                                 <input type="text" matInput placeholder="เลขเครื่อง2"
-                                    formControlName="runningengineNoField">
+                                    [formControl]="runningengineNoField">
                             </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols3" *ngIf="showchassisandengine">
                             <mat-form-field appearance="outline">
                                 <mat-label>เลขถัง</mat-label>
-                                <input type="text" matInput placeholder="เลขถัง" formControlName="chassisNoField">
+                                <input type="text" matInput placeholder="เลขถัง" [formControl]="chassisNoField">
                             </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols3">
                             <mat-form-field appearance="outline">
                                 <mat-label>เลขถัง (running)</mat-label>
                                 <input type="text" matInput placeholder="เลขถัง"
-                                    formControlName="runningchassisNoField">
+                                    [formControl]="runningchassisNoField">
                             </mat-form-field>
                         </mat-grid-tile>
 
@@ -208,7 +208,7 @@
                         <mat-grid-tile [colspan]="layout.list.cols4" *ngIf="showPrice && (showBrandModelLoan$ | async)">
                             <mat-form-field appearance="outline">
                                 <mat-label>อัตราดอกเบี้ย</mat-label>
-                                <mat-select formControlName="interestRateField" [required]="true">
+                                <mat-select [formControl]="interestRateField" [required]="true">
                                     <!-- <mat-option value=""></mat-option> -->
                                     <mat-option [value]="undefined" disabled hidden>เลือกอัตราดอกเบี้ย</mat-option>
                                     <mat-option *ngFor="let rt of rateSelect" [value]="rt.rate">
@@ -242,7 +242,7 @@
                         <mat-grid-tile [colspan]="layout.list.cols4" *ngIf="showPrice && (showBrandModelLoan$ | async)">
                             <mat-form-field appearance="outline">
                                 <mat-label>ยอดกู้ {{(maxlvtmessage$ | async)}}</mat-label>
-                                <input matInput formControlName="loanAmountField" type="number"
+                                <input matInput [formControl]="loanAmountField" type="number"
                                     max="{{(maxltvValue$ | async)}}" [required]="true">
                                 <mat-error *ngIf="detailForm.controls['loanAmountField'].hasError('required')">
                                     ระบุยอดกู้
@@ -258,14 +258,14 @@
                         <mat-grid-tile *ngIf="false">
                             <mat-form-field appearance="outline">
                                 <mat-label>ราคาโรงงาน</mat-label>
-                                <input matInput formControlName="productValueField" type="number">
+                                <input matInput [formControl]="productValueField" type="number">
                             </mat-form-field>
                         </mat-grid-tile>
 
                         <mat-grid-tile [colspan]="layout.list.maxcols" *ngIf="showPrice">
                             <mat-form-field appearance="outline">
                                 <mat-label>ประกัน</mat-label>
-                                <mat-select formControlName="insurerCodeField" [required]="true">
+                                <mat-select [formControl]="insurerCodeField" [required]="true">
                                     <!-- <mat-option value=""></mat-option> -->
                                     <mat-option [value]="undefined" disabled hidden>เลือกประกัน</mat-option>
                                     <mat-option *ngFor="let il of InsuranceList" [value]="il.insurer_code">
@@ -281,7 +281,7 @@
                             *ngIf="showPrice && (showInsuranceSelect$ | async)">
                             <mat-form-field appearance="outline">
                                 <mat-label>จำนวนปี</mat-label>
-                                <mat-select formControlName="insuranceYearField" [required]="true">
+                                <mat-select [formControl]="insuranceYearField" [required]="true">
                                     <!-- <mat-option value=""></mat-option> -->
                                     <mat-option [value]="undefined" disabled hidden>เลือกจำนวนปี</mat-option>
                                     <mat-option *ngFor="let ils of InsuranceListFilter" [value]="ils.years_insur">
@@ -297,7 +297,7 @@
                             *ngIf="showPrice && (showInsuranceSelect$ | async)">
                             <mat-form-field appearance="outline">
                                 <mat-label>ราคาเบี้ย (ประกัน)</mat-label>
-                                <mat-select formControlName="insurancePlanPriceField">
+                                <mat-select [formControl]="insurancePlanPriceField">
                                     <mat-option [value]="undefined" disabled hidden>เลือกเบี้ยประกัน</mat-option>
                                     <mat-option *ngFor="let il of InsuranceListFilter" [value]="il.premium_insur">
                                         {{il.premium_insur}}
@@ -309,7 +309,7 @@
                             <div class="form-group">
                                 <label *ngIf="false">รวมยอดกู้</label>
                                 <section class="example-section">
-                                    <mat-checkbox class="example-margin" formControlName="isincludeloanamount"
+                                    <mat-checkbox class="example-margin" [formControl]="isincludeloanamount"
                                         color="primary">
                                         รวมยอดกู้
                                     </mat-checkbox>
@@ -319,7 +319,7 @@
                         <mat-grid-tile [colspan]="layout.list.maxcols">
                             <mat-form-field appearance="outline">
                                 <mat-label>ราคาเงินสด</mat-label>
-                                <input matInput formControlName="priceincludevatField" type="number">
+                                <input matInput [formControl]="priceincludevatField" type="number">
                                 <mat-error *ngIf="detailForm.controls['priceincludevatField'].hasError('required')">
                                     กรุณากรอกราคาเงินสด
                                 </mat-error>
@@ -338,7 +338,7 @@
                 <div *ngIf="showPrice" hidden>
                     <div class="form-group">
                         <label>ค่างวด</label>
-                        <input formControlName="paymentValueField" type="number" class="form-control" [required]="true">
+                        <input [formControl]="paymentValueField" type="number" class="form-control" [required]="true">
                     </div>
                 </div>
                 <mat-error *ngIf="warningMsgPaymentValueField">
@@ -373,10 +373,10 @@
 
             <div style="margin-top: 1em; width: 100%;">
                 <!-- <app-mrta-product [out_stand]="out_stand" [age]="cusage" [gender]="gender" -->
-                <app-mrta-product [out_stand]="out_stand" [age]="insurance_age" [gender]="gender"
+                <app-mrta-product-new [out_stand]="out_stand" [age]="insurance_age" [gender]="gender"
                     [showseller]="false" [birth_date]="birth_date" 
                     [busi_code]="this.productForm.controls.detailForm.controls.bussinessCode.value">
-                </app-mrta-product>
+                </app-mrta-product-new>
             </div>
         </div>
         <!-- </div> -->

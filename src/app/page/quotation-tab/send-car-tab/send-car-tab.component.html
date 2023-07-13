@@ -198,12 +198,12 @@
                             <mat-tab-group dynamicHeight [(selectedIndex)]="qrTabIndex">
                                 <mat-tab label="หน้าคำนวณประกัน MRTA">
                                     <div class="col-md-12 mt-4">
-                                        <app-mrta-product [pay_status]="pay_status" [active_status]="active_status"
+                                        <app-mrta-product-new [pay_status]="pay_status" [active_status]="active_status"
                                             [insurance_code]="insurance_code" [insurance_year]="insurance_year"
                                             [insurance_seller]="insurance_seller" [age]="age" [gender]="gender"
                                             [out_stand]="out_stand" [birth_date]="birth_date" [showseller]="true" [busi_code]="busi_code"
                                             (emitqrtoparentclickbtn)="receiveEmitChildClickBtn($event)"
-                                            (emitqrtoparentshowqr)="receiveEmitChildShowQR($event)"></app-mrta-product>
+                                            (emitqrtoparentshowqr)="receiveEmitChildShowQR($event)"></app-mrta-product-new>
                                     </div>
                                 </mat-tab>
                                 <mat-tab label="สร้าง QR CODE สำหรับชำระค่าประกัน MRTA" [disabled]="lockqrpage">

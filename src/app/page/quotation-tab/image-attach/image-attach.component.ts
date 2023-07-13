@@ -119,7 +119,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
       this.uploadedImagesMultiple = []
       this.quotationReq.subscribe({
-        next: (resquo) => {
+        next: async (resquo) => {
           this.loadingService.showLoader();
           this.quotationdatatemp = resquo
           const checkquoitem = this.quotationdatatemp.data
@@ -128,9 +128,18 @@ export class ImageAttachComponent extends BaseService implements OnInit {
             const quoitem = this.quotationdatatemp.data[0]
             const recordExists = '';
 
-            // (quoitem.cd_bussiness_code !== '001') ? this.showsecondhandcarimageattach = true : this.showsecondhandcarimageattach = false
-            // (quoitem.cd_bussiness_code == '002' || quoitem.cd_bussiness_code == '003') ? this.showsecondhandcarimageattach = true : null
+            // *** comment on (13/07/2023) use api check busicode instead ****
+            // this.showsecondhandcarimageattach = (quoitem.cd_bussiness_code !== '001');
+            // this.showsecondhandcarimageattach = (quoitem.cd_bussiness_code === '002' || quoitem.cd_bussiness_code === '003') ? true : false;
             // console.log(`this.showsecondhandcarimageattach : ${this.showsecondhandcarimageattach}`)
+
+            // *** check busicode with api (13/07/2023) ***
+            const check_busi_code = await lastValueFrom(this.masterDataService.MPLS_check_busi_code({ quotation_id: quoitem.quo_key_app_id }))
+
+            if (check_busi_code.status == 200) {
+              this.showsecondhandcarimageattach = (check_busi_code.data.bussiness_code !== '001');
+              this.showsecondhandcarimageattach = (check_busi_code.data.bussiness_code === '002' || check_busi_code.data.bussiness_code === '003') ? true : false;
+            }
 
             // === call parameter data (single and multiple type) ===
             forkJoin([

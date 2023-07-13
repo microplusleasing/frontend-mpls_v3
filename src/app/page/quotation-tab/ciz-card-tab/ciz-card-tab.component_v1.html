@@ -2,8 +2,8 @@
   <form [formGroup]="cizForm">
     <div [formGroup]="maincitizenForm">
       <div class="flexbox">
-        <button mat-raised-button color="primary" (click)="onClickDipchipBtn()"
-          *ngIf="this.showdipchipbtn" [disabled]="dipchipButtonDisabled">Dipchip</button>
+        <button mat-raised-button color="primary" (click)="onClickDipchipBtn()" *ngIf="this.showdipchipbtn"
+          [disabled]="dipchipButtonDisabled">Dipchip</button>
       </div>
       <div class="flex-image-header">
         <div>
@@ -237,7 +237,8 @@
       <div class="flexbox">
         <mat-form-field appearance="outline" style="width: 90%;">
           <mat-label>ที่อยู่</mat-label>
-          <textarea matInput [formControl]="_l_address" [rows]="1"></textarea>
+          <!-- <textarea matInput [formControl]="_l_address" [rows]="1"></textarea> -->
+          <input matInput [formControl]="_l_address">
           <mat-error *ngIf="_l_address.errors?.['maxlength']">ข้อความยาวเกินกำหนด</mat-error>
         </mat-form-field>
 
@@ -309,7 +310,8 @@
       <div class="flexbox">
         <mat-form-field appearance="outline" style="width: 90%;">
           <mat-label>ที่อยู่</mat-label>
-          <textarea matInput [formControl]="_c_address" [rows]="1"></textarea>
+          <!-- <textarea matInput [formControl]="_c_address" [rows]="1"></textarea> -->
+          <input matInput [formControl]="_c_address">
           <mat-error *ngIf="_c_address.errors?.['maxlength']">ข้อความยาวเกินกำหนด</mat-error>
         </mat-form-field>
 
@@ -366,7 +368,8 @@
       <div class="flexbox">
         <mat-form-field appearance="outline" style="width: 90%;">
           <mat-label>ที่อยู่</mat-label>
-          <textarea matInput [formControl]="_h_address" [rows]="1"></textarea>
+          <!-- <textarea matInput [formControl]="_h_address" [rows]="1"></textarea> -->
+          <input matInput [formControl]="_h_address">
           <mat-error *ngIf="_h_address.errors?.['maxlength']">ข้อความยาวเกินกำหนด</mat-error>
         </mat-form-field>
 
@@ -423,7 +426,8 @@
       <div class="flexbox">
         <mat-form-field appearance="outline" style="width: 90%;">
           <mat-label>ที่อยู่</mat-label>
-          <textarea matInput [formControl]="_w_address" type="textarea" [rows]="1"></textarea>
+          <!-- <textarea matInput [formControl]="_w_address" type="textarea" [rows]="1"></textarea> -->
+          <input matInput [formControl]="_w_address">
           <mat-error *ngIf="_w_address.errors?.['maxlength']">ข้อความยาวเกินกำหนด</mat-error>
         </mat-form-field>
 
@@ -452,8 +456,17 @@
           <mat-label>รหัสไปรษณีย์</mat-label>
           <input matInput [formControl]="_w_postalCode">
         </mat-form-field>
+
+        <!-- Add description field -->
+        <mat-form-field appearance="outline" style="width: 90%;">
+          <mat-label>ระบุลักษณะ/สถานที่ ที่ทำงาน</mat-label>
+          <!-- <textarea matInput [formControl]="_w_description" type="textarea" [rows]="1"></textarea> -->
+          <input matInput [formControl]="_w_description">
+          <mat-error *ngIf="_w_description.errors?.['maxlength']">ข้อความยาวเกินกำหนด</mat-error>
+        </mat-form-field>
       </div>
     </div>
+    
     <div class="flex-center">
       <!-- age valid -->
       <mat-error *ngIf="cizForm.controls.maincitizenForm.controls.age.hasError('min')">❌ :

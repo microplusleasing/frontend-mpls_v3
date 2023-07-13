@@ -64,6 +64,7 @@ export interface IResQuotationDetailData {
     wp_province_name?: string;
     wp_province_code?: string;
     wp_postal_code?: string;
+    wp_description?: string;
     cd_app_key_id: string;
     cd_brand_code?: string;
     cd_brand_code_1?: string;

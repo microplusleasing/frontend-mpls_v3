@@ -617,23 +617,27 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                                 // *** check image contain data ****
                                 if (resultDealerGrade.data.notice_image.data.length !== 0) {
 
-                                  this.imageUtilService.getUrlImage(resultDealerGrade.data.notice_image.data).then(imageurldealergrade => {
-                                    // *** show dialog of image dealer grade ***
-                                    if (!this.isDialogOpen) {
-                                      this.isDialogOpen = true; // Set the flag to indicate that the dialog is open
-                                      // Open the dialog
-                                      this.dialog.open(DealerGradeImageDialogComponent, {
-                                        disableClose: true,
-                                        width: `500`,
-                                        height: `700`,
-                                        data: {
-                                          imageurl: imageurldealergrade
-                                        }
-                                      }).afterClosed().subscribe((res_dealer_grage_dialog_close) => {
-                                        this.isDialogOpen = false; // Reset the flag when the dialog is closed
-                                      })
-                                    }
-                                  })
+                                  // *** check trigger when field contain value (14/07/2023) ***
+                                  if (this.productForm.controls.detailForm.controls.dealerCode.value) {
+                                    this.imageUtilService.getUrlImage(resultDealerGrade.data.notice_image.data).then(imageurldealergrade => {
+                                      // *** show dialog of image dealer grade ***
+                                      if (!this.isDialogOpen) {
+                                        this.isDialogOpen = true; // Set the flag to indicate that the dialog is open
+                                        // Open the dialog
+                                        this.dialog.open(DealerGradeImageDialogComponent, {
+                                          disableClose: true,
+                                          width: `500`,
+                                          height: `700`,
+                                          data: {
+                                            imageurl: imageurldealergrade
+                                          }
+                                        }).afterClosed().subscribe((res_dealer_grage_dialog_close) => {
+                                          this.isDialogOpen = false; // Reset the flag when the dialog is closed
+                                        })
+                                      }
+                                    })
+                                  }
+
                                 }
 
                               }
@@ -1454,7 +1458,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 } else {
                   // === store ==== 
                   if (this.userSessionQuotation.value.SELLER_ID) {
-                    this.productForm.controls.detailForm.controls.dealerCode.setValue(this.userSessionQuotation.value.SELLER_ID);
+                    this.productForm.controls.detailForm.controls.dealerCode.setValue(this.userSessionQuotation.value.SELLER_ID, { emitEvent: false });
                     this.productForm.controls.detailForm.controls.dealerCode.disable();
                   }
                 }
@@ -1711,13 +1715,13 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // === checker ===
                   if (sessionData.value.channal == 'checker') {
                     if (quoitem.sl_code) {
-                      this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code);
+                      this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code, { emitEvent: false });
                     }
                   } else {
                     // === store ==== 
                     if (this.userSessionQuotation.value.SELLER_ID) {
                       console.log(`trigger this : ${this.userSessionQuotation.value.SELLER_ID}`)
-                      this.productForm.controls.detailForm.controls.dealerCode.setValue(this.userSessionQuotation.value.SELLER_ID);
+                      this.productForm.controls.detailForm.controls.dealerCode.setValue(this.userSessionQuotation.value.SELLER_ID, { emitEvent: false });
                       this.productForm.controls.detailForm.controls.dealerCode.disable();
                     }
                   }
@@ -1756,6 +1760,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.productForm.controls.secondHandCarForm.controls.reg_date.setValue(clinet_format_qregdate, { emitEvent: false })
                   this.productForm.controls.secondHandCarForm.controls.reg_no.setValue(qregno, { emitEvent: false })
                   this.productForm.controls.secondHandCarForm.controls.reg_mile.setValue(qregmile, { emitEvent: false })
+                  // *** add set value to motoyear Field (14/07/2023) ***
+                  this.productForm.controls.secondHandCarForm.controls.moto_year.setValue(qmotoyear, { emitEvent: false })
 
                   if (qbussinesscode == '002') {
 
@@ -2259,6 +2265,12 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     // Check if the key pressed is not the space bar
     if (event.keyCode !== 32) {
       event.preventDefault(); // Disable default behavior
+    }
+  }
+
+  handleKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
     }
   }
 

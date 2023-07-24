@@ -76,8 +76,6 @@ export class SecondhandCarAttachImageDialogComponent implements OnInit {
 
 
   async onFileChange(event: any) {
-    // Create a FileReader object
-
     const imageFile = event.target.files[0];
     const options = {
       maxSizeMB: 2,
@@ -86,14 +84,12 @@ export class SecondhandCarAttachImageDialogComponent implements OnInit {
     }
 
     try {
-
+      this.loadingService.showLoader()
       const compressedFile = await imageCompression(imageFile, options);
       const reader = new FileReader();
 
-      // Convert the Blob to a base64-encoded image URL
       reader.readAsDataURL(compressedFile);
 
-      // Use the onload event of the FileReader to store the data URL in a variable
       reader.onload = async () => {
         if (typeof reader.result === 'string') {
           this.selectImage = reader.result;
@@ -108,23 +104,23 @@ export class SecondhandCarAttachImageDialogComponent implements OnInit {
             src: this.selectImage
           })
 
-          // *** check image require *** (28/04/2023) 
+          this.loadingService.hideLoader()
+
           if (this.uploadedImages.length >= 2) {
-            this.txtsecondhandcarheaderstatus = `จำนวนไฟล์แนบผ่านขั้นต่ำแล้ว  (จำนวนภาพที่แนบ: ${this.uploadedImages.length} ภาพ)`
+            this.txtsecondhandcarheaderstatus = `จำนวนไฟล์แนบผ่านขั้นต่ำแล้ว (จำนวนภาพที่แนบ: ${this.uploadedImages.length} ภาพ)`
           } else {
             this.txtsecondhandcarheaderstatus = `รูปภาพแนบสำหรับรถมือสอง (ขั้นต่ำ 2 ภาพ) (จำนวนภาพที่แนบ: ${this.uploadedImages.length} ภาพ)`
           }
+
           this.imageindex++
         }
       };
-
-      // Read the data URL of the selected file
-      reader.readAsDataURL(event.target.files[0]);
-
     } catch (e: any) {
+      this.loadingService.hideLoader()
       console.log(`Error when compress image : ${e.message ? e.message : 'No message return'}`)
     }
   }
+
 
   savesecondhandcarimagelist() {
     this.loadingService.showLoader()
@@ -139,6 +135,12 @@ export class SecondhandCarAttachImageDialogComponent implements OnInit {
       contract_ref: this.data.contract_ref,
       bussiness_code: this.data.bussiness_code
     })
+
+    console.log(`log data in secondhand car image attach dialog !!`)
+    console.log(`quotationid : ${this.data.quotationid}`)
+    console.log(`contract_ref : ${this.data.contract_ref}`)
+    console.log(`bussiness_code : ${this.data.bussiness_code}`)
+
     let fd = new FormData()
     fd.append('id', itemData)
     fd.append('item_list', itemDataList)
@@ -155,8 +157,10 @@ export class SecondhandCarAttachImageDialogComponent implements OnInit {
           } catch (e: any) {
             this.snackbarfail(`Eror update Flag : ${e.message ? e.message : 'No return msg'}`)
           }
+          console.log(`trigger IResDialog2ndhandCarImageAttach onclose`)
           const iresdialog_2ndhandcar: IResDialog2ndhandCarImageAttach = {
-            upload_status: true
+            upload_status: true,
+            state: `success`
           }
           this.dialogRef.close(iresdialog_2ndhandcar)
         } else {
@@ -181,7 +185,11 @@ export class SecondhandCarAttachImageDialogComponent implements OnInit {
       this.quotationService.MPLS_update_flag_image_attach_file_multiple(this.data.quotationid ?? '').subscribe({
         next: (res_update_second_hand_verify) => {
           if (res_update_second_hand_verify.status == 200) {
-            this.dialogRef.close(true)
+            const iresdialog_2ndhandcar: IResDialog2ndhandCarImageAttach = {
+              upload_status: true,
+              state: `success`
+            }
+            this.dialogRef.close(iresdialog_2ndhandcar)
           }
         }, error: (e) => {
           this.snackbarfail(`Error flag status : ${e.message ? e.message : 'No return msg'}`)

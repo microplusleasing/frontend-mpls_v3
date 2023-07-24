@@ -2,7 +2,7 @@
 <!-- 
 <h2>form status is {{productForm.valid}}</h2> -->
 <div class="form-container">
-    <form [formGroup]="productForm">
+    <form [formGroup]="productForm" (keydown)="handleKeyDown($event)">
         <div [formGroup]="detailForm">
             <ng-container *ngIf="cardLayout | async as layout">
                 <mat-grid-list [cols]="layout.columns" [rowHeight]="'90px'">

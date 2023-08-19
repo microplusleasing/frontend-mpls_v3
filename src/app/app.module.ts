@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule, DatePipe } from '@angular/common';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -53,6 +52,12 @@ import { CreateLivingNegoDialogComponent } from './widget/dialog/create-living-n
 import { WaringEconsentDialogComponent } from './widget/dialog/waring-econsent-dialog/waring-econsent-dialog.component';
 import { EConsentImageDialogComponent } from './widget/dialog/e-consent-image-dialog/e-consent-image-dialog.component';
 import { DealerGradeImageDialogComponent } from './widget/dialog/dealer-grade-image-dialog/dealer-grade-image-dialog.component';
+import { SecondhandCarViewDialogComponent } from './widget/dialog/secondhand-car-view-dialog/secondhand-car-view-dialog.component';
+import { SecondhandCarAttachImageDialogComponent } from './widget/dialog/secondhand-car-attach-image-dialog/secondhand-car-attach-image-dialog.component';
+import { ConfirmDeleteSecondhandCarImageAttachComponent } from './widget/dialog/confirm-delete-secondhand-car-image-attach/confirm-delete-secondhand-car-image-attach.component';
+import { ViewCarAttachComponent } from './page/view/view-car-attach/view-car-attach.component';
+import { MrtaProductNewComponent } from './page/view/mrta-product-new/mrta-product-new.component';
+
 
 @NgModule({
   declarations: [
@@ -98,7 +103,12 @@ import { DealerGradeImageDialogComponent } from './widget/dialog/dealer-grade-im
     CreateLivingNegoDialogComponent,
     WaringEconsentDialogComponent,
     EConsentImageDialogComponent,
+    SecondhandCarViewDialogComponent,
+    SecondhandCarAttachImageDialogComponent,
+    ConfirmDeleteSecondhandCarImageAttachComponent,
+    ViewCarAttachComponent,
     DealerGradeImageDialogComponent,
+    MrtaProductNewComponent,
   ],
   imports: [
     BrowserModule,

@@ -38,6 +38,8 @@ export class MrtaInfoComponent implements OnInit {
 
   // *** (15/06/2023) ***
   birth_date: Date | null = null;
+  // *** (05/07/2023) ****
+  busi_code: string | null = null;
 
   textnotfound: string
 
@@ -128,6 +130,9 @@ export class MrtaInfoComponent implements OnInit {
 
             // *** (15/06/2023) birth_date set ***
             this.birth_date = result.data[0].birth_date
+
+            // *** (05/07/2023) business_code set ***
+            this.busi_code = result.data[0].bussiness_code
 
           }
           const checkmrtarecent = await lastValueFrom(this.masterDataService.checkmrtarecent(this.mrtainfodata.quo_key_app_id))

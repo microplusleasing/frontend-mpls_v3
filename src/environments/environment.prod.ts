@@ -16,7 +16,7 @@ export const environment = {
   iappapikey: "F3kBa0O7D07SUYy5YmcfLeohWRxbipdn",
   faceRecogApi: "https://api.iapp.co.th/thai-national-id-card/v3/front",
   faceValidApi: "https://api.iapp.co.th/face-verification/v2/face_compare",
-  version: "version  1.02"
+  version: "version  1.03.9"
   
 };
 

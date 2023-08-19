@@ -114,7 +114,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
 
   // livingAddress 
-  _l_address = new FormControl('')
+  _l_address = new FormControl('', Validators.maxLength(50))
   _l_subDistrict = new FormControl('')
   _l_district = new FormControl('')
   _l_provinceName = new FormControl<string | undefined>('')
@@ -125,7 +125,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   _l_longitude = new FormControl('')
 
   // contactAddress 
-  _c_address = new FormControl('')
+  _c_address = new FormControl('', Validators.maxLength(50))
   _c_subDistrict = new FormControl('')
   _c_district = new FormControl('')
   _c_provinceName = new FormControl<string | undefined>('')
@@ -133,7 +133,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   _c_postalCode = new FormControl('', Validators.pattern('^[0-9]{5}$'))
 
   // houseRegisAddress 
-  _h_address = new FormControl('')
+  _h_address = new FormControl('', Validators.maxLength(50))
   _h_subDistrict = new FormControl('')
   _h_district = new FormControl('')
   _h_provinceName = new FormControl<string | undefined>('')
@@ -141,12 +141,13 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   _h_postalCode = new FormControl('', Validators.pattern('^[0-9]{5}$'))
 
   // livingAddress 
-  _w_address = new FormControl('')
+  _w_address = new FormControl('', Validators.maxLength(50))
   _w_subDistrict = new FormControl('')
   _w_district = new FormControl('')
   _w_provinceName = new FormControl<string | undefined>('')
   _w_provinceCode = new FormControl<string | undefined>('') // not show
   _w_postalCode = new FormControl('', Validators.pattern('^[0-9]{5}$'))
+  _w_description = new FormControl('', Validators.maxLength(250))
 
   // === face comparison verify ===
   face_valid = new FormControl<boolean | null>(null, Validators.requiredTrue)
@@ -242,6 +243,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     provinceCode: this._w_provinceCode,
     provinceName: this._w_provinceName,
     postalCode: this._w_postalCode,
+    description: this._w_description
   })
 
   cizForm = this.fb.group({
@@ -846,6 +848,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     this.cizForm.controls.workAddress.controls.provinceCode.setValue(quoitem.wp_province_code ?? '')
     this.cizForm.controls.workAddress.controls.provinceName.setValue(this.mapProvinceNameById((quoitem.wp_province_code ?? ''), this.masterProvince.data))
     this.cizForm.controls.workAddress.controls.postalCode.setValue(quoitem.wp_postal_code ?? '')
+    this.cizForm.controls.workAddress.controls.description.setValue(quoitem.wp_description ?? '')
 
 
     this.cizForm.controls.maincitizenForm.controls.age.setValue(quoitem.ciz_age ?? null)

@@ -17,35 +17,37 @@
                     (click)="onclickgenqrpayment()">สร้าง QR
                     ชำระเงิน</button>
             </div>
-                    <mat-grid-list [cols]="layout.columns" [rowHeight]="'90px'">
-                        <mat-grid-tile [colspan]="layout.list.cols6">
-                            <!-- เลือกแผน -->
-                            <mat-form-field appearance="outline" style="width: 100%;">
-                                <mat-label>ประกัน MRTA</mat-label>
-                                <mat-select formControlName="mrtafieldValue"
-                                    (valueChange)="onchagemrtainsurance($event)">
-                                    <mat-option [value]="undefined" disabled hidden>ระบุจำนวนงวด</mat-option>
-                                    <mat-option *ngFor="let mrta of mrtamasterresult" [value]="mrta.insurance_code">
-                                        <!-- {{mrta.insurer_name}} {{mrta.plan}} -->
-                                        {{mrta.plan}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </mat-grid-tile>
-                        <mat-grid-tile [colspan]="layout.list.cols6">
-                            <!-- เลือกปี -->
-                            <mat-form-field appearance="outline" style="width: 100%;">
-                                <mat-label>จำนวนปี</mat-label>
-                                <mat-select formControlName="mrtayearfieldValue"
-                                    (valueChange)="onchangemrtayearinsurance($event)">
-                                    <mat-option [value]="undefined" disabled hidden>ระบุจำนวนปี</mat-option>
-                                    <mat-option *ngFor="let mrta of mrtainsurancedatayear" [value]="mrta.years_insur">
-                                        {{mrta.years_insur}}
-                                    </mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </mat-grid-tile>
-                    </mat-grid-list>
+            <mat-grid-list [cols]="layout.columns" [rowHeight]="'90px'">
+                <mat-grid-tile [colspan]="layout.list.cols6">
+                    <!-- เลือกแผน -->
+                    <mat-form-field appearance="outline" style="width: 100%;">
+                        <mat-label>ประกัน MRTA</mat-label>
+                        <mat-select formControlName="mrtafieldValue" (valueChange)="onchagemrtainsurance($event)">
+                            <mat-option [value]="undefined" disabled hidden>ระบุจำนวนงวด</mat-option>
+                            <mat-option *ngFor="let mrta of mrtamasterresult" [value]="mrta.insurance_code">
+                                <!-- {{mrta.insurer_name}} {{mrta.plan}} -->
+                                {{mrta.plan}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-grid-tile>
+                <!-- Add step year show after select mrta insurance -->
+                <div *ngIf="this.mrtaForm.controls.mrtafieldValue.value">
+                    <mat-grid-tile [colspan]="layout.list.cols6">
+                        <!-- เลือกปี -->
+                        <mat-form-field appearance="outline" style="width: 100%;">
+                            <mat-label>จำนวนปี</mat-label>
+                            <mat-select formControlName="mrtayearfieldValue"
+                                (valueChange)="onchangemrtayearinsurance($event)">
+                                <mat-option [value]="undefined" disabled hidden>ระบุจำนวนปี</mat-option>
+                                <mat-option *ngFor="let mrta of mrtainsurancedatayear" [value]="mrta.years_insur">
+                                    {{mrta.years_insur}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                </div>
+            </mat-grid-list>
 
             <div>
                 <mat-form-field *ngIf="showseller" appearance="outline" style="width: 80%; height: 100%;">

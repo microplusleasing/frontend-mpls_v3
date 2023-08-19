@@ -16,4 +16,6 @@ export interface IMartaPaymentInsurance {
     phone_number?: string;
     quotationid?: string;
     contract_no?: string;
+    // ==== 05/07/2023 ====
+    busi_code?: string;
 }

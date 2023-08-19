@@ -42,6 +42,7 @@ export interface IResBtwMrtaInfoData {
     report_date: Date;
     insurance_years: number;
     insurance_t1_cash?: any;
+    bussiness_code: string
 }
 
 export interface IResBtwMrtaInfo {

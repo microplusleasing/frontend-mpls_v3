@@ -1,4 +1,4 @@
-<form [formGroup]="uploadForm">
+<form [formGroup]="imageAttachForm" style="margin-top: 1em;">
   <div [formGroup]="uploadForm">
     <div class="flex-center">
       <div class="card" style="width: 80%;">
@@ -41,6 +41,64 @@
         <img [src]="image.urlsanitizer" [alt]="'ha'" style="max-width: 400px; max-height: 400px;"
           (click)="openimagedialog(image)"><br>
         <button mat-raised-button (click)="updateImage(image)" color="primary">Edit</button>
+        <!-- <button mat-raised-button (click)="deleteImage(image)" color="warn" style="margin-left: 1em;">Delete</button> -->
+      </mat-expansion-panel>
+    </div>
+
+  </div>
+  <div *ngIf="showsecondhandcarimageattach" [formGroup]="uploadMultipleForm" style="margin-top: 2em;">
+    <div class="flex-center">
+      <div style="margin-bottom: 1em;">
+        <span>
+          <h1>
+            {{this.txtsecondhandcarheader}}
+          </h1>
+        </span>
+      </div>
+      <div class="card" style="width: 80%;">
+        <div style="text-align: center;">
+          <span style="color: red;">{{this.txtrequireimagesecondhandcar}}</span>
+        </div>
+        <mat-form-field appearance="outline">
+          <mat-label>เอกสารแนบ</mat-label>
+          <mat-select [formControl]="categoryMultiple">
+            <mat-option [value]="undefined" disabled hidden>เลือกประเภทของรูปถ่าย</mat-option>
+            <mat-option *ngFor="let category of categoriesMultiple" [value]="category.image_code">
+              {{ category.image_header }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="fileInputMultiple.click();" style="margin-left: 1em;;">
+          <mat-icon>photo_library</mat-icon>
+          แนบไฟล์ภาพ
+        </button>
+
+        <div *ngIf="this.selectImageMultiple">
+          <img [src]="selectImageMultiple" style="max-width: 400px; max-height: 400px;">
+        </div>
+        <input type="file" accept="image/jpeg" capture="environment" (change)="onFileChangeMultiple($event)"
+          #fileInputMultiple style="visibility: hidden;">
+        <input type="file" accept="image/jpeg" capture="environment" (change)="onFileChangeMultipleEdit($event)"
+          #fileInputMultipleEdit style="visibility: hidden;">
+        <input #hiddenInput style="visibility: hidden;">
+
+
+        <button mat-raised-button (click)="uploadImageMultiple()" color="primary"
+          [disabled]="disableUploadMultipleBtn">Upload</button>
+      </div>
+      <br>
+      <!-- <span>{{this.txtsecondhandcarheader}}</span> -->
+    </div>
+
+    <div class="card-list-image" *ngFor="let image of uploadedImagesMultiple">
+      <mat-expansion-panel (opened)="onPanelOpen(image)" style="min-width: 600px;">
+        <mat-expansion-panel-header>
+          {{ image.image_header }}
+        </mat-expansion-panel-header>
+        <img [src]="image.urlsanitizer" [alt]="'ha'" style="max-width: 400px; max-height: 400px;"
+          (click)="openimageMultipledialog(image)"><br>
+        <button mat-raised-button (click)="updateImageMultiple(image)" color="primary">Edit</button>
         <!-- <button mat-raised-button (click)="deleteImage(image)" color="warn" style="margin-left: 1em;">Delete</button> -->
       </mat-expansion-panel>
     </div>

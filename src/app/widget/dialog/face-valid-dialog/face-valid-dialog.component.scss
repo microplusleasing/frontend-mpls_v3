@@ -1,25 +1,29 @@
 .flexpos {
-    display: flex;
-    margin: 0 auto;
-    justify-content: space-between;
+  display: flex;
+  margin: 0 auto;
+  justify-content: space-between;
 }
 
 .imgbox {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .flex-image-header {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
 
-  .flex-center {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-  }
-  
+.flex-center {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.custom-radio-button {
+  margin: 0 10px;
+  /* Adjust the margin values as needed */
+}

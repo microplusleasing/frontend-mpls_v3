@@ -37,14 +37,33 @@
 
     <div class="flex-center" style="margin-top: 1em;">
 
-        <div style="margin-top: 1em;">
+        <!-- Consent Detail -->
+        <div style="margin-top: 1em; max-width: 300px;" *ngIf="isfaceconsent">
+            <span>
+                ข้าพเจ้า ชื่อ {{firstName}} นามสกุล {{lastName}} <br>
+                เลขที่บัตรประชาชน {{idcard_num}} <br>
+                วันที่ในการให้ความยินยอม {{consentDate !== null ?
+                    (consentDate | thaidate: 'main'): ''}} เวลา {{consentDate | date: 'HH:mm'}} <br>
+                ความยินยอมนี้จัดทำขึ้นด้วยความสมัครใจของข้าพเจ้า ยินยอมให้บริษัท ไมโครพลัสลิสซิ่ง จำกัด <br>
+                นำรูปภาพถ่ายหน้าของข้าพเจ้า จัดเก็บ วิเคราะห์ ใช้เพื่อประโยชน์ในการประกอบพิจารณาสินเชื่อ
+                ของบริษัท ไมโครพลัสสิสซิ่ง จำกัด
+            </span>
+        </div>
+        <div style="margin-top: 1em;" *ngIf="!ismanual">
+            <mat-radio-group [formControl]='consent' color="primary">
+                <mat-radio-button class="custom-radio-button" value="Y">ยินยอม</mat-radio-button>
+                <mat-radio-button class="custom-radio-button" value="N">ไม่ยินยอม</mat-radio-button>
+            </mat-radio-group>
+        </div>
+
+        <div style="margin-top: 2em;">
             <span>ยืนยันบุคคลเดียวกัน</span>
         </div>
 
         <div style="margin-top: 1em;" *ngIf="!ismanual">
             <mat-radio-group [formControl]='result' color="primary">
-                <mat-radio-button value="Y">ตรงกัน</mat-radio-button>
-                <mat-radio-button value="N">ไม่ตรงกัน</mat-radio-button>
+                <mat-radio-button class="custom-radio-button" value="Y">ตรงกัน </mat-radio-button>
+                <mat-radio-button class="custom-radio-button" value="N">ไม่ตรงกัน</mat-radio-button>
             </mat-radio-group>
         </div>
 
@@ -52,7 +71,8 @@
             <mat-form-field appearance="fill" style="width: 400px;">
                 <mat-label>เหตุผล</mat-label>
                 <textarea matInput [formControl]="reason"></textarea>
-                <mat-error *ngIf="facevalidform.controls.reason.hasError('required')"> กรุณาระบุเหตุผลในกรณีเลือก ไม่ยืนยันเป็นบุคคลเดียวกัน</mat-error>
+                <mat-error *ngIf="facevalidform.controls.reason.hasError('required')"> กรุณาระบุเหตุผลในกรณีเลือก
+                    ไม่ยืนยันเป็นบุคคลเดียวกัน</mat-error>
             </mat-form-field>
 
             <div *ngIf="false">

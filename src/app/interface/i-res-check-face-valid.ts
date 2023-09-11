@@ -3,6 +3,7 @@ export interface IResCheckFaceValidData {
     isvalid: boolean;
     status: string;
     reason: string;
+    face_compare_consent: String;
 }
 
 export interface IResCheckFaceValid {

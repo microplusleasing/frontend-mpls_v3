@@ -21,6 +21,7 @@ import { IResImageTypeAttachMultipleData } from 'src/app/interface/i-res-image-t
 import { IResImageAttachMultipleData } from 'src/app/interface/i-res-image-attach-multiple';
 import { HttpErrorResponse } from '@angular/common/http';
 import { IImageAttachUploadMultiple } from 'src/app/interface/i-image-attach-upload-multiple';
+import { IUserTokenData } from 'src/app/interface/i-user-token';
 
 
 @Component({
@@ -32,6 +33,8 @@ export class ImageAttachComponent extends BaseService implements OnInit {
   @Input() quotationReq = {} as Observable<IResQuotationDetail>;
   @Output() emitverifyimageattach = new EventEmitter();
   @Output() emitverifysecondhandcarimage = new EventEmitter();
+
+  userSession: IUserTokenData = {} as IUserTokenData
 
   quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
 
@@ -110,7 +113,18 @@ export class ImageAttachComponent extends BaseService implements OnInit {
   }
 
   ngOnInit() {
+    this.getUserSessionQuotation().subscribe({
+      next: (res_session) => {
 
+        this.userSession = res_session
+      }, error: (e) => {
+
+      }, complete: () => {
+
+      }
+    }).add(() => {
+      this.loadingService.hideLoader();
+    })
   }
 
   onStageChageFormStepper() {
@@ -209,7 +223,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                             urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
                             src: imageStr
                           });
-                          
+
                         })
                       }
                     }

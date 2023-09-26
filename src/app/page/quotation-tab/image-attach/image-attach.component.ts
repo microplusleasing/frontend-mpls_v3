@@ -187,14 +187,27 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                       if (res1.data && res1.data.length !== 0) {
                         res1.data.forEach(async (item) => {
                           const imageStr = this._arrayBufferToJpeg(item.image_file.data)
+                          // this.uploadedImages.push({
+                          //   name: item.image_name ?? '',
+                          //   image_code: item.image_code ?? '',
+                          //   image_header: this.temp_master_categories.find((m_image) => m_image.image_code == item.image_code)?.image_header ?? '',
+                          //   image_field_name: item.image_name ?? '',
+                          //   urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
+                          //   src: imageStr
+                          // })
                           this.uploadedImages.push({
                             name: item.image_name ?? '',
                             image_code: item.image_code ?? '',
-                            image_header: this.temp_master_categories.find((m_image) => m_image.image_code == item.image_code)?.image_header ?? '',
+                            image_header: this.temp_master_categories.find((m_image) => {
+                              if (m_image.image_code === '16') {
+                                return true; // Set image_header to 'KYC'
+                              }
+                              return m_image.image_code == item.image_code;
+                            })?.image_code === '16' ? 'KYC' : this.temp_master_categories.find((m_image) => m_image.image_code == item.image_code)?.image_header ?? '', // Set image_header to 'KYC' if image_code is '16'
                             image_field_name: item.image_name ?? '',
                             urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
                             src: imageStr
-                          })
+                          });
                         })
                       }
                     }

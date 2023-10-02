@@ -273,6 +273,9 @@ export interface IResQuotationDetailData {
     cd_model_year: string;
     cd_cc: number;
     cd_reg_no: string;
+    cd_grade: string;
+    cd_is_over_max_ltv: string;
+    cd_over_max_ltv_reason: string;
     cd_reg_date: Date;
     cd_contract_ref: string;
     cd_reg_mile: number;

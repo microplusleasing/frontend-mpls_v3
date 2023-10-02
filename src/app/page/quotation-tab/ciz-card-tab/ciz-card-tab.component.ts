@@ -528,6 +528,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
           this.quotationReq.subscribe({
             next: (res_quo) => {
+              console.log(`ciz-card load success !`)
               // === success quotationReq ===
               if (res_quo) {
                 // *** set phone valid status ***
@@ -879,7 +880,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   }
 
 
-  onClickDipchipBtn() {
+  async onClickDipchipBtn() {
 
     if (!this.quotationid) {
       let countround = 0
@@ -958,6 +959,9 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
                 }
               })
+              // this.snackbarfail(`Token is Expire`)
+              // this.showdipchipbtn = false
+              // this.cizForm.enable()
             } else if (result.message == 'Not found!') {
 
               this.snackbarfail(`ไม่พบข้อมูล DIPCHIP : ${result.message}`)

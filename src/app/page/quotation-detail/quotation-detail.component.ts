@@ -235,7 +235,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         if (this.quoid) {
           this.quotationResult$.subscribe({
             next: (res_quo) => {
-              console.log(`can trigger this`)
+              console.log(`quotation-detail load success !`)
               if (res_quo.data) {
                 this.loadingService.hideLoader();
                 if (res_quo.data.length !== 0) {
@@ -652,10 +652,15 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
         this.createquotationdopa('1', $event.uuid).then((dchk) => {
           if (dchk.status) {
-            this.dipchipService.updatedipchipflag({
+            // this.dipchipService.updatedipchipflag({
+            this.dipchipService.updatepersonalinfodipchip({
               token: '',
               username: this.usernamefordipchip,
-              fromBody: $event.uuid
+              fromBody: {
+                UUID: $event.uuid,
+                QUE_KEY_ID: dchk.refId,
+                REMARK: ''
+              }
             }).subscribe(async (value) => {
               this.loadingService.hideLoader()
               console.log(`flag success : ${JSON.stringify(value)}`)
@@ -682,6 +687,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                 this.quotationService.setstatusdopa(dchk.refId)
 
                 this.afteroninit();
+              } else {
+                // === handle error from updatedipchipstatus (may be cause of mission quotaitonid (22/08/2023)) ===
+                
               }
             })
           } else {
@@ -1278,7 +1286,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       reg_mile: this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_mile.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.reg_mile.value : null,
       prov_code: this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_code.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_code.value : '',
       prov_name: this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value : '',
-      moto_year: this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value : null
+      moto_year: this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value : null,
+      // === over max ltv value (handle when business code == '002') (25/08/2023) ===
+      grade_moto: this.productdetailtab.productForm.controls.secondHandCarForm.controls.grade_moto.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.grade_moto.value : '', 
+      is_over_max_ltv: this.productdetailtab.productForm.controls.secondHandCarForm.controls.isovermaxltvField.value ? 'Y' : 'N',
+      over_max_ltv_reason: this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value : ''
+      
     }
 
     // *** declare params to check moto_year valid ***

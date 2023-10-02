@@ -40,6 +40,9 @@ export interface IReqCreateCredit {
     prov_code: string;
     prov_name: string;
     moto_year: number | null;
+    grade_moto: string;
+    is_over_max_ltv: 'Y' | 'N';
+    over_max_ltv_reason: string;
 }
 
 

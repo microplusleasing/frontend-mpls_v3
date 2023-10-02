@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { IResDipchip } from '../interface/i-res-dipchip';
 import { IReqDipchip } from '../interface/i-req-dipchip';
 import { IDipchipToken } from '../interface/i-dipchip-token';
+import { IReqUpdatePersonalInfoDipchip } from '../interface/i-req-update-personal-info-dipchip';
 
 @Injectable({
   providedIn: 'root'
@@ -58,7 +59,8 @@ export class DipchipService {
       )
   }
 
-  updatedipchipstatus(datasend: IReqDipchip): Observable<IResDipchip> {
+  updatepersonalinfodipchip(datasend: IReqUpdatePersonalInfoDipchip): Observable<IResDipchip> {
+
     return this.getdipchiptoken().pipe
       (
         switchMap(value => {

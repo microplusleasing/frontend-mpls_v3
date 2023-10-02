@@ -27,7 +27,7 @@
         <input #hiddenInput style="visibility: hidden;">
 
 
-        <button mat-raised-button (click)="uploadImage()" color="primary" [disabled]="disableUploadBtn">Upload</button>
+        <button *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="uploadImage()" color="primary" [disabled]="disableUploadBtn">Upload</button>
       </div>
       <br>
       <span style="color: red;">{{this.txtrequireimage}}</span>
@@ -40,7 +40,7 @@
         </mat-expansion-panel-header>
         <img [src]="image.urlsanitizer" [alt]="'ha'" style="max-width: 400px; max-height: 400px;"
           (click)="openimagedialog(image)"><br>
-        <button mat-raised-button (click)="updateImage(image)" color="primary">Edit</button>
+        <button *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="updateImage(image)" color="primary">Edit</button>
         <!-- <button mat-raised-button (click)="deleteImage(image)" color="warn" style="margin-left: 1em;">Delete</button> -->
       </mat-expansion-panel>
     </div>
@@ -84,7 +84,7 @@
         <input #hiddenInput style="visibility: hidden;">
 
 
-        <button mat-raised-button (click)="uploadImageMultiple()" color="primary"
+        <button *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="uploadImageMultiple()" color="primary"
           [disabled]="disableUploadMultipleBtn">Upload</button>
       </div>
       <br>
@@ -98,7 +98,7 @@
         </mat-expansion-panel-header>
         <img [src]="image.urlsanitizer" [alt]="'ha'" style="max-width: 400px; max-height: 400px;"
           (click)="openimageMultipledialog(image)"><br>
-        <button mat-raised-button (click)="updateImageMultiple(image)" color="primary">Edit</button>
+        <button *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="updateImageMultiple(image)" color="primary">Edit</button>
         <!-- <button mat-raised-button (click)="deleteImage(image)" color="warn" style="margin-left: 1em;">Delete</button> -->
       </mat-expansion-panel>
     </div>

@@ -84,6 +84,7 @@ export const environment = {
 //   faceValidApi: "https://api.iapp.co.th/face-verification/v2/face_compare",
 //   version: "uat version  1.04.01"
 
+
 // };
 
 // === build Development === 

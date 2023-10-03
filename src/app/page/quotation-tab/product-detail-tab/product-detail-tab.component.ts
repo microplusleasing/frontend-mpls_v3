@@ -434,10 +434,12 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   switch (sessionData.value.channal) {
                     case 'checker':
                       this.productForm.controls.detailForm.controls.dealerCode.setValue('', { emitEvent: false })
+                      this.dealerSelectText = of(this.getDealerNamebyCode('', this.dealerList))
                       break;
                     case 'dealer':
                       const dealer_seller_id = sessionData.value.SELLER_ID ? sessionData.value.SELLER_ID : ''
                       this.productForm.controls.detailForm.controls.dealerCode.setValue(dealer_seller_id, { emitEvent: false })
+                      this.dealerSelectText = of(this.getDealerNamebyCode(dealer_seller_id, this.dealerList))
                       break;
 
                     default:
@@ -1677,11 +1679,13 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     // *** comment this line on 10/07/2023 ***
                     // this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code);
                     this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code, { emitEvent: false })
+                    this.dealerSelectText = of(this.getDealerNamebyCode(quoitem.sl_code, this.dealerList))
                   }
                 } else {
                   // === store ==== 
                   if (this.userSessionQuotation.value.SELLER_ID) {
                     this.productForm.controls.detailForm.controls.dealerCode.setValue(this.userSessionQuotation.value.SELLER_ID, { emitEvent: false });
+                    this.dealerSelectText = of(this.getDealerNamebyCode(this.userSessionQuotation.value.SELLER_ID, this.dealerList))
                     this.productForm.controls.detailForm.controls.dealerCode.disable();
                   }
                 }
@@ -1959,12 +1963,14 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   if (sessionData.value.channal == 'checker') {
                     if (quoitem.sl_code) {
                       this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code, { emitEvent: false });
+                      this.dealerSelectText = of(this.getDealerNamebyCode(quoitem.sl_code, this.dealerList))
                     }
                   } else {
                     // === store ==== 
                     if (this.userSessionQuotation.value.SELLER_ID) {
                       console.log(`trigger this : ${this.userSessionQuotation.value.SELLER_ID}`)
                       this.productForm.controls.detailForm.controls.dealerCode.setValue(this.userSessionQuotation.value.SELLER_ID, { emitEvent: false });
+                      this.dealerSelectText = of(this.getDealerNamebyCode(this.userSessionQuotation.value.SELLER_ID, this.dealerList))
                       this.productForm.controls.detailForm.controls.dealerCode.disable();
                     }
                   }
@@ -1972,6 +1978,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // === stamp value to field ==== 
                   this.productForm.controls.detailForm.controls.bussinessCode.setValue(qbussinesscode, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.dealerCode.setValue(qdealercode, { emitEvent: false })
+                  this.dealerSelectText = of(this.getDealerNamebyCode(qdealercode, this.dealerList))
                   this.productForm.controls.detailForm.controls.carBrandField.setValue(qcarbrandcode, { emitEvent: false }); /// investigate on 13/03/2023
                   this.productForm.controls.detailForm.controls.carBrandNameField.setValue(qcarbrandname, { emitEvent: false });
                   this.productForm.controls.detailForm.controls.carModelField.setValue(qcarmodelcode, { emitEvent: false });
@@ -2538,6 +2545,19 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   handleKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       event.preventDefault();
+    }
+  }
+
+  getDealerNamebyCode(dl_code: string, ListDealer: IResMasterDealerData[]): string {
+
+    const dealerValue = ListDealer.find((items: { dl_code: string }) => {
+      return items.dl_code == dl_code
+    })
+
+    if (typeof dealerValue !== 'undefined') {
+      return dealerValue.dl_name
+    } else {
+      return ''
     }
   }
 

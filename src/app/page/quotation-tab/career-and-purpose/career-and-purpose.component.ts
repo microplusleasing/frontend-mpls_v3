@@ -41,7 +41,7 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
   mainCareerNameField = new FormControl()
   mainCareerCodeField = new FormControl()
   // mainCareerCodeField = new FormControl('', Validators.required)
-  mainCareerWorkplace = new FormControl('', [Validators.maxLength(150), Validators.required])
+  mainCareerWorkplace = new FormControl('', [Validators.maxLength(70), Validators.required])
   mainCareerPositionField = new FormControl('', [Validators.maxLength(150)])
   mainCareerDepartmentField = new FormControl('', [Validators.maxLength(150)])
   mainCareerExperienceYearsField = new FormControl<number | null>(null, Validators.pattern('^(0?[1-9]|[1-9][0-9])$'))

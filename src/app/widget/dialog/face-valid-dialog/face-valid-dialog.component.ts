@@ -32,6 +32,13 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
   resultfacecompareError: string;
   showuploadfaceimage: boolean = true;
   ismanual: boolean = false
+  isfaceconsent: boolean = false ;// === use value from ismaual but use other variable for handle render dom data ===
+
+  firstName: string = ''
+  lastName: string = ''
+  idcard_num: string = ''
+  consentDate: Date | null = null
+
 
   isfacevalid: boolean = false;
   settextstatus: boolean = false;
@@ -40,6 +47,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
   customerface = new FormControl<string | ''>('', Validators.required)
   // score = new FormControl<string | ''>('', Validators.required)
   result = new FormControl<string | ''>('', Validators.required)
+  consent = new FormControl<string | ''>('', Validators.required)
   reason = new FormControl<string | ''>({ value: '', disabled: false })
   verifymanual = new FormControl<boolean>(false)
 
@@ -47,6 +55,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
     citizenface: this.citizenface,
     customerface: this.customerface,
     // score: this.score,
+    consent: this.consent,
     result: this.result,
     reason: this.reason,
     verifymanual: this.verifymanual
@@ -124,12 +133,30 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
     this.quotationService.MPLS_is_check_face_valid(this.data.quotationid).subscribe({
       next: (resultdchkvalid) => {
         // === mange return data ===
-        this.quotationService.MPLS_getimagetocompareiapp(this.data.quotationid).subscribe({
-          next: (value) => {
 
+        forkJoin([
+          this.quotationService.MPLS_getinfofacecompare(this.data.quotationid),
+          this.quotationService.MPLS_getimagetocompareiapp(this.data.quotationid)
+        ]).subscribe({
+          next: ([resinfo, resimage]) => {
             this.loadingService.hideLoader()
-            this.file1 = value.data.file1
-            this.file2 = value.data.file2
+            // ============ resinfo =============
+            if (resinfo.status == 200) {
+              this.firstName = resinfo.data.first_name
+              this.lastName = resinfo.data.last_name
+              this.idcard_num = resinfo.data.idcard_num
+
+              if (resinfo.data.quo_consent_face_compare_date) {
+                this.consentDate = resinfo.data.quo_consent_face_compare_date
+              } else {
+                this.consentDate = new Date()
+              }
+            }
+
+            // ============ resimage =============
+            this.loadingService.hideLoader()
+            this.file1 = resimage.data.file1
+            this.file2 = resimage.data.file2
 
             this.facevalidform.controls.citizenface.setValue(this.file1 ? this.file1 : '')
             this.facevalidform.controls.customerface.setValue(this.file2 ? this.file2 : '')
@@ -139,8 +166,11 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
             this.imageurl2 = (this.file2 == null || this.file2 == '') ? `${environment.citizen_card_img_preload}` : `data:image/jpeg;base64,${this.file2}`
 
             // === check channal , If no dipccip channal hide list field  ====
-            if (value.data.is_dipchip_channal == 'N') {
+            if (resimage.data.is_dipchip_channal == 'N') {
               this.ismanual = true
+              this.isfaceconsent = false 
+            } else {
+              this.isfaceconsent = true
             }
 
 
@@ -149,6 +179,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
                 this.isfacevalid = true;
                 this.facevalidform.controls.reason.setValue(resultdchkvalid.data.reason)
                 this.facevalidform.controls.result.setValue(resultdchkvalid.data.status == 'Y' ? 'Y' : 'N')
+                this.facevalidform.controls.consent.setValue(resultdchkvalid.data.face_compare_consent == 'Y' ? 'Y' : 'N')
                 this.facevalidform.disable()
                 this.facevalidform.controls.reason.disable()
               } else {
@@ -156,6 +187,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
                 this.facevalidform.controls.verifymanual.setValue(true);
                 this.facevalidform.disable()
                 this.facevalidform.controls.reason.disable()
+                this.facevalidform.controls.consent.disable()
               }
             } else {
 
@@ -166,6 +198,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
               this.showuploadfaceimage = true
             }
           }, error: (e) => {
+            this.loadingService.hideLoader()
 
           }, complete: () => {
             this.loadingService.hideLoader()
@@ -260,7 +293,9 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
       quotationid: this.data.quotationid,
       reason: this.facevalidform.controls.reason.value ? this.facevalidform.controls.reason.value : '',
       result: this.facevalidform.controls.result.value ? this.facevalidform.controls.result.value : '',
-      is_dipchip: this.facevalidform.controls.verifymanual.value ? 'N' : 'Y'
+      is_dipchip: this.facevalidform.controls.verifymanual.value ? 'N' : 'Y',
+      consent: this.facevalidform.controls.consent.value ? this.facevalidform.controls.consent.value : '',
+      consentDate: this.consentDate ? this.consentDate : null
     }
 
     const dataitems = JSON.stringify(dataForm)

@@ -13,6 +13,10 @@ import { IReqMrtaAge } from '../interface/i-req-mrta-age';
 import { IResMrtaAge } from '../interface/i-res-mrta-age';
 import { IReqMrtaMaster } from '../interface/i-req-mrta-master';
 import { IResMrtaMaster } from '../interface/i-res-mrta-master';
+import { IReqGetMasterMrtaInsurance } from '../interface/i-req-get-master-mrta-insurance';
+import { IResGetMasterMrtaInsurance } from '../interface/i-res-get-master-mrta-insurance';
+import { IReqMplsCheckBusiCode } from '../interface/i-req-mpls-check-busi-code';
+import { IResMplsCheckBusiCode } from '../interface/i-res-mpls-check-busi-code';
 
 @Injectable({
   providedIn: 'root'
@@ -68,7 +72,19 @@ export class MrtaService {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getmrtamaster`
     return this.http.post<IResMrtaMaster>(url, formData)
   }
+  
+  // *** for new senario of mrta insurance (12/07/2023) ***
+  
+  getmastermrtainsurance(formData: IReqGetMasterMrtaInsurance): Observable<IResGetMasterMrtaInsurance> {
+    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getDealerSignaturebyid/${quotation_id}`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getmastermrtainsurance`
+    return this.http.post<IResGetMasterMrtaInsurance>(url, formData)
+  }
 
+  MPLS_check_busi_code(formData: IReqMplsCheckBusiCode): Observable<IResMplsCheckBusiCode> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_check_busi_code`
+    return this.http.post<IResMplsCheckBusiCode>(url, formData)
+  }
 
 
 }

@@ -75,7 +75,7 @@ export class BackwardBarComponent {
   }
 
   async onclickcarcheck() {
-    // === get token form user login (07/10/2022) === 
+    // === get token form user login (10/07/2022) === 
 
     const rolecheck = await this.btwService.checkmenuidpermission(this.menu_id)
 

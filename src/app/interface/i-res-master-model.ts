@@ -8,6 +8,8 @@ export interface IResMasterModelData {
     engine_no_running: string;
     chassis_no: string;
     chassis_no_running: string;
+    model_year: string;
+    cc: number;
 }
 
 export interface IResMasterModel {

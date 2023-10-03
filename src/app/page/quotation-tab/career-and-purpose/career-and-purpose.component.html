@@ -26,6 +26,9 @@
                                 <mat-error *ngIf="mainCareerWorkplace.errors?.['required']">
                                     กรุณากรอก ชื่อสถานที่ทำงาน
                                 </mat-error>
+                                <mat-error *ngIf="mainCareerWorkplace.errors?.['maxlength']">
+                                    ข้อความยาวเกินกำหนด
+                                </mat-error>
                             </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.maxcols">

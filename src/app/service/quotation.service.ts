@@ -44,6 +44,16 @@ import { IResStampFaceVerificationLog } from '../interface/i-res-stamp-face-veri
 import { IResGenEconsentImage } from '../interface/i-res-gen-econsent-image';
 import { IReqGenEconsentImage } from '../interface/i-req-gen-econsent-image';
 import { IResGeteconsentimagebyid } from '../interface/i-res-geteconsentimagebyid';
+import { IResCreateImageAttachMultiple } from '../interface/i-res-create-image-attach-multiple';
+import { IResImageAttachMultiple } from '../interface/i-res-image-attach-multiple';
+import { IResUpdateImageAttachMultiple } from '../interface/i-res-update-image-attach-multiple';
+import { IResUpdateFlagImageAttachMultiple } from '../interface/i-res-update-flag-image-attach-multiple';
+import { IResCheckSecondhandCarImageAttach } from '../interface/i-res-check-secondhand-car-image-attach';
+import { IResClearSecondhandCarImageAttach } from '../interface/i-res-clear-secondhand-car-image-attach';
+import { IImageAttachUploadMultipleList } from '../interface/i-image-attach-upload-multiple-list';
+import { IResCreateImageAttachMultipleList } from '../interface/i-res-create-image-attach-multiple-list';
+import { IResImageAttachMultipleByAppid } from '../interface/i-res-image-attach-multiple-by-appid';
+import { IResMplsGetInfoFaceCompare } from '../interface/i-res-mpls-get-info-face-compare';
 
 
 @Injectable({
@@ -276,6 +286,16 @@ export class QuotationService {
     return this.http.post<IResGenEconsentImage>(url, data)
   }
 
+  MPLS_check_secondhand_car_image_attach(quotationid: string, contract_ref: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_check_secondhand_car_image_attach`
+    return this.http.post<IResCheckSecondhandCarImageAttach>(url, { quotationid: quotationid, contract_ref: contract_ref })
+  }
+
+  MPLS_clear_secondhand_car_image_attach(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_clear_secondhand_car_image_attach`
+    return this.http.post<IResClearSecondhandCarImageAttach>(url, { quotationid: quotationid })
+  }
+
   MPLS_create_or_update_credit(data: IReqCreateCredit) {
     const fd = new FormData();
     fd.append('item', JSON.stringify(data));
@@ -295,14 +315,45 @@ export class QuotationService {
     return this.http.get<IResImageAttach>(url)
   }
 
+  MPLS_getimage_multiple_filebyid(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimage_multiple_filebyid?quotationid=${quotationid}`
+    return this.http.get<IResImageAttachMultiple>(url)
+  }
+
+  MPLS_getimage_multiple_filebyappid(appid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimage_multiple_filebyappid?applicationid=${appid}`
+    return this.http.get<IResImageAttachMultipleByAppid>(url)
+  }
+
   MPLS_create_image_attach_file(fd: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_image_attach_file`
     return this.http.post<IResCreateImageAttach>(url, fd)
   }
 
+  MPLS_create_image_attach_file_multiple(fd: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_image_attach_file_multiple`
+    return this.
+      http.post<IResCreateImageAttachMultiple>(url, fd)
+  }
+
+  MPLS_create_image_attach_file_multiple_list(fd: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_image_attach_file_multiple_list`
+    return this.http.post<IResCreateImageAttachMultipleList>(url, fd)
+  }
+
+  // MPLS_create_image_attach_file_multiple_list(data: IImageAttachUploadMultipleList[]) {
+  //   const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_image_attach_file_multiple_list`
+  //   return this.http.post<IResCreateImageAttachMultiple>(url, data)
+  // }
+
   MPLS_update_image_attach_file(fd: FormData) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_update_image_attach_file`
     return this.http.post<IResUpdateImageAttach>(url, fd)
+  }
+
+  MPLS_update_image_attach_file_multiple(fd: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_update_image_attach_file_multiple`
+    return this.http.post<IResUpdateImageAttachMultiple>(url, fd)
   }
 
   MPLS_delete_image_attach_file(fd: FormData) {
@@ -313,6 +364,11 @@ export class QuotationService {
   MPLS_update_flag_image_attach_file(quotationid: string) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_update_flag_image_attach_file?quotationid=${quotationid}`
     return this.http.get<IResUpdateFlagImageAttach>(url)
+  }
+
+  MPLS_update_flag_image_attach_file_multiple(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_update_flag_image_attach_file_multiple?quotationid=${quotationid}`
+    return this.http.get<IResUpdateFlagImageAttachMultiple>(url)
   }
 
   MPLS_create_consent(fd: FormData) {
@@ -333,6 +389,11 @@ export class QuotationService {
   MPLS_getimagetocompareiapp(quotationid: string) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimagetocompareiapp?quotationid=${quotationid}`
     return this.http.get<IResImageFaceCompare>(url)
+  }
+
+  MPLS_getinfofacecompare(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getinfofacecompare?quotationid=${quotationid}`
+    return this.http.post<IResMplsGetInfoFaceCompare>(url, {quotationid: quotationid})
   }
 
   MPLS_getimagetocompareiapp_unlock(quotationid: string) {

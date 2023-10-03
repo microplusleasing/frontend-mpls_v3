@@ -21,6 +21,7 @@ import { IResImageTypeAttachMultipleData } from 'src/app/interface/i-res-image-t
 import { IResImageAttachMultipleData } from 'src/app/interface/i-res-image-attach-multiple';
 import { HttpErrorResponse } from '@angular/common/http';
 import { IImageAttachUploadMultiple } from 'src/app/interface/i-image-attach-upload-multiple';
+import { IUserTokenData } from 'src/app/interface/i-user-token';
 
 
 @Component({
@@ -32,6 +33,8 @@ export class ImageAttachComponent extends BaseService implements OnInit {
   @Input() quotationReq = {} as Observable<IResQuotationDetail>;
   @Output() emitverifyimageattach = new EventEmitter();
   @Output() emitverifysecondhandcarimage = new EventEmitter();
+
+  userSession: IUserTokenData = {} as IUserTokenData
 
   quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
 
@@ -110,7 +113,18 @@ export class ImageAttachComponent extends BaseService implements OnInit {
   }
 
   ngOnInit() {
+    this.getUserSessionQuotation().subscribe({
+      next: (res_session) => {
 
+        this.userSession = res_session
+      }, error: (e) => {
+
+      }, complete: () => {
+
+      }
+    }).add(() => {
+      this.loadingService.hideLoader();
+    })
   }
 
   onStageChageFormStepper() {
@@ -187,14 +201,29 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                       if (res1.data && res1.data.length !== 0) {
                         res1.data.forEach(async (item) => {
                           const imageStr = this._arrayBufferToJpeg(item.image_file.data)
+                          // this.uploadedImages.push({
+                          //   name: item.image_name ?? '',
+                          //   image_code: item.image_code ?? '',
+                          //   image_header: this.temp_master_categories.find((m_image) => m_image.image_code == item.image_code)?.image_header ?? '',
+                          //   image_field_name: item.image_name ?? '',
+                          //   urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
+                          //   src: imageStr
+                          // })
                           this.uploadedImages.push({
                             name: item.image_name ?? '',
                             image_code: item.image_code ?? '',
-                            image_header: this.temp_master_categories.find((m_image) => m_image.image_code == item.image_code)?.image_header ?? '',
+                            image_header: (() => {
+                              if (item.image_code === '16') {
+                                return 'KYC';
+                              }
+                              const foundImage = this.temp_master_categories.find((m_image) => m_image.image_code == item.image_code);
+                              return foundImage?.image_header ?? '';
+                            })(),
                             image_field_name: item.image_name ?? '',
                             urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
                             src: imageStr
-                          })
+                          });
+
                         })
                       }
                     }

@@ -79,6 +79,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   secondhandcarverify: boolean = false
   verifycareerandpurpose: boolean = false
   verifysignature: boolean = false
+  /*... bypass flag ...*/
+  verifybypass: boolean = false
+  /* ..................*/
   createorupdatecitizendataDisable: boolean = true
   createorupdatecreditbtnDisable: boolean = true
   createorupdatecareerandPurposebtnDisable: boolean = true
@@ -333,6 +336,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                     // === set valid when record signature is already exits === 
                     this.consenttab.signaturetab.signatureForm.controls.verifySignature.setValue(true)
                     this.verifysignature = true
+                  }
+
+                  /* .... .FOr bypass check (image first) (31/10/2023) ...*/
+                  /* ... condition for check is quo_key_app_id == application_num ...*/
+                  if (quoitem.quo_key_app_id == quoitem.application_num) {
+                    this.verifybypass = true
                   }
 
                 }
@@ -613,7 +622,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           if (this.cizcardtab.cizForm.valid) {
             (this.verifyeconsent && this.verifycareerandpurpose) ? this.imageattachtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
           } else {
-            this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+            /*... check verify bypass ...*/
+            if (this.verifybypass) {
+              this.imageattachtab.onStageChageFormStepper()
+            } else {
+              this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+            }
           }
         }
           break;
@@ -689,7 +703,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                 this.afteroninit();
               } else {
                 // === handle error from updatedipchipstatus (may be cause of mission quotaitonid (22/08/2023)) ===
-                
+
               }
             })
           } else {
@@ -1288,10 +1302,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       prov_name: this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value : '',
       moto_year: this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value : null,
       // === over max ltv value (handle when business code == '002') (25/08/2023) ===
-      grade_moto: this.productdetailtab.productForm.controls.secondHandCarForm.controls.grade_moto.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.grade_moto.value : '', 
+      grade_moto: this.productdetailtab.productForm.controls.secondHandCarForm.controls.grade_moto.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.grade_moto.value : '',
       is_over_max_ltv: this.productdetailtab.productForm.controls.secondHandCarForm.controls.isovermaxltvField.value ? 'Y' : 'N',
       over_max_ltv_reason: this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value : ''
-      
+
     }
 
     // *** declare params to check moto_year valid ***

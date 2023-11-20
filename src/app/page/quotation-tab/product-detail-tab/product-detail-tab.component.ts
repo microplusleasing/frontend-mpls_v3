@@ -25,6 +25,7 @@ import { MasterDataService } from 'src/app/service/master.service';
 import { DealerGradeImageDialogComponent } from 'src/app/widget/dialog/dealer-grade-image-dialog/dealer-grade-image-dialog.component';
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 import { SecondhandCarViewDialogComponent } from 'src/app/widget/dialog/secondhand-car-view-dialog/secondhand-car-view-dialog.component';
+import { IResGetfueltype } from 'src/app/interface/i-res-getfueltype';
 
 @Component({
   selector: 'app-product-detail-tab',
@@ -76,6 +77,12 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   value1 = new FormControl()
   value2 = new FormControl()
   value3 = new FormControl()
+  /* ... evn - car field add (13/11/2023) ...*/
+  motorField = new FormControl<number | null>(null)
+  motorNumberField = new FormControl()
+  batteryTypeField = new FormControl()
+  batteryCapacityField = new FormControl()
+  fuelTypeField = new FormControl() // */ ... check this field to know fueltype of moto ...*/
 
   // === second hand car field (31/03/2023) ====
   model_year = new FormControl()
@@ -88,6 +95,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   prov_name = new FormControl()
   prov_code = new FormControl()
   moto_year = new FormControl()
+
 
   detailForm = this.fb.group({
     bussinessCode: this.bussinessCode,
@@ -123,7 +131,14 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     priceincludevatField: this.priceincludevatField,
     value1: this.value1,
     value2: this.value2,
-    value3: this.value3
+    value3: this.value3,
+    /* ... evn - car field add (13/11/2023) ...*/
+    motorField: this.motorField,
+    motorNumberField: this.motorNumberField,
+    batteryTypeField: this.batteryTypeField,
+    batteryCapacityField: this.batteryCapacityField,
+    fuelTypeField: this.fuelTypeField, // */ ... check this field to know fueltype of moto ...*/
+
   })
 
   secondHandCarForm = this.fb.group({
@@ -156,6 +171,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   brandList = [] as IResMasterBrandData[];
   modelList = [] as IResMasterModelData[];
   masterProvinceList: IResMasterProvince = {} as IResMasterProvince
+  /* ... master Fuel Type (13/11/2023) ...*/
+  masterFuelTypeList: IResGetfueltype = {} as IResGetfueltype
   modelListFilter = [] as IResMasterModelData[];
   modelSelect = [] as IResMasterModelData[];
   InsuranceListTemp = [] as IResMasterInsurerData[];
@@ -395,7 +412,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               this.masterDataService.getDealer('01'),
               this.masterDataService.MPLS_getbrand(),
               this.masterDataService.MPLS_getmodel(),
-              this.masterDataService.getMasterProvince()
+              this.masterDataService.getMasterProvince(),
+              this.masterDataService.getFuelType()
             ]).subscribe(async (res) => {
               // console.log(`this is master Data : ${JSON.stringify(res)}`)
               // === set master to variable ===
@@ -408,6 +426,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               // *** province master ****
               if (res[4]) {
                 this.masterProvinceList = res[4]
+              }
+
+              /*... Fuel Type (13/11/2023) ...*/
+              if (res[5]) {
+                this.masterFuelTypeList = res[5]
               }
 
               // *** bussiness ***
@@ -897,20 +920,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 ).subscribe(async (value: IResMasterModelData[]) => {
                   this.filterModelList = of(value)
 
-                  // *** comment on 05/04/2023 use below code instead ***
-                  // this.productForm.controls.detailForm.controls.interestRateField.enable()
-                  // this.productForm.controls.detailForm.controls.interestRateField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.productValueField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.engineNoField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.chassisNoField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.runningengineNoField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(null, { emitEvent: false })
-
                   // *** set more null field (secondhand car include) (05/04/2023) ***
                   this.detailForm.controls.carColorField.setValue('', { emitEvent: false });
                   this.detailForm.controls.chassisNoField.setValue('', { emitEvent: false });
@@ -980,6 +989,12 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       // === set chassis and engine to field (29/08/2022) ===
                       this.productForm.controls.detailForm.controls.engineNoField.setValue(modelprice[0].engine_no)
                       this.productForm.controls.detailForm.controls.chassisNoField.setValue(modelprice[0].chassis_no)
+
+                      /*... set value of add-on env-car detail ...*/
+                      this.productForm.controls.detailForm.controls.motorField.setValue(modelprice[0].motor)
+                      this.productForm.controls.detailForm.controls.batteryTypeField.setValue(modelprice[0].battery_type)
+                      this.productForm.controls.detailForm.controls.batteryCapacityField.setValue(modelprice[0].battery_capacity)
+                      this.productForm.controls.detailForm.controls.fuelTypeField.setValue(modelprice[0].fuel_type)
 
                       // ==== use loan_amont instead of factory_price when bussi code == '002' ===
                       let priceForCalTotalloss = this.productForm.controls.detailForm.controls.factoryPriceValueField.value ? this.productForm.controls.detailForm.controls.factoryPriceValueField.value : 0
@@ -1154,6 +1169,49 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.productForm.controls.detailForm.controls.carModelNameField.setValue(carModelNameSelect)
                       }
                     }
+
+                    /*... check fuel type to handle field to fill ...*/
+                    if (selectValue[0].fuel_type == '02') {
+
+                      /*... handle env-car ...*/
+
+                      /*... standard field ...*/
+                      this.productForm.controls.detailForm.controls.engineNoField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.runningengineNoField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.chassisNoField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.runningchassisNoField.disable({ onlySelf: true, emitEvent: false })
+
+                      /*.. env-car field handle ...*/
+                      this.productForm.controls.detailForm.controls.motorNumberField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorNumberField.setValidators(Validators.required)
+                      this.productForm.controls.detailForm.controls.motorNumberField.updateValueAndValidity({ emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryTypeField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryCapacityField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.fuelTypeField.disable({ onlySelf: true, emitEvent: false })
+                    } else {
+                      /* ... handle not env-car ...*/
+
+                      /* ... standard field ...*/
+                      this.productForm.controls.detailForm.controls.engineNoField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.runningengineNoField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.chassisNoField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.runningchassisNoField.enable({ onlySelf: true, emitEvent: false })
+
+                      /*.. env-car field handle ...*/
+                      this.productForm.controls.detailForm.controls.motorField.setValue(null, { emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorNumberField.setValue('', { emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryTypeField.setValue('', { emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryCapacityField.setValue('', { emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorNumberField.setValidators(null)
+                      this.productForm.controls.detailForm.controls.motorNumberField.updateValueAndValidity({ emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorNumberField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryTypeField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryCapacityField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.fuelTypeField.disable({ onlySelf: true, emitEvent: false })
+                    }
+
                   }
 
                   // === stamp model year by model select (02/05/2023) ===
@@ -1745,6 +1803,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 // === over max ltv (bussiness code == '002') (25/08/2023) ===
                 const qisovermaxltv = quoitem.cd_is_over_max_ltv == 'Y' ? true : false
                 const qovermaxltvreason = quoitem.cd_over_max_ltv_reason ?? ''
+                /* ... env-car field (13/11/2023) ...*/
+
+                const qmotornumber = quoitem.cd_motor_number ?? ''
 
 
                 // === check form layout depend on bussiness code (03/04/2023) ===
@@ -1942,6 +2003,61 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     // === set chassis and engine to field (29/08/2022) ===
                     this.productForm.controls.detailForm.controls.engineNoField.setValue(modelprice[0].engine_no, { emitEvent: false })
                     this.productForm.controls.detailForm.controls.chassisNoField.setValue(modelprice[0].chassis_no, { emitEvent: false })
+
+                    /*... check fuel type to handle field to fill ...*/
+                    if (modelprice[0].fuel_type == '02') {
+                      /*... handle env-car ...*/
+
+                      /* ... env-car field (13/11/2023) ...*/
+                      const qmotor = modelprice[0].motor ?? null
+                      const qbatterytype = modelprice[0].battery_type ?? ''
+                      const qbatterycapacity = modelprice[0].battery_capacity ?? ''
+                      const qfueltype = modelprice[0].fuel_type ?? ''
+
+                      /* .... add set value to env-car field (13/11/2023) ...*/
+                      this.productForm.controls.detailForm.controls.motorField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryTypeField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryCapacityField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.fuelTypeField.enable({ onlySelf: true, emitEvent: false })
+
+                      this.productForm.controls.detailForm.controls.motorField.setValue(qmotor, { emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorNumberField.setValue(qmotornumber, { emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryTypeField.setValue(qbatterytype, { emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryCapacityField.setValue(qbatterycapacity, { emitEvent: false })
+                      this.productForm.controls.detailForm.controls.fuelTypeField.setValue(qfueltype, { emitEvent: false })
+
+                      /*... standard field ...*/
+                      this.productForm.controls.detailForm.controls.engineNoField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.runningengineNoField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.chassisNoField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.runningchassisNoField.disable({ onlySelf: true, emitEvent: false })
+
+                      /*.. env-car field handle ...*/
+                      this.productForm.controls.detailForm.controls.motorNumberField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorNumberField.setValidators(Validators.required)
+                      this.productForm.controls.detailForm.controls.motorNumberField.updateValueAndValidity({ emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryTypeField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryCapacityField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.fuelTypeField.disable({ onlySelf: true, emitEvent: false })
+                    } else {
+                      /* ... handle not env-car ...*/
+
+                      /* ... standard field ...*/
+                      this.productForm.controls.detailForm.controls.engineNoField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.runningengineNoField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.chassisNoField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.runningchassisNoField.enable({ onlySelf: true, emitEvent: false })
+
+                      /*.. env-car field handle ...*/
+                      this.productForm.controls.detailForm.controls.motorNumberField.setValidators(null)
+                      this.productForm.controls.detailForm.controls.motorNumberField.updateValueAndValidity({ emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorNumberField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryTypeField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryCapacityField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.fuelTypeField.disable({ onlySelf: true, emitEvent: false })
+                    }
 
                   }
                   // ***===================***

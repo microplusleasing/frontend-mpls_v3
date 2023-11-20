@@ -283,6 +283,8 @@ export interface IResQuotationDetailData {
     cd_prov_name: string;
     quo_secondhand_car_verify: string;
 
+    /*.... ENV-CAR NEW FIELD (14/11/2023) ...*/
+    cd_motor_number: string;
 }
 
 export interface IResQuotationDetail {

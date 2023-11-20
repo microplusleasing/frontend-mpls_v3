@@ -1304,7 +1304,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       // === over max ltv value (handle when business code == '002') (25/08/2023) ===
       grade_moto: this.productdetailtab.productForm.controls.secondHandCarForm.controls.grade_moto.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.grade_moto.value : '',
       is_over_max_ltv: this.productdetailtab.productForm.controls.secondHandCarForm.controls.isovermaxltvField.value ? 'Y' : 'N',
-      over_max_ltv_reason: this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value : ''
+      over_max_ltv_reason: this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value : '',
+      /* .... add env-car field (14/11/2023) ...*/
+      motor_number: this.productdetailtab.productForm.controls.detailForm.controls.motorNumberField.value ? this.productdetailtab.productForm.controls.detailForm.controls.motorNumberField.value : '',
 
     }
 

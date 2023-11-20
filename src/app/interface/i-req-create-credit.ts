@@ -43,6 +43,7 @@ export interface IReqCreateCredit {
     grade_moto: string;
     is_over_max_ltv: 'Y' | 'N';
     over_max_ltv_reason: string;
+    motor_number: string
 }
 
 

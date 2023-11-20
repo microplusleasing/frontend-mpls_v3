@@ -47,6 +47,7 @@ import { IResCheckMotoYear } from '../interface/i-res-check-moto-year';
 import { IReqCheckMotoYear } from '../interface/i-req-check-moto-year';
 import { IReqMplsCheckBusiCode } from '../interface/i-req-mpls-check-busi-code';
 import { IResMplsCheckBusiCode } from '../interface/i-res-mpls-check-busi-code';
+import { IResGetfueltype } from '../interface/i-res-getfueltype';
 
 
 
@@ -311,6 +312,11 @@ export class MasterDataService {
   MPLS_check_busi_code(formData: IReqMplsCheckBusiCode): Observable<IResMplsCheckBusiCode> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_check_busi_code`
     return this.http.post<IResMplsCheckBusiCode>(url, formData)
+  }
+
+  getFuelType(): Observable<IResGetfueltype> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getFuelType`
+    return this.http.get<IResGetfueltype>(url)
   }
 
 

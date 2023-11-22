@@ -4,7 +4,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnIni
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, debounceTime, lastValueFrom, map, Observable, of, startWith, Subject, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, lastValueFrom, map, Observable, of, startWith, Subject, switchMap, tap } from 'rxjs';
 import { ThaidateformatDirective } from 'src/app/directive/thaidateformat.directive';
 import { IDialogSecondHandCarView } from 'src/app/interface/i-dialog-second-hand-car-view';
 import { IResGetMasterBussinessData } from 'src/app/interface/i-res-get-master-bussiness';
@@ -773,26 +773,21 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 this.brandList = res[2].data
                 this.productForm.controls.detailForm.controls.carBrandField.valueChanges.pipe(
                   startWith(''),
-                  tap(async value => {
+                  switchMap(async value => {
                     if (value) {
                       this.currentSelectBrand = this.brandList.filter((items: { brand_code: any; }) => {
-                        return items.brand_code == value
+                        return items.brand_code == value;
                       });
                     } else {
-                      this.currentSelectBrand = []
+                      this.currentSelectBrand = [];
                     }
-                  }),
-                  map(value => this._filterBrand(value))
+
+                    const filteredBrands = this._filterBrand(value);
+
+                    return filteredBrands;
+                  })
                 ).subscribe(async (value: IResMasterBrandData[]) => {
                   this.filterBrandList = of(value)
-
-                  // *** comment on 05/04/2023 use below code instead ***
-                  // this.productForm.controls.detailForm.controls.carModelField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.productValueField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.factoryPriceValueField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.interestRateField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
-                  // this.productForm.controls.detailForm.controls.insurerCodeField.setValue(null, { emitEvent: false })
 
                   // *** set more null field (secondhand car include) (05/04/2023) ***
                   this.detailForm.controls.carBrandNameField.setValue('', { emitEvent: false });
@@ -911,12 +906,18 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 this.modelList = res[3].data
                 this.productForm.controls.detailForm.controls.carModelField.valueChanges.pipe(
                   startWith(''),
-                  tap(async value => {
-                    this.currentSelectModel = this.modelList.filter((items: { model_code: any; }) => {
-                      return items.model_code == value
-                    })
-                  }),
-                  map(value => this._filterModel(value))
+                  switchMap(async value => {
+
+                    /* .... get brand code from fiedl  ...*/
+                    const brandcode = this.detailForm.controls.carBrandField.value ? this.detailForm.controls.carBrandField.value : ''
+                    this.currentSelectModel = this.modelList.filter((items: { model_code: string, brand_code: string; }) => {
+                      return items.model_code == value && items.brand_code == brandcode;
+                    });
+
+                    const filteredModels = this._filterModel(value);
+
+                    return filteredModels;
+                  })
                 ).subscribe(async (value: IResMasterModelData[]) => {
                   this.filterModelList = of(value)
 
@@ -947,6 +948,13 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.detailForm.controls.value2.setValue('', { emitEvent: false });
                   this.detailForm.controls.value3.setValue('', { emitEvent: false });
                   this.detailForm.controls.paymentValueField.setValue(null)
+
+                  /* ... set env-car field to null when model change (22/11/2023) ...*/
+                  this.detailForm.controls.motorField.setValue(null, { emitEvent: false })
+                  this.detailForm.controls.motorNumberField.setValue('', { emitEvent: false })
+                  this.detailForm.controls.batteryTypeField.setValue('', { emitEvent: false })
+                  this.detailForm.controls.batteryCapacityField.setValue('', { emitEvent: false })
+                  this.detailForm.controls.fuelTypeField.setValue('', { emitEvent: false })
                   this.showpaymentvalue$.next(false)
 
                   this.secondHandCarForm.controls.model_year.setValue('', { emitEvent: false })
@@ -1216,8 +1224,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   // === stamp model year by model select (02/05/2023) ===
                   if (this.productForm.controls.detailForm.controls.carModelField.value) {
-                    this.secondHandCarForm.controls.model_year.setValue(selectValue[0].model_year)
-                    this.secondHandCarForm.controls.cc.setValue(selectValue[0].cc)
+                    if (selectValue.length !== 0) {
+                      this.secondHandCarForm.controls.model_year.setValue(selectValue[0].model_year)
+                      this.secondHandCarForm.controls.cc.setValue(selectValue[0].cc)
+                    }
                   } else {
                     this.secondHandCarForm.controls.model_year.setValue('')
                     this.secondHandCarForm.controls.cc.setValue(null)

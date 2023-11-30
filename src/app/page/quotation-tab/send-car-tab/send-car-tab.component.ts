@@ -386,7 +386,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
         if (quotationid) {
           // === get deliver approve record === (api สำหรับแสดงรูปลายเซ็นคนที่ร้านและภาพรับรถลูกค้า)
           // ==== ถ้ามีรูป จะ lock field เพราะว่าเคยมีการส่งมอบรถไปแล้ว ===
-          this.quotationService.getsendcardeliverbyid(quotationid).subscribe(({
+          this.quotationService.getattachimagedeliverbyid(quotationid).subscribe(({
             //
             next: (results) => {
               // console.log(`success check immage 14 , 15 `)

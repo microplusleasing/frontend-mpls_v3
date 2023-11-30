@@ -1187,7 +1187,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       this.productForm.controls.detailForm.controls.engineNoField.disable({ onlySelf: true, emitEvent: false })
                       this.productForm.controls.detailForm.controls.runningengineNoField.disable({ onlySelf: true, emitEvent: false })
                       this.productForm.controls.detailForm.controls.chassisNoField.disable({ onlySelf: true, emitEvent: false })
-                      this.productForm.controls.detailForm.controls.runningchassisNoField.disable({ onlySelf: true, emitEvent: false })
+                      // this.productForm.controls.detailForm.controls.runningchassisNoField.disable({ onlySelf: true, emitEvent: false })
 
                       /*.. env-car field handle ...*/
                       this.productForm.controls.detailForm.controls.motorNumberField.enable({ onlySelf: true, emitEvent: false })
@@ -2040,7 +2040,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       this.productForm.controls.detailForm.controls.engineNoField.disable({ onlySelf: true, emitEvent: false })
                       this.productForm.controls.detailForm.controls.runningengineNoField.disable({ onlySelf: true, emitEvent: false })
                       this.productForm.controls.detailForm.controls.chassisNoField.disable({ onlySelf: true, emitEvent: false })
-                      this.productForm.controls.detailForm.controls.runningchassisNoField.disable({ onlySelf: true, emitEvent: false })
+                      // this.productForm.controls.detailForm.controls.runningchassisNoField.disable({ onlySelf: true, emitEvent: false })
 
                       /*.. env-car field handle ...*/
                       this.productForm.controls.detailForm.controls.motorNumberField.enable({ onlySelf: true, emitEvent: false })

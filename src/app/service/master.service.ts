@@ -237,6 +237,7 @@ export class MasterDataService {
     return this.http.get<IResMasterMrtaSeller>(url)
   }
 
+  /* ... api locate in mrta service ...*/
   checkmrtarecent(quotationid: string): Observable<IResMasterMrtaInsurance> {
 
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/checkmrtarecent?quotationid=${quotationid}`

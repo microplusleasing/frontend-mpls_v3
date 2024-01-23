@@ -1187,7 +1187,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       this.productForm.controls.detailForm.controls.engineNoField.disable({ onlySelf: true, emitEvent: false })
                       this.productForm.controls.detailForm.controls.runningengineNoField.disable({ onlySelf: true, emitEvent: false })
                       this.productForm.controls.detailForm.controls.chassisNoField.disable({ onlySelf: true, emitEvent: false })
-                      // this.productForm.controls.detailForm.controls.runningchassisNoField.disable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.runningchassisNoField.disable({ onlySelf: true, emitEvent: false })
 
                       /*.. env-car field handle ...*/
                       this.productForm.controls.detailForm.controls.motorNumberField.enable({ onlySelf: true, emitEvent: false })
@@ -1424,13 +1424,15 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss
                     (
-                      this.productForm.controls.detailForm.controls.insuranceCodeField.value ? this.productForm.controls.detailForm.controls.insuranceCodeField.value : '',
-                      // '001',
-                      this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
-                      this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
-                      this.productForm.controls.detailForm.controls.carModelField.value ? this.productForm.controls.detailForm.controls.carModelField.value : '',
-                      this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
-                      priceForCalTotalloss
+                      {
+                        insurance_code: this.productForm.controls.detailForm.controls.insuranceCodeField.value ? this.productForm.controls.detailForm.controls.insuranceCodeField.value : '',
+                        factory_price: this.productForm.controls.detailForm.controls.factoryPriceValueField.value ? this.productForm.controls.detailForm.controls.factoryPriceValueField.value : 0,
+                        bussi_code: this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
+                        brand_code: this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
+                        model_code: this.productForm.controls.detailForm.controls.carModelField.value ? this.productForm.controls.detailForm.controls.carModelField.value : '',
+                        dl_code: this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
+                        loan_amount: priceForCalTotalloss
+                      }
                     )
                   )
                   this.coverage = resultCoveragetotalloss.data[0].coverage_total_loss ? resultCoveragetotalloss.data[0].coverage_total_loss : 0
@@ -1939,9 +1941,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // === set max ltv field (29/08/2022) ===
                   this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
 
-                  // const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsuranceold2((resultMaxLtv.data[0].maxltv.toString())));
-                  // const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsurance(qfactoryprice, '001', qcarbrandcode, qcarmodelcode, qdealercode));
-
 
                   const resultInsuranceMaster = await lastValueFrom(this.masterDataService.getInsurance(
                     // qfactoryprice,
@@ -2182,12 +2181,15 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   }
 
                   const resultCoveragetotalloss = await lastValueFrom(this.masterDataService.getcoverageTotalloss(
-                    qinsurancecode,
-                    qbussinesscode, //'001',
-                    qcarbrandcode,
-                    qcarmodelcode,
-                    qdealercode,
-                    priceForCalTotalloss
+                    {
+                      insurance_code: qinsurancecode,
+                      factory_price: qfactoryprice,
+                      bussi_code: qbussinesscode, //'001',
+                      brand_code: qcarbrandcode,
+                      model_code: qcarmodelcode,
+                      dl_code: qdealercode,
+                      loan_amount: priceForCalTotalloss
+                    }
                   ))
                   this.coverage = resultCoveragetotalloss.data[0].coverage_total_loss ? resultCoveragetotalloss.data[0].coverage_total_loss : 0
                   this.factoryprice = qfactoryprice
@@ -2263,42 +2265,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     }
   }
 
-  // async checkChangeMaxValuePrice() {
-  //   if (
-  //     this.productForm.controls.detailForm.controls.carBrandField.value &&
-  //     this.productForm.controls.detailForm.controls.carModelField.value &&
-  //     this.productForm.controls.detailForm.controls.dealerCode.value
-  //   ) {
-  //     const cbcode = this.productForm.controls.detailForm.controls.carBrandField.value
-  //     const cmcode = this.productForm.controls.detailForm.controls.carModelField.value
-  //     const dlcode = this.productForm.controls.detailForm.controls.dealerCode.value
-  //     let modelprice = this.modelList.filter((items: { model_code: any; brand_code: any }) => {
-  //       return items.model_code == cmcode && items.brand_code == cbcode
-  //     })
-
-  //     /// ==== set price (productValueField) from master of model code ==== 
-  //     if (modelprice.length == 1) {
-  //       const valuePrice = modelprice[0].price
-  //       const resultMaxValue = await lastValueFrom(this.masterDataService.getMaxLtv(
-  //         valuePrice,
-  //         '001',
-  //         '01',
-  //         cbcode,
-  //         cmcode,
-  //         dlcode
-  //       ))
-
-  //       if (resultMaxValue) {
-  //         console.log(`this is max ltv value : ${resultMaxValue.data[0].maxltv}`)
-  //         const maxlvtnumber = (resultMaxValue.data[0].maxltv ?? 0).toString();
-  //         const maxlvtsetFormat = this.numberWithCommas(resultMaxValue.data[0].maxltv)
-  //         const maxlvttext = `(สูงสุด ${maxlvtsetFormat} บาท)`
-  //         this.maxltvValue$ = of(resultMaxValue.data[0].maxltv)
-  //         this.maxlvtmessage$ = of(maxlvttext)
-  //       }
-  //     }
-  //   }
-  // }
 
   showlistInsurancePlan() {
     const modelValue = this.productForm.controls.detailForm.controls.carModelField.value
@@ -2589,11 +2555,12 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
         data: senddata
       }).afterClosed().subscribe((res: IResSecondHandCarViewData) => {
         // *** parse data back from second hance car select dialog ***
-        // console.log(`parse data back success : ${JSON.stringify(res)}`)
         if (res.contract_no) {
           this.showgeneralcarinfovisible = true
           this.showchassisandengine = true
           this.shwosecondhandcardetail = true
+
+
 
           // *** field in secondhand car that need to use call other master data (contract_ref = *for getMaxLtv incase business_code = '002') ***
           this.productForm.controls.secondHandCarForm.controls.contract_ref.setValue(res.contract_no, { emitEvent: false })
@@ -2614,11 +2581,14 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
           // *** basic car field binding ***
           this.productForm.controls.detailForm.controls.carBrandField.setValue(res.brand_code)
           this.productForm.controls.detailForm.controls.carModelField.setValue(res.model_code)
+          // this.productForm.controls.detailForm.controls.carBrandField.setValue(res.brand_code, { emitEvent: false})
+          // this.productForm.controls.detailForm.controls.carModelField.setValue(res.model_code, { emitEvent: false})
           this.productForm.controls.detailForm.controls.engineNoField.setValue(res.engine_number)
           this.productForm.controls.detailForm.controls.runningengineNoField.setValue(res.engine_no_running, { emitEvent: false })
           this.productForm.controls.detailForm.controls.chassisNoField.setValue(res.chassis_number)
           this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(res.chassis_no_running, { emitEvent: false })
           this.productForm.controls.detailForm.controls.carColorField.setValue(res.color, { emitEvent: false })
+          this.productForm.controls.detailForm.controls.fuelTypeField.setValue(res.fuel_type, { emitEvent: false })
 
           // *** secondhand car field binding ***
           this.productForm.controls.secondHandCarForm.controls.cc.setValue(res.cc, { emitEvent: false })

@@ -32,5 +32,8 @@ export interface IResSecondHandCarView {
     auction_code: string
     model_year: string
     moto_year: number
+    battery_type: string
+    battery_capacity: string
+    fuel_type: string
   }
   

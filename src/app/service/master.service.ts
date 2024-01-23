@@ -48,6 +48,7 @@ import { IReqCheckMotoYear } from '../interface/i-req-check-moto-year';
 import { IReqMplsCheckBusiCode } from '../interface/i-req-mpls-check-busi-code';
 import { IResMplsCheckBusiCode } from '../interface/i-res-mpls-check-busi-code';
 import { IResGetfueltype } from '../interface/i-res-getfueltype';
+import { IReqCoverageTotalLoss } from '../interface/i-req-coverage-total-loss';
 
 
 
@@ -145,10 +146,9 @@ export class MasterDataService {
     return this.http.get<IResCoverageTotalLoss>(url)
   }
 
-  getcoverageTotalloss(insurance_code: string, bussi_code: string, brand_code: string, model_code: string, dl_code: string, factory_price?: number): Observable<IResCoverageTotalLoss> {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}'`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getcoverageTotalloss?insurance_code=${insurance_code}&factory_price=${factory_price}&bussi_code=${bussi_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}`
-    return this.http.get<IResCoverageTotalLoss>(url)
+  getcoverageTotalloss(data: IReqCoverageTotalLoss): Observable<IResCoverageTotalLoss> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getcoverageTotalloss`
+    return this.http.post<IResCoverageTotalLoss>(url, data)
   }
 
 
@@ -244,7 +244,7 @@ export class MasterDataService {
     return this.http.get<IResMasterMrtaInsurance>(url)
   }
 
-  confirmqrpayment(application_num: string, contract_no: string): Observable<IResConfirmQrPayment>  {
+  confirmqrpayment(application_num: string, contract_no: string): Observable<IResConfirmQrPayment> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/confirmqrpayment?application_num=${application_num}&contract_no=${contract_no}`
     return this.http.get<IResConfirmQrPayment>(url)
   }

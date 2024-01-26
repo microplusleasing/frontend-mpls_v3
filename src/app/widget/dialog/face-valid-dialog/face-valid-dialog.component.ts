@@ -104,6 +104,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
       const customerfaceinput = this.facevalidform.controls.customerface
       const reasoninput = this.facevalidform.controls.reason
       const resultinput = this.facevalidform.controls.result
+      const consentinput = this.facevalidform.controls.consent
 
       if (value) {
         // ==== manual quotation ===
@@ -111,10 +112,12 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
         customerfaceinput.reset();
         reasoninput.reset();
         resultinput.reset();
+        consentinput.reset();
         citizenfaceinput.clearValidators();
         customerfaceinput.clearValidators();
         reasoninput.clearValidators();
         resultinput.clearValidators();
+        consentinput.clearValidators();
       } else {
         citizenfaceinput.setValidators(Validators.required)
         customerfaceinput.setValidators(Validators.required)
@@ -125,6 +128,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
       customerfaceinput.updateValueAndValidity();
       reasoninput.updateValueAndValidity();
       resultinput.updateValueAndValidity();
+      consentinput.updateValueAndValidity();
     })
   }
 
@@ -330,69 +334,11 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
       fd_iapp.append('file2', _file2)
     }
 
-
-    // forkJoin([
-    //   this.iappService.getfacevalidation(fd_iapp),
-    //   this.quotationService.MPLS_stamp_check_face_valid(fd)
-    // ]).subscribe({
-    //   next: async ([res_iapp, res_stamp_check_face_valid]) => {
-
-    //     if (res_iapp.message) {
-    //       let fd = new FormData;
-    //       const datasend: IStampFaceVerificationLog = {
-    //         quotationid: this.data.quotationid,
-    //         duration: res_iapp.duration,
-    //         matched: res_iapp.matched,
-    //         message: res_iapp.message,
-    //         score: res_iapp.score,
-    //         threshold: res_iapp.threshold
-    //       }
-    //       const dataString = JSON.stringify(datasend)
-
-    //       fd.append('items', dataString)
-
-    //       const resultcreatelog = await lastValueFrom(this.quotationService.MPLS_stamp_face_verification_log_iapp(fd))
-
-    //       if (resultcreatelog.status == 200) {
-    //         // *** อาจปรับเปลี่ยนเป็นแสดง snackbar  พร้อมกับจังหวะที่ MPLS_stamp_check_face_valid สำเร็จได้ (res_stamp_check_face_valid == 200) ***
-    //         console.log(`บันทึกรายการ mpls_iapp_face_verification_log สำเร็จ !`)
-    //       } else {
-    //         console.log(`บันทึกรายการ mpls_iapp_face_verification_log ไม่สำเร็จ !`)
-    //       }
-    //     }
-
-    //     if (res_stamp_check_face_valid.status == 200) {
-    //       // === success ===
-    //       this.loadingService.hideLoader()
-    //       this.snackbarsuccess(`บันทึกข้อมูลยืนยันตัวบุคคลสำเร็จ`)
-    //       if (res_stamp_check_face_valid.data.isvalid == 'Y') {
-    //         this.isfacevalid = true
-    //         this.settextstatus = true
-    //       } else {
-    //         this.isfacevalid = false
-    //         this.settextstatus = true
-    //       }
-    //       this.facevalidform.disable()
-    //       this.facevalidform.controls.reason.disable()
-    //       // === clode dialog (requirement on 07/01/2023) ===
-    //       this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
-    //     } else {
-    //       this.snackbarfail(`ไม่สามารถบันทึกข้อมูลยืนยันตนบุคคลได้ : ${res_stamp_check_face_valid.message}`)
-    //     }
-    //   }, error: (e: any) => {
-    //     this.snackbarfail(`Error forkjoin : ${e.message ? e.message : 'No Message'}`)
-    //   }, complete: () => {
-    //     console.log(`trigger forkjoin (getfacevalidation, MPLS_stamp_check_face_valid) complete!`)
-    //   }
-    // })
-
     this.quotationService.MPLS_stamp_check_face_valid(fd).subscribe({
       next: (result) => {
         this.loadingService.showLoader()
         if (result.status == 200) {
           // === success ===
-          // this.loadingService.hideLoader()
-          // this.snackbarsuccess(`บันทึกข้อมูลยืนยันตัวบุคคลสำเร็จ`)
           if (result.data.isvalid == 'Y') {
             this.isfacevalid = true
             this.settextstatus = true
@@ -494,38 +440,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
       }
     })
 
-
-
     // =======================================================
-
-    // this.quotationService.MPLS_stamp_check_face_valid(fd).subscribe({
-    //   next: (result) => {
-
-    //     if (result.status == 200) {
-    //       // === success ===
-    //       this.loadingService.hideLoader()
-    //       this.snackbarsuccess(`บันทึกข้อมูลยืนยันตัวบุคคลสำเร็จ`)
-    //       if (result.data.isvalid == 'Y') {
-    //         this.isfacevalid = true
-    //         this.settextstatus = true
-    //       } else {
-    //         this.isfacevalid = false
-    //         this.settextstatus = true
-    //       }
-    //       this.facevalidform.disable()
-    //       this.facevalidform.controls.reason.disable()
-    //       // === clode dialog (requirement on 07/01/2023) ===
-    //       this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
-    //     } else {
-    //       this.snackbarfail(`ไม่สามารถบันทึกข้อมูลยืนยันตนบุคคลได้ : ${result.message}`)
-    //     }
-    //   }, error: (e) => {
-    //     console.log(`Error during update face valid status and result : ${e.message ? e.message : 'no return message'}`)
-    //     this.loadingService.hideLoader()
-    //   }, complete: () => {
-    //     this.loadingService.hideLoader()
-    //   }
-    // })
 
   }
 

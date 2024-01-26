@@ -49,6 +49,8 @@ import { IReqMplsCheckBusiCode } from '../interface/i-req-mpls-check-busi-code';
 import { IResMplsCheckBusiCode } from '../interface/i-res-mpls-check-busi-code';
 import { IResGetfueltype } from '../interface/i-res-getfueltype';
 import { IReqCoverageTotalLoss } from '../interface/i-req-coverage-total-loss';
+import { IResNationalityMaster } from '../interface/i-res-nationality-master';
+import { IResIdentityTypeMaster } from '../interface/i-res-identity-type-master';
 
 
 
@@ -318,6 +320,16 @@ export class MasterDataService {
   getFuelType(): Observable<IResGetfueltype> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getFuelType`
     return this.http.get<IResGetfueltype>(url)
+  }
+
+  nationalityMaster(): Observable<IResNationalityMaster> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/nationalityMaster`
+    return this.http.get<IResNationalityMaster>(url)
+  }
+
+  identityTypeMaster(): Observable<IResIdentityTypeMaster> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/identityTypeMaster`
+    return this.http.get<IResIdentityTypeMaster>(url)
   }
 
 

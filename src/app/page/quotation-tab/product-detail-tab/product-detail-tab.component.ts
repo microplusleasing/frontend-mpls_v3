@@ -37,6 +37,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   @Input() quotationReq = {} as Subject<IResQuotationDetail>;
   quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
   lockallbtn: boolean = false
+  is2ndmpls: boolean = false /*... check mplus secondhand car fact (handle subscribe value change of carBrand and carModel make field disable or enable) ... */
 
   // *** check econsent verify ***
   consentVerify = new FormControl<boolean>(false, Validators.requiredTrue)
@@ -291,6 +292,15 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
     this.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.disable({ emitEvent: false })
 
+    this.productForm.controls.secondHandCarForm.controls.isovermaxltvField.valueChanges.subscribe((res) => {
+      if (res) {
+        this.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.enable()
+      } else {
+        this.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.setValue(null, { emitEvent: false })
+        this.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.disable({ emitEvent: false })
+      }
+    })
+
   }
 
   async ngOnInit() {
@@ -433,6 +443,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // *** set filterbrandlist (08/04/2023) ****
                   this.filterDealerList = of(res[1].data)
 
+                  /* ... clear all filter of brand and model (add-on 26/01/2024) ... */
+                  this.filterBrandList = of(this.brandList)
+                  this.filterModelList = of(this.modelList)
+
                   if (recordExists) {
                     this.trigger_bussinesscode.emit(false)
                   }
@@ -493,6 +507,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.detailForm.controls.value1.setValue('', { emitEvent: false });
                   this.detailForm.controls.value2.setValue('', { emitEvent: false });
                   this.detailForm.controls.value3.setValue('', { emitEvent: false });
+                  this.detailForm.controls.fuelTypeField.setValue('', { emitEvent: false })
                   this.detailForm.controls.paymentValueField.setValue(null)
                   this.showpaymentvalue$.next(false)
 
@@ -524,6 +539,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.showBrandModelLoan$ = of(false)
                         this.shwosecondhandcardetail = false
                         this.showPrice = false
+                        this.is2ndmpls = false
 
                         this.productForm.controls.detailForm.controls.carBrandField.enable({ onlySelf: true, emitEvent: false })
                         this.productForm.controls.detailForm.controls.carModelField.enable({ onlySelf: true, emitEvent: false })
@@ -580,6 +596,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.paymentvalue$.next(0);
                         this.out_stand = 0
                         this.showpaymentvalue$.next(false)
+                        this.is2ndmpls = true
 
                         // *** set Require to some field of second hand car (MPLS) ***
                         this.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(Validators.required)
@@ -600,6 +617,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.showgeneralcarinfovisible = true
                         this.showchassisandengine = true
                         this.shwosecondhandcardetail = true
+                        this.is2ndmpls = false
 
                         this.productForm.controls.detailForm.controls.carBrandField.enable({ onlySelf: true, emitEvent: false })
                         this.productForm.controls.detailForm.controls.carModelField.enable({ onlySelf: true, emitEvent: false })
@@ -715,6 +733,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   this.filterDealerList = of(value)
 
+                  /* ... clear all filter of brand and model (add-on 26/01/2024) ... */
+                  this.filterBrandList = of(this.brandList)
+                  this.filterModelList = of(this.modelList)
+
                   const selectValue = this.dealerList.find((items: { dl_code: string }) => {
                     return items.dl_code == value[0].dl_code
                   })
@@ -733,6 +755,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.productForm.controls.detailForm.controls.chassisNoField.setValue('')
                   this.productForm.controls.detailForm.controls.runningchassisNoField.setValue('', { emitEvent: false })
                   this.productForm.controls.detailForm.controls.carColorField.setValue('', { emitEvent: false })
+                  this.productForm.controls.detailForm.controls.fuelTypeField.setValue('', { emitEvent: false })
 
                   this.productForm.controls.secondHandCarForm.reset()
                   // this.checkChangeMaxValuePrice();
@@ -1160,10 +1183,21 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       /* ... handle not env-car ...*/
 
                       /* ... standard field ...*/
-                      this.productForm.controls.detailForm.controls.engineNoField.enable({ onlySelf: true, emitEvent: false })
-                      this.productForm.controls.detailForm.controls.runningengineNoField.enable({ onlySelf: true, emitEvent: false })
-                      this.productForm.controls.detailForm.controls.chassisNoField.enable({ onlySelf: true, emitEvent: false })
-                      this.productForm.controls.detailForm.controls.runningchassisNoField.enable({ onlySelf: true, emitEvent: false })
+
+                      /* ... จัดการกรณี business code เปลี่ยนเป็นรถมือ1,2 แล้วเลือกโชว์หรือซ่อน field ... */
+                      if (!this.is2ndmpls) {
+                        this.productForm.controls.detailForm.controls.engineNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.runningengineNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.chassisNoField.enable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.runningchassisNoField.enable({ onlySelf: true, emitEvent: false })
+                      } else {
+                        this.productForm.controls.detailForm.controls.engineNoField.disable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.runningengineNoField.disable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.chassisNoField.disable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.detailForm.controls.runningchassisNoField.disable({ onlySelf: true, emitEvent: false })
+                        this.productForm.controls.secondHandCarForm.controls.prov_code.disable({ onlySelf: true, emitEvent: false })
+
+                      }
 
                       /*.. env-car field handle ...*/
                       this.productForm.controls.detailForm.controls.motorField.setValue(null, { emitEvent: false })
@@ -2534,9 +2568,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
           await this.asyncchangecarbrand(res.brand_code)
           await this.asyncchangemodelbrand(res.model_code)
-          this.productForm.controls.detailForm.controls.engineNoField.setValue(res.engine_number)
+          this.productForm.controls.detailForm.controls.engineNoField.setValue(res.engine_number, { emitEvent: false })
           this.productForm.controls.detailForm.controls.runningengineNoField.setValue(res.engine_no_running, { emitEvent: false })
-          this.productForm.controls.detailForm.controls.chassisNoField.setValue(res.chassis_number)
+          this.productForm.controls.detailForm.controls.chassisNoField.setValue(res.chassis_number, { emitEvent: false })
           this.productForm.controls.detailForm.controls.runningchassisNoField.setValue(res.chassis_no_running, { emitEvent: false })
           this.productForm.controls.detailForm.controls.carColorField.setValue(res.color, { emitEvent: false })
           this.productForm.controls.detailForm.controls.fuelTypeField.setValue(res.fuel_type, { emitEvent: false })
@@ -2566,6 +2600,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
           this.productForm.controls.secondHandCarForm.controls.prov_name.disable({ onlySelf: true, emitEvent: false })
           this.productForm.controls.secondHandCarForm.controls.reg_date.disable({ onlySelf: true, emitEvent: false })
           this.productForm.controls.secondHandCarForm.controls.reg_no.disable({ onlySelf: true, emitEvent: false })
+
 
         } else {
           // handle error or null data parse back

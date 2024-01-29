@@ -454,6 +454,21 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       }
     })
 
+    /*... check nationality valueChange '01' default identity = '01' (P'Inw request) ... */
+    this.cizForm.controls.maincitizenForm.controls.nationality.valueChanges.subscribe((value) => {
+      if (value) {
+        if (value == '01') {
+          this.cizForm.controls.maincitizenForm.controls.identity.setValue('01')
+          this.cizForm.controls.maincitizenForm.controls.identity.disable()
+          this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
+        } else {
+          this.cizForm.controls.maincitizenForm.controls.identity.enable()
+          this.cizForm.controls.maincitizenForm.controls.identity.setValue('07')
+          this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
+        }
+      }
+    })
+
     /*... CHECK VALID CITIZEN NO / PASSPORT NO WHEN IDENTITY VALUE CHANGE ...*/
     this.cizForm.controls.maincitizenForm.controls.identity.valueChanges.subscribe((value) => {
       if (value) {

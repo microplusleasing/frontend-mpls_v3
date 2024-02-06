@@ -48,6 +48,8 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   @Output() ciz_gender = new EventEmitter<number>();
   @Output() birth_date = new EventEmitter<Date | null>();
 
+
+  isFormResetting = false;
   quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
   phonevalidstatus: string = ''
   facevalidstatus: string = ''
@@ -456,36 +458,40 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
     /*... check nationality valueChange '01' default identity = '01' (P'Inw request) ... */
     this.cizForm.controls.maincitizenForm.controls.nationality.valueChanges.subscribe((value) => {
-      if (value) {
-        if (value == '01') {
-          this.cizForm.controls.maincitizenForm.controls.identity.setValue('01')
-          this.cizForm.controls.maincitizenForm.controls.identity.disable()
-          this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
-        } else {
-          this.cizForm.controls.maincitizenForm.controls.identity.enable()
-          this.cizForm.controls.maincitizenForm.controls.identity.setValue('07')
-          this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
+      if (!this.isFormResetting) {
+        if (value) {
+          if (value == '01') {
+            this.cizForm.controls.maincitizenForm.controls.identity.setValue('01')
+            this.cizForm.controls.maincitizenForm.controls.identity.disable()
+            this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
+          } else {
+            this.cizForm.controls.maincitizenForm.controls.identity.enable()
+            this.cizForm.controls.maincitizenForm.controls.identity.setValue('07')
+            this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
+          }
         }
       }
     })
 
     /*... CHECK VALID CITIZEN NO / PASSPORT NO WHEN IDENTITY VALUE CHANGE ...*/
     this.cizForm.controls.maincitizenForm.controls.identity.valueChanges.subscribe((value) => {
-      if (value) {
-        if (value !== '01') {
-          this.cizForm.controls.maincitizenForm.controls.citizenId.setValue(null)
-          this.cizForm.controls.maincitizenForm.controls.citizenId.setValidators(null)
-          this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
+      if (!this.isFormResetting) {
+        if (value) {
+          if (value !== '01') {
+            this.cizForm.controls.maincitizenForm.controls.citizenId.setValue(null)
+            this.cizForm.controls.maincitizenForm.controls.citizenId.setValidators(null)
+            this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
 
-          this.cizForm.controls.maincitizenForm.controls.passportId.setValidators(Validators.required)
-          this.cizForm.controls.maincitizenForm.controls.passportId.updateValueAndValidity()
-        } else {
-          this.cizForm.controls.maincitizenForm.controls.citizenId.setValidators([Validators.required, Validators.pattern('^[0-9]{13}$')])
-          this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
+            this.cizForm.controls.maincitizenForm.controls.passportId.setValidators(Validators.required)
+            this.cizForm.controls.maincitizenForm.controls.passportId.updateValueAndValidity()
+          } else {
+            this.cizForm.controls.maincitizenForm.controls.citizenId.setValidators([Validators.required, Validators.pattern('^[0-9]{13}$')])
+            this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
 
-          this.cizForm.controls.maincitizenForm.controls.passportId.setValue(null)
-          this.cizForm.controls.maincitizenForm.controls.passportId.setValidators(null)
-          this.cizForm.controls.maincitizenForm.controls.passportId.updateValueAndValidity()
+            this.cizForm.controls.maincitizenForm.controls.passportId.setValue(null)
+            this.cizForm.controls.maincitizenForm.controls.passportId.setValidators(null)
+            this.cizForm.controls.maincitizenForm.controls.passportId.updateValueAndValidity()
+          }
         }
       }
     })
@@ -766,7 +772,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     // this.cizForm.controls.facevalid.setValue(quoitem.quo_face_compare_verify == 'Y' ? true : false)
 
     /* ... set nationality and identity field (25/01/2024) ... */
-    this.cizForm.controls.maincitizenForm.controls.nationality.setValue(quoitem.ciz_nationality_code)
+    this.cizForm.controls.maincitizenForm.controls.nationality.setValue(quoitem.ciz_nationality_code, { emitEvent: false })
     this.cizForm.controls.maincitizenForm.controls.identity.setValue(quoitem.ciz_identity_code, { emitEvent: false })
     if (quoitem.ciz_identity_code) {
       if (quoitem.ciz_identity_code !== '01') {

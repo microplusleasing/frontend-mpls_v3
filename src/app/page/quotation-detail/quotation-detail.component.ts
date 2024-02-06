@@ -516,7 +516,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     if (this.quoid) {
       // === set Observable quotation (quotationResult$) ===
       // console.log(`test`)
+      this.cizcardtab.isFormResetting = true
       this.quotationResult$.next(await lastValueFrom(this.quotationService.getquotationbyid(this.quoid)))
+      this.cizcardtab.isFormResetting = false;
       if (this.quotationResult$.value.data.length !== 0) {
 
         this.cizcardtab.showdipchipbtn = false

@@ -580,6 +580,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
           this.setvalueaftersuccess()
 
         } else {
+          this.loadingService.hideLoader()
           this.snackbarfail(`แนบไฟล์ภาพส่งมอบรถไม่สำเร็จ : ${results.message ? results.message : 'No return Message'}`)
         }
 
@@ -587,8 +588,10 @@ export class SendCarTabComponent extends BaseService implements OnInit {
         console.log(`error when create send car : ${error.message ? error.message : 'No return message'}`);
         this.loadingService.hideLoader();
       }, complete: () => {
-        this.loadingService.hideLoader();
+
       }
+    }).add(() => {
+      this.loadingService.hideLoader();
     })
   }
 

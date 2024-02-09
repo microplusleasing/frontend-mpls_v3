@@ -13,6 +13,7 @@ import { IResMasterProvince, IResMasterProvinceData } from 'src/app/interface/i-
 import { IResMasterTitle, IResMasterTitleData } from 'src/app/interface/i-res-master-title';
 import { IResQuotationDetail } from 'src/app/interface/i-res-quotation-detail';
 import { IUserTokenData } from 'src/app/interface/i-user-token';
+import { IQueryParamsOracle } from 'src/app/interface/oracleform/queryParam/i-query-params-oracle';
 import { BaseService } from 'src/app/service/base/base.service';
 import { DipchipService } from 'src/app/service/dipchip.service';
 import { LoadingService } from 'src/app/service/loading.service';
@@ -37,6 +38,8 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   @Output() phonenumbervalue = new EventEmitter();
 
   userSession: IUserTokenData = {} as IUserTokenData
+  /* ... declare variable from query param form oracle view page ... */
+  oracleExamineSendCarImageView: IQueryParamsOracle = {} as IQueryParamsOracle
 
 
   // === add ciz_age_insurance (24/05/2023) ===
@@ -273,6 +276,12 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
     this.actRoute.queryParams.subscribe(params => {
       this.quotationid = params['id']
+      /* ... set filter query param from view page ... */
+      this.oracleExamineSendCarImageView.ac_status = params['ac_status'] || null;
+      this.oracleExamineSendCarImageView.branch = params['branch'] || null;
+      this.oracleExamineSendCarImageView.approve_date = params['approve_date'] || null;
+      this.oracleExamineSendCarImageView.pageno = +params['pageno']; // Convert to number
+
       if (this.quotationid) {
         this.dipchipButtonDisabled = true
       } else {
@@ -449,9 +458,24 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                             message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
                             button_name: 'ปิด'
                           }
-                        }).afterClosed().subscribe(result => {
-                          // === redirect to home page === 
-                          this.router.navigate(['/quotation-view']);
+                        }).afterClosed().subscribe(result => {  
+                          /* ... check route to redirect ... */
+                          const url = (this.actRoute.snapshot.routeConfig?.path) ? this.actRoute.snapshot.routeConfig?.path : ''
+
+                          if (url == 'quotation-examine') {
+                            // === redirect to examine-send-car-image-view
+                            this.router.navigate(['/examine-send-car-image-view'], {
+                              queryParams: {
+                                pageno: this.oracleExamineSendCarImageView.pageno ? this.oracleExamineSendCarImageView.pageno : 1,
+                                ac_status: this.oracleExamineSendCarImageView.ac_status,
+                                approve_date: this.oracleExamineSendCarImageView.approve_date,
+                                branch: this.oracleExamineSendCarImageView.branch
+                              }
+                            });
+                          } else {
+                            // === redirect to home page === 
+                            this.router.navigate(['/quotation-view']);
+                          }
                         });
                       } else {
                         this.snackbarfail(`Error : ${response.message}`)
@@ -475,8 +499,24 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                             button_name: `ปิด`
                           }
                         }).afterClosed().subscribe((result) => {
-                          // === redirect to home page === 
-                          this.router.navigate(['/quotation-view'])
+
+                          /* ... check route to redirect ... */
+                          const url = (this.actRoute.snapshot.routeConfig?.path) ? this.actRoute.snapshot.routeConfig?.path : ''
+
+                          if (url == 'quotation-examine') {
+                            // === redirect to examine-send-car-image-view
+                            this.router.navigate(['/examine-send-car-image-view'], {
+                              queryParams: {
+                                pageno: this.oracleExamineSendCarImageView.pageno ? this.oracleExamineSendCarImageView.pageno : 1,
+                                ac_status: this.oracleExamineSendCarImageView.ac_status,
+                                approve_date: this.oracleExamineSendCarImageView.approve_date,
+                                branch: this.oracleExamineSendCarImageView.branch
+                              }
+                            });
+                          } else {
+                            // === redirect to home page === 
+                            this.router.navigate(['/quotation-view']);
+                          }
                         })
                       } else { }
 

@@ -34,24 +34,30 @@ export class AdvancePaymentQrCodeComponent {
     if (this.application_num) {
       this.mrtaService.genadvanceqrpayment(this.application_num).subscribe({
         next: (results) => {
-          // === success stage ===
-          this.first_name_txt = results.data[0].name
-          this.last_name_txt = results.data[0].sname
-          this.due = results.data[0].due
-          this.billpayment = results.data[0].bill_payment
-          this.first_due = moment(results.data[0].first_due).format('DD/MM/yyyy')
-          this.monthly = (results.data[0].monthly) ? (results.data[0].monthly).toString() : '-'
-          this.term = (results.data[0].term) ? (results.data[0].term).toString() : '-'
 
-          this.image_qr$ = new Promise((resolve) => {
-            resolve(this.imageUtilService.getUrlImage(results.data[0].image_file[1].data))
-            this.showqr = true
-          })
+          if (results.status == 200) {
 
-          this.image_barcode$ = new Promise((resolve) => {
-            resolve(this.imageUtilService.getUrlImage(results.data[0].image_file[0].data))
-            this.showqr = true
-          })
+            // === success stage ===
+            this.first_name_txt = results.data[0].name
+            this.last_name_txt = results.data[0].sname
+            this.due = results.data[0].due
+            this.billpayment = results.data[0].bill_payment
+            this.first_due = moment(results.data[0].first_due).format('DD/MM/yyyy')
+            this.monthly = (results.data[0].monthly) ? (results.data[0].monthly).toString() : '-'
+            this.term = (results.data[0].term) ? (results.data[0].term).toString() : '-'
+
+            this.image_qr$ = new Promise((resolve) => {
+              resolve(this.imageUtilService.getUrlImage(results.data[0].image_file[1].data))
+              this.showqr = true
+            })
+
+            this.image_barcode$ = new Promise((resolve) => {
+              resolve(this.imageUtilService.getUrlImage(results.data[0].image_file[0].data))
+              this.showqr = true
+            })
+          } else {
+            console.log(`fail genadvanceqrpayment and return : ${results.message ? results.message : 'No return msg'}`)
+          }
         }, error: (e) => {
 
         }, complete: () => {

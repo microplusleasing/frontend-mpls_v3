@@ -1,0 +1,89 @@
+table {
+    width: 100%;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mat-header-row {
+    // background-color: #A7C942;
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+
+.mat-header-cell {
+    color: white
+}
+
+/* Add padding to every row and column */
+.mat-row,
+.mat-header-row {
+    border-bottom: 1px solid rgb(143, 143, 143);
+    padding: 0.5em;
+}
+
+.mat-column-hp_no,
+.mat-column-full_name,
+.mat-column-bill_code,
+.mat-column-bill_curr,
+.mat-column-monthly,
+.mat-column-due_date,
+.mat-column-follow_status,
+.mat-column-branch_name,
+.mat-column-stage,
+.mat-column-group_dpd {
+    border-right: 1px solid rgb(143, 143, 143);
+    padding: 0.5em;
+}
+
+.mat-row:nth-child(odd) {
+    background-color: white;
+}
+
+.mat-row:nth-child(even) {
+    background-color: #EAF2D3;
+}
+
+.first-column-header,
+.first-column-cell {
+    max-width: 100px;
+    /* Adjust this value as needed */
+    /* Other styling properties if necessary */
+}
+
+.header-font-size {
+    font-size: 16px;
+}
+
+.container-card {
+    display: flex;
+    justify-content: center;
+}
+
+th,
+td,
+span,
+button,
+table,
+.mat-tab .mat-label {
+    font-family: 'Prompt';
+}
+
+// For Material version 16
+
+.mat-mdc-table .mat-mdc-header-cell {
+    background-color: #A7C942;
+}
+
+.mat-mdc-table .mdc-data-table__row:nth-child(odd) {
+    background-color: white;
+}
+
+.mat-mdc-table .mdc-data-table__row:nth-child(odd) {
+    background-color: #EAF2D3;
+}

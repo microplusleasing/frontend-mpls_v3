@@ -24,7 +24,7 @@ import { Injectable } from '@angular/core';
 import { IReqSaveQrMrta } from 'src/app/interface/i-req-save-qr-mrta';
 import { IResSaveQrMrta } from 'src/app/interface/i-res-save-qr-mrta';
 import { environment } from 'src/environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { IResMasterRatesheet } from '../interface/i-res-master-ratesheet';
 import { IResMasterInsuranceYears } from '../interface/i-res-master-insurance-years';
 import { IResMasterBranch } from '../interface/i-res-master-branch';
@@ -48,6 +48,7 @@ import { IReqCheckMotoYear } from '../interface/i-req-check-moto-year';
 import { IReqMplsCheckBusiCode } from '../interface/i-req-mpls-check-busi-code';
 import { IResMplsCheckBusiCode } from '../interface/i-res-mpls-check-busi-code';
 import { IResGetfueltype } from '../interface/i-res-getfueltype';
+import { IResGetAcStatusType } from '../interface/i-res-get-ac-status-type';
 
 
 
@@ -244,7 +245,7 @@ export class MasterDataService {
     return this.http.get<IResMasterMrtaInsurance>(url)
   }
 
-  confirmqrpayment(application_num: string, contract_no: string): Observable<IResConfirmQrPayment>  {
+  confirmqrpayment(application_num: string, contract_no: string): Observable<IResConfirmQrPayment> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/confirmqrpayment?application_num=${application_num}&contract_no=${contract_no}`
     return this.http.get<IResConfirmQrPayment>(url)
   }
@@ -318,6 +319,18 @@ export class MasterDataService {
   getFuelType(): Observable<IResGetfueltype> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getFuelType`
     return this.http.get<IResGetfueltype>(url)
+  }
+
+  getAcStatusType(): Observable<IResGetAcStatusType> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getAcStatusType`
+    return this.http.get<IResGetAcStatusType>(url).pipe(
+      map((res) => {
+        if (res.data.length !== 0) {
+          res.data.unshift({ ac_desc: '--', ac_code: '' })
+        }
+        return res
+      })
+    )
   }
 
 

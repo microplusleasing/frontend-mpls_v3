@@ -44,6 +44,7 @@ import { SecondhandCarAttachImageDialogComponent } from 'src/app/widget/dialog/s
 import { ConfirmDeleteSecondhandCarImageAttachComponent } from 'src/app/widget/dialog/confirm-delete-secondhand-car-image-attach/confirm-delete-secondhand-car-image-attach.component';
 import { IReqCheckMotoYear } from 'src/app/interface/i-req-check-moto-year';
 import { IResDialog2ndhandCarImageAttach } from 'src/app/interface/dialog-return/i-res-dialog-2ndhand-car-image-attach';
+import { IQueryParamsOracle } from 'src/app/interface/oracleform/queryParam/i-query-params-oracle';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -64,13 +65,18 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   // ** stepper **
   stepperOrientation: Observable<StepperOrientation>;
   isLinear: boolean = false;
+  showOracleBackward: boolean = false;
 
+  currentUrl: string = '';
   quoForm: FormGroup;
   quotationkeyid: string;
   queryParams: ParamMap;
   quotationResult$: BehaviorSubject<IResQuotationDetail> = new BehaviorSubject<IResQuotationDetail>({} as IResQuotationDetail)
   userSession: IUserTokenData = {} as IUserTokenData
   quoid: string = ''
+  /* ... declare variable from query param form oracle view page ... */
+  oracleExamineSendCarImageView: IQueryParamsOracle = {} as IQueryParamsOracle
+
   visiblePhoneValid: boolean = true
   disablePhoneValidbtn: boolean = true
   verifyeconsent: boolean = false
@@ -189,6 +195,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     private cd: ChangeDetectorRef,
     private router: Router,
     private breakpointObserver: BreakpointObserver,
+    private route: ActivatedRoute,
     private loadingService: LoadingService,
     private masterDataService: MasterDataService,
     private imageUtilService: ImageUtilService,
@@ -202,6 +209,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     public override _snackBar: MatSnackBar,
   ) {
     super(dialog, _snackBar)
+
+
 
     this.quoForm = this.fb.group({
       cizform: this.cizcardtab.cizForm,
@@ -218,6 +227,11 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     this.actRoute.queryParams.subscribe(params => {
       this.quoid = params['id']
+      /* ... set filter query param from view page ... */
+      this.oracleExamineSendCarImageView.ac_status = params['ac_status'] || null;
+      this.oracleExamineSendCarImageView.branch = params['branch'] || null;
+      this.oracleExamineSendCarImageView.approve_date = params['approve_date'] || null;
+      this.oracleExamineSendCarImageView.pageno = +params['pageno']; // Convert to number
     });
 
     // ***** form on viewchild sucscribe at ngAfterViewInit() fn ******
@@ -232,8 +246,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.getUserSessionQuotation().subscribe({
       next: (res_user) => {
 
-        this.userSession = res_user
+        /*... check auth ... */
+        this.currentUrl = (this.route.snapshot.routeConfig?.path) ? this.route.snapshot.routeConfig?.path : ''
 
+        this.userSession = res_user
         // this.quotationService.getquotationbyid(this.quoid).subscribe({
         if (this.quoid) {
           this.quotationResult$.subscribe({
@@ -528,6 +544,14 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
         if (this.quotationResult$.value.data[0].loan_result !== 'Y') {
           this.sendcarActive$.next(false)
+
+        } else {
+          /* ... let allow link from quotaion-examine (07/02/2024) ... */
+          console.log(`this is currentUrl Value : ${this.currentUrl}`)
+          if (this.currentUrl == 'quotation-examine') {
+            this.showOracleBackward = true
+            this.stepper.selectedIndex = 5
+          }
         }
       } else {
 
@@ -541,7 +565,22 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           }
         }).afterClosed().subscribe(result => {
           // === redirect to home page === 
-          this.router.navigate(['/quotation-view']);
+
+          /* .... check if url is quotation-examine redirect to examine-send-car-image-view ... */
+
+          const chkurl = this.currentUrl = (this.route.snapshot.routeConfig?.path) ? this.route.snapshot.routeConfig?.path : ''
+          if (chkurl == 'quotation-examine') {
+            this.router.navigate(['/examine-send-car-image-view'], {
+              queryParams: {
+                pageno: this.oracleExamineSendCarImageView.pageno ? this.oracleExamineSendCarImageView.pageno : 1,
+                ac_status: this.oracleExamineSendCarImageView.ac_status,
+                approve_date: this.oracleExamineSendCarImageView.approve_date,
+                branch: this.oracleExamineSendCarImageView.branch
+              }
+            });
+          } else {
+            this.router.navigate(['/quotation-view']);
+          }
         });
 
       }

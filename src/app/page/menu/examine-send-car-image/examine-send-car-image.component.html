@@ -1,0 +1,291 @@
+<div class="container" style="padding-top: 2em;">
+    <div style="text-align: left; font-size: 10px;">
+        version : {{version}}
+    </div>
+    <div style="text-align: center; margin: 1em">
+        <h2>ตรวจสอบภาพรับรถในระบบ TABLET</h2>
+    </div>
+    <form [formGroup]="agentassigntofcrForm">
+        <ng-container *ngIf="cardLayout | async as layout">
+
+            <!-- filter -->
+
+            <mat-grid-list [cols]="layout.columns" [rowHeight]="'90px'" style="margin: 1em;">
+
+                <!-- วันที่อนุมัติ -->
+                <mat-grid-tile [colspan]="layout.list.cols2">
+                    <mat-form-field appearance="outline" style="width: 90%;">
+                        <input matInput [matDatepicker]="picker" placeholder="วันที่อนุมัติ"
+                            [formControl]="approvedateField" (keydown)="onKeyDown($event)" autocomplete="off">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                    <button mat-button color="warn" (click)="clearDate()">Clear</button>
+                </mat-grid-tile>
+
+                <!-- สาขา -->
+                <mat-grid-tile [colspan]="layout.list.cols2">
+                    <mat-form-field appearance="outline" style="width: 90%;">
+                        <mat-label>
+                            <span>
+                                สาขา
+                            </span>
+                        </mat-label>
+                        <mat-select [formControl]="branchField">
+                            <div *ngIf="branchData">
+                                <mat-option *ngFor="let b of branchData" [value]="b.branch_code">
+                                    <span>
+                                        {{b.branch_name}}
+                                    </span>
+                                </mat-option>
+                            </div>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-grid-tile>
+
+                <!-- AC Status. -->
+                <mat-grid-tile [colspan]="layout.list.cols2">
+                    <mat-form-field appearance="outline" style="width: 90%;">
+                        <mat-label>
+                            <span>
+                                สถานะปิดบัญชี
+                            </span>
+                        </mat-label>
+                        <mat-select [formControl]="ac_statusField">
+                            <div *ngIf="AcStatusList">
+                                <mat-option *ngFor="let ac of AcStatusList" [value]="ac.ac_code">
+                                    <span>
+                                        {{ac.ac_desc}}
+                                    </span>
+                                </mat-option>
+                            </div>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-grid-tile>
+
+                <!-- ปุ่ม -->
+                <mat-grid-tile [colspan]="layout.list.cols2">
+                    <button mat-raised-button color="primary" (disabled)="agentassigntofcrForm.valid == false"
+                        (click)="onsearch()" class="center-button" style="width: 80%; min-width: 100px;">ค้นหา</button>
+                </mat-grid-tile>
+                <mat-grid-tile [colspan]="layout.list.cols2">
+                    <button mat-raised-button color="primary" (disabled)="agentassigntofcrForm.valid == false"
+                        (click)="onclear()" class="center-button" style="width: 80%; min-width: 100px;">Clear</button>
+                </mat-grid-tile>
+                <!-- ปุ่ม export to excel  -->
+                <mat-grid-tile [colspan]="layout.list.cols2">
+                        <button *ngIf="containdata" mat-raised-button color="primary" (click)="generateExcelFile()" class="center-button"
+                            style="width: 80%; min-width: 100px;">Export Excel</button>
+                </mat-grid-tile>
+
+
+            </mat-grid-list>
+
+
+            <!-- contain data -->
+
+            <!-- sort description -->
+            <div style="margin-left: 3rem">
+                <h3>{{sort_text_desc}}</h3>
+            </div>
+
+            <div *ngIf="containdata">
+                <!-- Table responsive -->
+                <div *ngIf="layout.isweb" class="flex-center">
+                    <table mat-table [dataSource]="dataSource" matSort #sort_table="matSort"
+                        (matSortChange)="announceSortChange($event)" class="mat-elevation-z8" style="width: 90%;">
+
+                        <ng-container matColumnDef="idcardnum">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"
+                                class="first-column-header header-font-size">
+                                เลขที่บัตรประชาชน
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{element.idcard_num}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="createdtime">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by name"
+                                class="header-font-size">
+                                วันที่สร้างรายการ
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{((element.created_time | date: 'dd/MM/yy')
+                                ?
+                                (element.created_time |
+                                date:
+                                'dd/MM/yy')
+                                :
+                                '-')}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="contractno">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by name"
+                                class="header-font-size">
+                                เลขที่สัญญา
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{element.contract_no}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="applicationnum">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"
+                                class="header-font-size">
+                                เลขที่ใบสมัคร
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{element.application_num}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="createcontractdate">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by name"
+                                class="header-font-size">
+                                วันที่สร้างสัญญา
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{((element.create_contract_date | date: 'dd/MM/yy')
+                                ?
+                                (element.create_contract_date |
+                                date:
+                                'dd/MM/yy')
+                                :
+                                '-')}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="custname">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by name"
+                                class="header-font-size">
+                                ชื่อลูกค้า
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{element.cust_name}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="branchname">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by name"
+                                class="header-font-size">
+                                สาขา
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{element.branch_name}} </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="checkername">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by name"
+                                class="header-font-size">
+                                ชื่อ CK
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{element.checker_name ?? '-'}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="acstatustext">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by name"
+                                class="header-font-size">
+                                สถานะปิดบัญชี
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{element.ac_status_text ?? '-'}} </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="click">
+                            <th mat-header-cell *matHeaderCellDef class="header-font-size"> ตรวจสอบรูปรับรถ </th>
+                            <td mat-cell *matCellDef="let element">
+                                <button mat-raised-button color="primary"
+                                    (click)="openquotationpage(element.quo_key_app_id)">
+                                    View
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns; let i = index"></tr>
+                    </table>
+
+                    <div style="margin-top: 2em;">
+                        <!-- <mat-paginator [length]="pageLength" [pageSize]="pageSize" [hidePageSize]="true" [pageIndex]="pageno-1"
+                (page)="onPaginationChange($event)" aria-label="Select page">
+              </mat-paginator> -->
+                        <mat-paginator #paginator_table [length]="pageLength" [pageSize]="pageSize"
+                            [hidePageSize]="true" (page)="onPaginationChange($event)" aria-label="Select page">
+                        </mat-paginator>
+                    </div>
+                </div>
+
+                <!-- Matcard Responsive -->
+                <div *ngIf="!layout.isweb">
+                    <ng-container>
+                        <div class="container-card">
+                            <div [style.width]="layout.card_width">
+                                <!-- <ng-template ngFor let-d [ngForOf]="(dataList.data)" let-i="index"> -->
+                                <!-- <mat-card style="margin-bottom: 2em;"> -->
+                                <mat-card *ngFor="let d of (dataList); index as i" style="margin-bottom: 2em;">
+                                    <ng-container *ngIf="dataList as item">
+                                        <!-- <mat-card-header>
+                                      <div mat-mat-card-content></div>
+                                      <mat-card-title> เลขที่สัญญา : {{d.hp_no}}</mat-card-title>
+                                  </mat-card-header> -->
+                                        <mat-card-content>
+                                            <b>เลขที่บัตรประชาชน. : {{item[i].idcard_num ? item[i].idcard_num : '-'}}
+                                            </b>
+                                        </mat-card-content>
+                                        <mat-card-content>
+                                            วันที่สร้างรายการ : {{((item[i].created_time | date: 'dd/MM/yy') ?
+                                            (item[i].created_time |
+                                            date:
+                                            'dd/MM/yy')
+                                            :
+                                            '-')}}
+                                        </mat-card-content>
+                                        <mat-card-content>
+                                            เลขที่สัญญา : {{item[i].contract_no ? item[i].contract_no : ' - ' }}
+                                        </mat-card-content>
+                                        <mat-card-content>
+                                            เลขที่ใบสมัคร : {{item[i].application_num ? item[i].application_num : ' - '
+                                            }}
+                                        </mat-card-content>
+                                        <mat-card-content>
+                                            วันที่สร้างสัญญา : {{((item[i].create_contract_date | date: 'dd/MM/yy') ?
+                                            (item[i].create_contract_date |
+                                            date:
+                                            'dd/MM/yy')
+                                            :
+                                            '-')}}
+                                        </mat-card-content>
+                                        <mat-card-content>
+                                            เลขที่ใบสมัคร : {{item[i].application_num ? item[i].application_num : ' - '
+                                            }}
+                                        </mat-card-content>
+                                        <mat-card-content>
+                                            ชื่อลูกค้า : {{item[i].cust_name ? item[i].cust_name : ' - ' }}
+                                        </mat-card-content>
+                                        <mat-card-content>
+                                            สาขา : {{item[i].branch_name ? item[i].branch_name : ' - ' }}
+                                        </mat-card-content>
+                                        <mat-card-content>
+                                            ชื่อ CK : {{item[i].checker_name ? item[i].checker_name : ' - ' }}
+                                        </mat-card-content>
+                                        <mat-card-content>
+                                            ชื่อ สถานะปิดบัญชี : {{item[i].ac_status_text ? item[i].ac_status_text : ' -
+                                            ' }}
+                                        </mat-card-content>
+
+                                        <mat-card-content>
+                                            ตรวจสอบรูปรับรถ : <button mat-icon-button color="primary"
+                                                (click)="openquotationpage(item[i].quo_key_app_id)">
+                                                <mat-icon>dvr</mat-icon>
+                                            </button>
+                                        </mat-card-content>
+                                    </ng-container>
+                                </mat-card>
+                                <!-- </ng-template> -->
+
+                                <mat-paginator #paginator_table [length]="pageLength" [pageSize]="pageSize"
+                                    [hidePageSize]="true" (page)="onPaginationChange($event)" aria-label="Select page">
+                                </mat-paginator>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+                <!-- End of contain data -->
+            </div>
+
+            <div style="margin-left: 3rem">
+                <h3>จำนวนรายการ : {{total_count ? total_count : 0}} บัญชี</h3>
+            </div>
+
+            <!-- No Data -->
+            <div *ngIf="!containdata">
+                <div style="text-align: center;">
+                    <h2>ไม่พบรายการ</h2>
+                </div>
+            </div>
+
+
+        </ng-container>
+    </form>
+</div>

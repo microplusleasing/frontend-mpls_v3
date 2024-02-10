@@ -95,26 +95,62 @@ export class ExamineSendCarImageComponent extends BaseService implements OnInit 
 
   // *** responsive handle params ***
   cardLayout = this.breakpointObserver
-    .observe('(min-width: 800px)')
+    .observe(['(max-width: 800px)', '(min-width: 801px) and (max-width: 940px)', '(min-width: 941px) and (max-width: 1800px)', '(min-width: 1801px)'])
     .pipe(
-      map(({ matches }) => {
-        if (matches) {
-          return {
+      map(({ breakpoints, matches }) => {
+
+        const listLayout = [
+          // mobile 
+          {
+            columns: 12,
+            list: { maxcols: 12, cols6: 12, cols4: 12, cols3: 12, cols2: 12, col: 12, twin: 6 },
+            card_width: '90%',
+            isweb: false
+          },
+
+          // tablet 
+          {
+            columns: 12,
+            list: { maxcols: 12, cols6: 6, cols4: 4, cols3: 3, cols2: 12, col: 1, twin: 2 },
+            card_width: '90%',
+            isweb: false
+          },
+
+          // web 
+          {
+            columns: 12,
+            list: { maxcols: 12, cols6: 6, cols4: 4, cols3: 3, cols2: 4, col: 1, twin: 2 },
+            card_width: '80%',
+            isweb: true
+          },
+
+          // web large
+          {
             columns: 12,
             list: { maxcols: 12, cols6: 6, cols4: 4, cols3: 3, cols2: 2, col: 1, twin: 2 },
             card_width: '80%',
             isweb: true
-          };
-        }
+          }
+        ]
 
-        return {
-          columns: 12,
-          list: { maxcols: 12, cols6: 12, cols4: 12, cols3: 12, cols2: 12, col: 12, twin: 6 },
-          card_width: '90%',
-          isweb: false
-        };
+        if (matches) {
+
+          let cb = Object.entries(breakpoints)
+          for (let i = 0; i < cb.length; i++) {
+            if (cb[i][1]) {
+              return listLayout[i]
+            }
+          }
+
+          return listLayout[0]
+        } else {
+          return listLayout[0]
+        }
+        
       })
     );
+
+
 
   constructor(
     private router: Router,
@@ -210,7 +246,10 @@ export class ExamineSendCarImageComponent extends BaseService implements OnInit 
     // ---=== set filter to form ====----
     this.agentassigntofcrForm.controls.ac_statusField.setValue(this.ac_status)
     this.agentassigntofcrForm.controls.branchField.setValue(this.branch)
-    this.agentassigntofcrForm.controls.approvedateField.setValue(new Date(this.approve_date))
+    if (this.approve_date && typeof this.approve_date == 'string') {
+      const dateToSet: Date = new Date(this.formatDate(this.approve_date));
+      this.agentassigntofcrForm.controls.approvedateField.setValue(dateToSet)
+    }
 
     /*.... set recent filter value (09/10/2023) ...*/
     this.recent_ac_status = this.ac_status ? this.ac_status : ''
@@ -610,8 +649,8 @@ export class ExamineSendCarImageComponent extends BaseService implements OnInit 
       ac_status: this.recent_ac_status ? this.recent_ac_status : '',
       approve_date: this.recent_approve_date ? this.recent_approve_date : '',
       branch: this.recent_branch ? this.recent_branch : '',
-      sort_field: '',
-      sort_type: ''
+      sort_field: this.sort_field ? this.getSortFieldParam(this.sort_field) : '',
+      sort_type: this.sort_type
     }
     this.oraclemenuService.checksendcarimagelistexcel(parambuild).subscribe({
       next: (res) => {
@@ -694,6 +733,16 @@ export class ExamineSendCarImageComponent extends BaseService implements OnInit 
     if (event.keyCode !== 32) {
       event.preventDefault(); // Disable default behavior
     }
+  }
+
+  formatDate(inputDate: string): string {
+    // Split the input date string by '/'
+    const parts = inputDate.split('/');
+
+    // Re-arrange the parts to DD/MM/YYYY format
+    const formattedDate = `${parts[1]}/${parts[0]}/${parts[2]}`;
+
+    return formattedDate;
   }
 
   clearDate(): void {

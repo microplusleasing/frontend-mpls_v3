@@ -21,7 +21,7 @@ import { CizCardTabComponent } from './page/quotation-tab/ciz-card-tab/ciz-card-
 import { ProductDetailTabComponent } from './page/quotation-tab/product-detail-tab/product-detail-tab.component';
 import { BasicSnackbarComponent } from './widget/snackbar/basic-snackbar/basic-snackbar.component';
 import { OtpVerifyDialogComponent } from './widget/dialog/otp-verify-dialog/otp-verify-dialog.component';
-import { NgOtpInputModule } from  'ng-otp-input';
+import { NgOtpInputModule } from 'ng-otp-input';
 import { ImageAttachComponent } from './page/quotation-tab/image-attach/image-attach.component';
 import { OtpEconsentComponent } from './widget/dialog/otp-econsent/otp-econsent.component';
 import { CareerAndPurposeComponent } from './page/quotation-tab/career-and-purpose/career-and-purpose.component';
@@ -59,7 +59,20 @@ import { ViewCarAttachComponent } from './page/view/view-car-attach/view-car-att
 import { MrtaProductNewComponent } from './page/view/mrta-product-new/mrta-product-new.component';
 import { ExamineSendCarImageComponent } from './page/menu/examine-send-car-image/examine-send-car-image.component';
 import { OracleBackwardComponent } from './widget/oracle-backward/oracle-backward.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 
+const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'LL',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 @NgModule({
   declarations: [
@@ -124,17 +137,20 @@ import { OracleBackwardComponent } from './widget/oracle-backward/oracle-backwar
     MaterialModule,
     HttpClientModule,
     NgxSpinnerModule,
-    NgOtpInputModule
+    NgOtpInputModule,
+    MatDatepickerModule
   ],
   providers: [
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, // Optional: Use 'en-GB' to force the format
     DatePipe,
-    FormGroupDirective, 
+    FormGroupDirective,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: JwtInterceptor,
       multi: true
     }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent, ExamineSendCarImageComponent]
 })
 export class AppModule { }

@@ -40,6 +40,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   userSession: IUserTokenData = {} as IUserTokenData
   /* ... declare variable from query param form oracle view page ... */
   oracleExamineSendCarImageView: IQueryParamsOracle = {} as IQueryParamsOracle
+  redirectPageWhenError: string = '/quotation-view'
 
 
   // === add ciz_age_insurance (24/05/2023) ===
@@ -458,13 +459,14 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                             message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
                             button_name: 'ปิด'
                           }
-                        }).afterClosed().subscribe(result => {  
+                        }).afterClosed().subscribe(result => {
                           /* ... check route to redirect ... */
                           const url = (this.actRoute.snapshot.routeConfig?.path) ? this.actRoute.snapshot.routeConfig?.path : ''
 
                           if (url == 'quotation-examine') {
+                            this.redirectPageWhenError = `/examine-send-car-image-view`
                             // === redirect to examine-send-car-image-view
-                            this.router.navigate(['/examine-send-car-image-view'], {
+                            this.router.navigate([this.redirectPageWhenError], {
                               queryParams: {
                                 pageno: this.oracleExamineSendCarImageView.pageno ? this.oracleExamineSendCarImageView.pageno : 1,
                                 ac_status: this.oracleExamineSendCarImageView.ac_status,
@@ -474,7 +476,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                             });
                           } else {
                             // === redirect to home page === 
-                            this.router.navigate(['/quotation-view']);
+                            this.router.navigate([this.redirectPageWhenError]);
                           }
                         });
                       } else {
@@ -505,7 +507,8 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
                           if (url == 'quotation-examine') {
                             // === redirect to examine-send-car-image-view
-                            this.router.navigate(['/examine-send-car-image-view'], {
+                            this.redirectPageWhenError = `/examine-send-car-image-view`
+                            this.router.navigate([this.redirectPageWhenError], {
                               queryParams: {
                                 pageno: this.oracleExamineSendCarImageView.pageno ? this.oracleExamineSendCarImageView.pageno : 1,
                                 ac_status: this.oracleExamineSendCarImageView.ac_status,
@@ -515,7 +518,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                             });
                           } else {
                             // === redirect to home page === 
-                            this.router.navigate(['/quotation-view']);
+                            this.router.navigate([this.redirectPageWhenError]);
                           }
                         })
                       } else { }

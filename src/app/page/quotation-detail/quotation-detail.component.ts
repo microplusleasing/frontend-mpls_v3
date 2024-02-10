@@ -66,6 +66,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   stepperOrientation: Observable<StepperOrientation>;
   isLinear: boolean = false;
   showOracleBackward: boolean = false;
+  redirectPageWhenError: string = '/quotation-view'
 
   currentUrl: string = '';
   quoForm: FormGroup;
@@ -248,6 +249,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
         /*... check auth ... */
         this.currentUrl = (this.route.snapshot.routeConfig?.path) ? this.route.snapshot.routeConfig?.path : ''
+        if (this.currentUrl == 'quotation-examine') {
+          this.redirectPageWhenError = `/examine-send-car-image-view`
+        }
 
         this.userSession = res_user
         // this.quotationService.getquotationbyid(this.quoid).subscribe({
@@ -553,6 +557,34 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             this.stepper.selectedIndex = 5
           }
         }
+      } else if (this.quotationResult$.value.status == 202) {
+        this.loadingService.hideLoader()
+        this.dialog.open(MainDialogComponent, {
+          panelClass: 'custom-dialog-container',
+          data: {
+            header: 'No permission',
+            message: `${this.quotationResult$.value.message ? this.quotationResult$.value.message : 'ไม่มีสิทธ์เข้าถึงข้อมูล'}`,
+            button_name: 'ปิด'
+          }
+        }).afterClosed().subscribe(result => {
+          // === redirect to home page === 
+
+          /* .... check if url is quotation-examine redirect to examine-send-car-image-view ... */
+
+          const chkurl = this.currentUrl = (this.route.snapshot.routeConfig?.path) ? this.route.snapshot.routeConfig?.path : ''
+          if (chkurl == 'quotation-examine') {
+            this.router.navigate([this.redirectPageWhenError], {
+              queryParams: {
+                pageno: this.oracleExamineSendCarImageView.pageno ? this.oracleExamineSendCarImageView.pageno : 1,
+                ac_status: this.oracleExamineSendCarImageView.ac_status,
+                approve_date: this.oracleExamineSendCarImageView.approve_date,
+                branch: this.oracleExamineSendCarImageView.branch
+              }
+            });
+          } else {
+            this.router.navigate([this.redirectPageWhenError]);
+          }
+        });
       } else {
 
         this.loadingService.hideLoader()
@@ -570,7 +602,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
           const chkurl = this.currentUrl = (this.route.snapshot.routeConfig?.path) ? this.route.snapshot.routeConfig?.path : ''
           if (chkurl == 'quotation-examine') {
-            this.router.navigate(['/examine-send-car-image-view'], {
+            this.router.navigate([this.redirectPageWhenError], {
               queryParams: {
                 pageno: this.oracleExamineSendCarImageView.pageno ? this.oracleExamineSendCarImageView.pageno : 1,
                 ac_status: this.oracleExamineSendCarImageView.ac_status,
@@ -579,7 +611,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               }
             });
           } else {
-            this.router.navigate(['/quotation-view']);
+            this.router.navigate([this.redirectPageWhenError]);
           }
         });
 
@@ -2163,7 +2195,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               data: data
             }).afterClosed().subscribe((res) => {
               // === do next stage === 
-              this.router.navigate(['/quotation-view']);
+              this.router.navigate([this.redirectPageWhenError]);
 
             })
           } else {

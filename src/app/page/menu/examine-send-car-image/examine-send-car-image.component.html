@@ -14,7 +14,7 @@
 
                 <!-- วันที่อนุมัติ -->
                 <mat-grid-tile [colspan]="layout.list.cols2">
-                    <mat-form-field appearance="outline" style="width: 90%;">
+                    <mat-form-field appearance="outline" style="width: 90%; margin-left: 1em;">
                         <input matInput [matDatepicker]="picker" placeholder="วันที่อนุมัติ"
                             [formControl]="approvedateField" (keydown)="onKeyDown($event)" autocomplete="off">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -74,8 +74,8 @@
                 </mat-grid-tile>
                 <!-- ปุ่ม export to excel  -->
                 <mat-grid-tile [colspan]="layout.list.cols2">
-                        <button *ngIf="containdata" mat-raised-button color="primary" (click)="generateExcelFile()" class="center-button"
-                            style="width: 80%; min-width: 100px;">Export Excel</button>
+                    <button *ngIf="containdata" mat-raised-button color="primary" (click)="generateExcelFile()"
+                        class="center-button" style="width: 80%; min-width: 100px;">Export Excel</button>
                 </mat-grid-tile>
 
 
@@ -93,7 +93,7 @@
                 <!-- Table responsive -->
                 <div *ngIf="layout.isweb" class="flex-center">
                     <table mat-table [dataSource]="dataSource" matSort #sort_table="matSort"
-                        (matSortChange)="announceSortChange($event)" class="mat-elevation-z8" style="width: 90%;">
+                        (matSortChange)="announceSortChange($event)" class="mat-elevation-z8" style="width: 95%;">
 
                         <ng-container matColumnDef="idcardnum">
                             <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by number"
@@ -250,8 +250,8 @@
                                             ชื่อ CK : {{item[i].checker_name ? item[i].checker_name : ' - ' }}
                                         </mat-card-content>
                                         <mat-card-content>
-                                            ชื่อ สถานะปิดบัญชี : {{item[i].ac_status_text ? item[i].ac_status_text : ' -
-                                            ' }}
+                                            ชื่อ สถานะปิดบัญชี : {{item[i].ac_status_text ? item[i].ac_status_text : '-'
+                                            }}
                                         </mat-card-content>
 
                                         <mat-card-content>

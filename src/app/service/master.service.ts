@@ -326,8 +326,15 @@ export class MasterDataService {
     return this.http.get<IResGetAcStatusType>(url).pipe(
       map((res) => {
         if (res.data.length !== 0) {
-          res.data.unshift({ ac_desc: '--', ac_code: '' })
+          res.data.unshift({ ac_desc: 'ทั้งหมด', ac_code: '' })
         }
+
+        res.data.forEach((item) => {
+          switch (item.ac_code) {
+            case 'ACTIVE': item.ac_desc = 'บัญชีปกติ';
+              break;
+          }
+        })
         return res
       })
     )

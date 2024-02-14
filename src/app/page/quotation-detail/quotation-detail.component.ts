@@ -536,7 +536,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     if (this.quoid) {
       // === set Observable quotation (quotationResult$) ===
       // console.log(`test`)
+      this.cizcardtab.isFormResetting = true
       this.quotationResult$.next(await lastValueFrom(this.quotationService.getquotationbyid(this.quoid)))
+      this.cizcardtab.isFormResetting = false;
       if (this.quotationResult$.value.data.length !== 0) {
 
         this.cizcardtab.showdipchipbtn = false
@@ -906,7 +908,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       provinceCode: ciz_form.controls.maincitizenForm.controls.provinceCode.value ? ciz_form.controls.maincitizenForm.controls.provinceCode.value : '',
       postalCode: ciz_form.controls.maincitizenForm.controls.postalCode.value ? ciz_form.controls.maincitizenForm.controls.postalCode.value : '',
       cizcardImage: this.cizcardtab.cizCardImage_string ? this.cizcardtab.cizCardImage_string : '',
-      dipchipuuid: dipchipuuid ? dipchipuuid : ''
+      dipchipuuid: dipchipuuid ? dipchipuuid : '',
+      nationality: '01',
+      identity: '01'
     }
 
     const itemString = JSON.stringify(quotationdata)
@@ -1050,6 +1054,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       work_postal_code: ciz_form.controls.workAddress.controls.postalCode.value ? ciz_form.controls.workAddress.controls.postalCode.value : '',
       work_description: ciz_form.controls.workAddress.controls.description.value ? ciz_form.controls.workAddress.controls.description.value : '',
 
+      nationality: ciz_form.controls.maincitizenForm.controls.nationality.value ? ciz_form.controls.maincitizenForm.controls.nationality.value : '',
+      identity: ciz_form.controls.maincitizenForm.controls.identity.value ? ciz_form.controls.maincitizenForm.controls.identity.value : '',
+      passportid: ciz_form.controls.maincitizenForm.controls.passportId.value ? ciz_form.controls.maincitizenForm.controls.passportId.value : ''
+
     }
 
     const itemString = JSON.stringify(quotationdata)
@@ -1081,6 +1089,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
       } else {
         // --- handle fail update citizen info data ---
+        if (resultCreateQEconsent.status == 500) {
+          this.snackbarfail(`${resultCreateQEconsent.message ? resultCreateQEconsent.message : 'ไม่สามารถบันทึกข้อมูลบัตรประชาชนผู้สมัครได้ : no return msg'}`)
+        }
       }
 
     } catch (e: any) {
@@ -1194,6 +1205,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       work_province_name: work_provnameValue,
       work_postal_code: ciz_form.controls.workAddress.controls.postalCode.value ? ciz_form.controls.workAddress.controls.postalCode.value : '',
       work_description: ciz_form.controls.workAddress.controls.description.value ? ciz_form.controls.workAddress.controls.description.value : '',
+
+      nationality: ciz_form.controls.maincitizenForm.controls.nationality.value ? ciz_form.controls.maincitizenForm.controls.nationality.value : '',
+      identity: ciz_form.controls.maincitizenForm.controls.identity.value ? ciz_form.controls.maincitizenForm.controls.identity.value : '',
+      passportid: ciz_form.controls.maincitizenForm.controls.passportId.value ? ciz_form.controls.maincitizenForm.controls.passportId.value : ''
 
     }
 

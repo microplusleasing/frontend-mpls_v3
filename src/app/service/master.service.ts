@@ -48,7 +48,6 @@ import { IReqCheckMotoYear } from '../interface/i-req-check-moto-year';
 import { IReqMplsCheckBusiCode } from '../interface/i-req-mpls-check-busi-code';
 import { IResMplsCheckBusiCode } from '../interface/i-res-mpls-check-busi-code';
 import { IResGetfueltype } from '../interface/i-res-getfueltype';
-import { IResGetAcStatusType } from '../interface/i-res-get-ac-status-type';
 
 
 
@@ -146,10 +145,9 @@ export class MasterDataService {
     return this.http.get<IResCoverageTotalLoss>(url)
   }
 
-  getcoverageTotalloss(insurance_code: string, bussi_code: string, brand_code: string, model_code: string, dl_code: string, factory_price?: number): Observable<IResCoverageTotalLoss> {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getMaxLtv?factory_price=${factory_pirce}&bussi_code=${bussi_code}&pro_code=${pro_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}'`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getcoverageTotalloss?insurance_code=${insurance_code}&factory_price=${factory_price}&bussi_code=${bussi_code}&brand_code=${brand_code}&model_code=${model_code}&dl_code=${dl_code}`
-    return this.http.get<IResCoverageTotalLoss>(url)
+  getcoverageTotalloss(data: IReqCoverageTotalLoss): Observable<IResCoverageTotalLoss> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getcoverageTotalloss`
+    return this.http.post<IResCoverageTotalLoss>(url, data)
   }
 
 
@@ -319,25 +317,6 @@ export class MasterDataService {
   getFuelType(): Observable<IResGetfueltype> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getFuelType`
     return this.http.get<IResGetfueltype>(url)
-  }
-
-  getAcStatusType(): Observable<IResGetAcStatusType> {
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getAcStatusType`
-    return this.http.get<IResGetAcStatusType>(url).pipe(
-      map((res) => {
-        if (res.data.length !== 0) {
-          res.data.unshift({ ac_desc: 'ทั้งหมด', ac_code: '' })
-        }
-
-        res.data.forEach((item) => {
-          switch (item.ac_code) {
-            case 'ACTIVE': item.ac_desc = 'บัญชีปกติ';
-              break;
-          }
-        })
-        return res
-      })
-    )
   }
 
 

@@ -48,6 +48,7 @@ import { IReqCheckMotoYear } from '../interface/i-req-check-moto-year';
 import { IReqMplsCheckBusiCode } from '../interface/i-req-mpls-check-busi-code';
 import { IResMplsCheckBusiCode } from '../interface/i-res-mpls-check-busi-code';
 import { IResGetfueltype } from '../interface/i-res-getfueltype';
+import { IReqCoverageTotalLoss } from '../interface/i-req-coverage-total-loss';
 
 
 

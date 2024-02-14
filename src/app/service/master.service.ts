@@ -49,6 +49,9 @@ import { IReqMplsCheckBusiCode } from '../interface/i-req-mpls-check-busi-code';
 import { IResMplsCheckBusiCode } from '../interface/i-res-mpls-check-busi-code';
 import { IResGetfueltype } from '../interface/i-res-getfueltype';
 import { IReqCoverageTotalLoss } from '../interface/i-req-coverage-total-loss';
+import { IResNationalityMaster } from '../interface/i-res-nationality-master';
+import { IResIdentityTypeMaster } from '../interface/i-res-identity-type-master';
+import { IResGetAcStatusType } from '../interface/i-res-get-ac-status-type';
 
 
 
@@ -150,8 +153,6 @@ export class MasterDataService {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getcoverageTotalloss`
     return this.http.post<IResCoverageTotalLoss>(url, data)
   }
-
-
 
   getInsuranceold2(max_ltv: string): Observable<IResMasterInsuranceOld> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getInsurance?factory_price=${factory_price}`
@@ -318,6 +319,35 @@ export class MasterDataService {
   getFuelType(): Observable<IResGetfueltype> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getFuelType`
     return this.http.get<IResGetfueltype>(url)
+  }
+
+  getAcStatusType(): Observable<IResGetAcStatusType> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getAcStatusType`
+    return this.http.get<IResGetAcStatusType>(url).pipe(
+      map((res) => {
+        if (res.data.length !== 0) {
+          res.data.unshift({ ac_desc: 'ทั้งหมด', ac_code: '' })
+        }
+
+        res.data.forEach((item) => {
+          switch (item.ac_code) {
+            case 'ACTIVE': item.ac_desc = 'บัญชีปกติ';
+              break;
+          }
+        })
+        return res
+      })
+    )
+  }
+
+  nationalityMaster(): Observable<IResNationalityMaster> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/nationalityMaster`
+    return this.http.get<IResNationalityMaster>(url)
+  }
+
+  identityTypeMaster(): Observable<IResIdentityTypeMaster> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/identityTypeMaster`
+    return this.http.get<IResIdentityTypeMaster>(url)
   }
 
 

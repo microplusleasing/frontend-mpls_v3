@@ -861,8 +861,9 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   async onClickDipchipBtn() {
 
     if (!this.quotationid) {
+
       let countround = 0
-      this.dipchipButtonDisabled = false;
+      this.dipchipButtonDisabled = true;
       this.loadingService.showLoader()
       this.dipchipService.getdipchipinfo({
         token: '',

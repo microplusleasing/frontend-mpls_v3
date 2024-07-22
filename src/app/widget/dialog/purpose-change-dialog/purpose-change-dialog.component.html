@@ -1,0 +1,290 @@
+<div class="form-container">
+    <ng-container *ngIf="cardLayout | async as layout">
+        <div [formGroup]="purposeForm">
+            <mat-grid-list [cols]="layout.columns" [rowHeight]="'90px'">
+                <mat-grid-tile [colspan]="layout.list.cols6">
+                    <mat-form-field appearance="outline">
+                        <mat-label>วัตถุประสงค์ในการขอสินเชื่อ/บุคคลอ้างอิง</mat-label>
+                        <mat-select [formControl]="purposeBuy">
+                            <mat-option [value]="null" disabled hidden>เลือกวัตถุประสงค์ในการขอสินเชื่อ</mat-option>
+                            <mat-option *ngFor="let item of buyobjectiveList"
+                                [value]="item.code">{{item.name}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-grid-tile>
+                <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="!isRepresentative">
+                    <!-- Blank (purposeBuy value = '2') -->
+                </mat-grid-tile>
+                <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="isRepresentative">
+                    <mat-form-field appearance="outline">
+                        <mat-label>ผู้ถูกซื้อแทน</mat-label>
+                        <input matInput color="primary" [formControl]="purposeBuyName" type="text">
+                        <mat-error *ngIf="purposeBuyName.errors?.['maxlength']">
+                            ข้อความยาวเกินกำหนด
+                        </mat-error>
+                    </mat-form-field>
+                </mat-grid-tile>
+                <div *ngIf="!iscartitleloan">
+                    <mat-grid-tile [colspan]="layout.list.cols6">
+                        <mat-form-field appearance="outline">
+                            <mat-label>เหตุผลในการออกรถ</mat-label>
+                            <mat-select [formControl]="reasonBuy">
+                                <mat-option [value]="undefined" disabled hidden>เลือกเหตุผลในการออกรถ</mat-option>
+                                <mat-option value="0">ไม่เคยมีรถใช้</mat-option>
+                                <mat-option value="1">แทนคันเก่า</mat-option>
+                                <mat-option value="2">ไม่พอใช้ในครอบครัว</mat-option>
+                                <mat-option value="3">อื่นๆ</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="!isotherResontobuy">
+                        <!-- Blank (reasonBuy Value = '3') -->
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="isotherResontobuy">
+                        <mat-form-field appearance="outline">
+                            <mat-label>โปรดระบุเหตุผล</mat-label>
+                            <input matInput color="primary" [formControl]="reasonBuyEtc" type="text">
+                            <mat-error *ngIf="reasonBuyEtc.errors?.['maxlength']">
+                                ข้อความยาวเกินกำหนด
+                            </mat-error>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols6">
+                        <mat-form-field appearance="outline">
+                            <mat-label>ผู้ใช้รถ</mat-label>
+                            <mat-select [formControl]="carUser">
+                                <mat-option [value]="undefined" disabled hidden>เลือกผู้ใช้รถ</mat-option>
+                                <mat-option value="0">ผู้เช่าซื้อใช้เอง</mat-option>
+                                <mat-option value="1">ญาติ</mat-option>
+                                <mat-option value="2">คนในครอบครัว</mat-option>
+                                <mat-option value="3">ลูกจ้าง</mat-option>
+                                <mat-option value="4">อื่นๆ</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="isotherDriver">
+                        <mat-form-field appearance="outline">
+                            <mat-label>โปรดระบุผู้ใช้รถ</mat-label>
+                            <input matInput color="primary" [formControl]="carUserName" type="text">
+                            <mat-error *ngIf="carUserName.errors?.['maxlength']">
+                                ข้อความยาวเกินกำหนด
+                            </mat-error>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="isotherDriver">
+                        <mat-form-field appearance="outline">
+                            <mat-label>ความสัมพันธ์</mat-label>
+                            <input matInput color="primary" [formControl]="carUserRelation" type="text">
+                            <mat-error *ngIf="carUserRelation.errors?.['maxlength']">
+                                ข้อความยาวเกินกำหนด
+                            </mat-error>
+                        </mat-form-field>
+                    </mat-grid-tile>
+                    <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="!isnotbuyforyourself">
+                        <!-- Blank (carUser !== '0') -->
+                    </mat-grid-tile>
+                    <div *ngIf="isnotbuyforyourself">
+                        <!-- (carUser) = '0' -->
+                        <mat-grid-tile [colspan]="layout.list.maxcols">
+                            <mat-form-field appearance="outline">
+                                <mat-label>ชื่อ-สกุล ผู้ใช้รถ</mat-label>
+                                <input matInput color="primary" [formControl]="carUserName2" type="text">
+                                <mat-error *ngIf="carUserName2.errors?.['maxlength']">
+                                    ข้อความยาวเกินกำหนด
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.maxcols">
+                            <mat-form-field appearance="outline">
+                                <mat-label>เลขที่บัตรประชาชน</mat-label>
+                                <input matInput color="primary" [formControl]="carUserCitizenid" type="text">
+                                <mat-error *ngIf="carUserCitizenid.errors?.['pattern']">
+                                    กรอกรหัสบัตรประชาชนให้ถูกต้อง
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.cols4">
+                            <mat-form-field appearance="outline">
+                                <mat-label>ที่อยู่ เลขที่</mat-label>
+                                <input matInput color="primary" [formControl]="carUserHomeNo" type="text">
+                                <mat-error *ngIf="carUserHomeNo.errors?.['maxlength']">
+                                    ข้อความยาวเกินกำหนด
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.cols2">
+                            <mat-form-field appearance="outline">
+                                <mat-label>หมู่</mat-label>
+                                <input matInput color="primary" [formControl]="carUserMoo" type="text">
+                                <mat-error *ngIf="carUserMoo.errors?.['pattern']">
+                                    ต้องเป็นตัวเลขเท่านั้นและไม่เกิน 4 หลัก
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.cols6">
+                            <mat-form-field appearance="outline">
+                                <mat-label>หมู่บ้าน/อาคาร</mat-label>
+                                <input matInput color="primary" [formControl]="carUserHomeName" type="text">
+                                <mat-error *ngIf="carUserHomeName.errors?.['maxlength']">
+                                    ข้อความยาวเกินกำหนด
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.cols3">
+                            <mat-form-field appearance="outline">
+                                <mat-label>เลขที่ห้อง</mat-label>
+                                <input matInput color="primary" [formControl]="carUserRoomNo" type="text">
+                                <mat-error *ngIf="carUserRoomNo.errors?.['maxlength']">
+                                    กรอกตัวเลข 0-9 ได้ไม่เกิน 10 หลัก
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.cols3">
+                            <mat-form-field appearance="outline">
+                                <mat-label>ชั้น</mat-label>
+                                <input matInput color="primary" [formControl]="carUserFloor" type="text">
+                                <mat-error *ngIf="carUserFloor.errors?.['pattern']">
+                                    กรอกให้อยู่ในช่วง 1-99
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.cols6">
+                            <mat-form-field appearance="outline">
+                                <mat-label>ตรอก/ซอย</mat-label>
+                                <input matInput color="primary" [formControl]="carUserSoi" type="text">
+                                <mat-error *ngIf="carUserSoi.errors?.['maxlength']">
+                                    ข้อความยาวเกินกำหนด
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.cols6">
+                            <mat-form-field appearance="outline">
+                                <mat-label>ถนน</mat-label>
+                                <input matInput color="primary" [formControl]="carUserRoad" type="text">
+                                <mat-error *ngIf="carUserRoad.errors?.['maxlength']">
+                                    ข้อความยาวเกินกำหนด
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.cols6">
+                            <mat-form-field appearance="outline">
+                                <mat-label>แขวง/ตำบล</mat-label>
+                                <input matInput color="primary" [formControl]="carUserSubDistrict" type="text">
+                                <mat-error *ngIf="carUserSubDistrict.errors?.['maxlength']">
+                                    ข้อความยาวเกินกำหนด
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.maxcols">
+                            <mat-form-field appearance="outline">
+                                <mat-label>เขต/อำเภอ</mat-label>
+                                <input matInput color="primary" [formControl]="carUserDistrict" type="text">
+                                <mat-error *ngIf="carUserDistrict.errors?.['maxlength']">
+                                    ข้อความยาวเกินกำหนด
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.cols4">
+                            <mat-form-field appearance="outline">
+                                <mat-label>จังหวัด</mat-label>
+                                <input matInput color="primary" [formControl]="carUserProvinceName" type="text">
+                                <mat-error *ngIf="carUserProvinceName.errors?.['maxlength']">
+                                    ข้อความยาวเกินกำหนด
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.cols4">
+                            <mat-form-field appearance="outline">
+                                <mat-label>รหัสไปรษณีย์</mat-label>
+                                <input matInput color="primary" [formControl]="carUserPostalCode" type="text">
+                                <mat-error *ngIf="carUserPostalCode.errors?.['pattern']">
+                                    กรอกรหัสไปรษณีย์ให้ถูกต้อง
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <mat-grid-tile [colspan]="layout.list.cols4">
+                            <mat-form-field appearance="outline">
+                                <mat-label>เบอร์ติดต่อ (ผู้ใช้รถ)</mat-label>
+                                <input matInput color="primary" [formControl]="carUserPhoneNo" type="text">
+                                <mat-error *ngIf="carUserPhoneNo.errors?.['pattern']">
+                                    กรอกเบอร์โทรศัพท์ให้ถูกต้อง
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <!-- End -->
+                    </div>
+                </div>
+                <!-- FIrst Ref -->
+                <mat-grid-tile [colspan]="layout.list.cols6">
+                    <mat-form-field appearance="outline">
+                        <mat-label>ชื่อ-สกุล บุคคลอ้างอิงอันดับที่ 1</mat-label>
+                        <input matInput color="primary" [formControl]="firstReferralFullName" type="text">
+                        <mat-error *ngIf="firstReferralFullName.errors?.['maxlength']">
+                            ข้อความยาวเกินกำหนด
+                        </mat-error>
+                    </mat-form-field>
+                </mat-grid-tile>
+                <mat-grid-tile [colspan]="layout.list.cols6">
+                    <mat-form-field appearance="outline">
+                        <mat-label>เบอร์ติดต่อ (บุคคลอ้างอิง 1)</mat-label>
+                        <input matInput color="primary" [formControl]="firstReferralPhoneNo" type="text">
+                        <mat-error *ngIf="firstReferralPhoneNo.errors?.['pattern']">
+                            กรอกเบอร์ให้ถูกต้อง
+                        </mat-error>
+                    </mat-form-field>
+                </mat-grid-tile>
+                <mat-grid-tile [colspan]="layout.list.maxcols">
+                    <mat-form-field appearance="outline">
+                        <mat-label>ความสัมพันธ์ (บุคคลอ้างอิง 1)</mat-label>
+                        <input matInput color="primary" [formControl]="firstReferralRelation" type="text">
+                        <mat-error *ngIf="firstReferralRelation.errors?.['maxlength']">
+                            ข้อความยาวเกินกำหนด
+                        </mat-error>
+                    </mat-form-field>
+                </mat-grid-tile>
+                <!-- Second Ref -->
+                <mat-grid-tile [colspan]="layout.list.cols6">
+                    <mat-form-field appearance="outline">
+                        <mat-label>ชื่อ-สกุล บุคคลอ้างอิงอันดับที่ 2</mat-label>
+                        <input matInput color="primary" [formControl]="secondReferralFullName" type="text">
+                        <mat-error *ngIf="secondReferralFullName.errors?.['maxlength']">
+                            ข้อความยาวเกินกำหนด
+                        </mat-error>
+                    </mat-form-field>
+                </mat-grid-tile>
+                <mat-grid-tile [colspan]="layout.list.cols6">
+                    <mat-form-field appearance="outline">
+                        <mat-label>เบอร์ติดต่อ (บุคคลอ้างอิง 2)</mat-label>
+                        <input matInput color="primary" [formControl]="secondReferralPhoneNo" type="text">
+                        <mat-error *ngIf="secondReferralPhoneNo.errors?.['pattern']">
+                            กรอกเบอร์ให้ถูกต้อง
+                        </mat-error>
+                    </mat-form-field>
+                </mat-grid-tile>
+                <mat-grid-tile [colspan]="layout.list.maxcols">
+                    <mat-form-field appearance="outline">
+                        <mat-label>ความสัมพันธ์ (บุคคลอ้างอิง 2)</mat-label>
+                        <input matInput color="primary" [formControl]="secondReferralRelation" type="text">
+                        <mat-error *ngIf="secondReferralRelation.errors?.['maxlength']">
+                            ข้อความยาวเกินกำหนด
+                        </mat-error>
+                    </mat-form-field>
+                </mat-grid-tile>
+            </mat-grid-list>
+        </div>
+    </ng-container>
+    <div class="flexbox" style="justify-content: center;">
+        <button mat-raised-button color="primary" (click)="sendbackpurposeupdate()" [disabled]="!this.purposeForm.valid">
+            <mat-icon>
+                save
+            </mat-icon>
+            บันทึก
+        </button>
+        <button mat-raised-button style="background-color: #FF5D79; color: white" (click)="closedialogupdatepurpose()">
+            <mat-icon>
+                close
+            </mat-icon>
+                ปิด
+        </button>
+    </div>
+</div>

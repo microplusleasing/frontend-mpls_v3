@@ -5,6 +5,7 @@
         (selectionChange)="changeStage($event)">
         <mat-step [stepControl]="this.cizcardtab.cizForm" state="cizcard">
             <mat-divider></mat-divider>
+            <!-- Tab 1  -->
             <ng-template matStepLabel>ข้อมูลบัตรประชาชน</ng-template>
             <app-ciz-card-tab [quotationReq]="(quotationResult$)" (dipchipRes)="recieve_dipchipData($event)"
                 (facevalid)="recieve_dialogfacevalid()" (phonenumbervalue)="recieve_phonenumber()"
@@ -34,6 +35,7 @@
 
         <mat-step [stepControl]="this.productdetailtab.productForm.controls.consentVerify" state="product">
             <mat-divider></mat-divider>
+            <!-- Tab 2 -->
             <ng-template matStepLabel>ข้อมูลผลิตภัณฑ์/วงเงินสินเชื่อ</ng-template>
             <app-product-detail-tab [quotationReq]="quotationResult$" [insurance_age]="insurance_age" [cusage]="cusage"
                 [birth_date]="birth_date" [gender]="gender"
@@ -79,7 +81,7 @@
             state="careerandpurpose">
             <mat-divider></mat-divider>
             <ng-template matStepLabel>อาชีพ และ รายได้</ng-template>
-            <app-career-and-purpose [quotationReq]="quotationResult$"></app-career-and-purpose>
+            <app-career-and-purpose [quotationReq]="quotationResult$" [bussi_code]="this.productdetailtab.detailForm.controls.bussinessCode.value ?? ''"></app-career-and-purpose>
             <div class="flex-center">
                 <div class="flex-center" style="margin-top: 1em;">
                     <button mat-raised-button color="primary" (click)="onclickCreateCareerandPurposeBtn()"

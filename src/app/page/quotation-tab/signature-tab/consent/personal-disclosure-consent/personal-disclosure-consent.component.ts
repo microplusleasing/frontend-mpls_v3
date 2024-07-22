@@ -124,7 +124,7 @@ export class PersonalDisclosureConsentComponent extends BaseService implements O
     })
   }
 
-  onStageChageFormStepper() {
+  onStageChangeFormStepper() {
 
   }
 

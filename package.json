@@ -28,8 +28,10 @@
     "ng-otp-input": "^1.8.5",
     "ngx-spinner": "^14.0.0",
     "rxjs": "~7.5.0",
+    "semver": "^7.5.1",
     "signature_pad": "^4.1.4",
     "tslib": "^2.3.0",
+    "webpack-dev-middleware": "^7.3.0",
     "xlsx": "^0.18.5",
     "zone.js": "~0.11.4"
   },

@@ -326,7 +326,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
 
   private _filterDealer(value: string | null): IResMasterDealerData[] {
-
     if (value) {
       const filterValue = value.toLowerCase();
       return this.dealerList.filter(value => value.dl_code.includes(filterValue) || value.dl_name.includes(filterValue))
@@ -396,7 +395,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   }
 
 
-  async onStageChageFormStepper() {
+  async onStageChangeFormStepper() {
     // this.loadingService.showLoader()
     if (this.countload == 0) {
       // this.loadingService.showLoader()
@@ -656,7 +655,20 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.productForm.controls.detailForm.updateValueAndValidity()
                       }
                       break;
+                    case '005':
+                      {
+                        /* ... car title-loan ... */
+                        this.showgeneralcarinfovisible = true
+                        this.show2ndHandMPLSBtn = false
+                        this.showdealerfield = true
+                        this.showBrandModelLoan$ = of(false)
+                        this.showPrice = true
+                        this.shwosecondhandcardetail = true
 
+                        /* ... remove this after calcualate mock success (09/07/2024) ... */
+                        this.lockbtncalculate$.next(false)
+                      }
+                      break;
                     default:
                       break;
                   }
@@ -1025,6 +1037,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         priceForCalTotalloss = this.productForm.controls.detailForm.controls.loanAmountField.value ? this.productForm.controls.detailForm.controls.loanAmountField.value : 0
                       }
 
+                      // === for car-title handle in case of change calculate (09/07/2024) 
+                      if (this.productForm.controls.detailForm.controls.bussinessCode.value == '005') {
+                        // handle here
+                      }
+
                       //=== call max lvt vaue === 
                       const resultMaxLtv = await lastValueFrom(this.masterDataService.getMaxLtv(
                         // valuePrice,
@@ -1211,6 +1228,23 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       this.productForm.controls.detailForm.controls.batteryTypeField.disable({ onlySelf: true, emitEvent: false })
                       this.productForm.controls.detailForm.controls.batteryCapacityField.disable({ onlySelf: true, emitEvent: false })
                       this.productForm.controls.detailForm.controls.fuelTypeField.disable({ onlySelf: true, emitEvent: false })
+                    }
+
+                    /* ... handle in case of car-title condition to show/hidden , disable/enable field (09/07/2024) ... */
+                    if (this.productForm.controls.detailForm.controls.bussinessCode.value == '005') {
+                      /* ... handle here ... */
+                      this.productForm.controls.detailForm.controls.motorField.setValue(null, { emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorNumberField.setValue('', { emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryTypeField.setValue('', { emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryCapacityField.setValue('', { emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorNumberField.setValidators(null)
+                      this.productForm.controls.detailForm.controls.motorNumberField.updateValueAndValidity({ emitEvent: false })
+
+                      this.productForm.controls.detailForm.controls.motorNumberField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.motorField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryTypeField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.batteryCapacityField.enable({ onlySelf: true, emitEvent: false })
+                      this.productForm.controls.detailForm.controls.fuelTypeField.enable({ onlySelf: true, emitEvent: false })
                     }
 
                   }
@@ -1891,6 +1925,28 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     }
                     break;
 
+                  case '005': {
+                    /* ... 09/07/2024 ... */
+                    // remove this switch case when test calculate mock finish 
+                    this.lockbtncalculate$.next(true)
+
+                    /* ... self logic ... */
+                    this.showdealerfield = true
+                      this.showgeneralcarinfovisible = true
+                      this.showBrandModelLoan$ = of(true)
+                      this.shwosecondhandcardetail = false
+                      this.showpaymentvalue$.next(true)
+                      this.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.model_year.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.cc.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.reg_no.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.reg_date.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.contract_ref.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.prov_name.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(null)
+                  }
+                  break;
+
                   default:
                     break;
                 }
@@ -2319,12 +2375,14 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       this.productForm.controls.detailForm.controls.interestRateField.value &&
       this.productForm.controls.detailForm.controls.paymentRoundCountValueField.value &&
       this.productForm.controls.detailForm.controls.loanAmountField.value &&
-      this.productForm.controls.detailForm.controls.insurerCodeField.value &&
-      chkrequireregmile
+      
+      this.productForm.controls.detailForm.controls.insurerCodeField.value
+      /* ... remove this line after test calculate mockup finish ... */
+      // this.productForm.controls.detailForm.controls.insurerCodeField.value &&
+      // chkrequireregmile
     ) {
       this.lockbtncalculate$.next(false)
-    }
-    else {
+    } else {
       // === clear payment value when condition out match ===
       this.lockbtncalculate$.next(true)
       // console.log('975')

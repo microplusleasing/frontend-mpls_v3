@@ -45,6 +45,11 @@ import { ConfirmDeleteSecondhandCarImageAttachComponent } from 'src/app/widget/d
 import { IReqCheckMotoYear } from 'src/app/interface/i-req-check-moto-year';
 import { IResDialog2ndhandCarImageAttach } from 'src/app/interface/dialog-return/i-res-dialog-2ndhand-car-image-attach';
 import { IQueryParamsOracle } from 'src/app/interface/oracleform/queryParam/i-query-params-oracle';
+import { IProductCodeChange } from 'src/app/interface/i-product-code-change';
+import { PurposeChangeDialogComponent } from 'src/app/widget/dialog/purpose-change-dialog/purpose-change-dialog.component';
+import { IDialogChangePurpose } from 'src/app/interface/i-dialog-change-purpose';
+import { IDialogChangePurposeClose } from 'src/app/interface/i-dialog-change-purpose-close';
+import { IReqUpdateCreditAndPurpose } from 'src/app/interface/i-req-update-credit-and-purpose';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -102,12 +107,16 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
 
   // === variable from citizenpage (age, gender) (22/09/2022) ===
-
+  checkprocode: IProductCodeChange = {} as IProductCodeChange
+  isprocodechange: boolean = false;
   // === add insurance age (24/05/2023) ====
   insurance_age: number = 0;
   cusage: number = 0;
   gender: number = 0;
   birth_date: Date | null = null;
+
+  /* ... for check product code change (09/07/2024) ... */
+
 
 
 
@@ -506,11 +515,21 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
       if (this.productdetailtab.productForm.controls.detailForm.valid && this.productdetailtab.productForm.controls.secondHandCarForm.valid) {
         // this.econsentbtnDisable = false
+        /* ... remove this line after test calculate mockup finish (09/07/2024) ... */
+        this.econsentbtnDisable = false
+        /* ... end ... */
+
         this.createorupdatecreditbtnDisable = false
         this.cd.detectChanges()
       } else {
-        this.createorupdatecreditbtnDisable = true
+        /* .... fixed to unlock for skip calculate product and remove when code finish (09/07/2024) ... */
+        // this.createorupdatecreditbtnDisable = true
+        this.createorupdatecreditbtnDisable = false
         this.cd.detectChanges()
+
+        /* ... remove this line after test calculate mockup finish (09/07/2024) ... */
+        this.econsentbtnDisable = false
+        /* ... end ... */
       }
 
     })
@@ -650,28 +669,33 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       switch (stage) {
         case 0:
           // *** Citizencard ***
+          if (this.isprocodechange) {
+            this.openDialogStep(`ไม่อนุญาติ`, `มีการเปลี่ยนประเภทผลิตภัณฑ์ กรุณาทำการบันทึกก่อนทำรายการใน tab อื่น`, `ปิด`, previousStage);
+          } else {
+
+          }
           break;
         case 1: {
           // *** Product deatail ***
-          // this.cizcardtab.cizForm.valid ? this.productdetailtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+          // this.cizcardtab.cizForm.valid ? this.productdetailtab.onStageChangeFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
           if (this.cizcardtab.cizForm.valid) {
             if (previousStage == 0) {
               if (quo_status == 1) {
-                this.productdetailtab.onStageChageFormStepper()
+                this.productdetailtab.onStageChangeFormStepper()
               } else {
                 if (this.userSession.RADMIN !== 'Y') {
                   const savecitizensuccess = await this.manualsaveonchangestep()
                   if (savecitizensuccess) {
-                    this.productdetailtab.onStageChageFormStepper()
+                    this.productdetailtab.onStageChangeFormStepper()
                   } else {
                     this.openDialogStep(`บันทึกข้อมูลไม่สำเร็จ`, `ไม่สามารถบันทึกข้อมูลในหน้า 'ข้อมูลบัตรประชาชนได้'`, `ปิด`, previousStage)
                   }
                 } else {
-                  this.productdetailtab.onStageChageFormStepper()
+                  this.productdetailtab.onStageChangeFormStepper()
                 }
               }
             } else {
-              this.productdetailtab.onStageChageFormStepper()
+              this.productdetailtab.onStageChangeFormStepper()
             }
           } else {
             this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
@@ -682,7 +706,16 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         case 2: {
           // *** career and purpose ***
           if (this.cizcardtab.cizForm.valid) {
-            this.verifyeconsent ? this.careerandpurposetab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+            // this.verifyeconsent && !this.isprocodechange ? this.careerandpurposetab.onStageChangeFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+            if (this.verifyeconsent && !this.isprocodechange) {
+              this.careerandpurposetab.onStageChangeFormStepper()
+            } else {
+              if (this.isprocodechange) {
+                this.openDialogStep(`ไม่อนุญาติ`, `มีการเปลี่ยนประเภทผลิตภัณฑ์ กรุณาทำการบันทึกก่อนทำรายการใน tab อื่น`, `ปิด`, previousStage);
+              } else {
+                this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+              }
+            }
           } else {
             this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
           }
@@ -691,13 +724,13 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
         case 3: {
           // *** attach image file ***
-          // this.imageattachtab.onStageChageFormStepper()
+          // this.imageattachtab.onStageChangeFormStepper()
           if (this.cizcardtab.cizForm.valid) {
-            (this.verifyeconsent && this.verifycareerandpurpose) ? this.imageattachtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+            (this.verifyeconsent && this.verifycareerandpurpose && !this.isprocodechange) ? this.imageattachtab.onStageChangeFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
           } else {
             /*... check verify bypass ...*/
             if (this.verifybypass) {
-              this.imageattachtab.onStageChageFormStepper()
+              this.imageattachtab.onStageChangeFormStepper()
             } else {
               this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
             }
@@ -706,8 +739,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           break;
         case 4: {
           // *** consent tab ***
-          if (this.cizcardtab.cizForm.valid) {
-            (this.verifyeconsent && this.verifycareerandpurpose && this.verifyimageattach && this.secondhandcarverify) ? this.imageattachtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+          if (this.cizcardtab.cizForm.valid && !this.isprocodechange) {
+            (this.verifyeconsent && this.verifycareerandpurpose && this.verifyimageattach && this.secondhandcarverify) ? this.imageattachtab.onStageChangeFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
           } else {
             this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
           }
@@ -715,7 +748,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           break;
         case 5: {
           // *** send car tab ***
-          this.sendcartab.onStageChageFormStepper()
+          this.sendcartab.onStageChangeFormStepper()
         }
           break;
         default:
@@ -1400,6 +1433,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '002' || this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '003') {
 
+      /* ... wait handle condition in case of calculate mockup finish (09/07/2024) ... */
+
       // *** secondhand car ***
 
       // *** check moto year valid (20/04/2023) ***
@@ -1813,52 +1848,179 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     } else {
       // *** new car save or create  (รถมือหนึ่ง) ***
-      this.quotationService.MPLS_create_or_update_credit(reqcreatecreditdata).pipe(
-        catchError((err: any) => {
-          return throwError(() => {
-            this.loadingService.hideLoader()
-            this.snackbarfail(`${err.message ? err.message : 'No error msg'}`)
-          })
-        })
-      ).subscribe({
-        next: (reqcreatecredit) => {
+
+      /* ... add criteria for check product code change (car-title-loan) for update purpose (09/07/2024) ... */
+
+      if (this.checkprocode.isPurpose) {
+        if (this.checkprocode.procodechange) {
           this.loadingService.hideLoader()
-          if (reqcreatecredit.status == true) {
 
-            // *** check type of image attach (new car or second hand car) ***
-            if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
-
-              this.secondhandcarverify = true
-              this.imageattachtab.countload = 0
-              this.imageattachtab.txtrequireimagesecondhandcar = ''
-              this.imageattachtab.showsecondhandcarimageattach = false
-              this.econsentbtnDisable = false
-            } else {
-              if (this.quotationResult$.value.data[0].quo_secondhand_car_verify !== 'Y') {
-                this.secondhandcarverify = false
-                this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
-              } else {
-                this.imageattachtab.txtrequireimagesecondhandcar = ''
-              }
-              this.imageattachtab.showsecondhandcarimageattach = true
-            }
-
-            if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
-              this.econsentbtnDisable = false
-            }
-            this.cizcardtab.cizForm.markAsPristine();
-            this.snackbarsuccess(`${reqcreatecredit.message}`)
-          } else {
-            this.snackbarfail(`${reqcreatecredit.message}`)
+          const datadialogchangepurpose: IDialogChangePurpose = {
+            bussi_code: this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value ?? ''
           }
-        }, error: (e) => {
-          this.loadingService.hideLoader()
-          console.log(`Error during call MPLS_create_or_update_credit (04) : ${JSON.stringify(e)}`)
-        }, complete: () => {
-          this.loadingService.hideLoader()
-          console.log(`finish MPLS_create_or_update_credit (04)`)
+          this.dialog.open(PurposeChangeDialogComponent, {
+            width: '90%',
+            height: '80%',
+            data: datadialogchangepurpose
+          }).afterClosed().subscribe({
+            next: (res: IDialogChangePurposeClose) => {
+              if (res) {
+                if (res.valid) {
+
+                  /* ... data of update purpose valide from dialog ... */
+
+                  /* ... combine data (MPLS_credit, MPLS_purpose) ... */
+                  const dataupdate_credit_and_purpose: IReqUpdateCreditAndPurpose = {
+                    ...reqcreatecreditdata,
+                    car_user: res.car_user ?? '',
+                    car_user_citizen_id: res.car_user_citizen_id ?? '',
+                    car_user_district: res.car_user_district ?? '',
+                    car_user_floor: res.car_user_floor ?? '',
+                    car_user_home_name: res.car_user_home_name ?? '',
+                    car_user_home_no: res.car_user_home_no ?? '',
+                    car_user_moo: res.car_user_moo ?? '',
+                    car_user_name: res.car_user_name ?? '',
+                    car_user_name_2: res.car_user_name_2 ?? '',
+                    car_user_phone_no: res.car_user_phone_no ?? '',
+                    car_user_postal_code: res.car_user_postal_code ?? '',
+                    car_user_province_code: res.car_user_province_code ?? '',
+                    car_user_province_name: res.car_user_province_name ?? '',
+                    car_user_relation: res.car_user_relation ?? '',
+                    car_user_road: res.car_user_road ?? '',
+                    car_user_room_no: res.car_user_room_no ?? '',
+                    car_user_soi: res.car_user_soi ?? '',
+                    car_user_sub_district: res.car_user_sub_district ?? '',
+                    first_referral_fullname: res.first_referral_fullname ?? '',
+                    first_referral_phone_no: res.first_referral_phone_no ?? '',
+                    first_referral_relation: res.first_referral_relation ?? '',
+                    purpose_buy: res.purpose_buy ?? '',
+                    purpose_buy_name: res.purpose_buy_name ?? '',
+                    reason_buy: res.reason_buy ?? '',
+                    reason_buy_etc: res.reason_buy_etc ?? '',
+                    second_referral_fullname: res.second_referral_fullname ?? '',
+                    second_referral_phone_no: res.second_referral_phone_no ?? '',
+                    second_referral_relation: res.second_referral_relation ?? '',
+
+                  }
+                  this.quotationService.MPLS_create_or_update_credit_and_purpose(dataupdate_credit_and_purpose).pipe(
+                    catchError((err: any) => {
+                      return throwError(() => {
+                        this.loadingService.hideLoader()
+                        this.snackbarfail(`${err.message ? err.message : 'No error msg'}`)
+                      })
+                    })
+                  ).subscribe({
+                    next: async (reqcreatecredit) => {
+                      this.loadingService.hideLoader()
+                      if (reqcreatecredit.status == true) {
+
+                        this.quotationResult$.next(await lastValueFrom(this.quotationService.getquotationbyid(this.quoid)))
+                        /*... set flag isprocodechange to false when update credit and purpose success (09/07/2024) ... */
+                        this.isprocodechange = false
+
+                        // *** check type of image attach (new car or second hand car) ***
+                        if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
+
+                          this.secondhandcarverify = true
+                          this.imageattachtab.countload = 0
+                          this.imageattachtab.txtrequireimagesecondhandcar = ''
+                          this.imageattachtab.showsecondhandcarimageattach = false
+                          this.econsentbtnDisable = false
+                        } else {
+                          if (this.quotationResult$.value.data[0].quo_secondhand_car_verify !== 'Y') {
+                            this.secondhandcarverify = false
+                            this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
+                          } else {
+                            this.imageattachtab.txtrequireimagesecondhandcar = ''
+                          }
+                          this.imageattachtab.showsecondhandcarimageattach = true
+                        }
+
+                        if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                          this.econsentbtnDisable = false
+                        }
+                        this.cizcardtab.cizForm.markAsPristine();
+                        this.snackbarsuccess(`${reqcreatecredit.message}`)
+                      } else {
+                        this.snackbarfail(`${reqcreatecredit.message}`)
+                      }
+                    }, error: (e) => {
+                      this.loadingService.hideLoader()
+                      console.log(`Error during call MPLS_create_or_update_credit (04) : ${JSON.stringify(e)}`)
+                    }, complete: () => {
+                      this.loadingService.hideLoader()
+                      console.log(`finish MPLS_create_or_update_credit (04)`)
+                    }
+                  })
+
+
+
+                } else {
+                  /* ... handle close with button in update purpose dialog ... */
+                  // console.log(`close purpose update data pop up with click close button`)
+                }
+              } else {
+                /* ... handle close with click out side update purpose dialog ... */
+                // console.log(`close purpose update data pop up with click outside`)
+              }
+            }, error: (e) => {
+
+            }, complete: () => {
+
+            }
+          })
         }
-      })
+      } else {
+        this.quotationService.MPLS_create_or_update_credit(reqcreatecreditdata).pipe(
+          catchError((err: any) => {
+            return throwError(() => {
+              this.loadingService.hideLoader()
+              this.snackbarfail(`${err.message ? err.message : 'No error msg'}`)
+            })
+          })
+        ).subscribe({
+          next: async (reqcreatecredit) => {
+            this.loadingService.hideLoader()
+            if (reqcreatecredit.status == true) {
+
+              this.quotationResult$.next(await lastValueFrom(this.quotationService.getquotationbyid(this.quoid)))
+
+              // *** check type of image attach (new car or second hand car) ***
+              if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
+
+                this.secondhandcarverify = true
+                this.imageattachtab.countload = 0
+                this.imageattachtab.txtrequireimagesecondhandcar = ''
+                this.imageattachtab.showsecondhandcarimageattach = false
+                this.econsentbtnDisable = false
+              } else {
+                if (this.quotationResult$.value.data[0].quo_secondhand_car_verify !== 'Y') {
+                  this.secondhandcarverify = false
+                  this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
+                } else {
+                  this.imageattachtab.txtrequireimagesecondhandcar = ''
+                }
+                this.imageattachtab.showsecondhandcarimageattach = true
+              }
+
+              if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                this.econsentbtnDisable = false
+              }
+              this.cizcardtab.cizForm.markAsPristine();
+              this.snackbarsuccess(`${reqcreatecredit.message}`)
+            } else {
+              this.snackbarfail(`${reqcreatecredit.message}`)
+            }
+          }, error: (e) => {
+            this.loadingService.hideLoader()
+            console.log(`Error during call MPLS_create_or_update_credit (04) : ${JSON.stringify(e)}`)
+          }, complete: () => {
+            this.loadingService.hideLoader()
+            console.log(`finish MPLS_create_or_update_credit (04)`)
+          }
+        })
+
+      }
 
     }
 
@@ -1872,6 +2034,34 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     } else {
       this.econsentbtnDisable = true
     }
+
+    /* ... for car-title-loan check (09/07/2024) ...*/
+    this.loadingService.showLoader()
+    const checkcartitleloanpart = await lastValueFrom(
+      forkJoin([
+        this.quotationService.MPLS_check_change_product_code_after_purpose({ quotationid: this.quoid }),
+        this.quotationService.MPLS_check_is_change_pro_code_from_business_code({ quotationid: this.quoid, bussiness_code: this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value ?? '' })
+      ]).pipe(
+        catchError((err: any) => {
+          this.loadingService.hideLoader();
+          this.snackbarfail(`${err.message ? err.message : `No error msg`}`);
+          return throwError(() => new Error(err));
+        })
+      )
+    );
+
+    this.loadingService.hideLoader()
+    console.log(`checkcartitleloanpart : ${checkcartitleloanpart}`)
+
+    /* ... check is procode is change handle for career and purpose page (09/07/2024) ... */
+
+    this.checkprocode = {
+      isPurpose: checkcartitleloanpart[0].data.isPurpose,
+      procodechange: checkcartitleloanpart[1].data.isProcodeChange,
+      currentbussicode: checkcartitleloanpart[1].data.recentProCode
+    }
+
+    this.isprocodechange = this.checkprocode.procodechange
   }
 
   async onclickEconsentBtn() {

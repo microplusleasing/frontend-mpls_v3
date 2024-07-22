@@ -52,6 +52,7 @@ import { IReqCoverageTotalLoss } from '../interface/i-req-coverage-total-loss';
 import { IResNationalityMaster } from '../interface/i-res-nationality-master';
 import { IResIdentityTypeMaster } from '../interface/i-res-identity-type-master';
 import { IResGetAcStatusType } from '../interface/i-res-get-ac-status-type';
+import { IResGetbuyobjectiveMaster } from '../interface/i-res-getbuyobjective-master';
 
 
 
@@ -349,6 +350,12 @@ export class MasterDataService {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/identityTypeMaster`
     return this.http.get<IResIdentityTypeMaster>(url)
   }
+
+  getbuyobjectiveMaster(): Observable<IResGetbuyobjectiveMaster> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getbuyobjectiveMaster`
+    return this.http.get<IResGetbuyobjectiveMaster>(url)
+  }
+  
 
 
 

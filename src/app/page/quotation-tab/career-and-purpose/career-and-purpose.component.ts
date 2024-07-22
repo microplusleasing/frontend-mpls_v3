@@ -3,7 +3,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { map, Observable } from 'rxjs';
+import { forkJoin, map, Observable } from 'rxjs';
+import { IResGetbuyobjectiveMasterData } from 'src/app/interface/i-res-getbuyobjective-master';
 import { IResQuotationDetail, IResQuotationDetailData } from 'src/app/interface/i-res-quotation-detail';
 import { BaseService } from 'src/app/service/base/base.service';
 import { LoadingService } from 'src/app/service/loading.service';
@@ -17,6 +18,8 @@ import { MasterDataService } from 'src/app/service/master.service';
 export class CareerAndPurposeComponent extends BaseService implements OnInit {
 
   @Input() quotationReq = {} as Observable<IResQuotationDetail>;
+  @Input() bussi_code: string = '' /* ... add for check procode change (09/07/2024) ... */
+
 
   quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
 
@@ -30,8 +33,11 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
   isotherDriver: boolean = false;
   isotherResontobuy: boolean = false;
   isnotbuyforyourself: boolean = false;
+  iscartitleloan: boolean = false
+
   quotationresultData = {} as IResQuotationDetail;
   quoitem = {} as IResQuotationDetailData
+  buyobjectiveList = [] as IResGetbuyobjectiveMasterData[]
   occupationMasterList: any;
   finishLoad: boolean = false;
   countload: number = 0;
@@ -248,7 +254,7 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
     })
   }
 
-  onStageChageFormStepper() {
+  onStageChangeFormStepper() {
 
     if (this.countload == 0) {
 
@@ -307,6 +313,34 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
                 // *** check for stamp record data to form ***
                 if (!recordExists) {
                   // === no record exist ===
+                  /* .... stage ctrl with handle car-title (09/07/2024) ... */
+                  forkJoin([
+                    this.masterDataService.getOccupation(), // อาชีพ
+                    this.masterDataService.getMasterBussiness(), // ประเภทผลิดภัณฑ์
+                    this.masterDataService.getbuyobjectiveMaster(), // วัตถุประสงค์การเช่าซื้อ 
+                  ]).subscribe({
+                    next: ([resOc, resBu, resbuyobjective]) => {
+
+                      if (resOc.status == 200 && resBu.status == 200 && resbuyobjective.status == 200) {
+
+                        /* .. get product code from busicode ... */
+                        const current_busi_code = this.bussi_code
+
+                        const current_pro_code = resBu.data.find((item) => item.bussiness_code == current_busi_code)?.product_code
+
+                        if (current_pro_code) {
+                          this.buyobjectiveList = resbuyobjective.data.filter((item) => item.product_code == current_pro_code)
+                        }
+
+                        if (current_busi_code == '005') {
+                          this.iscartitleloan = true
+                        }
+
+                      } else {
+                        console.log(`master data load fail !`)
+                      }
+                    }
+                  })
                 } else {
                   // === set careerForm ===
                   this.careerandpurposeForm.controls.careerForm.controls.mainCareerCodeField.setValue(quoitem.cr_main_career_code ? quoitem.cr_main_career_code : '')
@@ -388,6 +422,35 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
                 console.log(`Error dution call master Occupation data : ${e.message ? e.message : 'No return message'}`)
               }, complete: () => {
                 console.log(`complete call master Occupation`)
+              }
+            })
+
+            /* .... stage ctrl with handle car-title (09/07/2024) ... */
+            forkJoin([
+              this.masterDataService.getOccupation(), // อาชีพ
+              this.masterDataService.getMasterBussiness(), // ประเภทผลิดภัณฑ์
+              this.masterDataService.getbuyobjectiveMaster(), // วัตถุประสงค์การเช่าซื้อ 
+            ]).subscribe({
+              next: ([resOc, resBu, resbuyobjective]) => {
+
+                if (resOc.status == 200 && resBu.status == 200 && resbuyobjective.status == 200) {
+
+                  /* .. get product code from busicode ... */
+                  const current_busi_code = quoitem.cd_bussiness_code
+
+                  const current_pro_code = resBu.data.find((item) => item.bussiness_code == current_busi_code)?.product_code
+
+                  if (current_pro_code) {
+                    this.buyobjectiveList = resbuyobjective.data.filter((item) => item.product_code == current_pro_code)
+                  }
+
+                  if (current_busi_code == '005') {
+                    this.iscartitleloan = true
+                  }
+
+                } else {
+                  console.log(`master data load fail !`)
+                }
               }
             })
           } else {

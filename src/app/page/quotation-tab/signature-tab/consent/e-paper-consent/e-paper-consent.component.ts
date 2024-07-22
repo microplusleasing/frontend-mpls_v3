@@ -117,7 +117,7 @@ export class EPaperConsentComponent extends BaseService implements OnInit {
   }
 
 
-  onStageChageFormStepper() {
+  onStageChangeFormStepper() {
 
   }
 

@@ -127,7 +127,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
     })
   }
 
-  onStageChageFormStepper() {
+  onStageChangeFormStepper() {
 
     if (this.countload == 0) {
 

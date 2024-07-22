@@ -61,6 +61,8 @@ import { ExamineSendCarImageComponent } from './page/menu/examine-send-car-image
 import { OracleBackwardComponent } from './widget/oracle-backward/oracle-backward.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { QuotationNextPreviousButtonComponent } from './widget/button/quotation-next-previous-button/quotation-next-previous-button.component';
+import { PurposeChangeDialogComponent } from './widget/dialog/purpose-change-dialog/purpose-change-dialog.component';
 
 const MY_DATE_FORMATS = {
   parse: {
@@ -126,6 +128,8 @@ const MY_DATE_FORMATS = {
     MrtaProductNewComponent,
     ExamineSendCarImageComponent,
     OracleBackwardComponent,
+    QuotationNextPreviousButtonComponent,
+    PurposeChangeDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -151,6 +155,6 @@ const MY_DATE_FORMATS = {
       multi: true
     }
   ],
-  bootstrap: [AppComponent, ExamineSendCarImageComponent]
+  bootstrap: [AppComponent]
 })
 export class AppModule { }

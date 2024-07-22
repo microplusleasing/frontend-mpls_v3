@@ -1,0 +1,16 @@
+<div class="sticky-button-container">
+  <!-- back button -->
+  <button mat-raised-button color="primary" class="sticky-button" [class.visible]="isVisible" (click)="backButtonClickHandler()">
+    <mat-icon>
+      arrow_back
+    </mat-icon>
+    Back
+  </button>
+  <!-- Next button -->
+  <button mat-raised-button color="primary" class="sticky-button" [class.visible]="isVisible" (click)="nextButtonClickHandler()">
+    <mat-icon>
+      arrow_forward
+    </mat-icon>
+    Next
+  </button>
+</div>

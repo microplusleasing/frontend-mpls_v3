@@ -1,0 +1,43 @@
+.sticky-button-container {
+  position: fixed;
+  bottom: 20px; /* Distance from the bottom of the screen */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2em; /* Space between buttons */
+  z-index: 1000; /* Ensure it stays on top of other elements */
+}
+
+.sticky-button {
+  padding: 10px 20px; /* Adjust padding as needed */
+  background-color: #007bff; /* Button background color */
+  color: white; /* Button text color */
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for better visibility */
+  opacity: 0;
+  transition: opacity 0.5s;
+  z-index: 1000;
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.sticky-button:hover {
+  background-color: #0056b3; /* Darker background on hover */
+}
+
+.sticky-button.visible {
+  opacity: 1;
+}
+
+// .sticky-button {
+//   position: fixed;
+//   bottom: 20px;
+//   right: 20px;
+//   opacity: 0;
+//   transition: opacity 0.5s;
+//   z-index: 1000;
+// }
+
+// .sticky-button.visible {
+//   opacity: 1;
+// }

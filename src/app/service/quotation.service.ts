@@ -54,6 +54,11 @@ import { IImageAttachUploadMultipleList } from '../interface/i-image-attach-uplo
 import { IResCreateImageAttachMultipleList } from '../interface/i-res-create-image-attach-multiple-list';
 import { IResImageAttachMultipleByAppid } from '../interface/i-res-image-attach-multiple-by-appid';
 import { IResMplsGetInfoFaceCompare } from '../interface/i-res-mpls-get-info-face-compare';
+import { IResMPLSCheckIsChangeProCodeFromBusinessCode } from '../interface/i-res-mpls-check-is-change-pro-code-from-business-code';
+import { IReqMPLSCheckIsChangeProCodeFromBusinessCode } from '../interface/i-req-mpls-check-is-change-pro-code-from-business-code';
+import { IReqMPLSCheckChangeProductCodeAfterPurpose } from '../interface/i-req-mpls-check-change-product-code-after-purpose';
+import { IResMPLSCheckChangeProductCodeAfterPurpose } from '../interface/i-res-mpls-check-change-product-code-after-purpose';
+import { IReqUpdateCreditAndPurpose } from '../interface/i-req-update-credit-and-purpose';
 
 
 @Injectable({
@@ -303,6 +308,14 @@ export class QuotationService {
     return this.http.post<IResMainBooleanAndMessage>(url, fd)
   }
 
+  /* ... api on 09/07/2024 ... (handle for requirement car-title-loan) ... */
+  MPLS_create_or_update_credit_and_purpose(data: IReqUpdateCreditAndPurpose) {
+    const fd = new FormData();
+    fd.append('item', JSON.stringify(data));
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_create_or_update_credit_and_purpose`
+    return this.http.post<IResMainBooleanAndMessage>(url, fd)
+  }
+
   MPLS_create_or_update_careerandpurpose(data: IReqCreateCareerAndPurpose) {
     const fd = new FormData();
     fd.append('item', JSON.stringify(data));
@@ -434,6 +447,17 @@ export class QuotationService {
   MPLS_get_dopa_valid_status_unlock() {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_get_dopa_valid_status_unlock`
     return this.http.get<IResDopaValidStatus>(url)
+  }
+  
+  /*... car-title-loan (09/07/2024) ... */
+  MPLS_check_is_change_pro_code_from_business_code(data: IReqMPLSCheckIsChangeProCodeFromBusinessCode): Observable<IResMPLSCheckIsChangeProCodeFromBusinessCode> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_check_is_change_pro_code_from_business_code`
+    return this.http.post<IResMPLSCheckIsChangeProCodeFromBusinessCode>(url, data)
+  }
+
+  MPLS_check_change_product_code_after_purpose(data: IReqMPLSCheckChangeProductCodeAfterPurpose): Observable<IResMPLSCheckChangeProductCodeAfterPurpose> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_check_change_product_code_after_purpose`
+    return this.http.post<IResMPLSCheckChangeProductCodeAfterPurpose>(url, data)
   }
 
 

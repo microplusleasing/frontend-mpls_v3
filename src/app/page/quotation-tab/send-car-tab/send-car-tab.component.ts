@@ -378,7 +378,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
     })
   }
 
-  onStageChageFormStepper() {
+  onStageChangeFormStepper() {
 
     if (this.quotationresultData.data[0].quo_key_app_id) {
       if (this.countload == 0) {

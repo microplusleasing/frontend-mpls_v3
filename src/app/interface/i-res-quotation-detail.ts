@@ -289,6 +289,8 @@ export interface IResQuotationDetailData {
 
     /*.... ENV-CAR NEW FIELD (14/11/2023) ...*/
     cd_motor_number: string;
+    /*... check for product code change (09/07/2024) ...*/
+    is_change_pro_code: string;
 }
 
 export interface IResQuotationDetail {

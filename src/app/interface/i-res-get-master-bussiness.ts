@@ -16,4 +16,5 @@ export interface IResGetMasterBussinessData {
     reprint: string
     gfms_product_code: any
     product_name: string
+    product_code: string
 }

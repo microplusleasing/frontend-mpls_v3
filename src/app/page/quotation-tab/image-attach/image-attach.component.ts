@@ -355,7 +355,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
       // === call api create here === 
 
-      const recentSelect = this.categories.find((item) => { return item.image_code == this.uploadForm.controls.category.value ?? '' })
+      const recentSelect = this.categories.find((item) => { return item.image_code == this.uploadForm.controls.category.value ? this.uploadForm.controls.category.value : '' })
 
 
       let quotationdata = {
@@ -643,7 +643,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
       // === call api create here === 
 
-      const recentSelect = this.categoriesMultiple.find((item) => { return item.image_code == this.uploadMultipleForm.controls.category.value ?? '' })
+      const recentSelect = this.categoriesMultiple.find((item) => { return item.image_code == this.uploadMultipleForm.controls.category.value ? this.uploadMultipleForm.controls.category.value :'' })
 
 
       let quotationdata = {

@@ -15,7 +15,7 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { IResGetfollowuppaymentlist } from '../interface/i-res-getfollowuppaymentlist'; // replace ICustomerFollowupPaymentlist
-import * as moment from 'moment';
+// import moment from 'moment';
 import { IResGetaddressinfo } from '../interface/i-res-getaddressinfo'; // replace Iaddressinfo
 import { Observable } from 'rxjs';
 import { IReqUpdatenegolalon } from '../interface/i-req-updatenegolalon'; // replace IReqUpdateNegoLalon

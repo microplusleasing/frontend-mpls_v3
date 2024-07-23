@@ -223,7 +223,7 @@ export class PurposeChangeDialogComponent extends BaseService implements OnInit 
             case '01':
                 this.iscartitleloan = false
                 break;
-            case '01':
+            case '05':
                 this.iscartitleloan = true
                 break;
           

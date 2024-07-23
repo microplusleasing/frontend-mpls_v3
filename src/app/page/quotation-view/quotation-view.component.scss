@@ -2,14 +2,8 @@
   height: 3.5em;
 }
 
-.table-home {
-  width: 100%;
-}
-
-.mat-header-cell {
-  color: #FFFF;
-  font-size: 17px;
-  background-color: #3d3d3d;
+.table-width {
+  width: 90%;
 }
 
 .mat-row:nth-child(even) {
@@ -30,6 +24,7 @@ tr.mat-header-row {
 }
 
 .card-header-home {
+  padding: 1rem;
   background-color: #e9e9e9;
 }
 
@@ -48,4 +43,21 @@ tr.mat-header-row {
   justify-content: center;
   flex-direction: column;
   align-items: center;
+}
+
+/*... angular 18 ... */
+
+.mat-header-cell,
+.mat-mdc-table .mat-mdc-header-cell
+ {
+  color: #FFFF;
+  font-size: 17px;
+  background-color: #3d3d3d;
+}
+
+.mat-mdc-row:nth-cild(even) {
+  background-color: #F5F5F5;
+}
+.mat-mdc-row:nth-child(odd) {
+  background-color: #E3E3E3;
 }

@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import * as moment from 'moment';
+import moment from 'moment';
 import { combineLatest, debounceTime, forkJoin, lastValueFrom, map, Observable, of, Subject } from 'rxjs';
 import { IReqFlagDipchip } from 'src/app/interface/i-req-flag-dipchip';
 import { IResHouseOwnerType } from 'src/app/interface/i-res-house-owner-type';

@@ -13,7 +13,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
-import * as moment from 'moment';
 import { IResGetviewcontractlist, IResGetviewcontractlistData } from 'src/app/interface/i-res-getviewcontractlist'; // replace IResGetviewcontractlist
 import { IUserToken } from 'src/app/interface/i-user-token'; // replace IUserToken
 import { MatDialog } from '@angular/material/dialog';
@@ -684,9 +683,3 @@ export class CollectorViewComponent extends BaseService implements OnInit {
   }
 
 }
-
-// var currentDate =moment($scope.o.DateOfBirth, 'DD/MM/YYYY').format('YYYY-MM-DD');
-// var futureMonth = moment(currentDate ).add(24, 'month').format("YYYY-MM-DD");
-
-// console.log(currentDate.format('DD-MM-YYYY'));
-// console.log(futureMonth.format('DD-MM-YYYY'));

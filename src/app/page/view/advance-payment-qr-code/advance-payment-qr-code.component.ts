@@ -1,7 +1,7 @@
 import { MrtaService } from 'src/app/service/mrta.service';
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { ImageUtilService } from 'src/app/service/image-util.service';
-import * as moment from 'moment';
+import moment from 'moment';
 
 @Component({
   selector: 'app-advance-payment-qr-code',

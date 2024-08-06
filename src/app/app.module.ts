@@ -65,7 +65,7 @@ import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { QuotationNextPreviousButtonComponent } from './widget/button/quotation-next-previous-button/quotation-next-previous-button.component';
 import { PurposeChangeDialogComponent } from './widget/dialog/purpose-change-dialog/purpose-change-dialog.component';
 import { NZ_I18N } from 'ng-zorro-antd/i18n';
-import { th_TH } from 'ng-zorro-antd/i18n';
+import { th_TH, en_US } from 'ng-zorro-antd/i18n';
 import th from '@angular/common/locales/th';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 

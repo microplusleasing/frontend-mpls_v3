@@ -23,6 +23,7 @@ export interface IDialogChangePurposeClose {
     first_referral_phone_no?: string
     first_referral_relation?: string
     purpose_buy?: string
+    purpose_buy_other: string
     purpose_buy_name?: string
     reason_buy?: string
     reason_buy_etc?: string

@@ -44,6 +44,7 @@ export interface IReqUpdateCreditAndPurpose {
     is_over_max_ltv: 'Y' | 'N';
     over_max_ltv_reason: string;
     motor_number: string
+    model_description: string
     /*... purpose ... */
     car_user: string,
     car_user_citizen_id: string
@@ -67,10 +68,17 @@ export interface IReqUpdateCreditAndPurpose {
     first_referral_phone_no: string
     first_referral_relation: string
     purpose_buy: string
+    purpose_buy_other: string
     purpose_buy_name: string
     reason_buy: string
     reason_buy_etc: string
     second_referral_fullname: string
     second_referral_phone_no: string
     second_referral_relation: string
+
+    /* ... add on fuel_type, motor_power, battery_type, battery_capacity (09/07/2024) ... */
+    fuel_type: string
+    motor_power: number | null;
+    battery_type: string
+    battery_capacity: number | null;
 }

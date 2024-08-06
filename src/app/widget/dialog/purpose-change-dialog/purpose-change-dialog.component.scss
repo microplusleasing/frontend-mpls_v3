@@ -1,18 +1,26 @@
+.form-container>.mat-form-field:first-child {
+  margin-left: 0px;
+}
+
+.form-container .mat-form-field {
+  width: 220px;
+  width: 100%;
+}
+
 .form-container form {
-    margin-bottom: 20px;
-  }
-  
-  .form-container .mat-form-field {
-    width: 220px;
-    width: 100%;
-  }
-  
-  .mat-radio-button ~ .mat-radio-button {
-    margin-left: 16px;
-  }
-  
-  .flexbox {
-    display: flex;
-    gap: 10px 10px;
-    flex-wrap: wrap;
-  }
+  margin-bottom: 20px;
+}
+
+.form-container form>* {
+  margin: 10px 0;
+}
+
+.form-container .mat-radio-button {
+  margin: 0 12px;
+}
+
+.flexbox {
+  display: flex;
+  gap: 10px 10px;
+  flex-wrap: wrap;
+}

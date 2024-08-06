@@ -1,8 +1,9 @@
 <form [formGroup]="imageAttachForm" style="margin-top: 1em;">
   <div [formGroup]="uploadForm">
     <div class="flex-center">
+      <!-- card attach image -->
       <div class="card" style="width: 80%;">
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" style="width: 50%">
           <mat-label>เอกสารแนบ</mat-label>
           <mat-select [formControl]="category">
             <mat-option [value]="undefined" disabled hidden>เลือกประเภทของรูปถ่าย</mat-option>
@@ -27,7 +28,8 @@
         <input #hiddenInput style="visibility: hidden;">
 
 
-        <button *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="uploadImage()" color="primary" [disabled]="disableUploadBtn">Upload</button>
+        <button *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="uploadImage()" color="primary"
+          [disabled]="disableUploadBtn">Upload</button>
       </div>
       <br>
       <span style="color: red;">{{this.txtrequireimage}}</span>
@@ -40,12 +42,15 @@
         </mat-expansion-panel-header>
         <img [src]="image.urlsanitizer" [alt]="'ha'" style="max-width: 400px; max-height: 400px;"
           (click)="openimagedialog(image)"><br>
-        <button *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="updateImage(image)" color="primary">Edit</button>
+        <button *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="updateImage(image)"
+          color="primary">Edit</button>
         <!-- <button mat-raised-button (click)="deleteImage(image)" color="warn" style="margin-left: 1em;">Delete</button> -->
       </mat-expansion-panel>
     </div>
 
   </div>
+
+  <!-- second hand car image attach -->
   <div *ngIf="showsecondhandcarimageattach" [formGroup]="uploadMultipleForm" style="margin-top: 2em;">
     <div class="flex-center">
       <div style="margin-bottom: 1em;">
@@ -98,10 +103,39 @@
         </mat-expansion-panel-header>
         <img [src]="image.urlsanitizer" [alt]="'ha'" style="max-width: 400px; max-height: 400px;"
           (click)="openimageMultipledialog(image)"><br>
-        <button *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="updateImageMultiple(image)" color="primary">Edit</button>
+        <button *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="updateImageMultiple(image)"
+          color="primary">Edit</button>
         <!-- <button mat-raised-button (click)="deleteImage(image)" color="warn" style="margin-left: 1em;">Delete</button> -->
       </mat-expansion-panel>
     </div>
 
+  </div>
+
+  <!-- car title loan file attach (09/07/2024)  -->
+  <div class="flex-center" style="margin-bottom: 1rem; margin-top: 1rem">
+    <div class="card" style="width: 80%;">
+      <!-- ant design -->
+      <nz-form-item>
+        <!-- preview doc button -->
+        <button *ngIf="!load_bank_statement_file_init  && is_bank_statement_file" nz-button [nzType]="'primary'" type="button"
+          (click)="onClickOpenbankaccountFile()" [nzLoading]="load_spin_bank_statement_file">
+          <span nz-icon nzType="eye" nzTheme="outline"></span>
+          ดูเอกสารแนบ Bank statement
+        </button>
+        <!-- upload button -->
+        <nz-form-control [nzSpan]="23" *ngIf="!is_bank_statement_file || load_bank_statement_file_init" nzErrorTip="อัพโหลดเอกสาร bank statement">
+          <input nz-input [formControl]="bank_statement_file" name="bank_statement_file" [hidden]="true">
+          <nz-upload nzListType="picture" [nzFileList]="bank_statement_fileList" [nzBeforeUpload]="uploadcartitleloandoc"
+            [nzMultiple]="false" [nzRemove]="removecartitleloandoc">
+            <button nz-button [nzType]="'primary'" type="button">
+              <span nz-icon nzType="upload"></span>
+              อัพโหลดไฟล์ Bank Statement
+            </button>
+            <!-- <button nz-button nzType="dashed" nzDanger>Dashed</button> -->
+          </nz-upload>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <br>
   </div>
 </form>

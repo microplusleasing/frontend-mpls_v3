@@ -1,5 +1,5 @@
 export interface IResBasic {
-    data: any[];
-    message: string;
     status: number;
+    message: string;
+    data: any[];
 }

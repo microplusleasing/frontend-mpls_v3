@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, registerLocaleData } from '@angular/common';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormGroupDirective, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './module/material/material.module';
+import { AntDesignMaterialModule } from './module/material/ant-design-material.module';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { QuotationViewComponent } from './page/quotation-view/quotation-view.component';
@@ -63,6 +64,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { QuotationNextPreviousButtonComponent } from './widget/button/quotation-next-previous-button/quotation-next-previous-button.component';
 import { PurposeChangeDialogComponent } from './widget/dialog/purpose-change-dialog/purpose-change-dialog.component';
+import { NZ_I18N } from 'ng-zorro-antd/i18n';
+import { th_TH } from 'ng-zorro-antd/i18n';
+import th from '@angular/common/locales/th';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+
+registerLocaleData(th);
 
 const MY_DATE_FORMATS = {
   parse: {
@@ -130,16 +137,19 @@ const MY_DATE_FORMATS = {
         QuotationNextPreviousButtonComponent,
         PurposeChangeDialogComponent,
     ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
+    bootstrap: [AppComponent], 
+    imports: [BrowserModule,
         AppRoutingModule,
         CommonModule,
         BrowserAnimationsModule,
         FormsModule,
         ReactiveFormsModule,
         MaterialModule,
+        AntDesignMaterialModule,
         NgxSpinnerModule,
         NgOtpInputModule,
-        MatDatepickerModule], providers: [
+        MatDatepickerModule], 
+    providers: [
         { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
         { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, // Optional: Use 'en-GB' to force the format
         DatePipe,
@@ -149,6 +159,9 @@ const MY_DATE_FORMATS = {
             useClass: JwtInterceptor,
             multi: true
         },
-        provideHttpClient(withInterceptorsFromDi())
+        provideHttpClient(withInterceptorsFromDi()),
+        { provide: NZ_I18N, useValue: th_TH },
+        provideAnimationsAsync(),
+        provideHttpClient()
     ] })
 export class AppModule { }

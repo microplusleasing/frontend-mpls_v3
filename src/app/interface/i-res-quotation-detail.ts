@@ -124,6 +124,9 @@ export interface IResQuotationDetailData {
     cr_sub_salary_per_day?: number;
     cr_sub_leader_name?: string;
     cr_sub_work_per_week?: number;
+    cr_book_bank_account_no?: string;
+    cr_bank_account_name?: string;
+    cr_bank_account_branch?: string;
     cs_app_key_id: string;
     cs_customer_name: string;
     cs_first_name: string;
@@ -148,6 +151,7 @@ export interface IResQuotationDetailData {
     is_check_l_insur_cancle_d: number,
     pp_app_key_id: string;
     pp_purpose_of_buy?: string;
+    pp_purpose_of_buy_other: string;
     pp_purpose_of_buy_name?: string;
     pp_reason_of_buy?: string;
     pp_reason_of_buy_name?: string;
@@ -289,8 +293,14 @@ export interface IResQuotationDetailData {
 
     /*.... ENV-CAR NEW FIELD (14/11/2023) ...*/
     cd_motor_number: string;
+    cd_model_description: string;
     /*... check for product code change (09/07/2024) ...*/
     is_change_pro_code: string;
+    is_upload_bank_statement_file: string;
+    cd_fuel_type: string;
+    cd_motor_power: number | null;
+    cd_battery_type: string;
+    cd_battery_capacity: number | null;
 }
 
 export interface IResQuotationDetail {

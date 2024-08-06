@@ -13,7 +13,8 @@ export interface IResMasterModelData {
     motor: number
     motor_number: string
     battery_type: string
-    battery_capacity: string
+    // battery_capacity: string
+    battery_capacity: number | null
     fuel_type: string
 }
 

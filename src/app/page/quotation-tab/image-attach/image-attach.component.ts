@@ -22,6 +22,9 @@ import { IResImageAttachMultipleData } from 'src/app/interface/i-res-image-attac
 import { HttpErrorResponse } from '@angular/common/http';
 import { IImageAttachUploadMultiple } from 'src/app/interface/i-image-attach-upload-multiple';
 import { IUserTokenData } from 'src/app/interface/i-user-token';
+import { NzUploadFile } from 'ng-zorro-antd/upload';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { UtilityService } from 'src/app/service/utility.service';
 
 
 @Component({
@@ -65,10 +68,18 @@ export class ImageAttachComponent extends BaseService implements OnInit {
   selectImage: string = ''
   selectImageMultiple: string = ''
 
+  /* ... image attach ... */
   category = new FormControl('', Validators.required)
-  categoryMultiple = new FormControl('', Validators.required)
   image = new FormControl('', Validators.required)
+
+  /* ... second hand car image attach ... */
+  categoryMultiple = new FormControl('', Validators.required)
   imageMultiple = new FormControl('', Validators.required)
+
+  /* ... car title loan file attach ... */
+  bank_statement_file = new FormControl()
+  bank_statement_file_type = new FormControl('')
+
   verifyImageAttach = new FormControl<boolean>(false, Validators.requiredTrue)
   verifySecondhandCarImageAttach = new FormControl<boolean>(false, Validators.requiredTrue)
 
@@ -94,11 +105,34 @@ export class ImageAttachComponent extends BaseService implements OnInit {
     uploadMultipleForm: this.uploadMultipleForm
   })
 
+  cartitleloanForm = this.fb.group({
+    bank_statement_file: this.bank_statement_file,
+    bank_statement_file_type: this.bank_statement_file_type
+  })
+
+  bank_statement_fileList: NzUploadFile[] = [];
+  jpg_icon_path: string = '../../../../assets/image/jpg-icon.png'
+  jpeg_icon_path: string = '../../../../assets/image/jpeg-icon.png'
+  png_icon_path: string = '../../../../assets/image/png-icon.png'
+  gif_icon_path: string = '../../../../assets/image/gif-icon.png'
+  bmp_icon_path: string = '../../../../assets/image/bmp-icon.png'
+  svg_icon_path: string = '../../../../assets/image/svg-icon.png'
+  pdf_icon_path: string = '../../../../assets/image/pdf-icon.png'
+
+
+  is_bank_statement_file: boolean = false
+  load_spin_bank_statement_file: boolean = false
+  load_bank_statement_file_init: boolean = false
+
+
+
   constructor(
     private fb: FormBuilder,
     private masterDataService: MasterDataService,
     private quotationService: QuotationService,
+    private utilityService: UtilityService,
     private loadingService: LoadingService,
+    private modal: NzModalService,
     public override dialog: MatDialog,
     public override _snackBar: MatSnackBar,
     private breakpointObserver: BreakpointObserver,
@@ -252,6 +286,10 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                         })
                       }
                     }
+
+                    /* ... set condition show upload by doc file contain ... */
+
+                    this.is_bank_statement_file = this.quotationdatatemp.data[0].is_upload_bank_statement_file == 'Y' ? true : false
 
                   }, error: (e) => {
                     this.loadingService.hideLoader()
@@ -643,7 +681,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
       // === call api create here === 
 
-      const recentSelect = this.categoriesMultiple.find((item) => { return item.image_code == this.uploadMultipleForm.controls.category.value ? this.uploadMultipleForm.controls.category.value :'' })
+      const recentSelect = this.categoriesMultiple.find((item) => { return item.image_code == this.uploadMultipleForm.controls.category.value ? this.uploadMultipleForm.controls.category.value : '' })
 
 
       let quotationdata = {
@@ -1034,6 +1072,214 @@ export class ImageAttachComponent extends BaseService implements OnInit {
         }
       })
     }
+  }
+
+  /* ... cartitleloan file upload (09/07/2024) ... */
+
+  uploadcartitleloandoc = (file: NzUploadFile): boolean => {
+
+    // this.loadingService.showLoader()
+    // if (file.type == 'application/pdf') {
+    if (
+      file.type == 'application/pdf' ||
+      file.type == 'image/jpeg' ||
+      file.type == 'image/jpg' ||
+      file.type == 'image/png' ||
+      file.type == 'image/gif' ||
+      file.type == 'image/bmp' ||
+      file.type == 'image/svg'
+    ) {
+      this.bank_statement_fileList = [file]
+      this.cartitleloanForm.controls.bank_statement_file.setValue(file)
+      this.cartitleloanForm.controls.bank_statement_file_type.setValue(file.type ? file.type : '')
+
+      /* ... set thumburl of pdf ... */
+      switch (file.type) {
+        case 'image/jpg':
+          this.bank_statement_fileList[0].thumbUrl = this.jpg_icon_path
+          break;
+        case 'image/jpeg':
+          /* ... check is jpeg or jpg ... */
+          const isjpeg = file.name.toLowerCase().endsWith(".jpeg")
+          if (isjpeg) {
+            this.bank_statement_fileList[0].thumbUrl = this.jpeg_icon_path
+          } else {
+            this.bank_statement_fileList[0].thumbUrl = this.jpg_icon_path
+          }
+          break;
+        case 'image/png':
+          this.bank_statement_fileList[0].thumbUrl = this.png_icon_path
+          break;
+        case 'image/gif':
+          this.bank_statement_fileList[0].thumbUrl = this.gif_icon_path
+          break;
+        case 'image/bmp':
+          this.bank_statement_fileList[0].thumbUrl = this.bmp_icon_path
+          break;
+        case 'image/svg':
+          this.bank_statement_fileList[0].thumbUrl = this.svg_icon_path
+          break;
+        case 'application/pdf':
+          this.bank_statement_fileList[0].thumbUrl = this.pdf_icon_path
+          break;
+        default:
+          break;
+      }
+      /* ... set url pdf (for open in new tab) ... */
+      const url = URL.createObjectURL(file as any); // Cast file to any for URL.createObjectURL
+      this.bank_statement_fileList[0].url = url
+
+
+      if (file instanceof File) {
+        /*... call api upload bank statement (09/07/2024)... */
+        const quotationiditem = JSON.stringify({ quotationid: this.quotationdatatemp.data[0].quo_key_app_id })
+        let fd = new FormData();
+        fd.append('item', quotationiditem)
+        fd.append('bank_statement_file', file)
+
+
+
+        this.quotationService.MPLS_upload_bank_statement_file(fd).subscribe({
+          next: (res) => {
+            this.loadingService.hideLoader()
+            if (res.status == 200) {
+              this.snackbarsuccess(`แนบไฟล์ bank statement สำเร็จ : ${res.message ? res.message : ''}`)
+            } else {
+              /* ... upload file bank statement  fail ... */
+              this.bank_statement_fileList = []
+              this.snackbarfail(`ผิดพลาด : ${res.message ? res.message : 'No error message'}`)
+            }
+          }, error: (e) => {
+
+          }, complete: () => {
+
+          }
+        })
+        // ... rest of the code ...
+
+      } else {
+        // Handle the case where file.originFileObj is undefined or not a File
+        this.loadingService.hideLoader()
+        this.snackbarfail('ไฟล์ไม่รองรับในการอัพโหลด')
+        // Or display an error message to the user
+        return false
+      }
+
+      return false;
+    } else {
+      this.modal.warning({
+        nzTitle: 'ไม่รองรับ',
+        nzContent: 'ไม่รองรับไฟล์ประเภทนี้'
+      });
+    }
+    return false
+  };
+
+  removecartitleloandoc = (file: NzUploadFile): boolean => {
+    this.load_spin_bank_statement_file = true
+    // this.bank_statement_fileList = []
+    // this.cartitleloanForm.controls.bank_statement_file.setValue(null)
+    // this.cartitleloanForm.controls.bank_statement_file_type.setValue(null)
+    // this.cartitleloanForm.controls.bank_statement_file.markAsDirty()
+    // this.cartitleloanForm.controls.bank_statement_file.updateValueAndValidity({ onlySelf: true })
+
+    this.quotationService.deletebankstatementfilebyquotationid({ quotationid: this.quotationdatatemp.data[0].quo_key_app_id }).subscribe({
+      next: (res) => {
+        this.load_spin_bank_statement_file = false
+
+        if (res.status == 200) {
+          this.bank_statement_fileList = []
+          this.cartitleloanForm.controls.bank_statement_file.setValue(null)
+          this.cartitleloanForm.controls.bank_statement_file_type.setValue(null)
+          this.cartitleloanForm.controls.bank_statement_file.markAsDirty()
+          this.cartitleloanForm.controls.bank_statement_file.updateValueAndValidity({ onlySelf: true })
+          this.snackbarsuccess(`ลบรายการไฟล์ bank statement สำเร็จ`)
+        } else {
+          this.snackbarfail(`ลบรายการ bank statement ไม่สำเร็จ : ${res.message ? res.message : `No error message`}`)
+        }
+      }, error: (e) => {
+        this.load_spin_bank_statement_file = false
+        
+        this.snackbarfail(`Error : ${e.message ? e.message : 'No error message'}`)
+      }, complete: () => {
+        this.load_spin_bank_statement_file = false
+      }
+    })
+    
+    return false;
+  };
+
+  onClickOpenbankaccountFile() {
+
+    this.load_spin_bank_statement_file = true
+    this.quotationService.retrievebankstatementfilebyquotationid({ quotationid: this.quotationdatatemp.data[0].quo_key_app_id }).subscribe({
+      next: (res) => {
+
+        /* ... set response blob to default nz-upload file componenet ... */
+        this.load_spin_bank_statement_file = false
+        this.load_bank_statement_file_init = true
+        this.is_bank_statement_file = true
+        const bank_statement_file_buffer = this.utilityService.arrayToBuffer(res.data.image_file.data)
+        const bank_statement_file_file = this.utilityService.arrayBufferToFile(bank_statement_file_buffer, `${res.data.image_name}`, `${res.data.image_type}`)
+        const bank_statement_file_upload = this.utilityService.fileToNzUploadFile(bank_statement_file_file)
+
+        if (
+          bank_statement_file_upload.type == 'image/jpg' ||
+          bank_statement_file_upload.type == 'image/jpeg' ||
+          bank_statement_file_upload.type == 'image/png' ||
+          bank_statement_file_upload.type == 'image/gif' ||
+          bank_statement_file_upload.type == 'image/bmp' ||
+          bank_statement_file_upload.type == 'image/svg' ||
+          bank_statement_file_upload.type == 'application/pdf'
+        ) {
+          this.bank_statement_fileList = [bank_statement_file_upload]
+          this.cartitleloanForm.controls.bank_statement_file.setValue(bank_statement_file_upload)
+
+          /* ... set thumburl of pdf ... */
+          // this.bank_statement_fileList[0].thumbUrl = this.pdf_icon_path
+
+          switch (this.bank_statement_fileList[0].type) {
+            case 'image/jpg':
+              this.bank_statement_fileList[0].type = this.jpg_icon_path
+              break;
+            case 'image/jpeg':
+              /* ... check is jpeg or jpg ... */
+              const isjpeg = this.bank_statement_fileList[0].name.toLowerCase().endsWith(".jpeg")
+              if (isjpeg) {
+                this.bank_statement_fileList[0].thumbUrl = this.jpeg_icon_path
+              } else {
+                this.bank_statement_fileList[0].thumbUrl = this.jpg_icon_path
+              }
+              break;
+            case 'image/png':
+              this.bank_statement_fileList[0].thumbUrl = this.png_icon_path
+              break;
+            case 'image/gif':
+              this.bank_statement_fileList[0].thumbUrl = this.gif_icon_path
+              break;
+            case 'image/bmp':
+              this.bank_statement_fileList[0].thumbUrl = this.bmp_icon_path
+              break;
+            case 'image/svg':
+              this.bank_statement_fileList[0].thumbUrl = this.svg_icon_path
+              break;
+            case 'application/pdf':
+              this.bank_statement_fileList[0].thumbUrl = this.pdf_icon_path
+              break;
+            default:
+              break;
+          }
+          /* ... set url pdf (for open in new tab) ... */
+          const url = URL.createObjectURL(bank_statement_file_upload.originFileObj as any); // Cast file to any for URL.createObjectURL
+          this.bank_statement_fileList[0].url = url
+        }
+
+      }, error: (e) => {
+
+      }, complete: () => {
+
+      }
+    })
   }
 
 }

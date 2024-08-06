@@ -26,6 +26,9 @@ export interface IReqCreateCareerAndPurpose {
   sub_workplace_name: string
   main_workplace_phone_no_1: string;
   main_workplace_phone_no_2: string;
+  book_bank_account_no: string;
+  bank_account_name: string;
+  bank_account_branch: string;
   // === purpose Path ===
   car_user: string, // career form (stamp via code , sync master data)
   car_user_citizen_id: string
@@ -49,6 +52,7 @@ export interface IReqCreateCareerAndPurpose {
   first_referral_phone_no: string
   first_referral_relation: string
   purpose_buy: string
+  purpose_buy_other: string
   purpose_buy_name: string
   reason_buy: string
   reason_buy_etc: string

@@ -129,11 +129,21 @@
                             </mat-form-field>
                         </mat-grid-tile>
                         <!-- Env-car -->
+                        <!-- model description (09/07/2024)  -->
+                        <mat-grid-tile [colspan]="layout.list.maxcols" *ngIf="show_model_description">
+                            <mat-form-field appearance="outline" style="width: 100%">
+                                <mat-label>รายละเอียดรุ่นรถ</mat-label>
+                                <input type="text" matInput placeder="รายละเอียดรุ่นรถ" [formControl]="model_description">
+                                <mat-error *ngIf="model_description.hasError('maxlength')">
+                                    ข้อความยาวเกินกำหนด
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
                         <!-- Fuel Type -->
                         <mat-grid-tile [colspan]="layout.list.cols3">
                             <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-select required [formControl]="fuelTypeField">
-                                    <mat-option [value]="null" disabled hidden>Fuel Type</mat-option>
+                                    <mat-option [value]="null" hidden>Fuel Type</mat-option>
                                     <mat-option *ngFor="let item of masterFuelTypeList.data"
                                         [value]="item.code">{{item.detail}}</mat-option>
                                 </mat-select>
@@ -208,12 +218,18 @@
                             <mat-grid-tile [colspan]="layout.list.cols4">
                                 <mat-form-field appearance="outline" style="width: 100%">
                                     <mat-label>วันที่จดทะเบียน</mat-label>
-                                    <input type="date" matInput placeholder="วันที่จดทะเบียน" [formControl]="reg_date"
-                                        (keydown)="onKeyDown($event)" [disabled]="true">
+                                    <!-- <input type="date" matInput placeholder="วันที่จดทะเบียน" [formControl]="reg_date"
+                                        (keydown)="onKeyDown($event)" [disabled]="!this.enable_reg_date_field"> -->
+                                    <input matInput [matDatepicker]="picker" placeholder="วันที่จดทะเบียน"
+                                        [formControl]="reg_date" (keydown)="onKeyDown($event)"
+                                        [disabled]="!this.enable_reg_date_field" autocomplete="off">
+                                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker></mat-datepicker>
                                     <mat-error
                                         *ngIf="secondHandCarForm.controls.reg_date.hasError('required')">กรุณากรอกวันที่จดทะเบียน
                                     </mat-error>
                                 </mat-form-field>
+                                <button mat-button color="warn" (click)="clearDate()">Clear</button>
                             </mat-grid-tile>
                             <!-- ปีรุ่นรถ -->
                             <mat-grid-tile [colspan]="layout.list.cols3">

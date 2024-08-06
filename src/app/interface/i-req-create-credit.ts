@@ -44,6 +44,13 @@ export interface IReqCreateCredit {
     is_over_max_ltv: 'Y' | 'N';
     over_max_ltv_reason: string;
     motor_number: string
+    model_description: string
+
+    /* ... add on fuel_type, motor_power, battery_type, battery_capacity (09/07/2024) ... */
+    fuel_type: string
+    motor_power: number | null;
+    battery_type: string
+    battery_capacity: number | null;
 }
 
 

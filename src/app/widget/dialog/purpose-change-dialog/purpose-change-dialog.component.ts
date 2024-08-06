@@ -24,11 +24,13 @@ export class PurposeChangeDialogComponent extends BaseService implements OnInit 
   isotherResontobuy: boolean = false;
   isnotbuyforyourself: boolean = false;
   iscartitleloan: boolean = false
+  isotherpurposeBuy: boolean = false
 
   buyobjectiveList = [] as IResGetbuyobjectiveMasterData[]
 
   // *** purpose form ***
   purposeBuy = new FormControl('', Validators.required) // PURPOSE_OF_BUY (NVARCHAR 3)
+  purposeBuyother = new FormControl<string>('', Validators.maxLength(100)) // PURPOSE_OF_BUY_OTHER (NVARCHAR 100) 
   purposeBuyName = new FormControl('', [Validators.maxLength(1000)]) // PURPOSE_OF_BUY_NAME (NAVARCHAR 1000)
   reasonBuy = new FormControl() // REASON_OF_BUY
   reasonBuyEtc = new FormControl('', [Validators.maxLength(300)])
@@ -83,6 +85,7 @@ export class PurposeChangeDialogComponent extends BaseService implements OnInit 
 
   purposeForm = this.fb.group({
     purposeBuy: this.purposeBuy,
+    purposeBuyother: this.purposeBuyother,
     purposeBuyName: this.purposeBuyName,
     reasonBuy: this.reasonBuy,
     reasonBuyEtc: this.reasonBuyEtc,
@@ -174,6 +177,20 @@ export class PurposeChangeDialogComponent extends BaseService implements OnInit 
       } else {
         this.isRepresentative = false;
       }
+
+      /* ... add purposeBuyother (car-title-loan) (09/07/2024) ... */
+      /* ... trigger to show purposeBuyother in case of bussiness_code == '005' and code (purposeBuyl.value) is '8' ... */
+      if (purposeBuyvalue == '8' && this.data.bussi_code == '005') {
+        this.isotherpurposeBuy = true
+        /* ... set validator require of purposeBuyother field ... */
+        this.purposeForm.controls.purposeBuyother.setValidators(Validators.required)
+        this.purposeForm.controls.purposeBuyother.updateValueAndValidity({ emitEvent: false })
+      } else {
+        this.purposeForm.controls.purposeBuyother.setValidators(null)
+        this.purposeForm.controls.purposeBuyother.updateValueAndValidity({ emitEvent: false })
+        this.purposeForm.controls.purposeBuyother.setValue('')
+        this.isotherpurposeBuy = false
+      }
     })
 
     // *** resonBuy ***
@@ -221,12 +238,12 @@ export class PurposeChangeDialogComponent extends BaseService implements OnInit 
           /* ... set display condition field hidden/show by product_code ... */
           switch (current_pro_code) {
             case '01':
-                this.iscartitleloan = false
-                break;
+              this.iscartitleloan = false
+              break;
             case '05':
-                this.iscartitleloan = true
-                break;
-          
+              this.iscartitleloan = true
+              break;
+
             default:
               break;
           }
@@ -277,6 +294,7 @@ export class PurposeChangeDialogComponent extends BaseService implements OnInit 
       first_referral_phone_no: this.purposeForm.controls.firstReferralPhoneNo.value ? this.purposeForm.controls.firstReferralPhoneNo.value : '',
       first_referral_relation: this.purposeForm.controls.firstReferralRelation.value ? this.purposeForm.controls.firstReferralRelation.value : '',
       purpose_buy: this.purposeForm.controls.purposeBuy.value ? this.purposeForm.controls.purposeBuy.value : '', // purpose form (รหัสคำนำหน้า)
+      purpose_buy_other: this.purposeForm.controls.purposeBuyother.value ? this.purposeForm.controls.purposeBuyother.value : '',
       purpose_buy_name: this.purposeForm.controls.purposeBuyName.value ? this.purposeForm.controls.purposeBuyName.value : '',
       reason_buy: this.purposeForm.controls.reasonBuy.value ? this.purposeForm.controls.reasonBuy.value : '', // purpose form (select code of Reason (sync with master data))
       reason_buy_etc: this.purposeForm.controls.reasonBuyEtc.value ? this.purposeForm.controls.reasonBuyEtc.value : '',
@@ -286,11 +304,11 @@ export class PurposeChangeDialogComponent extends BaseService implements OnInit 
     }
 
     this.dialogRef.close(datasend as IDialogChangePurposeClose)
-    
+
   }
 
   closedialogupdatepurpose() {
-    this.dialogRef.close( { valid: false} as IDialogChangePurposeClose)
+    this.dialogRef.close({ valid: false } as IDialogChangePurposeClose)
   }
 
 }

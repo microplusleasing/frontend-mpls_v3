@@ -121,6 +121,39 @@
                             </mat-form-field>
                         </mat-grid-tile>
 
+
+                        <!-- Bank account (09/07/2024) -->
+
+                        <mat-grid-tile [colspan]="layout.list.maxcols">
+                            <mat-form-field appearance="outline" style="width: 100%">
+                                <mat-label>เลขที่บัญชีธนาคารลูกค้า</mat-label>
+                                <input matInput color="primary" [formControl]="book_bank_account_no" type="text">
+                                <mat-error *ngIf="book_bank_account_no.errors?.['maxlength']">
+                                    เลขบัญชียาวเกินกำหนด
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+
+                        <mat-grid-tile [colspan]="layout.list.maxcols">
+                            <mat-form-field appearance="outline" style="width: 100%">
+                                <mat-label>ชื่อธนาคาร</mat-label>
+                                <input matInput color="primary" [formControl]="bank_account_name" type="text">
+                                <mat-error *ngIf="bank_account_name.errors?.['maxlength']">
+                                    ชื่อธนาคารยาวเกินกำหนด
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+
+                        <mat-grid-tile [colspan]="layout.list.maxcols">
+                            <mat-form-field appearance="outline" style="width: 100%">
+                                <mat-label>สาขาธนาคาร</mat-label>
+                                <input matInput color="primary" [formControl]="bank_account_branch" type="text">
+                                <mat-error *ngIf="bank_account_branch.errors?.['maxlength']">
+                                    สาขาธนาคารยาวเกินกำหนด
+                                </mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+
                         <!-- is Sub career -->
 
                         <mat-grid-tile [colspan]="layout.list.maxcols">
@@ -237,6 +270,9 @@
                                 </mat-form-field>
                             </mat-grid-tile>
                         </div>
+
+
+
                     </mat-grid-list>
                 </div>
             </mat-expansion-panel>
@@ -263,12 +299,29 @@
                                     <mat-option [value]="null" disabled
                                         hidden>เลือกวัตถุประสงค์ในการขอสินเชื่อ</mat-option>
                                     <mat-option *ngFor="let item of buyobjectiveList"
-                                        [value]="item.code">{{item.name}}</mat-option>
+                                        [value]="item.code_client">{{item.name}}</mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="!isRepresentative">
                             <!-- Blank (purposeBuy value = '2') -->
+                        </mat-grid-tile>
+                        <!-- purpose of buy other -->
+                        <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="isotherpurposeBuy">
+                            <mat-form-field appearance="outline" style="width: 100%;">
+                                <mat-label>
+                                    ระบุวัตถุประสงค์อื่นๆในการขอสินเชื่อ
+                                </mat-label>
+                                <input matInput color="primary" [formControl]="purposeBuyother" type="text">
+                                <!-- Error require text -->
+                                <mat-error *ngIf="purposeBuyother.errors?.['required']">
+                                    กรุณากรอกวัตถุประสงค์ในการขอสินเชื่อ
+                                </mat-error>
+                                <!-- Error maxlenth text -->
+                                <mat-error *ngIf="purposeBuyother.errors?.['maxlenth']">
+                                    ข้อความยาวเกินกำหนด
+                                </mat-error>
+                            </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="isRepresentative">
                             <mat-form-field appearance="outline" style="width: 100%">

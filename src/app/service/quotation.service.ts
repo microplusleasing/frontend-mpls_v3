@@ -59,6 +59,10 @@ import { IReqMPLSCheckIsChangeProCodeFromBusinessCode } from '../interface/i-req
 import { IReqMPLSCheckChangeProductCodeAfterPurpose } from '../interface/i-req-mpls-check-change-product-code-after-purpose';
 import { IResMPLSCheckChangeProductCodeAfterPurpose } from '../interface/i-res-mpls-check-change-product-code-after-purpose';
 import { IReqUpdateCreditAndPurpose } from '../interface/i-req-update-credit-and-purpose';
+import { IReqRetrievebankstatementfilebyquotationid } from '../interface/i-req-retrievebankstatementfilebyquotationid';
+import { IResRetrievebankstatementfilebyquotationid } from '../interface/i-res-retrievebankstatementfilebyquotationid';
+import { IReqDeletebankstatementfilebyquotationid } from '../interface/i-req-deletebankstatementfilebyquotationid';
+import { IResDeletebankstatementfilebyquotationid } from '../interface/i-res-deletebankstatementfilebyquotationid';
 
 
 @Injectable({
@@ -294,6 +298,21 @@ export class QuotationService {
   MPLS_check_secondhand_car_image_attach(quotationid: string, contract_ref: string) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_check_secondhand_car_image_attach`
     return this.http.post<IResCheckSecondhandCarImageAttach>(url, { quotationid: quotationid, contract_ref: contract_ref })
+  }
+
+  MPLS_upload_bank_statement_file(fd: FormData) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_upload_bank_statement_file`
+    return this.http.post<IResBasic>(url, fd)
+  }
+
+  retrievebankstatementfilebyquotationid(data: IReqRetrievebankstatementfilebyquotationid) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/retrievebankstatementfilebyquotationid`
+    return this.http.post<IResRetrievebankstatementfilebyquotationid>(url, data)
+  }
+
+  deletebankstatementfilebyquotationid(data: IReqDeletebankstatementfilebyquotationid) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/deletebankstatementfilebyquotationid`
+    return this.http.post<IResDeletebankstatementfilebyquotationid>(url, data)
   }
 
   MPLS_clear_secondhand_car_image_attach(quotationid: string) {

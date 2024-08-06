@@ -6,6 +6,7 @@ export interface IResGetbuyobjectiveMaster {
   
   export interface IResGetbuyobjectiveMasterData {
     code: string
+    code_client: string
     name: string
     upd_datetime?: string
     upd_user?: string

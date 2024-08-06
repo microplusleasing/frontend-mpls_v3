@@ -50,6 +50,8 @@ import { PurposeChangeDialogComponent } from 'src/app/widget/dialog/purpose-chan
 import { IDialogChangePurpose } from 'src/app/interface/i-dialog-change-purpose';
 import { IDialogChangePurposeClose } from 'src/app/interface/i-dialog-change-purpose-close';
 import { IReqUpdateCreditAndPurpose } from 'src/app/interface/i-req-update-credit-and-purpose';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { UtilityService } from 'src/app/service/utility.service';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -164,7 +166,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.fb,
     this.masterDataService,
     this.quotationService,
+    this.utilityService,
     this.loadingService,
+    this.modal,
     this.dialog,
     this._snackBar,
     this.breakpointObserver,
@@ -207,10 +211,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     private breakpointObserver: BreakpointObserver,
     private route: ActivatedRoute,
     private loadingService: LoadingService,
+    private modal: NzModalService,
     private masterDataService: MasterDataService,
     private imageUtilService: ImageUtilService,
     private imageService: ImageService,
     private dipchipService: DipchipService,
+    private utilityService: UtilityService,
     private actRoute: ActivatedRoute,
     private sanitizer: DomSanitizer,
     public quotationService: QuotationService,
@@ -343,7 +349,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                   // }
 
                   // *** tab 4 (second hand car case) ***
-                  if (quoitem.cd_bussiness_code !== '001' && quoitem.quo_secondhand_car_verify !== 'Y') {
+                  /* .... add list of business_code that not equal '002' andd '003' in if condition (09/07/2024) ... */
+                  if (
+                    quoitem.cd_bussiness_code !== '001' &&
+                    quoitem.cd_bussiness_code !== '005' &&
+                    quoitem.quo_secondhand_car_verify !== 'Y'
+                  ) {
                     this.secondhandcarverify = false
                     this.imageattachtab.verifySecondhandCarImageAttach.setValue(false)
                     this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
@@ -522,9 +533,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         this.createorupdatecreditbtnDisable = false
         this.cd.detectChanges()
       } else {
+
+        this.createorupdatecreditbtnDisable = true
         /* .... fixed to unlock for skip calculate product and remove when code finish (09/07/2024) ... */
-        // this.createorupdatecreditbtnDisable = true
-        this.createorupdatecreditbtnDisable = false
+        // this.createorupdatecreditbtnDisable = false
         this.cd.detectChanges()
 
         /* ... remove this line after test calculate mockup finish (09/07/2024) ... */
@@ -726,7 +738,20 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           // *** attach image file ***
           // this.imageattachtab.onStageChangeFormStepper()
           if (this.cizcardtab.cizForm.valid) {
-            (this.verifyeconsent && this.verifycareerandpurpose && !this.isprocodechange) ? this.imageattachtab.onStageChangeFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+            // (this.verifyeconsent && this.verifycareerandpurpose && !this.isprocodechange) ? this.imageattachtab.onStageChangeFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+            if (
+              this.verifyeconsent && 
+              this.verifycareerandpurpose &&
+              !this.isprocodechange
+            ) {
+              this.imageattachtab.onStageChangeFormStepper()
+            } else {
+              if (this.isprocodechange) {
+                this.openDialogStep(`ไม่อนุญาติ`, `มีการเปลี่ยนประเภทผลิตภัณฑ์ กรุณาทำการบันทึกก่อนทำรายการใน tab อื่น`, `ปิด`, previousStage);
+              } else {
+                this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+              }
+            }
           } else {
             /*... check verify bypass ...*/
             if (this.verifybypass) {
@@ -739,8 +764,23 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           break;
         case 4: {
           // *** consent tab ***
-          if (this.cizcardtab.cizForm.valid && !this.isprocodechange) {
-            (this.verifyeconsent && this.verifycareerandpurpose && this.verifyimageattach && this.secondhandcarverify) ? this.imageattachtab.onStageChangeFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+          if (this.cizcardtab.cizForm.valid) {
+            // (this.verifyeconsent && this.verifycareerandpurpose && this.verifyimageattach && this.secondhandcarverify) ? this.imageattachtab.onStageChangeFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+            if (
+              this.verifyeconsent &&
+              this.verifycareerandpurpose && 
+              this.verifyimageattach &&
+              this.secondhandcarverify &&
+              !this.isprocodechange
+            ) {
+              // this.imageattachtab.onStageChangeFormStepper()
+            } else {
+              if (this.isprocodechange) {
+                this.openDialogStep(`ไม่อนุญาติ`, `มีการเปลี่ยนประเภทผลิตภัณฑ์ กรุณาทำการบันทึกก่อนทำรายการใน tab อื่น`, `ปิด`, previousStage);
+              } else {
+                this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
+              }
+            }
           } else {
             this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
           }
@@ -1426,6 +1466,13 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       over_max_ltv_reason: this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value : '',
       /* .... add env-car field (14/11/2023) ...*/
       motor_number: this.productdetailtab.productForm.controls.detailForm.controls.motorNumberField.value ? this.productdetailtab.productForm.controls.detailForm.controls.motorNumberField.value : '',
+      model_description: this.productdetailtab.productForm.controls.detailForm.controls.model_description.value ? this.productdetailtab.productForm.controls.detailForm.controls.model_description.value : '',
+      /* ... add on more fuel_type, motor_power, battery_type, battery_capacity (09/07/2024) ... */
+      fuel_type: this.productdetailtab.productForm.controls.detailForm.controls.fuelTypeField.value ? this.productdetailtab.productForm.controls.detailForm.controls.fuelTypeField.value : '',
+      motor_power: this.productdetailtab.productForm.controls.detailForm.controls.motorField.value ? this.productdetailtab.productForm.controls.detailForm.controls.motorField.value : null,
+      battery_type: this.productdetailtab.productForm.controls.detailForm.controls.batteryTypeField.value ? this.productdetailtab.productForm.controls.detailForm.controls.batteryTypeField.value : '',
+      battery_capacity: this.productdetailtab.productForm.controls.detailForm.controls.batteryCapacityField.value ? this.productdetailtab.productForm.controls.detailForm.controls.batteryCapacityField.value : null
+
 
     }
 
@@ -1859,6 +1906,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             bussi_code: this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value ?? ''
           }
           this.dialog.open(PurposeChangeDialogComponent, {
+            panelClass: 'custom-dialog-header',
             width: '90%',
             height: '80%',
             data: datadialogchangepurpose
@@ -1894,6 +1942,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                     first_referral_phone_no: res.first_referral_phone_no ?? '',
                     first_referral_relation: res.first_referral_relation ?? '',
                     purpose_buy: res.purpose_buy ?? '',
+                    purpose_buy_other: res.purpose_buy_other ?? '',
                     purpose_buy_name: res.purpose_buy_name ?? '',
                     reason_buy: res.reason_buy ?? '',
                     reason_buy_etc: res.reason_buy_etc ?? '',
@@ -1913,6 +1962,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                     next: async (reqcreatecredit) => {
                       this.loadingService.hideLoader()
                       if (reqcreatecredit.status == true) {
+                        console.log(`reqcreatecredit.status : ${reqcreatecredit.status}`)
 
                         this.quotationResult$.next(await lastValueFrom(this.quotationService.getquotationbyid(this.quoid)))
                         /*... set flag isprocodechange to false when update credit and purpose success (09/07/2024) ... */
@@ -1939,6 +1989,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                         if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
                           this.econsentbtnDisable = false
                         }
+
                         this.cizcardtab.cizForm.markAsPristine();
                         this.snackbarsuccess(`${reqcreatecredit.message}`)
                       } else {
@@ -2134,7 +2185,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
 
         this.dialog.open(OtpEconsentComponent, {
-          width: `100%`,
+          panelClass: 'custom-dialog-header',
+          width: `80%`,
           height: `90%`,
           data: senddata,
           scrollStrategy: this.sso.reposition()
@@ -2257,6 +2309,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       sub_salary_per_month: career_form.subCareerSalaryPerMonthField.value ? career_form.subCareerSalaryPerMonthField.value : null,
       sub_work_per_week: career_form.subCareerWorkPerWeekField.value ? career_form.subCareerWorkPerWeekField.value : null,
       sub_workplace_name: career_form.subCareerWorkplace.value ? career_form.subCareerWorkplace.value : '',
+      book_bank_account_no: career_form.book_bank_account_no.value ? career_form.book_bank_account_no.value : '',
+      bank_account_name: career_form.bank_account_name.value ? career_form.bank_account_name.value : '',
+      bank_account_branch: career_form.bank_account_branch.value ? career_form.bank_account_branch.value : '',
       // === purpose Path ===
       car_user: purpose_form.carUser.value ? purpose_form.carUser.value : '', // career form (stamp via code , sync master data)
       car_user_citizen_id: purpose_form.carUserCitizenid.value ? purpose_form.carUserCitizenid.value : '',
@@ -2280,6 +2335,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       first_referral_phone_no: purpose_form.firstReferralPhoneNo.value ? purpose_form.firstReferralPhoneNo.value : '',
       first_referral_relation: purpose_form.firstReferralRelation.value ? purpose_form.firstReferralRelation.value : '',
       purpose_buy: purpose_form.purposeBuy.value ? purpose_form.purposeBuy.value : '', // purpose form (รหัสคำนำหน้า)
+      purpose_buy_other: purpose_form.purposeBuyother.value ? purpose_form.purposeBuyother.value : '',
       purpose_buy_name: purpose_form.purposeBuyName.value ? purpose_form.purposeBuyName.value : '',
       reason_buy: purpose_form.reasonBuy.value ? purpose_form.reasonBuy.value : '', // purpose form (select code of Reason (sync with master data))
       reason_buy_etc: purpose_form.reasonBuyEtc.value ? purpose_form.reasonBuyEtc.value : '',

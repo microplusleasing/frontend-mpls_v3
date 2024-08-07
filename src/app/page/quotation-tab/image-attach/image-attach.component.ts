@@ -942,6 +942,8 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
     if (imageselect) {
       this.dialog.open(ImageDialogComponent, {
+        width: '90%',
+        height: '90%',
         data: {
           header: '',
           message: '',
@@ -958,6 +960,8 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
     if (imageselect) {
       this.dialog.open(ImageDialogComponent, {
+        width: '90%',
+        height: '90%',
         data: {
           header: '',
           message: '',

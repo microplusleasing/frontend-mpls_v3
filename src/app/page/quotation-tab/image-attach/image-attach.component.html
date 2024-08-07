@@ -42,7 +42,7 @@
         </mat-expansion-panel-header>
         <img [src]="image.urlsanitizer" [alt]="'ha'" style="max-width: 400px; max-height: 400px;"
           (click)="openimagedialog(image)"><br>
-        <button *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="updateImage(image)"
+        <button style="margin: 1rem;" *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="updateImage(image)"
           color="primary">Edit</button>
         <!-- <button mat-raised-button (click)="deleteImage(image)" color="warn" style="margin-left: 1em;">Delete</button> -->
       </mat-expansion-panel>

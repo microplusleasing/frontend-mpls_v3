@@ -177,19 +177,22 @@ export class PurposeChangeDialogComponent extends BaseService implements OnInit 
       } else {
         this.isRepresentative = false;
       }
-
       /* ... add purposeBuyother (car-title-loan) (09/07/2024) ... */
-      /* ... trigger to show purposeBuyother in case of bussiness_code == '005' and code (purposeBuyl.value) is '8' ... */
-      if (purposeBuyvalue == '8' && this.data.bussi_code == '005') {
+      /* ... trigger to show purposeBuyother code (purposeBuyl.value) is '8' ... */
+      if (purposeBuyvalue == '8') {
         this.isotherpurposeBuy = true
         /* ... set validator require of purposeBuyother field ... */
         this.purposeForm.controls.purposeBuyother.setValidators(Validators.required)
         this.purposeForm.controls.purposeBuyother.updateValueAndValidity({ emitEvent: false })
+        const testlogic = (!this.isotherpurposeBuy || !this.isRepresentative)
+        const testlogic2 = (!this.isotherpurposeBuy && !this.isRepresentative)
+        console.log(`testlogic1 : ${testlogic}, testlogic2: ${testlogic2}`)
       } else {
         this.purposeForm.controls.purposeBuyother.setValidators(null)
         this.purposeForm.controls.purposeBuyother.updateValueAndValidity({ emitEvent: false })
         this.purposeForm.controls.purposeBuyother.setValue('')
         this.isotherpurposeBuy = false
+        
       }
     })
 

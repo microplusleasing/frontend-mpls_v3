@@ -2697,8 +2697,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     }
     if (dealercode) {
       this.dialog.open(SecondhandCarViewDialogComponent, {
-        width: '100%',
-        height: `80%`,
+        width: '90%',
+        height: `90%`,
         data: senddata
       }).afterClosed().subscribe(async (res: IResSecondHandCarViewData) => {
         // *** parse data back from second hance car select dialog ***

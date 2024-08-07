@@ -13,7 +13,7 @@
 
         <mat-grid-list [cols]="layout.columns" [rowHeight]="'400px'">
             <mat-grid-tile [colspan]="layout.list.cols6">
-                <mat-card class="matchildcolor">
+                <mat-card class="matchildcolor" style="padding: 1.5em;">
                     <h2>ลายเซ็นต์ลูกค้า</h2>
                     <input #Image type="file" accept="image/*" (change)="handleFileInput($event, 'customer')"
                         [hidden]="!(editstage$ | async)">
@@ -23,7 +23,7 @@
                 </mat-card>
             </mat-grid-tile>
             <mat-grid-tile [colspan]="layout.list.cols6">
-                <mat-card class="matchildcolor">
+                <mat-card class="matchildcolor" style="padding: 1.5em;">
                     <h2>ลายเซ็นต์พยาน</h2>
                     <input #Image type="file" accept="image/*" (change)="handleFileInput($event, 'witness')"
                         [hidden]="!(editstage$ | async)">

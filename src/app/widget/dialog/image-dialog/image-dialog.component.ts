@@ -11,7 +11,7 @@ export class ImageDialogComponent implements OnInit {
 
   imagesrc = new BehaviorSubject<string>('')
 
-  slide = 50;
+  slide = 100;
   max = 150;
   min = 50;
 

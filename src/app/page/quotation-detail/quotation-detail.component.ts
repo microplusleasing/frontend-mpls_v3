@@ -360,7 +360,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                     this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
                   } else {
 
-                    if (quoitem.cd_bussiness_code == '001') {
+                    // if (quoitem.cd_bussiness_code == '001') {
+                    if (quoitem.cd_bussiness_code !== '002' && quoitem.cd_bussiness_code !== '003') {
                       this.imageattachtab.showsecondhandcarimageattach = false
                     } else {
                       this.imageattachtab.showsecondhandcarimageattach = true
@@ -740,7 +741,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           if (this.cizcardtab.cizForm.valid) {
             // (this.verifyeconsent && this.verifycareerandpurpose && !this.isprocodechange) ? this.imageattachtab.onStageChangeFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
             if (
-              this.verifyeconsent && 
+              this.verifyeconsent &&
               this.verifycareerandpurpose &&
               !this.isprocodechange
             ) {
@@ -768,7 +769,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
             // (this.verifyeconsent && this.verifycareerandpurpose && this.verifyimageattach && this.secondhandcarverify) ? this.imageattachtab.onStageChangeFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
             if (
               this.verifyeconsent &&
-              this.verifycareerandpurpose && 
+              this.verifycareerandpurpose &&
               this.verifyimageattach &&
               this.secondhandcarverify &&
               !this.isprocodechange
@@ -1895,6 +1896,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     } else {
       // *** new car save or create  (รถมือหนึ่ง) ***
+      /*... add-on case of bussiness_code == '005' (car-title-loan) ... */
 
       /* ... add criteria for check product code change (car-title-loan) for update purpose (09/07/2024) ... */
 
@@ -1969,7 +1971,13 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                         this.isprocodechange = false
 
                         // *** check type of image attach (new car or second hand car) ***
-                        if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
+
+                        // if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
+                        /* ... change condition for check secondhand car from businessCode.value == '001' into (businessCode.value !== '002' && businessCode.value !== '003') ... */
+                        if (
+                          this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value !== '002' &&
+                          this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value !== '003'
+                        ) {
 
                           this.secondhandcarverify = true
                           this.imageattachtab.countload = 0
@@ -2037,7 +2045,13 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               this.quotationResult$.next(await lastValueFrom(this.quotationService.getquotationbyid(this.quoid)))
 
               // *** check type of image attach (new car or second hand car) ***
-              if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
+              
+              // if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
+              /* ... change condition for check secondhand car from businessCode.value == '001' into (businessCode.value !== '002' && businessCode.value !== '003') ... */
+              if (
+                this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value !== '002' &&
+                this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value !== '003'
+              ) {
 
                 this.secondhandcarverify = true
                 this.imageattachtab.countload = 0
@@ -2219,6 +2233,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                     this.productdetailtab.productForm.controls.consentVerify.setValue(true)
                     this.verifyeconsent = true
                     this.verifyeconsent_txt = 'ไม่ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ต'
+                    /* ... set text for require image type when econsent is false ... */
+                    this.imageattachtab.txtrequireimage = `*แนบไฟล์ "บัตรประชาชน" , "รูปหน้าลูกค้าพร้อมบัตรประชาชน" , "สำเนาบัตรประชาชนพร้อมลายเซ็นรับรองถูกต้อง"  และ "NCB Consent`
                   } else {
                     // === fail to update flag econsent ==== 
                     this.snackbarfail(`ไม่สามารถทำรายการได้ : ${res_non.message}`)

@@ -292,18 +292,14 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
                 // === value Change ===
                 // *** purposeBuy ***
                 this.careerandpurposeForm.controls.purposeForm.controls.purposeBuy.valueChanges.subscribe((purposeBuyvalue) => {
-                  /* ... add-on (ต้องเช็คค่า bussi_code เพื่มเติมด้วยจากค่า product_code ถึงจะตั้งค่า this.isRepresentative ได้) ... */
                   if (purposeBuyvalue == '2') {
-
                     this.isRepresentative = true;
-
                   } else {
                     this.isRepresentative = false;
                   }
-
                   /* ... add purposeBuyother (car-title-loan) (09/07/2024) ... */
-                  /* ... trigger to show purposeBuyother in case of bussiness_code == '005' and code (purposeBuyl.value) is '8' ... */
-                  if (purposeBuyvalue == '8' && this.bussi_code == '005') {
+                  /* ... trigger to show purposeBuyother code (purposeBuyl.value) is '8' ... */
+                  if (purposeBuyvalue == '8') {
                     this.isotherpurposeBuy = true
                     /* ... set validator require of purposeBuyother field ... */
                     this.purposeForm.controls.purposeBuyother.setValidators(Validators.required)
@@ -361,12 +357,6 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
                         if (current_pro_code) {
                           this.buyobjectiveList = resbuyobjective.data.filter((item) => item.product_code == current_pro_code)
 
-                          /* ... check for condition of true/false of this.isRepresentative againt (09/07/2024) ... */
-                          if (this.careerandpurposeForm.controls.purposeForm.controls.purposeBuy.value == '2' && current_busi_code == '005') {
-                            this.isRepresentative = false;
-                          } else {
-                            this.isRepresentative = true;
-                          }
                         }
 
                         if (current_busi_code == '005') {
@@ -418,7 +408,8 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
                   // === set purposeForm === 
 
                   this.careerandpurposeForm.controls.purposeForm.controls.purposeBuy.setValue(quoitem.pp_purpose_of_buy ?? '') // code of purpose buy name
-                  if (quoitem.pp_purpose_of_buy == '2') this.isRepresentative = true; // show วัตถุประสงค์ในการเช่าซื้อ text 
+                  if (quoitem.pp_purpose_of_buy == '2') {this.isRepresentative = true;} // show วัตถุประสงค์ในการเช่าซื้อ text 
+                  if (quoitem.pp_purpose_of_buy == '8') {this.isotherpurposeBuy = true;} // show วัตถุประสงค์ในการขอสินเชิ่อ (อื่นๆ)
                   this.careerandpurposeForm.controls.purposeForm.controls.purposeBuyother.setValue(quoitem.pp_purpose_of_buy_other ?? '')
                   this.careerandpurposeForm.controls.purposeForm.controls.purposeBuyName.setValue(quoitem.pp_purpose_of_buy_name ?? '')
                   this.careerandpurposeForm.controls.purposeForm.controls.reasonBuy.setValue(quoitem.pp_reason_of_buy ?? '')
@@ -495,13 +486,6 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
 
                   if (current_busi_code == '005') {
                     this.iscartitleloan = true
-                  }
-
-                  /* ... check for condition of true/false of this.isRepresentative againt (09/07/2024) ... */
-                  if (this.careerandpurposeForm.controls.purposeForm.controls.purposeBuy.value == '2' && current_busi_code !== '005') {
-                    this.isRepresentative = false;
-                  } else {
-                    this.isRepresentative = true;
                   }
 
                 } else {

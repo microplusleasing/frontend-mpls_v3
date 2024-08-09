@@ -691,6 +691,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.enable_reg_date_field = true
                         this.visible_clear_reg_date_field = true
                         this.show_model_description = true
+                        this.is2ndmpls = false
 
                         /* ... remove this after calcualate mock success (09/07/2024) ... */
                         // this.lockbtncalculate$.next(false)

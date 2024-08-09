@@ -165,7 +165,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
     if (this.countload == 0) {
 
-      this.uploadedImagesMultiple = []
+      // this.uploadedImagesMultiple = []
       this.quotationReq.subscribe({
         next: async (resquo) => {
           this.loadingService.showLoader();
@@ -189,6 +189,8 @@ export class ImageAttachComponent extends BaseService implements OnInit {
               this.showsecondhandcarimageattach = (check_busi_code.data.bussiness_code === '002' || check_busi_code.data.bussiness_code === '003') ? true : false;
             }
 
+            this.uploadedImagesMultiple = []
+            this.uploadedImages = []
             // === call parameter data (single and multiple type) ===
             forkJoin([
               this.masterDataService.getImageTypeAttach(),
@@ -243,6 +245,16 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                           //   urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
                           //   src: imageStr
                           // })
+
+                          /* ... check image is load before push array (car-title-loan branch) (09/07/2024) ... */
+                          // const isrepeatimage = this.uploadedImages.some(img_item => img_item.image_code === item.image_code)
+
+                          // if (isrepeatimage) {
+
+                          // } else {
+                          //   ... do push method ...
+                          // }
+                          
                           this.uploadedImages.push({
                             name: item.image_name ?? '',
                             image_code: item.image_code ?? '',
@@ -1203,13 +1215,13 @@ export class ImageAttachComponent extends BaseService implements OnInit {
         }
       }, error: (e) => {
         this.load_spin_bank_statement_file = false
-        
+
         this.snackbarfail(`Error : ${e.message ? e.message : 'No error message'}`)
       }, complete: () => {
         this.load_spin_bank_statement_file = false
       }
     })
-    
+
     return false;
   };
 

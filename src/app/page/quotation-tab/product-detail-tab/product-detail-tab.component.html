@@ -133,7 +133,8 @@
                         <mat-grid-tile [colspan]="layout.list.maxcols" *ngIf="show_model_description">
                             <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>รายละเอียดรุ่นรถ</mat-label>
-                                <input type="text" matInput placeder="รายละเอียดรุ่นรถ" [formControl]="model_description">
+                                <input type="text" matInput placeder="รายละเอียดรุ่นรถ"
+                                    [formControl]="model_description">
                                 <mat-error *ngIf="model_description.hasError('maxlength')">
                                     ข้อความยาวเกินกำหนด
                                 </mat-error>
@@ -157,7 +158,8 @@
                         <mat-grid-tile [colspan]="layout.list.cols2">
                             <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>กำลังมอเตอร์ไฟฟ้า</mat-label>
-                                <input type="text" matInput placeholder="กำลังมอเตอร์ไฟฟ้า" [formControl]="motorField">
+                                <input type="number" [min]="0" matInput placeholder="กำลังมอเตอร์ไฟฟ้า"
+                                    [formControl]="motorField">
                             </mat-form-field>
                         </mat-grid-tile>
                         <!-- Motor Number -->
@@ -182,7 +184,7 @@
                         <mat-grid-tile [colspan]="layout.list.cols2">
                             <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>ความจุแบตเตอรี่</mat-label>
-                                <input type="text" matInput placeholder="ความจุแบตเตอรี่"
+                                <input type="number" [min]="0" matInput placeholder="ความจุแบตเตอรี่"
                                     [formControl]="batteryCapacityField">
                             </mat-form-field>
                         </mat-grid-tile>

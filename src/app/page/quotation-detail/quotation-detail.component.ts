@@ -2267,6 +2267,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               this.productdetailtab.productForm.controls.consentVerify.setValue(true)
               this.verifyeconsent = true
               this.verifyeconsent_txt = 'ไม่ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ต'
+              this.imageattachtab.txtrequireimage = `*แนบไฟล์ "บัตรประชาชน" , "รูปหน้าลูกค้าพร้อมบัตรประชาชน" , "สำเนาบัตรประชาชนพร้อมลายเซ็นรับรองถูกต้อง"  และ "NCB Consent`
             } else {
               // === fail to update flag econsent ==== 
               this.snackbarfail(`ไม่สามารถทำรายการได้ : ${res_non.message}`)

@@ -64,7 +64,7 @@ export class PersonalDisclosureConsentComponent extends BaseService implements O
 
   ngOnInit(): void {
     this.quotationReq.subscribe({
-      next: (resquo) => {
+      next: async (resquo) => {
         // this.loadingService.showLoader();
         this.quotationdatatemp = resquo
 
@@ -105,13 +105,13 @@ export class PersonalDisclosureConsentComponent extends BaseService implements O
           // === value Change ===
 
           // === main form (check valid) ===
-          this.formPersonalDisclosureConsent.valueChanges.subscribe((value) => {
+          this.formPersonalDisclosureConsent.valueChanges.subscribe(async (value) => {
             if (this.formPersonalDisclosureConsent.valid) {
               this.disableNextBtn = false
               this.personalDisclosureValid.emit(true)
             } else {
               this.disableNextBtn = true
-              this.personalDisclosureValid.emit(false)
+              this.personalDisclosureValid.emit(true)
             }
           })
         }

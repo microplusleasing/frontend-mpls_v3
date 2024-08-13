@@ -50,7 +50,7 @@ export interface IReqCreateCredit {
     fuel_type: string
     motor_power: number | null;
     battery_type: string
-    battery_capacity: number | null;
+    battery_capacity: string;
 }
 
 

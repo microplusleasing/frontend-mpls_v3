@@ -300,7 +300,7 @@ export interface IResQuotationDetailData {
     cd_fuel_type: string;
     cd_motor_power: number | null;
     cd_battery_type: string;
-    cd_battery_capacity: number | null;
+    cd_battery_capacity: string;
 }
 
 export interface IResQuotationDetail {

@@ -83,7 +83,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   motorField = new FormControl<number | null>(null)
   motorNumberField = new FormControl()
   batteryTypeField = new FormControl<string>('', Validators.maxLength(100))
-  batteryCapacityField = new FormControl<number | null>(null)
+  batteryCapacityField = new FormControl<string>('')
   fuelTypeField = new FormControl<string>('', Validators.maxLength(100)) // */ ... check this field to know fueltype of moto ...*/
   /* ... add-on field model_description car-title-loan (09/07/2024) ... */
   model_description = new FormControl('', Validators.maxLength(150))
@@ -1255,10 +1255,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       }
 
                       /*.. env-car field handle ...*/
-                      this.productForm.controls.detailForm.controls.motorField.setValue(null, { emitEvent: false })
-                      this.productForm.controls.detailForm.controls.motorNumberField.setValue('', { emitEvent: false })
-                      this.productForm.controls.detailForm.controls.batteryTypeField.setValue('', { emitEvent: false })
-                      this.productForm.controls.detailForm.controls.batteryCapacityField.setValue(null, { emitEvent: false })
+                      // this.productForm.controls.detailForm.controls.motorField.setValue(null, { emitEvent: false })
+                      // this.productForm.controls.detailForm.controls.motorNumberField.setValue('', { emitEvent: false })
+                      // this.productForm.controls.detailForm.controls.batteryTypeField.setValue('', { emitEvent: false })
+                      // this.productForm.controls.detailForm.controls.batteryCapacityField.setValue(null, { emitEvent: false })
                       this.productForm.controls.detailForm.controls.motorNumberField.setValidators(null)
                       this.productForm.controls.detailForm.controls.motorNumberField.updateValueAndValidity({ emitEvent: false })
                       this.productForm.controls.detailForm.controls.motorNumberField.disable({ onlySelf: true, emitEvent: false })
@@ -1893,7 +1893,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 const qfueltype = quoitem.cd_fuel_type ?? ''
                 const qmotorpower = quoitem.cd_motor_power ?? null
                 const qbatterytype = quoitem.cd_battery_type ?? ''
-                const qbatterycapacity = quoitem.cd_battery_capacity ?? null
+                const qbatterycapacity = quoitem.cd_battery_capacity ?? ''
                 const qmotornumbercartitleloan = quoitem.cd_motor_number ?? ''
 
 
@@ -2138,7 +2138,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       /* ... env-car field (13/11/2023) ...*/
                       const qmotor = modelprice[0].motor ?? null
                       const qbatterytype = modelprice[0].battery_type ?? ''
-                      const qbatterycapacity = modelprice[0].battery_capacity ?? null
+                      const qbatterycapacity = modelprice[0].battery_capacity ?? ''
                       const qfueltype = modelprice[0].fuel_type ?? ''
 
                       /* .... add set value to env-car field (13/11/2023) ...*/

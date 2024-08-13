@@ -191,13 +191,16 @@
                                     {{item.bat_detail}}
                                 </mat-option>
                                 </mat-select>
+                                <mat-label>
+                                    Battery Type
+                                </mat-label>
                             </mat-form-field>
                         </mat-grid-tile>
                         <!-- Battery Capacity -->
                         <mat-grid-tile [colspan]="layout.list.cols2">
                             <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>ความจุแบตเตอรี่</mat-label>
-                                <input type="number" [min]="0" matInput placeholder="ความจุแบตเตอรี่"
+                                <input type="text" matInput placeholder="ความจุแบตเตอรี่"
                                     [formControl]="batteryCapacityField">
                             </mat-form-field>
                         </mat-grid-tile>

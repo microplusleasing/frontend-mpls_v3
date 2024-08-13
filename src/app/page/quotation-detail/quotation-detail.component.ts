@@ -1472,7 +1472,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       fuel_type: this.productdetailtab.productForm.controls.detailForm.controls.fuelTypeField.value ? this.productdetailtab.productForm.controls.detailForm.controls.fuelTypeField.value : '',
       motor_power: this.productdetailtab.productForm.controls.detailForm.controls.motorField.value ? this.productdetailtab.productForm.controls.detailForm.controls.motorField.value : null,
       battery_type: this.productdetailtab.productForm.controls.detailForm.controls.batteryTypeField.value ? this.productdetailtab.productForm.controls.detailForm.controls.batteryTypeField.value : '',
-      battery_capacity: this.productdetailtab.productForm.controls.detailForm.controls.batteryCapacityField.value ? this.productdetailtab.productForm.controls.detailForm.controls.batteryCapacityField.value : null
+      battery_capacity: this.productdetailtab.productForm.controls.detailForm.controls.batteryCapacityField.value ? this.productdetailtab.productForm.controls.detailForm.controls.batteryCapacityField.value : ''
 
 
     }

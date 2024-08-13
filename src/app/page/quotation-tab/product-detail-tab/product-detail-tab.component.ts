@@ -26,6 +26,7 @@ import { DealerGradeImageDialogComponent } from 'src/app/widget/dialog/dealer-gr
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 import { SecondhandCarViewDialogComponent } from 'src/app/widget/dialog/secondhand-car-view-dialog/secondhand-car-view-dialog.component';
 import { IResGetfueltype } from 'src/app/interface/i-res-getfueltype';
+import { IResGetbatteryType } from 'src/app/interface/i-res-getbattery-type';
 
 @Component({
   selector: 'app-product-detail-tab',
@@ -263,6 +264,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   showdealerfield: boolean = false
   showgeneralcarinfovisible: boolean = false
   shwosecondhandcardetail: boolean = false
+  batteryTypeList: IResGetbatteryType = {} as IResGetbatteryType
 
   warningMsgPaymentValueField: boolean = false;// === subscribe on paymentValueField (valueChange) to show or hide === 
 
@@ -429,7 +431,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               this.masterDataService.MPLS_getbrand(),
               this.masterDataService.MPLS_getmodel(),
               this.masterDataService.getMasterProvince(),
-              this.masterDataService.getFuelType()
+              this.masterDataService.getFuelType(),
+              this.masterDataService.getbatteryType(),
             ]).subscribe(async (res) => {
               // console.log(`this is master Data : ${JSON.stringify(res)}`)
               // === set master to variable ===
@@ -447,6 +450,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               /*... Fuel Type (13/11/2023) ...*/
               if (res[5]) {
                 this.masterFuelTypeList = res[5]
+              }
+
+              /* ... battery Type (09/07/2024) ... */
+              if (res[6]) {
+                this.batteryTypeList = res[6]
               }
 
               // *** bussiness ***

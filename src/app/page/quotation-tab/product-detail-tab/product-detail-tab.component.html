@@ -173,11 +173,24 @@
                             </mat-form-field>
                         </mat-grid-tile>
                         <!-- Battery Type -->
-                        <mat-grid-tile [colspan]="layout.list.cols2">
+                         <!-- old is text fill  -->
+                        <!-- <mat-grid-tile [colspan]="layout.list.cols2">
                             <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>ชนิดแบตเตอรี่</mat-label>
                                 <input type="text" matInput placeholder="ชนิดแบตเตอรี่"
                                     [formControl]="batteryTypeField">
+                            </mat-form-field>
+                        </mat-grid-tile> -->
+                        <!-- change to select field (09/07/2024) -->
+                        <mat-grid-tile [colspan]="layout.list.cols2">
+                            <mat-form-field appearance="outline" style="width: 100%">
+                                <mat-select [formControl]="batteryTypeField">
+                                    <mat-option [value]="null" hidden>Battery Type</mat-option>
+                                    <mat-option *ngFor="let item of batteryTypeList.data"
+                                    [value]="item.bat_code">
+                                    {{item.bat_detail}}
+                                </mat-option>
+                                </mat-select>
                             </mat-form-field>
                         </mat-grid-tile>
                         <!-- Battery Capacity -->

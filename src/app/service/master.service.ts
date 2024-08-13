@@ -53,6 +53,7 @@ import { IResNationalityMaster } from '../interface/i-res-nationality-master';
 import { IResIdentityTypeMaster } from '../interface/i-res-identity-type-master';
 import { IResGetAcStatusType } from '../interface/i-res-get-ac-status-type';
 import { IResGetbuyobjectiveMaster } from '../interface/i-res-getbuyobjective-master';
+import { IResGetbatteryType } from '../interface/i-res-getbattery-type';
 
 
 
@@ -354,6 +355,11 @@ export class MasterDataService {
   getbuyobjectiveMaster(): Observable<IResGetbuyobjectiveMaster> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getbuyobjectiveMaster`
     return this.http.get<IResGetbuyobjectiveMaster>(url)
+  }
+
+  getbatteryType(): Observable<IResGetbatteryType> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getbatteryType`
+    return this.http.get<IResGetbatteryType>(url)
   }
   
 

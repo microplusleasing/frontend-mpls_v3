@@ -54,6 +54,7 @@ import { IResIdentityTypeMaster } from '../interface/i-res-identity-type-master'
 import { IResGetAcStatusType } from '../interface/i-res-get-ac-status-type';
 import { IResGetbuyobjectiveMaster } from '../interface/i-res-getbuyobjective-master';
 import { IResGetbatteryType } from '../interface/i-res-getbattery-type';
+import { IResGetbankbt } from '../interface/i-res-getbankbt';
 
 
 
@@ -360,6 +361,11 @@ export class MasterDataService {
   getbatteryType(): Observable<IResGetbatteryType> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getbatteryType`
     return this.http.get<IResGetbatteryType>(url)
+  }
+  
+  getbankbt(): Observable<IResGetbankbt> {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getbankbt`
+    return this.http.get<IResGetbankbt>(url)
   }
   
 

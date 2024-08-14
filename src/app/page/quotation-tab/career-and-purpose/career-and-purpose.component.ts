@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { forkJoin, map, Observable } from 'rxjs';
+import { IResGetbankbtData } from 'src/app/interface/i-res-getbankbt';
 import { IResGetbuyobjectiveMasterData } from 'src/app/interface/i-res-getbuyobjective-master';
 import { IResQuotationDetail, IResQuotationDetailData } from 'src/app/interface/i-res-quotation-detail';
 import { BaseService } from 'src/app/service/base/base.service';
@@ -40,6 +41,7 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
   quoitem = {} as IResQuotationDetailData
   buyobjectiveList = [] as IResGetbuyobjectiveMasterData[]
   occupationMasterList: any;
+  bankbtList = [] as IResGetbankbtData[]
   finishLoad: boolean = false;
   countload: number = 0;
   is_edit: boolean = true;
@@ -75,6 +77,7 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
   // add bank field (09/07/2024) (pre-loan) 
   book_bank_account_no = new FormControl<string>('', Validators.maxLength(20))
   bank_account_name = new FormControl<string>('', Validators.maxLength(100))
+  bank_account_code = new FormControl<string>('', Validators.maxLength(10))
   bank_account_branch = new FormControl<string>('', Validators.maxLength(100))
 
 
@@ -165,6 +168,7 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
     // === addon (09/07/2024) ====
     book_bank_account_no: this.book_bank_account_no,
     bank_account_name: this.bank_account_name,
+    bank_account_code: this.bank_account_code,
     bank_account_branch: this.bank_account_branch
 
   })
@@ -258,6 +262,23 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
     private breakpointObserver: BreakpointObserver
   ) {
     super(dialog, _snackBar)
+
+    /* ... form valueChange ... */
+
+    /* ... bank_account_code ... */
+    this.careerForm.controls.bank_account_code.valueChanges.subscribe((bankCode) => {
+      if (bankCode) {
+
+        const selectedBank_name = this.bankbtList.find((item) => item.code === bankCode)?.name
+        if (selectedBank_name) {
+          this.careerForm.controls.bank_account_name.setValue(selectedBank_name, { onlySelf: true, emitEvent: false })
+        } else {
+          this.careerForm.controls.bank_account_name.setValue('', { onlySelf: true, emitEvent: false })
+        }
+      } else {
+        this.careerForm.controls.bank_account_name.setValue('', { onlySelf: true, emitEvent: false })
+      }
+    })
   }
 
   ngOnInit(): void {
@@ -343,11 +364,17 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
                   forkJoin([
                     this.masterDataService.getOccupation(), // อาชีพ
                     this.masterDataService.getMasterBussiness(), // ประเภทผลิดภัณฑ์
-                    this.masterDataService.getbuyobjectiveMaster(), // วัตถุประสงค์การเช่าซื้อ 
+                    this.masterDataService.getbuyobjectiveMaster(), // วัตถุประสงค์การเช่าซื้อ
+                    this.masterDataService.getbankbt(), // ชื่อธนาคาร
                   ]).subscribe({
-                    next: ([resOc, resBu, resbuyobjective]) => {
+                    next: ([resOc, resBu, resbuyobjective, resbankbt]) => {
 
-                      if (resOc.status == 200 && resBu.status == 200 && resbuyobjective.status == 200) {
+                      if (
+                        resOc.status == 200 &&
+                        resBu.status == 200 &&
+                        resbuyobjective.status == 200 &&
+                        resbankbt.status == 200
+                      ) {
 
                         /* .. get product code from busicode ... */
                         const current_busi_code = this.bussi_code
@@ -402,14 +429,15 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
                   this.careerandpurposeForm.controls.careerForm.controls.subCareerWorkPerWeekField.setValue(quoitem.cr_sub_work_per_week ?? null)
                   /* ... set bank account value (field from add-on 09/07/2024) ... */
                   this.careerandpurposeForm.controls.careerForm.controls.book_bank_account_no.setValue(quoitem.cr_book_bank_account_no ?? '')
-                  this.careerandpurposeForm.controls.careerForm.controls.bank_account_name.setValue(quoitem.cr_bank_account_name ?? '')
+                  this.careerandpurposeForm.controls.careerForm.controls.bank_account_code.setValue(quoitem.cr_bank_account_code ?? '', { onlySelf: true, emitEvent: false })
+                  this.careerandpurposeForm.controls.careerForm.controls.bank_account_name.setValue(quoitem.cr_bank_account_name ?? '', { onlySelf: true, emitEvent: false })
                   this.careerandpurposeForm.controls.careerForm.controls.bank_account_branch.setValue(quoitem.cr_bank_account_branch ?? '')
 
                   // === set purposeForm === 
 
                   this.careerandpurposeForm.controls.purposeForm.controls.purposeBuy.setValue(quoitem.pp_purpose_of_buy ?? '') // code of purpose buy name
-                  if (quoitem.pp_purpose_of_buy == '2') {this.isRepresentative = true;} // show วัตถุประสงค์ในการเช่าซื้อ text 
-                  if (quoitem.pp_purpose_of_buy == '8') {this.isotherpurposeBuy = true;} // show วัตถุประสงค์ในการขอสินเชิ่อ (อื่นๆ)
+                  if (quoitem.pp_purpose_of_buy == '2') { this.isRepresentative = true; } // show วัตถุประสงค์ในการเช่าซื้อ text 
+                  if (quoitem.pp_purpose_of_buy == '8') { this.isotherpurposeBuy = true; } // show วัตถุประสงค์ในการขอสินเชิ่อ (อื่นๆ)
                   this.careerandpurposeForm.controls.purposeForm.controls.purposeBuyother.setValue(quoitem.pp_purpose_of_buy_other ?? '')
                   this.careerandpurposeForm.controls.purposeForm.controls.purposeBuyName.setValue(quoitem.pp_purpose_of_buy_name ?? '')
                   this.careerandpurposeForm.controls.purposeForm.controls.reasonBuy.setValue(quoitem.pp_reason_of_buy ?? '')
@@ -468,10 +496,16 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
               this.masterDataService.getOccupation(), // อาชีพ
               this.masterDataService.getMasterBussiness(), // ประเภทผลิดภัณฑ์
               this.masterDataService.getbuyobjectiveMaster(), // วัตถุประสงค์การเช่าซื้อ 
+              this.masterDataService.getbankbt(), // ชื่อธนาคาร
             ]).subscribe({
-              next: ([resOc, resBu, resbuyobjective]) => {
+              next: ([resOc, resBu, resbuyobjective, resbankbt]) => {
 
-                if (resOc.status == 200 && resBu.status == 200 && resbuyobjective.status == 200) {
+                if (
+                  resOc.status == 200 &&
+                  resBu.status == 200 &&
+                  resbuyobjective.status == 200 &&
+                  resbankbt.status == 200
+                ) {
 
                   /* .. get product code from busicode ... */
                   const current_busi_code = quoitem.cd_bussiness_code
@@ -486,6 +520,14 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
 
                   if (current_busi_code == '005') {
                     this.iscartitleloan = true
+                  }
+
+                  if (resbankbt.data.length !== 0) {
+                    this.bankbtList = resbankbt.data
+                  }
+
+                  if (resbankbt.data.length !== 0) {
+                    this.bankbtList = resbankbt.data
                   }
 
                 } else {

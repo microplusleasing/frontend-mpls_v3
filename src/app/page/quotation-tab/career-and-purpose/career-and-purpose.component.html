@@ -137,10 +137,17 @@
                         <mat-grid-tile [colspan]="layout.list.maxcols">
                             <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>ชื่อธนาคาร</mat-label>
-                                <input matInput color="primary" [formControl]="bank_account_name" type="text">
-                                <mat-error *ngIf="bank_account_name.errors?.['maxlength']">
-                                    ชื่อธนาคารยาวเกินกำหนด
+                                <mat-select [formControl]="bank_account_code">
+                                    <mat-option [value]="undefined" disabled hidden>เลือกธนาคาร</mat-option>
+                                    <mat-option *ngFor="let bl of bankbtList" [value]="bl.code">
+                                        {{bl.name}}
+                                    </mat-option>
+                                </mat-select>
+                                <!-- <input matInput color="primary" [formControl]="bank_account_name" type="text"> -->
+                                <mat-error *ngIf="bank_account_code.errors?.['maxlength']">
+                                    รหัสธนาคารยาวเกินกำหนด ติดต่อเจ้าหน้าที่
                                 </mat-error>
+
                             </mat-form-field>
                         </mat-grid-tile>
 

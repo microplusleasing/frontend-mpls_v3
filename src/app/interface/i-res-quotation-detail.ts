@@ -125,6 +125,7 @@ export interface IResQuotationDetailData {
     cr_sub_leader_name?: string;
     cr_sub_work_per_week?: number;
     cr_book_bank_account_no?: string;
+    cr_bank_account_code?: string;
     cr_bank_account_name?: string;
     cr_bank_account_branch?: string;
     cs_app_key_id: string;

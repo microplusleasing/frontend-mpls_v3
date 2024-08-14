@@ -2327,6 +2327,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       sub_work_per_week: career_form.subCareerWorkPerWeekField.value ? career_form.subCareerWorkPerWeekField.value : null,
       sub_workplace_name: career_form.subCareerWorkplace.value ? career_form.subCareerWorkplace.value : '',
       book_bank_account_no: career_form.book_bank_account_no.value ? career_form.book_bank_account_no.value : '',
+      bank_account_code: career_form.bank_account_code.value ? career_form.bank_account_code.value : '',
       bank_account_name: career_form.bank_account_name.value ? career_form.bank_account_name.value : '',
       bank_account_branch: career_form.bank_account_branch.value ? career_form.bank_account_branch.value : '',
       // === purpose Path ===

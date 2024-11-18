@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -37,6 +37,9 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   @Input() quotationReq = {} as Observable<IResQuotationDetail>;
   @Output() dipchipRes = new EventEmitter<IReqFlagDipchip>();
   @Output() facevalid = new EventEmitter();
+  @Output() editfacecompare = new EventEmitter();
+  
+
   @Output() phonenumbervalue = new EventEmitter();
 
   userSession: IUserTokenData = {} as IUserTokenData
@@ -967,6 +970,11 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
   onClickFacecompareBtn() {
     this.facevalid.emit();
+  }
+
+  onClickEditFacecompareImage() {
+    /* ... witing implement ... */
+    this.editfacecompare.emit();
   }
 
   sameCitizenAddress(type: string) {

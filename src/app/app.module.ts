@@ -68,6 +68,9 @@ import { NZ_I18N } from 'ng-zorro-antd/i18n';
 import { th_TH } from 'ng-zorro-antd/i18n';
 import th from '@angular/common/locales/th';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { FaceValidEditComponent } from './widget/dialog/face-valid-edit/face-valid-edit.component';
+import { BasicConfirmDialogComponent } from './widget/dialog/basic-confirm-dialog/basic-confirm-dialog.component';
+import { PermissionUploadFacecompareDialogComponent } from './widget/dialog/permission-upload-facecompare-dialog/permission-upload-facecompare-dialog.component';
 
 registerLocaleData(th);
 
@@ -136,6 +139,9 @@ const MY_DATE_FORMATS = {
         OracleBackwardComponent,
         QuotationNextPreviousButtonComponent,
         PurposeChangeDialogComponent,
+        FaceValidEditComponent,
+        BasicConfirmDialogComponent,
+        PermissionUploadFacecompareDialogComponent,
     ],
     bootstrap: [AppComponent], 
     imports: [BrowserModule,

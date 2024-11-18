@@ -290,7 +290,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                             name: item.image_name ?? '',
                             image_code: item.image_code ?? '',
                             image_id: item.image_id ?? '',
-                            image_header: `${this.temp_master_categories_multiple.find((m_image) => m_image.image_code == item.image_code)?.image_header} (รูปที่ ${sequence})` ?? '',
+                            image_header: `${this.temp_master_categories_multiple.find((m_image) => m_image.image_code == item.image_code)?.image_header || ''} (รูปที่ ${sequence})`,
                             image_field_name: item.image_name ?? '',
                             urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
                             src: imageStr
@@ -739,7 +739,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                     name: item.image_name ?? '',
                     image_code: item.image_code ?? '',
                     image_id: item.image_id ?? '',
-                    image_header: `${this.temp_master_categories_multiple.find((m_image) => m_image.image_code == item.image_code)?.image_header} (รูปที่ ${sequence})` ?? '',
+                    image_header: `${this.temp_master_categories_multiple.find((m_image) => m_image.image_code == item.image_code)?.image_header || ''} (รูปที่ ${sequence})`,
                     image_field_name: item.image_name ?? '',
                     urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
                     src: imageStr

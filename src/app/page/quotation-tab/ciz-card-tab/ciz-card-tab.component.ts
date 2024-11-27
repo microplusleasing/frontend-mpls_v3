@@ -38,6 +38,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   @Output() dipchipRes = new EventEmitter<IReqFlagDipchip>();
   @Output() facevalid = new EventEmitter();
   @Output() phonenumbervalue = new EventEmitter();
+  @Output() editfacecompare = new EventEmitter();
 
   userSession: IUserTokenData = {} as IUserTokenData
   /* ... declare variable from query param form oracle view page ... */
@@ -967,6 +968,11 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
   onClickFacecompareBtn() {
     this.facevalid.emit();
+  }
+
+  onClickEditFacecompareImage() {
+    /* ... witing implement ... */
+    this.editfacecompare.emit();
   }
 
   sameCitizenAddress(type: string) {

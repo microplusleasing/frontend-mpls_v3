@@ -244,7 +244,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                             name: item.image_name ?? '',
                             image_code: item.image_code ?? '',
                             image_id: item.image_id ?? '',
-                            image_header: `${this.temp_master_categories_multiple.find((m_image) => m_image.image_code == item.image_code)?.image_header} (รูปที่ ${sequence})` ?? '',
+                            image_header: `${this.temp_master_categories_multiple.find((m_image) => m_image.image_code == item.image_code)?.image_header || ''} (รูปที่ ${sequence})`,
                             image_field_name: item.image_name ?? '',
                             urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
                             src: imageStr
@@ -355,7 +355,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
       // === call api create here === 
 
-      const recentSelect = this.categories.find((item) => { return item.image_code == this.uploadForm.controls.category.value ?? '' })
+      const recentSelect = this.categories.find((item) => { return item.image_code == this.uploadForm.controls.category.value ? this.uploadForm.controls.category.value : '' })
 
 
       let quotationdata = {
@@ -643,7 +643,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
       // === call api create here === 
 
-      const recentSelect = this.categoriesMultiple.find((item) => { return item.image_code == this.uploadMultipleForm.controls.category.value ?? '' })
+      const recentSelect = this.categoriesMultiple.find((item) => { return item.image_code == this.uploadMultipleForm.controls.category.value ? this.uploadMultipleForm.controls.category.value : '' })
 
 
       let quotationdata = {
@@ -689,7 +689,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                     name: item.image_name ?? '',
                     image_code: item.image_code ?? '',
                     image_id: item.image_id ?? '',
-                    image_header: `${this.temp_master_categories_multiple.find((m_image) => m_image.image_code == item.image_code)?.image_header} (รูปที่ ${sequence})` ?? '',
+                    image_header: `${this.temp_master_categories_multiple.find((m_image) => m_image.image_code == item.image_code)?.image_header || ''} (รูปที่ ${sequence})`,
                     image_field_name: item.image_name ?? '',
                     urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
                     src: imageStr

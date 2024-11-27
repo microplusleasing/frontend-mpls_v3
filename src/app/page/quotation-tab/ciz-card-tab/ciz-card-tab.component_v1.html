@@ -5,11 +5,21 @@
         <button mat-raised-button color="primary" (click)="onClickDipchipBtn()" *ngIf="this.showdipchipbtn"
           [disabled]="dipchipButtonDisabled">Dipchip</button>
       </div>
-      <div class="flex-image-header">
+      <div class="flex-image-header" style="margin-bottom: 1.5em;">
         <div>
           <img [src]="cizCardImage" class="img-box"><br>
           <span style="color: red;">{{this.quotationService.dopastatus.messageheader}}</span><br>
           <button mat-raised-button color="primary" (click)="onClickFacecompareBtn()">เปรียบเทียบใบหน้า</button>
+          
+          <button 
+          *ngIf="userSession.RADMIN === 'Y'" 
+          style="margin-left: 2em;" 
+          mat-raised-button color="primary"
+            (click)="onClickEditFacecompareImage()"
+            >
+            แก้ไข/upload ภาพ
+          </button>
+          
         </div>
       </div>
       <div class="flexbox">

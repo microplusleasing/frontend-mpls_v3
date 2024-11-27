@@ -9,7 +9,8 @@
             <app-ciz-card-tab [quotationReq]="(quotationResult$)" (dipchipRes)="recieve_dipchipData($event)"
                 (facevalid)="recieve_dialogfacevalid()" (phonenumbervalue)="recieve_phonenumber()"
                 (ciz_age)="updateage($event)" (ciz_age_insurance)="updateage_insurance($event)"
-                (ciz_gender)="updategender($event)" (birth_date)="updatebirthdate($event)">
+                (ciz_gender)="updategender($event)" (birth_date)="updatebirthdate($event)"
+                (editfacecompare)="recieve_editfacecompare()">
             </app-ciz-card-tab>
             <div class="flex-center" *ngIf="!canclequest">
                 <div>

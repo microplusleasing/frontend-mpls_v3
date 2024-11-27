@@ -61,6 +61,9 @@ import { ExamineSendCarImageComponent } from './page/menu/examine-send-car-image
 import { OracleBackwardComponent } from './widget/oracle-backward/oracle-backward.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { FaceValidEditComponent } from './widget/dialog/face-valid-edit/face-valid-edit.component';
+import { PermissionUploadFacecompareDialogComponent } from './widget/dialog/permission-upload-facecompare-dialog/permission-upload-facecompare-dialog.component';
+import { BasicConfirmDialogComponent } from './widget/dialog/basic-confirm-dialog/basic-confirm-dialog.component';
 
 const MY_DATE_FORMATS = {
   parse: {
@@ -126,6 +129,9 @@ const MY_DATE_FORMATS = {
     MrtaProductNewComponent,
     ExamineSendCarImageComponent,
     OracleBackwardComponent,
+    FaceValidEditComponent,
+    PermissionUploadFacecompareDialogComponent,
+    BasicConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,

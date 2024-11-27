@@ -45,6 +45,9 @@ import { ConfirmDeleteSecondhandCarImageAttachComponent } from 'src/app/widget/d
 import { IReqCheckMotoYear } from 'src/app/interface/i-req-check-moto-year';
 import { IResDialog2ndhandCarImageAttach } from 'src/app/interface/dialog-return/i-res-dialog-2ndhand-car-image-attach';
 import { IQueryParamsOracle } from 'src/app/interface/oracleform/queryParam/i-query-params-oracle';
+import { FaceValidEditComponent } from 'src/app/widget/dialog/face-valid-edit/face-valid-edit.component';
+import { PermissionUploadFacecompareDialogComponent } from 'src/app/widget/dialog/permission-upload-facecompare-dialog/permission-upload-facecompare-dialog.component';
+import { ControlService } from 'src/app/service/control.service';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -202,6 +205,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     private imageUtilService: ImageUtilService,
     private imageService: ImageService,
     private dipchipService: DipchipService,
+    private controlService: ControlService,
     private actRoute: ActivatedRoute,
     private sanitizer: DomSanitizer,
     public quotationService: QuotationService,
@@ -877,6 +881,58 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     } else {
       this.snackbarfail(`มีการแก้ไขข้อมูลบนหน้ากรอกข้อมูล กรุณาบันทึกก่อน`)
     }
+  }
+
+
+  recieve_editfacecompare() {
+
+
+    /* ... เช็คสถานะ case quotation ก่อนว่าสามารถแก้ไขได้ไหม (loan_result เป็น null กับ 'Z' เท่านั้น) .... */
+    this.loadingService.showLoader()
+
+    this.controlService.checkloanresultbyquotationid(this.quoid).subscribe({
+      next: (res_loan_result) => {
+        this.loadingService.hideLoader()
+
+        if (res_loan_result.status !== 200) {
+          this.snackbarfail(`❌ ไม่สามารถอัพโหลดรูปได้ : ${res_loan_result.message ? res_loan_result.message : 'No error message'}`)
+        } else {
+          if (res_loan_result.data.loan_result && res_loan_result.data.loan_result !== 'Z') {
+            /* ... not allow ... */
+            this.dialog.open(PermissionUploadFacecompareDialogComponent, {}).afterClosed().subscribe((res_close) => {
+              /* ... waiting implement ... */
+            })
+          } else {
+            /* ... allow ... */
+            if (this.quoid) {
+              // FaceValidEditComponent
+              this.dialog.open(FaceValidEditComponent, {
+                width: `80%`,
+                height: `90%`,
+                data: {
+                  quotationid: `${this.quoid}`
+                }
+              }).afterClosed().subscribe((resCloseDialogEditFacecompare) => {
+                /* .. waiting implement ... */
+              })
+            } else {
+              this.snackbarfail(`ไม่พบเลข quotation id ที่จะทำรายการ`)
+            }
+          }
+        }
+
+      }, error: (e) => {
+        /* ... waiting implement ... */
+        this.loadingService.hideLoader()
+        this.snackbarfail(`Fail to call service checkloanresultbyquotationid : ${e.message ? e.message : `No error message`}`)
+      }, complete: () => {
+        /* ... waiting implement ... */
+        this.loadingService.hideLoader()
+      }
+    }).add(() => {
+      this.loadingService.hideLoader()
+    })
+
   }
 
 

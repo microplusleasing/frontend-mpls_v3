@@ -224,7 +224,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
     console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
 
     const options = {
-      maxSizeMB: 2,
+      maxSizeMB: 1.5,
       maxWidthOrHeight: 1920,
       useWebWorker: true
     }

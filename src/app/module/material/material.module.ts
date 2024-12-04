@@ -23,7 +23,10 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSliderModule } from '@angular/material/slider';
-import {CdkAccordionModule} from '@angular/cdk/accordion';
+import { CdkAccordionModule } from '@angular/cdk/accordion';
+import { MatSortModule } from '@angular/material/sort';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 
 @NgModule({
@@ -55,7 +58,10 @@ import {CdkAccordionModule} from '@angular/cdk/accordion';
     MatSnackBarModule,
     MatRadioModule,
     MatSliderModule,
-    CdkAccordionModule
+    CdkAccordionModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
+    MatSortModule
   ]
 })
 export class MaterialModule { }

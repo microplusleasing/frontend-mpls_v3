@@ -45,15 +45,9 @@ export class ImageService {
 
   getdealersignimage(quotation_id: string): Observable<IImage> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getDealerSignaturebyid/${quotation_id}`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getDealerSignaturebyid/${quotation_id}`
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getdealersignimage/${quotation_id}`
     return this.http.get<IImage>(url)
   }
-
-  // verifyviewsignimage(userid: string) {
-  //   // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/insertnegolist`;
-  //   const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/verifyviewsignimage`;
-  //   return this.http.post<any>(url, userid);
-  // }
 
   genmrtaqr(application_num: string, premium_mrta: number): Observable<IMrtaQrBarcode> {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getDealerSignaturebyid/${quotation_id}`

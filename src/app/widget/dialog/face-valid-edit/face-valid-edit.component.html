@@ -1,0 +1,51 @@
+<div [formGroup]="editfacecompareimageform">
+    <div style="
+        display: flex;
+        justify-content: center; /* Centers the inner div horizontally */
+        align-items: center;
+        flex-wrap: wrap;
+    ">
+
+        <!-- Centered Content -->
+        <div style="
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         flex-direction: column;">
+            <div style="text-align: center;">
+                <div>
+                    ภาพจาก DIPCHIP
+                </div>
+                <br>
+                <div class="sp1em imgbox">
+                    <img style="max-height: 400px;" [src]="this.citizenimageurl">
+                </div>
+                <div>
+                    {{this.customerfullname}}
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 2rem;">
+                <div>
+                    ภาพถ่ายหน้าลูกค้า
+                </div>
+                <div class="sp1em imgbox">
+                    <img style="max-height: 400px; max-width: 400px;" [src]="this.photofaceimageurl">
+                </div>
+                <div>
+                    <button mat-raised-button color="primary" (click)="takefile.click()">
+                        อัพโหลดภาพถ่ายเปรียบเทียบภาพหน้าลูกค้า
+                    </button>
+                </div>
+                <input #takefile (change)="attachphotofaceimage($event)" type="file" accept="image/jpeg"
+                    capture="environment" style="visibility: hidden;" />
+                <div>
+                    <button mat-raised-button color="primary" 
+                    [disabled]="!editfacecompareimageform.valid"
+                    (click)="OnClickUploadfacecompareimage()">
+                        ยืนยันการอัพโหลดภาพ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

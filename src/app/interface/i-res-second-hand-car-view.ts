@@ -27,9 +27,13 @@ export interface IResSecondHandCarView {
     model_code: string
     application_num: string
     contract_no: string
+    grade_moto: string
     sl_code: string
     auction_code: string
     model_year: string
     moto_year: number
+    battery_type: string
+    battery_capacity: string
+    fuel_type: string
   }
   

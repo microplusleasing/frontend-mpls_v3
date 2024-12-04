@@ -27,7 +27,7 @@ export class SecondhandCarViewDialogComponent implements OnInit {
   textshow: string = 'กรอกข้อมูลเบื้องต้นแล้วกดค้นหา'
   dataSource = new MatTableDataSource;
   paginator: MatPaginator = {} as MatPaginator;
-  displayedColumns: string[] = ['regno', 'provname', 'brandname', 'modelname', 'color', 'cc'];
+  displayedColumns: string[] = ['regno', 'provname', 'brandname', 'modelname', 'color', 'cc', 'grade'];
   dataListTemp: IResSecondHandCarView = {} as IResSecondHandCarView
   pageLength: number = 0;
   pageSize: number = 0;

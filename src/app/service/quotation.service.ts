@@ -53,6 +53,7 @@ import { IResClearSecondhandCarImageAttach } from '../interface/i-res-clear-seco
 import { IImageAttachUploadMultipleList } from '../interface/i-image-attach-upload-multiple-list';
 import { IResCreateImageAttachMultipleList } from '../interface/i-res-create-image-attach-multiple-list';
 import { IResImageAttachMultipleByAppid } from '../interface/i-res-image-attach-multiple-by-appid';
+import { IResMplsGetInfoFaceCompare } from '../interface/i-res-mpls-get-info-face-compare';
 
 
 @Injectable({
@@ -158,7 +159,7 @@ export class QuotationService {
     return this.http.post<IResBasic>(url, formData)
   }
 
-  getsendcardeliverbyid(quotation_id: string): Observable<IResBasicImage> {
+  getattachimagedeliverbyid(quotation_id: string): Observable<IResBasicImage> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getattachimagedeliverbyid/${quotation_id}`
     return this.http.get<IResBasicImage>(url)
   }
@@ -388,6 +389,11 @@ export class QuotationService {
   MPLS_getimagetocompareiapp(quotationid: string) {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getimagetocompareiapp?quotationid=${quotationid}`
     return this.http.get<IResImageFaceCompare>(url)
+  }
+
+  MPLS_getinfofacecompare(quotationid: string) {
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_getinfofacecompare?quotationid=${quotationid}`
+    return this.http.post<IResMplsGetInfoFaceCompare>(url, {quotationid: quotationid})
   }
 
   MPLS_getimagetocompareiapp_unlock(quotationid: string) {

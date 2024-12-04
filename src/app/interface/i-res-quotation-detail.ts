@@ -273,13 +273,22 @@ export interface IResQuotationDetailData {
     cd_model_year: string;
     cd_cc: number;
     cd_reg_no: string;
+    cd_grade: string;
+    cd_is_over_max_ltv: string;
+    cd_over_max_ltv_reason: string;
     cd_reg_date: Date;
     cd_contract_ref: string;
     cd_reg_mile: number;
     cd_prov_code: string;
     cd_prov_name: string;
     quo_secondhand_car_verify: string;
+    is_dipchip_channal: string
+    ciz_nationality_code: string;
+    ciz_identity_code: string;
+    ciz_passport_id: string;
 
+    /*.... ENV-CAR NEW FIELD (14/11/2023) ...*/
+    cd_motor_number: string;
 }
 
 export interface IResQuotationDetail {

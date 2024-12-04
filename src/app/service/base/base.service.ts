@@ -96,10 +96,10 @@ export class BaseService {
       moment.locale('en');
       var date = moment(datestring, 'MM/DD/YYYY HH:mm:ss')
       var formatedate = moment(date).format('YYYY-MM-DD');
-      console.log(`date before return : ${formatedate}`)
+      // console.log(`date before return : ${formatedate}`)
       return formatedate;
     } catch (e) {
-      console.log(`before return null: ${e}`)
+      // console.log(`before return null: ${e}`)
       return null;
     }
   }
@@ -155,10 +155,10 @@ export class BaseService {
       moment.locale('en');
       var date = moment(datevalue)
       var formatedate = moment(date).format('YYYY-MM-DD');
-      console.log(`date before return : ${formatedate}`)
+      // console.log(`date before return : ${formatedate}`)
       return formatedate;
     } catch (e) {
-      console.log(`before return null: ${e}`)
+      // console.log(`before return null: ${e}`)
       return null;
     }
   }

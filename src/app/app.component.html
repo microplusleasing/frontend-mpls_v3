@@ -1,4 +1,6 @@
-<app-header></app-header>
+<ng-container>
+  <app-header *ngIf="showHeader"></app-header>
+</ng-container>
 <router-outlet></router-outlet>
 <ngx-spinner 
   bdColor="rgba(0, 0, 0, 0.8)" 

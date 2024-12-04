@@ -8,11 +8,14 @@ import { combineLatest, debounceTime, forkJoin, lastValueFrom, map, Observable, 
 import { IReqFlagDipchip } from 'src/app/interface/i-req-flag-dipchip';
 import { IResHouseOwnerType } from 'src/app/interface/i-res-house-owner-type';
 import { IResHouseType } from 'src/app/interface/i-res-house-type';
+import { IResIdentityTypeMaster } from 'src/app/interface/i-res-identity-type-master';
 import { IResMariedStatus } from 'src/app/interface/i-res-maried-status';
 import { IResMasterProvince, IResMasterProvinceData } from 'src/app/interface/i-res-master-province';
 import { IResMasterTitle, IResMasterTitleData } from 'src/app/interface/i-res-master-title';
+import { IResNationalityMaster } from 'src/app/interface/i-res-nationality-master';
 import { IResQuotationDetail } from 'src/app/interface/i-res-quotation-detail';
 import { IUserTokenData } from 'src/app/interface/i-user-token';
+import { IQueryParamsOracle } from 'src/app/interface/oracleform/queryParam/i-query-params-oracle';
 import { BaseService } from 'src/app/service/base/base.service';
 import { DipchipService } from 'src/app/service/dipchip.service';
 import { LoadingService } from 'src/app/service/loading.service';
@@ -35,8 +38,12 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   @Output() dipchipRes = new EventEmitter<IReqFlagDipchip>();
   @Output() facevalid = new EventEmitter();
   @Output() phonenumbervalue = new EventEmitter();
+  @Output() editfacecompare = new EventEmitter();
 
   userSession: IUserTokenData = {} as IUserTokenData
+  /* ... declare variable from query param form oracle view page ... */
+  oracleExamineSendCarImageView: IQueryParamsOracle = {} as IQueryParamsOracle
+  redirectPageWhenError: string = '/quotation-view'
 
 
   // === add ciz_age_insurance (24/05/2023) ===
@@ -46,6 +53,8 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   @Output() ciz_gender = new EventEmitter<number>();
   @Output() birth_date = new EventEmitter<Date | null>();
 
+
+  isFormResetting = false;
   quotationdatatemp: IResQuotationDetail = {} as IResQuotationDetail
   phonevalidstatus: string = ''
   facevalidstatus: string = ''
@@ -65,6 +74,9 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     { value: 1, name: 'ชาย' },
     { value: 2, name: 'หญิง' }
   ]
+  /* ... add master nationality and identity (24/01/2024) ... */
+  masterNationality: IResNationalityMaster = {} as IResNationalityMaster
+  masterIdentityType: IResIdentityTypeMaster = {} as IResIdentityTypeMaster
 
   cizCardImage: string = `${environment.citizen_card_img_preload}`
   cizCardImage_string: string = ''
@@ -79,8 +91,12 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   firstName = new FormControl('', Validators.required)
   lastName = new FormControl('', Validators.required)
   gender = new FormControl<number | null | undefined>(null, Validators.required)
+  /* ... add field nationlity and identitytype (24/01/2024) ... */
+  nationality = new FormControl('', Validators.required)
+  identity = new FormControl('', Validators.required)
   // email = new FormControl('', Validators.required)
   citizenId = new FormControl('', [Validators.required, Validators.pattern('^[0-9]{13}$')])
+  passportId = new FormControl('', [Validators.required])
   birthDate = new FormControl<string | null>(null, Validators.required)
   issueDate = new FormControl<string | null>(null, Validators.required)
   expireDate = new FormControl<string | null>(null, Validators.required)
@@ -171,10 +187,13 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     // uploadImg: this.uploadImg,
     titleCode: this.titleCode,
     gender: this.gender,
+    nationality: this.nationality,
+    identity: this.identity,
     titleName: this.titleName,
     firstName: this.firstName,
     lastName: this.lastName,
     citizenId: this.citizenId,
+    passportId: this.passportId,
     // email: this.email,
     address: this.address,
     subDistrict: this.subDistrict,
@@ -273,6 +292,12 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
     this.actRoute.queryParams.subscribe(params => {
       this.quotationid = params['id']
+      /* ... set filter query param from view page ... */
+      this.oracleExamineSendCarImageView.ac_status = params['ac_status'] || null;
+      this.oracleExamineSendCarImageView.branch = params['branch'] || null;
+      this.oracleExamineSendCarImageView.approve_date = params['approve_date'] || null;
+      this.oracleExamineSendCarImageView.pageno = +params['pageno']; // Convert to number
+
       if (this.quotationid) {
         this.dipchipButtonDisabled = true
       } else {
@@ -365,62 +390,6 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
         // === wait for calculate age from birthdate ===
         if (value) {
           const formatbirthdatenew = moment(value).format('DD/MM/YYYY')
-          // if (formatbirthdatenew) {
-
-          //   // const agecalcualte = await lastValueFrom(this.masterDataService.getagefrombirthdate(formatbirthdatenew))
-          //   const agecalcualte = await lastValueFrom(this.masterDataService.calculateage_db(formatbirthdatenew))
-          //   // == set age to form field ==
-          //   this.cizForm.controls.maincitizenForm.controls.age.setValue(agecalcualte.data[0].age_year)
-
-
-          //   this.quotationReq.subscribe((value) => {
-          //     if (value.data && value.data[0].ciz_age && value.data[0].ciz_age < 20) {
-          //       // code to execute if value.data[0].ciz_age is less than 20 (no valid)
-          //       this.quotationService.MPLS_cancle_quotation(value.data[0].quo_key_app_id).subscribe((response) => {
-          //         if (response.status == 200) {
-
-          //           // === Warning dialog and navigate dashboard ===
-          //           this.dialog.open(MainDialogComponent, {
-          //             panelClass: 'custom-dialog-container',
-          //             data: {
-          //               header: 'ไม่สามารถทำรายการได้',
-          //               message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
-          //               button_name: 'ปิด'
-          //             }
-          //           }).afterClosed().subscribe(result => {
-          //             // === redirect to home page === 
-          //             this.router.navigate(['/quotation-view']);
-          //           });
-          //         } else {
-          //           this.snackbarfail(`Error : ${response.message}`)
-          //         }
-          //       })
-          //     } else {
-
-          //       if (agecalcualte.data.length !== 0) {
-          //         this.ciz_age.emit(agecalcualte.data[0].age_year)
-
-          //         // code to execute if value.data[0].ciz_age is not less than 20 
-          //         // === case that new case (no quo_key_app_id) ====
-          //         if (agecalcualte.data[0].age_year < 20) {
-          //           // === กรณีอายุไม่ถึง 20 ปี และไม่มี quo_key_app_id ====
-          //           this.dialog.open(MainDialogComponent, {
-          //             panelClass: `custom-dialog-container`,
-          //             data: {
-          //               header: `ไม่สามารถทำรายการได้`,
-          //               message: `อายุไม่ผ่านเกณฑ์ในการขอสินเชื่อ`,
-          //               button_name: `ปิด`
-          //             }
-          //           }).afterClosed().subscribe((result) => {
-          //             // === redirect to home page === 
-          //             this.router.navigate(['/quotation-view'])
-          //           })
-          //         } else { }
-
-          //       }
-          //     }
-          //   });
-          // }
 
           if (formatbirthdatenew) {
             forkJoin([
@@ -450,8 +419,24 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                             button_name: 'ปิด'
                           }
                         }).afterClosed().subscribe(result => {
-                          // === redirect to home page === 
-                          this.router.navigate(['/quotation-view']);
+                          /* ... check route to redirect ... */
+                          const url = (this.actRoute.snapshot.routeConfig?.path) ? this.actRoute.snapshot.routeConfig?.path : ''
+
+                          if (url == 'quotation-examine') {
+                            this.redirectPageWhenError = `/examine-send-car-image-view`
+                            // === redirect to examine-send-car-image-view
+                            this.router.navigate([this.redirectPageWhenError], {
+                              queryParams: {
+                                pageno: this.oracleExamineSendCarImageView.pageno ? this.oracleExamineSendCarImageView.pageno : 1,
+                                ac_status: this.oracleExamineSendCarImageView.ac_status,
+                                approve_date: this.oracleExamineSendCarImageView.approve_date,
+                                branch: this.oracleExamineSendCarImageView.branch
+                              }
+                            });
+                          } else {
+                            // === redirect to home page === 
+                            this.router.navigate([this.redirectPageWhenError]);
+                          }
                         });
                       } else {
                         this.snackbarfail(`Error : ${response.message}`)
@@ -475,8 +460,25 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                             button_name: `ปิด`
                           }
                         }).afterClosed().subscribe((result) => {
-                          // === redirect to home page === 
-                          this.router.navigate(['/quotation-view'])
+
+                          /* ... check route to redirect ... */
+                          const url = (this.actRoute.snapshot.routeConfig?.path) ? this.actRoute.snapshot.routeConfig?.path : ''
+
+                          if (url == 'quotation-examine') {
+                            // === redirect to examine-send-car-image-view
+                            this.redirectPageWhenError = `/examine-send-car-image-view`
+                            this.router.navigate([this.redirectPageWhenError], {
+                              queryParams: {
+                                pageno: this.oracleExamineSendCarImageView.pageno ? this.oracleExamineSendCarImageView.pageno : 1,
+                                ac_status: this.oracleExamineSendCarImageView.ac_status,
+                                approve_date: this.oracleExamineSendCarImageView.approve_date,
+                                branch: this.oracleExamineSendCarImageView.branch
+                              }
+                            });
+                          } else {
+                            // === redirect to home page === 
+                            this.router.navigate([this.redirectPageWhenError]);
+                          }
                         })
                       } else { }
 
@@ -498,6 +500,45 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       }
     })
 
+    /*... check nationality valueChange '01' default identity = '01' (P'Inw request) ... */
+    this.cizForm.controls.maincitizenForm.controls.nationality.valueChanges.subscribe((value) => {
+      if (!this.isFormResetting) {
+        if (value) {
+          if (value == '01') {
+            this.cizForm.controls.maincitizenForm.controls.identity.setValue('01')
+            this.cizForm.controls.maincitizenForm.controls.identity.disable()
+            this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
+          } else {
+            this.cizForm.controls.maincitizenForm.controls.identity.enable()
+            this.cizForm.controls.maincitizenForm.controls.identity.setValue('07')
+            this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
+          }
+        }
+      }
+    })
+
+    /*... CHECK VALID CITIZEN NO / PASSPORT NO WHEN IDENTITY VALUE CHANGE ...*/
+    this.cizForm.controls.maincitizenForm.controls.identity.valueChanges.subscribe((value) => {
+      if (!this.isFormResetting) {
+        if (value) {
+          if (value !== '01') {
+            this.cizForm.controls.maincitizenForm.controls.citizenId.setValue(null)
+            this.cizForm.controls.maincitizenForm.controls.citizenId.setValidators(null)
+            this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
+
+            this.cizForm.controls.maincitizenForm.controls.passportId.setValidators(Validators.required)
+            this.cizForm.controls.maincitizenForm.controls.passportId.updateValueAndValidity()
+          } else {
+            this.cizForm.controls.maincitizenForm.controls.citizenId.setValidators([Validators.required, Validators.pattern('^[0-9]{13}$')])
+            this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
+
+            this.cizForm.controls.maincitizenForm.controls.passportId.setValue(null)
+            this.cizForm.controls.maincitizenForm.controls.passportId.setValidators(null)
+            this.cizForm.controls.maincitizenForm.controls.passportId.updateValueAndValidity()
+          }
+        }
+      }
+    })
 
   }
 
@@ -534,7 +575,6 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                 // *** set phone valid status ***
 
                 // === ปลดล๊อค form เมื่อมี record อยู่แล้ว ===
-                // this.loadingService.hideLoader() // === (comment on 06/02/2023 to manage stage (timing)) ===
                 if (res_quo.data) {
 
                   // this.loadingService.hideLoader();
@@ -603,86 +643,6 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
         }
       })
 
-      // forkJoin([
-      //   this.getUserSessionQuotation(),
-      //   this.quotationReq
-      // ]).subscribe({
-      //   next: ([resSession, resQuo]) => {
-      //     if (resSession) {
-      //       this.userSession = resSession
-      //     }
-
-      //     if (resQuo) {
-      //       // *** set phone valid status ***
-
-      //       // === ปลดล๊อค form เมื่อมี record อยู่แล้ว ===
-      //       // this.loadingService.hideLoader() // === (comment on 06/02/2023 to manage stage (timing)) ===
-      //       if (resQuo.data) {
-
-      //         this.loadingService.hideLoader();
-
-      //         this.showdipchipbtn = false;
-      //         if (resQuo.data.length !== 0) {
-
-      //           const quodata = resQuo.data[0]
-
-      //           // *** กำหนดค่า quotationid ในหน้า ciz-card-tab ***
-      //           this.quotationid = quodata.quo_key_app_id
-
-      //           // *** ล๊อค field เบอร์โทรศัพท์ที่ได้ทำการ verify แล้ว (OTP_PHONE_VERIFY = 'Y') ***
-      //           if (quodata.otp_phone_verify == 'Y') {
-      //             this.cizForm.controls.generalinfoForm.controls.phoneNumber.disable()
-      //           }
-
-      //           // *** check and trigger field phone number on form field ***
-      //           if (quodata.phone_number == '') {
-      //             this.cizForm.controls.generalinfoForm.controls.phoneNumber.markAllAsTouched()
-      //           }
-
-      //           // *** set phone valid status text ***
-      //           if (quodata.quo_key_app_id !== '') {
-
-      //             if (quodata.ciz_phone_valid_status == 'Y') {
-      //               this.phonevalidstatus = `✅ : ได้รับการยืนยันเบอร์โทรศัพท์แล้ว`
-      //             } else {
-      //               this.phonevalidstatus = `❌ : ยังไม่ได้รับการยืนยันเบอร์โทรศัพท์`
-      //             }
-
-      //             if (quodata.quo_face_compare_verify !== '' && quodata.quo_face_compare_verify !== null) {
-      //               this.facevalidstatus = `✅ : ทำการตรวจสอบใบหน้าคนเรียบร้อย`
-      //             } else {
-      //               this.facevalidstatus = `❌ : รอทำการตรวจสอบใบหน้าคน`
-      //             }
-      //           }
-
-      //           // *** ล๊อคฟิวส์พวกข้อมูลบนบัตรประชาชนไม่ให้แก้ไขกรณี case มาจากการ dipchip (dipchip_uuid is not null || dipchip_uuid !== '')
-
-      //           // if(quodata.dipchip_uuid !== '' && quodata.dipchip_uuid !== null) {
-      //           //   this.cizForm.controls.maincitizenForm.disable()
-      //           // }
-
-      //         }
-      //       } else {
-      //         this.loadingService.hideLoader();
-
-      //         if (this.userSession.RADMIN == 'Y') {
-      //           this.showdipchipbtn = false;
-      //         } else {
-      //           this.showdipchipbtn = true;
-      //         }
-      //       }
-      //     }
-      //   }
-      //   , error: (e) => {
-      //     this.loadingService.hideLoader()
-      //     this.snackbarfail(`error : ${e.message ? e.message : 'No return message'}`)
-      //     console.log(`Error on get observable quotation result : ${e.messgae ? e.message : `No return message`}`)
-      //   }, complete: () => {
-      //     this.loadingService.hideLoader()
-      //     console.log(`complete forkjoin !`)
-      //   }
-      // })
-
     } else {
       // this.loadingService.hideLoader()
 
@@ -707,6 +667,8 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       this.masterDataService.getmariedstatus(),
       this.masterDataService.gethousetype(),
       this.masterDataService.gethouseownertype(),
+      this.masterDataService.nationalityMaster(),
+      this.masterDataService.identityTypeMaster(),
       this.quotationReq
     ]).subscribe({
       next: (resultMaster) => {
@@ -717,7 +679,9 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
         this.masterMariedStatus = resultMaster[2]
         this.masterHouseType = resultMaster[3]
         this.masterHouseOwnerType = resultMaster[4]
-        this.quotationdatatemp = resultMaster[5]
+        this.masterNationality = resultMaster[5]
+        this.masterIdentityType = resultMaster[6]
+        this.quotationdatatemp = resultMaster[7]
 
         this.cizForm.disable();
 
@@ -731,13 +695,10 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
               // === contain quo_key_app_id ===
               this.cizForm.enable()
 
-              // if (quodata.dipchip_uuid !== '' && quodata.dipchip_uuid !== null) {
-              //   this.cizForm.controls.maincitizenForm.disable()
-              // }
-
-
               // === *** เงื่อนไขใหม่ ถ้าหากมีข้อมูล dipchip ไม่ว่าจะมี dopa หรือ ไม่มี ให้ lock field พวกข้อมูลบัตรประชาชน *** ===
-              this.cizForm.controls.maincitizenForm.disable() // === set on 03/01/2023 ===
+              if (this.quotationdatatemp.data[0].is_dipchip_channal == 'Y') {
+                this.cizForm.controls.maincitizenForm.disable() // === set on 03/01/2023 ===
+              }
 
               // === new valid (if postal code of ciz_card null unlock field) 20/02/2023 ====
               !quodata.ciz_postal_code ? this.cizForm.controls.maincitizenForm.controls.postalCode.enable() : {};
@@ -764,24 +725,21 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   }
 
   async setquotationdata() {
-    // console.log(`this is quotation temp (citizenid): ${this.quotationdatatemp.data[0].first_name}`);
 
     const quoitem = this.quotationdatatemp.data[0];
     // === set informationForm ===
     this.cizForm.controls.maincitizenForm.controls.firstName.setValue(quoitem.first_name ?? '')
     this.cizForm.controls.maincitizenForm.controls.lastName.setValue(quoitem.last_name ?? '')
     this.cizForm.controls.maincitizenForm.controls.citizenId.setValue(quoitem.idcard_num ?? '')
+    this.cizForm.controls.maincitizenForm.controls.passportId.setValue(quoitem.ciz_passport_id ?? '')
     this.cizForm.controls.generalinfoForm.controls.phoneNumber.setValue(quoitem.phone_number ?? '')
-    // this.cizForm.controls.maincitizenForm.controls.email.setValue(quoitem.email ?? '')
     this.cizForm.controls.maincitizenForm.controls.address.setValue(quoitem.ciz_address ?? '')
     this.cizForm.controls.maincitizenForm.controls.subDistrict.setValue(quoitem.ciz_sub_district ?? '')
     this.cizForm.controls.maincitizenForm.controls.district.setValue(quoitem.ciz_district ?? '')
     this.cizForm.controls.maincitizenForm.controls.gender.setValue(quoitem.ciz_gender ?? null)
     this.cizForm.controls.maincitizenForm.controls.provinceCode.setValue(quoitem.ciz_province_code ?? '')
     this.cizForm.controls.maincitizenForm.controls.provinceName.setValue(this.mapProvinceNameById((quoitem.ciz_province_code ?? ''), this.masterProvince.data))
-    // this.cizForm.controls.maincitizenForm.controls.provinceName.setValue(quoitem.ciz_province_name ?? '')
     this.cizForm.controls.maincitizenForm.controls.postalCode.setValue(quoitem.ciz_postal_code ?? '')
-    // this.cizForm.controls.maincitizenForm.controls.provinceCode.setValue(quoitem.ciz_province_code ?? null)
     this.cizForm.controls.maincitizenForm.controls.titleCode.setValue(quoitem.title_code ?? '')
     this.cizForm.controls.maincitizenForm.controls.titleName.setValue(this.mapTitleNameById((quoitem.title_code ?? ''), this.masterTitle.data))
     this.cizForm.controls.maincitizenForm.controls.issuePlace.setValue(quoitem.ciz_issued_place ?? null)
@@ -857,6 +815,27 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     this.cizForm.controls.facecompareValid.setValue(quoitem.quo_face_compare_verify ? true : false)
     // this.cizForm.controls.facevalid.setValue(quoitem.quo_face_compare_verify == 'Y' ? true : false)
 
+    /* ... set nationality and identity field (25/01/2024) ... */
+    this.cizForm.controls.maincitizenForm.controls.nationality.setValue(quoitem.ciz_nationality_code, { emitEvent: false })
+    this.cizForm.controls.maincitizenForm.controls.identity.setValue(quoitem.ciz_identity_code, { emitEvent: false })
+    if (quoitem.ciz_identity_code) {
+      if (quoitem.ciz_identity_code !== '01') {
+        this.cizForm.controls.maincitizenForm.controls.citizenId.setValue(null)
+        this.cizForm.controls.maincitizenForm.controls.citizenId.setValidators(null)
+        this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
+
+        this.cizForm.controls.maincitizenForm.controls.passportId.setValidators(Validators.required)
+        this.cizForm.controls.maincitizenForm.controls.passportId.updateValueAndValidity()
+      } else {
+        this.cizForm.controls.maincitizenForm.controls.citizenId.setValidators([Validators.required, Validators.pattern('^[0-9]{13}$')])
+        this.cizForm.controls.maincitizenForm.controls.citizenId.updateValueAndValidity()
+
+        this.cizForm.controls.maincitizenForm.controls.passportId.setValue(null)
+        this.cizForm.controls.maincitizenForm.controls.passportId.setValidators(null)
+        this.cizForm.controls.maincitizenForm.controls.passportId.updateValueAndValidity()
+      }
+    }
+
     // === set image from dipchip to src (03/10/2022) === 
 
     if (quoitem.cizcard_image) {
@@ -883,8 +862,9 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   async onClickDipchipBtn() {
 
     if (!this.quotationid) {
+
       let countround = 0
-      this.dipchipButtonDisabled = false;
+      this.dipchipButtonDisabled = true;
       this.loadingService.showLoader()
       this.dipchipService.getdipchipinfo({
         token: '',
@@ -988,6 +968,11 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
   onClickFacecompareBtn() {
     this.facevalid.emit();
+  }
+
+  onClickEditFacecompareImage() {
+    /* ... witing implement ... */
+    this.editfacecompare.emit();
   }
 
   sameCitizenAddress(type: string) {

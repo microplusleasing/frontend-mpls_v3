@@ -44,6 +44,10 @@ import { SecondhandCarAttachImageDialogComponent } from 'src/app/widget/dialog/s
 import { ConfirmDeleteSecondhandCarImageAttachComponent } from 'src/app/widget/dialog/confirm-delete-secondhand-car-image-attach/confirm-delete-secondhand-car-image-attach.component';
 import { IReqCheckMotoYear } from 'src/app/interface/i-req-check-moto-year';
 import { IResDialog2ndhandCarImageAttach } from 'src/app/interface/dialog-return/i-res-dialog-2ndhand-car-image-attach';
+import { IQueryParamsOracle } from 'src/app/interface/oracleform/queryParam/i-query-params-oracle';
+import { FaceValidEditComponent } from 'src/app/widget/dialog/face-valid-edit/face-valid-edit.component';
+import { PermissionUploadFacecompareDialogComponent } from 'src/app/widget/dialog/permission-upload-facecompare-dialog/permission-upload-facecompare-dialog.component';
+import { ControlService } from 'src/app/service/control.service';
 
 @Component({
   selector: 'app-quotation-detail',
@@ -64,13 +68,19 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   // ** stepper **
   stepperOrientation: Observable<StepperOrientation>;
   isLinear: boolean = false;
+  showOracleBackward: boolean = false;
+  redirectPageWhenError: string = '/quotation-view'
 
+  currentUrl: string = '';
   quoForm: FormGroup;
   quotationkeyid: string;
   queryParams: ParamMap;
   quotationResult$: BehaviorSubject<IResQuotationDetail> = new BehaviorSubject<IResQuotationDetail>({} as IResQuotationDetail)
   userSession: IUserTokenData = {} as IUserTokenData
   quoid: string = ''
+  /* ... declare variable from query param form oracle view page ... */
+  oracleExamineSendCarImageView: IQueryParamsOracle = {} as IQueryParamsOracle
+
   visiblePhoneValid: boolean = true
   disablePhoneValidbtn: boolean = true
   verifyeconsent: boolean = false
@@ -79,6 +89,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   secondhandcarverify: boolean = false
   verifycareerandpurpose: boolean = false
   verifysignature: boolean = false
+  /*... bypass flag ...*/
+  verifybypass: boolean = false
+  /* ..................*/
   createorupdatecitizendataDisable: boolean = true
   createorupdatecreditbtnDisable: boolean = true
   createorupdatecareerandPurposebtnDisable: boolean = true
@@ -186,11 +199,13 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     private cd: ChangeDetectorRef,
     private router: Router,
     private breakpointObserver: BreakpointObserver,
+    private route: ActivatedRoute,
     private loadingService: LoadingService,
     private masterDataService: MasterDataService,
     private imageUtilService: ImageUtilService,
     private imageService: ImageService,
     private dipchipService: DipchipService,
+    private controlService: ControlService,
     private actRoute: ActivatedRoute,
     private sanitizer: DomSanitizer,
     public quotationService: QuotationService,
@@ -199,6 +214,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     public override _snackBar: MatSnackBar,
   ) {
     super(dialog, _snackBar)
+
+
 
     this.quoForm = this.fb.group({
       cizform: this.cizcardtab.cizForm,
@@ -215,6 +232,11 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     this.actRoute.queryParams.subscribe(params => {
       this.quoid = params['id']
+      /* ... set filter query param from view page ... */
+      this.oracleExamineSendCarImageView.ac_status = params['ac_status'] || null;
+      this.oracleExamineSendCarImageView.branch = params['branch'] || null;
+      this.oracleExamineSendCarImageView.approve_date = params['approve_date'] || null;
+      this.oracleExamineSendCarImageView.pageno = +params['pageno']; // Convert to number
     });
 
     // ***** form on viewchild sucscribe at ngAfterViewInit() fn ******
@@ -229,8 +251,13 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.getUserSessionQuotation().subscribe({
       next: (res_user) => {
 
-        this.userSession = res_user
+        /*... check auth ... */
+        this.currentUrl = (this.route.snapshot.routeConfig?.path) ? this.route.snapshot.routeConfig?.path : ''
+        if (this.currentUrl == 'quotation-examine') {
+          this.redirectPageWhenError = `/examine-send-car-image-view`
+        }
 
+        this.userSession = res_user
         // this.quotationService.getquotationbyid(this.quoid).subscribe({
         if (this.quoid) {
           this.quotationResult$.subscribe({
@@ -333,6 +360,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                     // === set valid when record signature is already exits === 
                     this.consenttab.signaturetab.signatureForm.controls.verifySignature.setValue(true)
                     this.verifysignature = true
+                  }
+
+                  /* .... .FOr bypass check (image first) (31/10/2023) ...*/
+                  /* ... condition for check is quo_key_app_id == application_num ...*/
+                  if (quoitem.quo_key_app_id == quoitem.application_num) {
+                    this.verifybypass = true
                   }
 
                 }
@@ -507,7 +540,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     if (this.quoid) {
       // === set Observable quotation (quotationResult$) ===
       // console.log(`test`)
+      this.cizcardtab.isFormResetting = true
       this.quotationResult$.next(await lastValueFrom(this.quotationService.getquotationbyid(this.quoid)))
+      this.cizcardtab.isFormResetting = false;
       if (this.quotationResult$.value.data.length !== 0) {
 
         this.cizcardtab.showdipchipbtn = false
@@ -519,7 +554,43 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
         if (this.quotationResult$.value.data[0].loan_result !== 'Y') {
           this.sendcarActive$.next(false)
+
+        } else {
+          /* ... let allow link from quotaion-examine (07/02/2024) ... */
+          console.log(`this is currentUrl Value : ${this.currentUrl}`)
+          if (this.currentUrl == 'quotation-examine') {
+            this.showOracleBackward = true
+            this.stepper.selectedIndex = 5
+          }
         }
+      } else if (this.quotationResult$.value.status == 202) {
+        this.loadingService.hideLoader()
+        this.dialog.open(MainDialogComponent, {
+          panelClass: 'custom-dialog-container',
+          data: {
+            header: 'No permission',
+            message: `${this.quotationResult$.value.message ? this.quotationResult$.value.message : 'ไม่มีสิทธ์เข้าถึงข้อมูล'}`,
+            button_name: 'ปิด'
+          }
+        }).afterClosed().subscribe(result => {
+          // === redirect to home page === 
+
+          /* .... check if url is quotation-examine redirect to examine-send-car-image-view ... */
+
+          const chkurl = this.currentUrl = (this.route.snapshot.routeConfig?.path) ? this.route.snapshot.routeConfig?.path : ''
+          if (chkurl == 'quotation-examine') {
+            this.router.navigate([this.redirectPageWhenError], {
+              queryParams: {
+                pageno: this.oracleExamineSendCarImageView.pageno ? this.oracleExamineSendCarImageView.pageno : 1,
+                ac_status: this.oracleExamineSendCarImageView.ac_status,
+                approve_date: this.oracleExamineSendCarImageView.approve_date,
+                branch: this.oracleExamineSendCarImageView.branch
+              }
+            });
+          } else {
+            this.router.navigate([this.redirectPageWhenError]);
+          }
+        });
       } else {
 
         this.loadingService.hideLoader()
@@ -532,7 +603,22 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           }
         }).afterClosed().subscribe(result => {
           // === redirect to home page === 
-          this.router.navigate(['/quotation-view']);
+
+          /* .... check if url is quotation-examine redirect to examine-send-car-image-view ... */
+
+          const chkurl = this.currentUrl = (this.route.snapshot.routeConfig?.path) ? this.route.snapshot.routeConfig?.path : ''
+          if (chkurl == 'quotation-examine') {
+            this.router.navigate([this.redirectPageWhenError], {
+              queryParams: {
+                pageno: this.oracleExamineSendCarImageView.pageno ? this.oracleExamineSendCarImageView.pageno : 1,
+                ac_status: this.oracleExamineSendCarImageView.ac_status,
+                approve_date: this.oracleExamineSendCarImageView.approve_date,
+                branch: this.oracleExamineSendCarImageView.branch
+              }
+            });
+          } else {
+            this.router.navigate([this.redirectPageWhenError]);
+          }
         });
 
       }
@@ -613,7 +699,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           if (this.cizcardtab.cizForm.valid) {
             (this.verifyeconsent && this.verifycareerandpurpose) ? this.imageattachtab.onStageChageFormStepper() : this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage);
           } else {
-            this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+            /*... check verify bypass ...*/
+            if (this.verifybypass) {
+              this.imageattachtab.onStageChageFormStepper()
+            } else {
+              this.openDialogStep(`ไม่อนุญาติ`, `คุณยังไม่สามาถทำรายการในขั้นตอนนี้ได้`, `ปิด`, previousStage)
+            }
           }
         }
           break;
@@ -689,7 +780,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                 this.afteroninit();
               } else {
                 // === handle error from updatedipchipstatus (may be cause of mission quotaitonid (22/08/2023)) ===
-                
+
               }
             })
           } else {
@@ -793,6 +884,58 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
   }
 
 
+  recieve_editfacecompare() {
+
+
+    /* ... เช็คสถานะ case quotation ก่อนว่าสามารถแก้ไขได้ไหม (loan_result เป็น null กับ 'Z' เท่านั้น) .... */
+    this.loadingService.showLoader()
+
+    this.controlService.checkloanresultbyquotationid(this.quoid).subscribe({
+      next: (res_loan_result) => {
+        this.loadingService.hideLoader()
+
+        if (res_loan_result.status !== 200) {
+          this.snackbarfail(`❌ ไม่สามารถอัพโหลดรูปได้ : ${res_loan_result.message ? res_loan_result.message : 'No error message'}`)
+        } else {
+          if (res_loan_result.data.loan_result && res_loan_result.data.loan_result !== 'Z') {
+            /* ... not allow ... */
+            this.dialog.open(PermissionUploadFacecompareDialogComponent, {}).afterClosed().subscribe((res_close) => {
+              /* ... waiting implement ... */
+            })
+          } else {
+            /* ... allow ... */
+            if (this.quoid) {
+              // FaceValidEditComponent
+              this.dialog.open(FaceValidEditComponent, {
+                width: `80%`,
+                height: `90%`,
+                data: {
+                  quotationid: `${this.quoid}`
+                }
+              }).afterClosed().subscribe((resCloseDialogEditFacecompare) => {
+                /* .. waiting implement ... */
+              })
+            } else {
+              this.snackbarfail(`ไม่พบเลข quotation id ที่จะทำรายการ`)
+            }
+          }
+        }
+
+      }, error: (e) => {
+        /* ... waiting implement ... */
+        this.loadingService.hideLoader()
+        this.snackbarfail(`Fail to call service checkloanresultbyquotationid : ${e.message ? e.message : `No error message`}`)
+      }, complete: () => {
+        /* ... waiting implement ... */
+        this.loadingService.hideLoader()
+      }
+    }).add(() => {
+      this.loadingService.hideLoader()
+    })
+
+  }
+
+
   async createquotationdopa(type: string, dipchipuuid: string) {
     // == set default type ==
     // * 1: e-consent flow (verify dopa sucess)
@@ -821,7 +964,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       provinceCode: ciz_form.controls.maincitizenForm.controls.provinceCode.value ? ciz_form.controls.maincitizenForm.controls.provinceCode.value : '',
       postalCode: ciz_form.controls.maincitizenForm.controls.postalCode.value ? ciz_form.controls.maincitizenForm.controls.postalCode.value : '',
       cizcardImage: this.cizcardtab.cizCardImage_string ? this.cizcardtab.cizCardImage_string : '',
-      dipchipuuid: dipchipuuid ? dipchipuuid : ''
+      dipchipuuid: dipchipuuid ? dipchipuuid : '',
+      nationality: '01',
+      identity: '01'
     }
 
     const itemString = JSON.stringify(quotationdata)
@@ -965,6 +1110,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       work_postal_code: ciz_form.controls.workAddress.controls.postalCode.value ? ciz_form.controls.workAddress.controls.postalCode.value : '',
       work_description: ciz_form.controls.workAddress.controls.description.value ? ciz_form.controls.workAddress.controls.description.value : '',
 
+      nationality: ciz_form.controls.maincitizenForm.controls.nationality.value ? ciz_form.controls.maincitizenForm.controls.nationality.value : '',
+      identity: ciz_form.controls.maincitizenForm.controls.identity.value ? ciz_form.controls.maincitizenForm.controls.identity.value : '',
+      passportid: ciz_form.controls.maincitizenForm.controls.passportId.value ? ciz_form.controls.maincitizenForm.controls.passportId.value : ''
+
     }
 
     const itemString = JSON.stringify(quotationdata)
@@ -996,6 +1145,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
       } else {
         // --- handle fail update citizen info data ---
+        if (resultCreateQEconsent.status == 500) {
+          this.snackbarfail(`${resultCreateQEconsent.message ? resultCreateQEconsent.message : 'ไม่สามารถบันทึกข้อมูลบัตรประชาชนผู้สมัครได้ : no return msg'}`)
+        }
       }
 
     } catch (e: any) {
@@ -1109,6 +1261,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       work_province_name: work_provnameValue,
       work_postal_code: ciz_form.controls.workAddress.controls.postalCode.value ? ciz_form.controls.workAddress.controls.postalCode.value : '',
       work_description: ciz_form.controls.workAddress.controls.description.value ? ciz_form.controls.workAddress.controls.description.value : '',
+
+      nationality: ciz_form.controls.maincitizenForm.controls.nationality.value ? ciz_form.controls.maincitizenForm.controls.nationality.value : '',
+      identity: ciz_form.controls.maincitizenForm.controls.identity.value ? ciz_form.controls.maincitizenForm.controls.identity.value : '',
+      passportid: ciz_form.controls.maincitizenForm.controls.passportId.value ? ciz_form.controls.maincitizenForm.controls.passportId.value : ''
 
     }
 
@@ -1288,10 +1444,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       prov_name: this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.prov_name.value : '',
       moto_year: this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.moto_year.value : null,
       // === over max ltv value (handle when business code == '002') (25/08/2023) ===
-      grade_moto: this.productdetailtab.productForm.controls.secondHandCarForm.controls.grade_moto.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.grade_moto.value : '', 
+      grade_moto: this.productdetailtab.productForm.controls.secondHandCarForm.controls.grade_moto.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.grade_moto.value : '',
       is_over_max_ltv: this.productdetailtab.productForm.controls.secondHandCarForm.controls.isovermaxltvField.value ? 'Y' : 'N',
-      over_max_ltv_reason: this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value : ''
-      
+      over_max_ltv_reason: this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value ? this.productdetailtab.productForm.controls.secondHandCarForm.controls.overmaxltvreasonField.value : '',
+      /* .... add env-car field (14/11/2023) ...*/
+      motor_number: this.productdetailtab.productForm.controls.detailForm.controls.motorNumberField.value ? this.productdetailtab.productForm.controls.detailForm.controls.motorNumberField.value : '',
+
     }
 
     // *** declare params to check moto_year valid ***
@@ -2108,7 +2266,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               data: data
             }).afterClosed().subscribe((res) => {
               // === do next stage === 
-              this.router.navigate(['/quotation-view']);
+              this.router.navigate([this.redirectPageWhenError]);
 
             })
           } else {

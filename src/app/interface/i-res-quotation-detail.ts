@@ -282,7 +282,13 @@ export interface IResQuotationDetailData {
     cd_prov_code: string;
     cd_prov_name: string;
     quo_secondhand_car_verify: string;
+    is_dipchip_channal: string
+    ciz_nationality_code: string;
+    ciz_identity_code: string;
+    ciz_passport_id: string;
 
+    /*.... ENV-CAR NEW FIELD (14/11/2023) ...*/
+    cd_motor_number: string;
 }
 
 export interface IResQuotationDetail {

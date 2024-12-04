@@ -2,7 +2,7 @@
   <div [formGroup]="uploadForm">
     <div class="flex-center">
       <div class="card" style="width: 80%;">
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" style="width: 50%">
           <mat-label>เอกสารแนบ</mat-label>
           <mat-select [formControl]="category">
             <mat-option [value]="undefined" disabled hidden>เลือกประเภทของรูปถ่าย</mat-option>
@@ -27,7 +27,7 @@
         <input #hiddenInput style="visibility: hidden;">
 
 
-        <button *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="uploadImage()" color="primary" [disabled]="disableUploadBtn">Upload</button>
+        <button style="margin: 1rem;" *ngIf="userSession.RADMIN !== 'Y'" mat-raised-button (click)="uploadImage()" color="primary" [disabled]="disableUploadBtn">Upload</button>
       </div>
       <br>
       <span style="color: red;">{{this.txtrequireimage}}</span>
@@ -59,7 +59,7 @@
         <div style="text-align: center;">
           <span style="color: red;">{{this.txtrequireimagesecondhandcar}}</span>
         </div>
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" style="width: 50%">
           <mat-label>เอกสารแนบ</mat-label>
           <mat-select [formControl]="categoryMultiple">
             <mat-option [value]="undefined" disabled hidden>เลือกประเภทของรูปถ่าย</mat-option>

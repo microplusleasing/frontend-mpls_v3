@@ -1,27 +1,42 @@
-<h1 mat-dialog-title>รูปภาพ</h1>
-<mat-dialog-content class="mat-typography" style="margin: 0;">
+<h1 mat-dialog-title style="font-family: prompt;">รูปภาพ</h1>
+<!-- <mat-dialog-content class="flexbox">
     <img src="{{imagesrc | async}}" style="
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-    width: 100%
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
     "
     [ngStyle]="{
-        width: slide+ '%',
+        width: slide+'%',
         height: slide+'%'
       }"
     >
+</mat-dialog-content> -->
+<mat-dialog-content class="flexbox">
+  <img src="{{imagesrc | async}}" style="
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+      width: auto;
+  "
+  [ngStyle]="{
+      height: slide+'%'
+    }"
+  >
 </mat-dialog-content>
-ZOOM :
-<mat-slider 
-class="example-margin"
-    color="primary"
-    [max]="max"
-    [min]="min"
-    [(ngModel)]="slide"
->
-</mat-slider>
-<div mat-dialog-actions align="end">
+
+
+<div class="flex-center" style="margin-top: 1rem;">
+    <div class="flex-column">
+      ZOOM : 
+    </div>
+    <div>
+      <mat-slider color="primary" [max]="max" [min]="min">
+        <input matSliderThumb [(ngModel)]="slide" #slider>
+      </mat-slider>
+    </div>
+  </div>
+  
+<div class="flex-center" mat-dialog-actions align="end">
     <button mat-raised-button 
     [mat-dialog-close]="true" 
     color="primary"

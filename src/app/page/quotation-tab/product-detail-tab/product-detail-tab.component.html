@@ -8,7 +8,7 @@
                 <mat-grid-list [cols]="layout.columns" [rowHeight]="'90px'">
                     <mat-grid-tile [colspan]="layout.list.maxcols">
                         <!-- ประเภทผลิดภัณฑ์ -->
-                        <mat-form-field appearance="outline">
+                        <mat-form-field appearance="outline" style="width: 100%">
                             <mat-select required [formControl]="bussinessCode">
                                 <mat-option [value]="null" disabled hidden>เลือกผลิตภัณฑ์</mat-option>
                                 <mat-option *ngFor="let item of bussinessList"
@@ -25,7 +25,7 @@
                     <div *ngIf="showdealerfield">
                         <mat-grid-tile [colspan]="layout.list.cols6">
                             <!-- รหัสร้านค้า -->
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>รหัสร้านค้า</mat-label>
                                 <input type="text" placeholder="กรอกรหัสร้านค้า" aria-label="Number" matInput
                                     [formControl]="dealerCode" [matAutocomplete]="autoDealer">
@@ -57,7 +57,7 @@
                     </div>
                     <div *ngIf="showgeneralcarinfovisible">
                         <mat-grid-tile [colspan]="layout.list.cols4">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>ยี่ห้อ</mat-label>
                                 <input type="text" placeholder="กรอกยี่ห้อ" aria-label="Number" matInput
                                     [formControl]="carBrandField" [matAutocomplete]="autoBrand" [required]="true">
@@ -77,7 +77,7 @@
                             </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols4">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>รุ่น</mat-label>
                                 <input type="text" placeholder="กรอกรหัสโมเดล" aria-label="Number" matInput
                                     [formControl]="carModelField" [matAutocomplete]="autoModel" [required]="true">
@@ -97,33 +97,33 @@
                             </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols4">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>สี</mat-label>
                                 <input type="text" matInput placeholder="สีรถ" [formControl]="carColorField">
                             </mat-form-field>
                         </mat-grid-tile>
 
                         <mat-grid-tile [colspan]="layout.list.cols3" *ngIf="showchassisandengine">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>เลขเครื่อง</mat-label>
                                 <input type="text" matInput placeholder="เลขเครื่อง" [formControl]="engineNoField">
                             </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols3">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>เลขเครื่อง (running)</mat-label>
                                 <input type="text" matInput placeholder="เลขเครื่อง2"
                                     [formControl]="runningengineNoField">
                             </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols3" *ngIf="showchassisandengine">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>เลขถัง</mat-label>
                                 <input type="text" matInput placeholder="เลขถัง" [formControl]="chassisNoField">
                             </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols3">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>เลขถัง (running)</mat-label>
                                 <input type="text" matInput placeholder="เลขถัง" [formControl]="runningchassisNoField">
                             </mat-form-field>
@@ -133,7 +133,7 @@
                         <div [formGroup]="secondHandCarForm" *ngIf="shwosecondhandcardetail">
                             <!-- เลขทะเบียน -->
                             <mat-grid-tile [colspan]="layout.list.cols4">
-                                <mat-form-field appearance="outline">
+                                <mat-form-field appearance="outline" style="width: 100%">
                                     <mat-label>ทะเบียน</mat-label>
                                     <input type="text" matInput placeholder="ทะเบียน" [formControl]="reg_no">
                                     <mat-error
@@ -143,7 +143,7 @@
                             </mat-grid-tile>
                             <!-- จังหวัด -->
                             <mat-grid-tile [colspan]="layout.list.cols4">
-                                <mat-form-field appearance="outline">
+                                <mat-form-field appearance="outline" style="width: 100%">
                                     <mat-select required [formControl]="prov_code">
                                         <mat-option [value]="null" disabled hidden>เลือกจังหวัด</mat-option>
                                         <mat-option *ngFor="let item of masterProvinceList.data"
@@ -157,7 +157,7 @@
                             </mat-grid-tile>
                             <!-- วันที่จดทะเบียน -->
                             <mat-grid-tile [colspan]="layout.list.cols4">
-                                <mat-form-field appearance="outline">
+                                <mat-form-field appearance="outline" style="width: 100%">
                                     <mat-label>วันที่จดทะเบียน</mat-label>
                                     <input type="date" matInput placeholder="วันที่จดทะเบียน" [formControl]="reg_date"
                                         (keydown)="onKeyDown($event)" [disabled]="true">
@@ -168,7 +168,7 @@
                             </mat-grid-tile>
                             <!-- ปีรุ่นรถ -->
                             <mat-grid-tile [colspan]="layout.list.cols3">
-                                <mat-form-field appearance="outline">
+                                <mat-form-field appearance="outline" style="width: 100%">
                                     <mat-label>ปีรุ่นรถ</mat-label>
                                     <input type="number" [min]="0" matInput placeholder="ปีรุ่นรถ"
                                         [formControl]="model_year">
@@ -179,7 +179,7 @@
                             </mat-grid-tile>
                             <!-- CC -->
                             <mat-grid-tile [colspan]="layout.list.cols3">
-                                <mat-form-field appearance="outline">
+                                <mat-form-field appearance="outline" style="width: 100%">
                                     <mat-label>CC</mat-label>
                                     <input type="text" matInput placeholder="CC" [formControl]="cc">
                                     <mat-error *ngIf="secondHandCarForm.controls.cc.hasError('required')">กรุณากรอก cc
@@ -188,14 +188,14 @@
                             </mat-grid-tile>
                             <!-- Grade -->
                             <mat-grid-tile [colspan]="layout.list.cols3">
-                                <mat-form-field appearance="outline">
+                                <mat-form-field appearance="outline" style="width: 100%">
                                     <mat-label>Grade</mat-label>
                                     <input type="text" matInput placeholder="Grade" [formControl]="grade_moto">
                                 </mat-form-field>
                             </mat-grid-tile>
                             <!-- เลขไมล์ -->
                             <mat-grid-tile [colspan]="layout.list.cols3">
-                                <mat-form-field appearance="outline">
+                                <mat-form-field appearance="outline" style="width: 100%">
                                     <mat-label>เลขไมล์</mat-label>
                                     <input type="number" [min]="0" matInput placeholder="เลขไมล์"
                                         [formControl]="reg_mile">
@@ -212,7 +212,7 @@
                             <!-- Blank Field For fix layout -->
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols4" *ngIf="showPrice && (showBrandModelLoan$ | async)">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>อัตราดอกเบี้ย</mat-label>
                                 <mat-select [formControl]="interestRateField" [required]="true">
                                     <!-- <mat-option value=""></mat-option> -->
@@ -227,7 +227,7 @@
                             </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols4" *ngIf="showPrice && (showBrandModelLoan$ | async)">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>จำนวนงวด</mat-label>
                                 <mat-select [formControl]="paymentRoundCountValueField" [required]="true">
                                     <!-- <mat-option value=""></mat-option> -->
@@ -246,7 +246,7 @@
                             </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols4" *ngIf="showPrice && (showBrandModelLoan$ | async)">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>ยอดกู้ {{(maxlvtmessage$ | async)}}</mat-label>
                                 <!-- <input matInput [formControl]="loanAmountField" type="number"
                                     max="{{(maxltvValue$ | async)}}" [required]="true"> -->
@@ -277,7 +277,7 @@
                         <mat-grid-tile [colspan]="layout.list.cols4"
                             *ngIf="(detailForm.controls.loanAmountField.hasError('max') && detailForm.controls.bussinessCode.value == '002') || isshowmaxltv">
                             <!-- is over max ltv field -->
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>เหตุผล</mat-label>
                                 <input type="text" matInput placeholder="ระบุเหตุผล"
                                     [formControl]="overmaxltvreasonField">
@@ -289,14 +289,14 @@
 
                         <!-- Hide field -->
                         <mat-grid-tile *ngIf="false">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>ราคาโรงงาน</mat-label>
                                 <input matInput [formControl]="productValueField" type="number">
                             </mat-form-field>
                         </mat-grid-tile>
 
                         <mat-grid-tile [colspan]="layout.list.maxcols" *ngIf="showPrice">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>ประกัน</mat-label>
                                 <mat-select [formControl]="insurerCodeField" [required]="true">
                                     <!-- <mat-option value=""></mat-option> -->
@@ -312,7 +312,7 @@
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols4"
                             *ngIf="showPrice && (showInsuranceSelect$ | async)">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>จำนวนปี</mat-label>
                                 <mat-select [formControl]="insuranceYearField" [required]="true">
                                     <!-- <mat-option value=""></mat-option> -->
@@ -328,7 +328,7 @@
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols4"
                             *ngIf="showPrice && (showInsuranceSelect$ | async)">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>ราคาเบี้ย (ประกัน)</mat-label>
                                 <mat-select [formControl]="insurancePlanPriceField">
                                     <mat-option [value]="undefined" disabled hidden>เลือกเบี้ยประกัน</mat-option>
@@ -350,7 +350,7 @@
                             </div>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.maxcols">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>ราคาเงินสด</mat-label>
                                 <input matInput [formControl]="priceincludevatField" type="number">
                                 <mat-error *ngIf="detailForm.controls.priceincludevatField.hasError('required')">

@@ -5,7 +5,7 @@
         <button mat-raised-button color="primary" (click)="onClickDipchipBtn()" *ngIf="this.showdipchipbtn"
           [disabled]="dipchipButtonDisabled">Dipchip</button>
       </div>
-      <div class="flex-image-header">
+      <div class="flex-image-header" style="margin-bottom: 1.5em;">
         <div>
           <img [src]="cizCardImage" class="img-box"><br>
           <span style="color: red;">{{this.quotationService.dopastatus.messageheader}}</span><br>

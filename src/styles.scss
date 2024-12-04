@@ -25,7 +25,16 @@ h1,
 h2,
 h3,
 h4,
-div {
+s div,
+div form,
+div form .ng-container,
+div form .ng-container .mat-grid-list .mat-grid-tile,
+div form .ng-container .mat-grid-list .mat-grid-tile .mat-form-field,
+div form .ng-container .mat-grid-list .mat-grid-tile .mat-form-field .mat-label {
+  font-family: Prompt;
+}
+
+* {
   font-family: Prompt;
 }
 
@@ -44,12 +53,26 @@ div {
 .mat-card h2,
 .mat-dialog-title h1,
 .mat-dialog-title h2,
-.mat-h1, .mat-typography h1,
-.mat-h2, .mat-title, .mat-typography h2,
-.mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button,
+.mat-h1,
+.mat-h2,
+.mat-title,
+.mat-typography h2,
+.mat-button,
+.mat-icon-button,
+.mat-stroked-button,
+.mat-flat-button,
 .mat-snack-bar-container,
-.mat-h3, .mat-subheading-2, .mat-typography h3,
-.mat-h4, .mat-subheading-1, .mat-typography h4 {
+.mat-h3,
+.mat-subheading-2,
+.mat-typography h3,
+.mat-h4,
+.mat-subheading-1,
+.mat-typography h4,
+.mat-form-girld,
+.mat-h1, .mat-headline-5, .mat-typography .mat-h1, .mat-typography .mat-headline-5, .mat-typography h1,
+.mat-mdc-dialog-container .mat-mdc-dialog-title,
+.mat-mdc-dialog-container .mat-mdc-dialog-title+.mat-mdc-dialog-content
+{
   font-family: Prompt;
 }
 
@@ -80,4 +103,9 @@ body {
 
 .sp1em {
   margin: 1em;
+}
+
+span .mat-mdc-option .mdc-list-item__primary-text,
+.mat-mdc-option .mdc-list-item__primary-text {
+  font-family: Prompt !important;
 }

@@ -27,9 +27,10 @@ import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dial
 import { SecondhandCarViewDialogComponent } from 'src/app/widget/dialog/secondhand-car-view-dialog/secondhand-car-view-dialog.component';
 
 @Component({
-  selector: 'app-product-detail-tab',
-  templateUrl: './product-detail-tab.component.html',
-  styleUrls: ['./product-detail-tab.component.scss']
+    selector: 'app-product-detail-tab',
+    templateUrl: './product-detail-tab.component.html',
+    styleUrls: ['./product-detail-tab.component.scss'],
+    standalone: false
 })
 export class ProductDetailTabComponent extends BaseService implements OnInit, AfterViewInit {
 

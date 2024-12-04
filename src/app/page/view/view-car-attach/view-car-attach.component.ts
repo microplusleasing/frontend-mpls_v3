@@ -14,9 +14,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ImageDialogComponent } from 'src/app/widget/dialog/image-dialog/image-dialog.component';
 
 @Component({
-  selector: 'app-view-car-attach',
-  templateUrl: './view-car-attach.component.html',
-  styleUrls: ['./view-car-attach.component.scss']
+    selector: 'app-view-car-attach',
+    templateUrl: './view-car-attach.component.html',
+    styleUrls: ['./view-car-attach.component.scss'],
+    standalone: false
 })
 export class ViewCarAttachComponent extends BaseService implements OnInit {
 

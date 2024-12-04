@@ -21,9 +21,10 @@ export interface econsentValue {
 }
 
 @Component({
-  selector: 'app-otp-econsent',
-  templateUrl: './otp-econsent.component.html',
-  styleUrls: ['./otp-econsent.component.scss']
+    selector: 'app-otp-econsent',
+    templateUrl: './otp-econsent.component.html',
+    styleUrls: ['./otp-econsent.component.scss'],
+    standalone: false
 })
 export class OtpEconsentComponent extends BaseService implements OnInit {
 

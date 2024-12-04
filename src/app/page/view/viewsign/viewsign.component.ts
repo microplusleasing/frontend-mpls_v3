@@ -14,9 +14,10 @@ import { EConsentImageDialogComponent } from 'src/app/widget/dialog/e-consent-im
 import { IResGeteconsentimagebyidData } from 'src/app/interface/i-res-geteconsentimagebyid';
 
 @Component({
-  selector: 'app-viewsign',
-  templateUrl: './viewsign.component.html',
-  styleUrls: ['./viewsign.component.scss']
+    selector: 'app-viewsign',
+    templateUrl: './viewsign.component.html',
+    styleUrls: ['./viewsign.component.scss'],
+    standalone: false
 })
 export class ViewsignComponent implements OnInit {
 

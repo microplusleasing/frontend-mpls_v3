@@ -54,9 +54,10 @@ interface Status {
 }
 
 @Component({
-  selector: 'app-quotation-view',
-  templateUrl: './quotation-view.component.html',
-  styleUrls: ['./quotation-view.component.scss']
+    selector: 'app-quotation-view',
+    templateUrl: './quotation-view.component.html',
+    styleUrls: ['./quotation-view.component.scss'],
+    standalone: false
 })
 export class QuotationViewComponent extends BaseService implements OnInit {
   dataListTemp: IResQuotationView = {} as IResQuotationView;

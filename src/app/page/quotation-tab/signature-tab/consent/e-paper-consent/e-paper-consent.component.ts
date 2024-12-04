@@ -10,9 +10,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
-  selector: 'app-e-paper-consent',
-  templateUrl: './e-paper-consent.component.html',
-  styleUrls: ['./e-paper-consent.component.scss']
+    selector: 'app-e-paper-consent',
+    templateUrl: './e-paper-consent.component.html',
+    styleUrls: ['./e-paper-consent.component.scss'],
+    standalone: false
 })
 export class EPaperConsentComponent extends BaseService implements OnInit {
 

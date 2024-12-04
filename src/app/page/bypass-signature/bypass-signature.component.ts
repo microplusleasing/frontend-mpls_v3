@@ -12,9 +12,10 @@ import { QuotationService } from 'src/app/service/quotation.service';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
-  selector: 'app-bypass-signature',
-  templateUrl: './bypass-signature.component.html',
-  styleUrls: ['./bypass-signature.component.scss']
+    selector: 'app-bypass-signature',
+    templateUrl: './bypass-signature.component.html',
+    styleUrls: ['./bypass-signature.component.scss'],
+    standalone: false
 })
 export class BypassSignatureComponent implements OnInit {
 

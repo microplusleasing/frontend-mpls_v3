@@ -9,9 +9,10 @@ import { LoadingService } from 'src/app/service/loading.service';
 import { QuotationService } from 'src/app/service/quotation.service';
 
 @Component({
-  selector: 'app-credit-disclosure-consent',
-  templateUrl: './credit-disclosure-consent.component.html',
-  styleUrls: ['./credit-disclosure-consent.component.scss']
+    selector: 'app-credit-disclosure-consent',
+    templateUrl: './credit-disclosure-consent.component.html',
+    styleUrls: ['./credit-disclosure-consent.component.scss'],
+    standalone: false
 })
 export class CreditDisclosureConsentComponent extends BaseService implements OnInit {
 

@@ -7,9 +7,10 @@ import { Component, Input, OnInit, Output, SimpleChanges, EventEmitter } from '@
 import { IUserToken } from 'src/app/interface/i-user-token';
 
 @Component({
-  selector: 'app-qr-barcode-mrta',
-  templateUrl: './qr-barcode-mrta.component.html',
-  styleUrls: ['./qr-barcode-mrta.component.scss']
+    selector: 'app-qr-barcode-mrta',
+    templateUrl: './qr-barcode-mrta.component.html',
+    styleUrls: ['./qr-barcode-mrta.component.scss'],
+    standalone: false
 })
 export class QrBarcodeMrtaComponent {
 

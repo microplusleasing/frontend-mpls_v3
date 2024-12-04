@@ -3,9 +3,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
-  selector: 'app-dealer-grade-image-dialog',
-  templateUrl: './dealer-grade-image-dialog.component.html',
-  styleUrls: ['./dealer-grade-image-dialog.component.scss']
+    selector: 'app-dealer-grade-image-dialog',
+    templateUrl: './dealer-grade-image-dialog.component.html',
+    styleUrls: ['./dealer-grade-image-dialog.component.scss'],
+    standalone: false
 })
 export class DealerGradeImageDialogComponent implements OnInit {
 

@@ -61,9 +61,10 @@ interface Status {
 }
 
 @Component({
-  selector: 'app-collector-view',
-  templateUrl: './collector-view.component.html',
-  styleUrls: ['./collector-view.component.scss']
+    selector: 'app-collector-view',
+    templateUrl: './collector-view.component.html',
+    styleUrls: ['./collector-view.component.scss'],
+    standalone: false
 })
 export class CollectorViewComponent extends BaseService implements OnInit {
 

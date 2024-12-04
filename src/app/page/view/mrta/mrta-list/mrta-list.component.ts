@@ -28,9 +28,10 @@ export const atLeastOne = (validator: ValidatorFn, controls: string[] = []) => (
 };
 
 @Component({
-  selector: 'app-mrta-list',
-  templateUrl: './mrta-list.component.html',
-  styleUrls: ['./mrta-list.component.scss']
+    selector: 'app-mrta-list',
+    templateUrl: './mrta-list.component.html',
+    styleUrls: ['./mrta-list.component.scss'],
+    standalone: false
 })
 export class MrtaListComponent implements OnInit {
 

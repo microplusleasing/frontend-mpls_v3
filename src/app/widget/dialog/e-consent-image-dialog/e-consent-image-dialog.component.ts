@@ -8,9 +8,10 @@ import { LoadingService } from 'src/app/service/loading.service';
 import { QuotationService } from 'src/app/service/quotation.service';
 
 @Component({
-  selector: 'app-e-consent-image-dialog',
-  templateUrl: './e-consent-image-dialog.component.html',
-  styleUrls: ['./e-consent-image-dialog.component.scss']
+    selector: 'app-e-consent-image-dialog',
+    templateUrl: './e-consent-image-dialog.component.html',
+    styleUrls: ['./e-consent-image-dialog.component.scss'],
+    standalone: false
 })
 export class EConsentImageDialogComponent implements OnInit {
 

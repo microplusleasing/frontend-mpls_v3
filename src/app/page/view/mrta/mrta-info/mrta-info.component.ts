@@ -11,9 +11,10 @@ import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dial
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { LoadingService } from 'src/app/service/loading.service';
 @Component({
-  selector: 'app-mrta-info',
-  templateUrl: './mrta-info.component.html',
-  styleUrls: ['./mrta-info.component.scss']
+    selector: 'app-mrta-info',
+    templateUrl: './mrta-info.component.html',
+    styleUrls: ['./mrta-info.component.scss'],
+    standalone: false
 })
 export class MrtaInfoComponent implements OnInit {
 

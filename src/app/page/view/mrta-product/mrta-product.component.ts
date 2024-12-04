@@ -14,9 +14,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';
 
 @Component({
-  selector: 'app-mrta-product',
-  templateUrl: './mrta-product.component.html',
-  styleUrls: ['./mrta-product.component.scss']
+    selector: 'app-mrta-product',
+    templateUrl: './mrta-product.component.html',
+    styleUrls: ['./mrta-product.component.scss'],
+    standalone: false
 })
 export class MrtaProductComponent {
 

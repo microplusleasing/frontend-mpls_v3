@@ -3,9 +3,10 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-information-dialog',
-  templateUrl: './information-dialog.component.html',
-  styleUrls: ['./information-dialog.component.scss']
+    selector: 'app-information-dialog',
+    templateUrl: './information-dialog.component.html',
+    styleUrls: ['./information-dialog.component.scss'],
+    standalone: false
 })
 export class InformationDialogComponent implements OnInit {
 

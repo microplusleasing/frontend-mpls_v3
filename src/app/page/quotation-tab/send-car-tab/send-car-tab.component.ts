@@ -21,9 +21,10 @@ import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dial
 import { LoyaltyConsentComponent } from '../signature-tab/consent/loyalty-consent/loyalty-consent.component';
 
 @Component({
-  selector: 'app-send-car-tab',
-  templateUrl: './send-car-tab.component.html',
-  styleUrls: ['./send-car-tab.component.scss']
+    selector: 'app-send-car-tab',
+    templateUrl: './send-car-tab.component.html',
+    styleUrls: ['./send-car-tab.component.scss'],
+    standalone: false
 })
 export class SendCarTabComponent extends BaseService implements OnInit {
 

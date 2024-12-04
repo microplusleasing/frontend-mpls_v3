@@ -25,9 +25,10 @@ import { BasicSnackbarComponent } from 'src/app/widget/snackbar/basic-snackbar/b
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-ciz-card-tab',
-  templateUrl: './ciz-card-tab.component_v1.html',
-  styleUrls: ['./ciz-card-tab.component.scss']
+    selector: 'app-ciz-card-tab',
+    templateUrl: './ciz-card-tab.component_v1.html',
+    styleUrls: ['./ciz-card-tab.component.scss'],
+    standalone: false
 })
 export class CizCardTabComponent extends BaseService implements OnInit, AfterViewInit {
 

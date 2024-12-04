@@ -46,15 +46,16 @@ import { IReqCheckMotoYear } from 'src/app/interface/i-req-check-moto-year';
 import { IResDialog2ndhandCarImageAttach } from 'src/app/interface/dialog-return/i-res-dialog-2ndhand-car-image-attach';
 
 @Component({
-  selector: 'app-quotation-detail',
-  templateUrl: './quotation-detail.component.html',
-  styleUrls: ['./quotation-detail.component.scss'],
-  providers: [
-    {
-      provide: STEPPER_GLOBAL_OPTIONS,
-      useValue: { displayDefaultIndicatorType: false },
-    },
-  ],
+    selector: 'app-quotation-detail',
+    templateUrl: './quotation-detail.component.html',
+    styleUrls: ['./quotation-detail.component.scss'],
+    providers: [
+        {
+            provide: STEPPER_GLOBAL_OPTIONS,
+            useValue: { displayDefaultIndicatorType: false },
+        },
+    ],
+    standalone: false
 })
 export class QuotationDetailComponent extends BaseService implements OnInit {
 

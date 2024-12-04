@@ -3,9 +3,10 @@ import { ImageUtilService } from 'src/app/service/image-util.service';
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 
 @Component({
-  selector: 'app-total-loss-qr-code',
-  templateUrl: './total-loss-qr-code.component.html',
-  styleUrls: ['./total-loss-qr-code.component.scss']
+    selector: 'app-total-loss-qr-code',
+    templateUrl: './total-loss-qr-code.component.html',
+    styleUrls: ['./total-loss-qr-code.component.scss'],
+    standalone: false
 })
 export class TotalLossQrCodeComponent {
 

@@ -15,9 +15,10 @@ import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dial
 import { IResGetMasterMrtaInsuranceData } from 'src/app/interface/i-res-get-master-mrta-insurance';
 
 @Component({
-  selector: 'app-mrta-product-new',
-  templateUrl: './mrta-product-new.component.html',
-  styleUrls: ['./mrta-product-new.component.scss']
+    selector: 'app-mrta-product-new',
+    templateUrl: './mrta-product-new.component.html',
+    styleUrls: ['./mrta-product-new.component.scss'],
+    standalone: false
 })
 export class MrtaProductNewComponent {
 

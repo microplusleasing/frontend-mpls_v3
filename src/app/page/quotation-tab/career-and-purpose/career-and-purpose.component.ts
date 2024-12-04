@@ -10,9 +10,10 @@ import { LoadingService } from 'src/app/service/loading.service';
 import { MasterDataService } from 'src/app/service/master.service';
 
 @Component({
-  selector: 'app-career-and-purpose',
-  templateUrl: './career-and-purpose.component.html',
-  styleUrls: ['./career-and-purpose.component.scss']
+    selector: 'app-career-and-purpose',
+    templateUrl: './career-and-purpose.component.html',
+    styleUrls: ['./career-and-purpose.component.scss'],
+    standalone: false
 })
 export class CareerAndPurposeComponent extends BaseService implements OnInit {
 

@@ -9,9 +9,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
-  selector: 'app-personal-disclosure-consent',
-  templateUrl: './personal-disclosure-consent.component.html',
-  styleUrls: ['./personal-disclosure-consent.component.scss']
+    selector: 'app-personal-disclosure-consent',
+    templateUrl: './personal-disclosure-consent.component.html',
+    styleUrls: ['./personal-disclosure-consent.component.scss'],
+    standalone: false
 })
 export class PersonalDisclosureConsentComponent extends BaseService implements OnInit {
 

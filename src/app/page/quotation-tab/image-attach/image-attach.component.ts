@@ -25,9 +25,10 @@ import { IUserTokenData } from 'src/app/interface/i-user-token';
 
 
 @Component({
-  selector: 'app-image-attach',
-  templateUrl: './image-attach.component.html',
-  styleUrls: ['./image-attach.component.scss']
+    selector: 'app-image-attach',
+    templateUrl: './image-attach.component.html',
+    styleUrls: ['./image-attach.component.scss'],
+    standalone: false
 })
 export class ImageAttachComponent extends BaseService implements OnInit {
   @Input() quotationReq = {} as Observable<IResQuotationDetail>;

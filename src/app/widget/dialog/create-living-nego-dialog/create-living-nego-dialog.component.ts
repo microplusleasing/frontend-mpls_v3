@@ -12,9 +12,10 @@ import { MasterDataService } from 'src/app/service/master.service';
 import { NegotiationService } from 'src/app/service/negotiation.service';
 
 @Component({
-  selector: 'app-create-living-nego-dialog',
-  templateUrl: './create-living-nego-dialog.component.html',
-  styleUrls: ['./create-living-nego-dialog.component.scss']
+    selector: 'app-create-living-nego-dialog',
+    templateUrl: './create-living-nego-dialog.component.html',
+    styleUrls: ['./create-living-nego-dialog.component.scss'],
+    standalone: false
 })
 export class CreateLivingNegoDialogComponent extends BaseService implements OnInit {
   // === variable master variable ===

@@ -3,9 +3,10 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { LoadingService } from './service/loading.service';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent  {
   showLoader$ = this.loadingService.loadingAction$;

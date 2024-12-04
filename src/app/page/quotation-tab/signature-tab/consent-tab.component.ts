@@ -15,9 +15,10 @@ import { PersonalDisclosureConsentComponent } from './consent/personal-disclosur
 import { SignatureConsentComponent } from './consent/signature-consent/signature-consent.component';
 
 @Component({
-  selector: 'app-consent-tab',
-  templateUrl: './consent-tab.component.html',
-  styleUrls: ['./consent-tab.component.scss']
+    selector: 'app-consent-tab',
+    templateUrl: './consent-tab.component.html',
+    styleUrls: ['./consent-tab.component.scss'],
+    standalone: false
 })
 export class ConsentTabComponent extends BaseService implements OnInit {
 

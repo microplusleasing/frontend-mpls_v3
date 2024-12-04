@@ -16,9 +16,10 @@ import { IStampFaceVerificationLog } from 'src/app/interface/i-stamp-face-verifi
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-face-valid-dialog',
-  templateUrl: './face-valid-dialog.component.html',
-  styleUrls: ['./face-valid-dialog.component.scss']
+    selector: 'app-face-valid-dialog',
+    templateUrl: './face-valid-dialog.component.html',
+    styleUrls: ['./face-valid-dialog.component.scss'],
+    standalone: false
 })
 export class FaceValidDialogComponent extends BaseService implements OnInit {
 

@@ -16,9 +16,10 @@ import { MasterDataService } from 'src/app/service/master.service';
 import { QuotationService } from 'src/app/service/quotation.service';
 
 @Component({
-  selector: 'app-secondhand-car-attach-image-dialog',
-  templateUrl: './secondhand-car-attach-image-dialog.component.html',
-  styleUrls: ['./secondhand-car-attach-image-dialog.component.scss']
+    selector: 'app-secondhand-car-attach-image-dialog',
+    templateUrl: './secondhand-car-attach-image-dialog.component.html',
+    styleUrls: ['./secondhand-car-attach-image-dialog.component.scss'],
+    standalone: false
 })
 export class SecondhandCarAttachImageDialogComponent implements OnInit {
 

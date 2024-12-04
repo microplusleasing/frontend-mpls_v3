@@ -9,9 +9,10 @@ import { MainDialogComponent } from '../dialog/main-dialog/main-dialog.component
 
 
 @Component({
-  selector: 'app-backward-bar',
-  templateUrl: './backward-bar.component.html',
-  styleUrls: ['./backward-bar.component.scss']
+    selector: 'app-backward-bar',
+    templateUrl: './backward-bar.component.html',
+    styleUrls: ['./backward-bar.component.scss'],
+    standalone: false
 })
 export class BackwardBarComponent {
 

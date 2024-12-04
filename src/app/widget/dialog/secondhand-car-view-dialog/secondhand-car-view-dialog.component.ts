@@ -12,9 +12,10 @@ import { LoadingService } from 'src/app/service/loading.service';
 import { MasterDataService } from 'src/app/service/master.service';
 
 @Component({
-  selector: 'app-secondhand-car-view-dialog',
-  templateUrl: './secondhand-car-view-dialog.component.html',
-  styleUrls: ['./secondhand-car-view-dialog.component.scss']
+    selector: 'app-secondhand-car-view-dialog',
+    templateUrl: './secondhand-car-view-dialog.component.html',
+    styleUrls: ['./secondhand-car-view-dialog.component.scss'],
+    standalone: false
 })
 export class SecondhandCarViewDialogComponent implements OnInit {
 

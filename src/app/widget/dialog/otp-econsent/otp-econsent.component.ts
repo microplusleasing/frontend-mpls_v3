@@ -212,7 +212,7 @@ export class OtpEconsentComponent extends BaseService implements OnInit {
     console.log(`scrollTop : ${event.target.scrollTop}`)
     console.log(`offsetHeight : ${event.target.offsetHeight}`)
     console.log(`scrollHeight : ${event.target.scrollHeight}`)
-    if (this._countscrollbottom == 0) {
+    if (this._countscrollbottom === 0) {
       if (event.target.scrollTop + event.target.offsetHeight >= event.target.scrollHeight) {
         // The user has scrolled to the end of the dialog content
 
@@ -243,7 +243,7 @@ export class OtpEconsentComponent extends BaseService implements OnInit {
       }).subscribe({
         next: async (res) => {
           console.log(`res otp Data : ${JSON.stringify(res)}`)
-          if (res.status == 200) {
+          if (res.status === 200) {
             this._tabindex = 1
 
           } else {
@@ -263,7 +263,7 @@ export class OtpEconsentComponent extends BaseService implements OnInit {
       // === not accept ===
       const quotationid = this.data.quotationid
 
-      if (this._countconfirmask == 0) {
+      if (this._countconfirmask === 0) {
         // === ask agiant (ถ้าชัว skip to หน้า อาชีพและรายได้ (flag case non-econsent), if ไม่ชัวปิดหน้าต่างให้เลือกใหม่) ===
         this.dialog.open(ConfirmDialogComponent, {
           width: 'auto',
@@ -336,7 +336,7 @@ export class OtpEconsentComponent extends BaseService implements OnInit {
       // await lastValueFrom(this.quotationService.MPLS_validation_otp_econsent(fd)).then((res) => {
       await lastValueFrom(this.quotationService.MPLS_gen_econsent_image(this.econsentimage_binding)).then((res) => {
         this.loadingService.hideLoader()
-        if (res.status == 200) {
+        if (res.status === 200) {
           // *** save econst image to db (oracle) ***
           this.econsent_valid_status = true
           this.validsuccess = true

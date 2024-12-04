@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, registerLocaleData } from '@angular/common';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormGroupDirective, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './module/material/material.module';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { QuotationViewComponent } from './page/quotation-view/quotation-view.component';
 import { QuotationDetailComponent } from './page/quotation-detail/quotation-detail.component';
@@ -57,6 +57,25 @@ import { SecondhandCarAttachImageDialogComponent } from './widget/dialog/secondh
 import { ConfirmDeleteSecondhandCarImageAttachComponent } from './widget/dialog/confirm-delete-secondhand-car-image-attach/confirm-delete-secondhand-car-image-attach.component';
 import { ViewCarAttachComponent } from './page/view/view-car-attach/view-car-attach.component';
 import { MrtaProductNewComponent } from './page/view/mrta-product-new/mrta-product-new.component';
+
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import th from '@angular/common/locales/th';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+
+
+registerLocaleData(th);
+
+const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'LL',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 
 @NgModule({
@@ -110,6 +129,7 @@ import { MrtaProductNewComponent } from './page/view/mrta-product-new/mrta-produ
     DealerGradeImageDialogComponent,
     MrtaProductNewComponent,
   ],
+  bootstrap: [AppComponent], 
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -118,19 +138,21 @@ import { MrtaProductNewComponent } from './page/view/mrta-product-new/mrta-produ
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    HttpClientModule,
     NgxSpinnerModule,
     NgOtpInputModule
   ],
   providers: [
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, // Optional: Use 'en-GB' to force the format
     DatePipe,
-    FormGroupDirective, 
+    FormGroupDirective,
     {
-      provide: HTTP_INTERCEPTORS,
-      useClass: JwtInterceptor,
-      multi: true
-    }
-  ],
-  bootstrap: [AppComponent]
-})
+        provide: HTTP_INTERCEPTORS,
+        useClass: JwtInterceptor,
+        multi: true
+    },
+    provideHttpClient(withInterceptorsFromDi()),
+    provideAnimationsAsync(),
+    provideHttpClient()
+] })
 export class AppModule { }

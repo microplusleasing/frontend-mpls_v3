@@ -56,17 +56,17 @@ export class ThaidateformatDirective implements PipeTransform {
     let returnDate: string;
 
     returnDate = outputDateMedium.join(" ");
-    if (format == 'full') {
+    if (format === 'full') {
       returnDate = outputDateFull.join(" ");
     }
-    if (format == 'medium') {
+    if (format === 'medium') {
       returnDate = outputDateMedium.join(" ");
     }
-    if (format == 'short') {
+    if (format === 'short') {
       returnDate = outputDateShort.join(" ");
     }
 
-    if (format == 'main') {
+    if (format === 'main') {
       returnDate = outputmainformat.join(" ");
     }
     return returnDate;

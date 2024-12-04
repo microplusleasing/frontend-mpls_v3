@@ -141,22 +141,22 @@ export class BypassSignatureComponent implements OnInit {
   async donext() {
     // === check quotation record found with condition === 
     // *** for condition that can bypass signature  
-    // is 'QUO_KEY_APP_ID' == 'APPLICATION_NUM' and 'CONTRACT_NO IS NOT NULL ***
+    // is 'QUO_KEY_APP_ID' === 'APPLICATION_NUM' and 'CONTRACT_NO IS NOT NULL ***
 
     this.quotationService.getquotationbyid(this.quotationkeyid).subscribe((results) => {
-      if (results.data.length == 1) {
+      if (results.data.length === 1) {
         // === check conditon ('QUO_KEY_APP_ID' == 'APPLICATION_NUM') and 'CONTRACT_NO IS NOT NULL
         this.quoitem = results.data[0];
         if (
           (this.quoitem.application_num == this.quoitem.quo_key_app_id) &&
-          this.quoitem.loan_result == 'Y' &&
-          (this.quoitem.contract_no == '' || this.quoitem.contract_no == null)
+          this.quoitem.loan_result === 'Y' &&
+          (this.quoitem.contract_no === '' || this.quoitem.contract_no === null)
         ) {
           // === set quoid form return check validate === 
           this.bypassSigForm.controls.quotaionId.setValue(this.quoitem.quo_key_app_id);
 
           this.imageService.getsignimage(this.quotationkeyid).subscribe(async (results) => {
-            if (results.status == 200) {
+            if (results.status === 200) {
               const cussigimagebase64 = await this.getUrlImage(results.data[0])
               this.customerSig = new Promise((resolve) => {
                 resolve(cussigimagebase64)
@@ -216,11 +216,11 @@ export class BypassSignatureComponent implements OnInit {
     //Show image preview
     let reader = new FileReader();
     reader.onload = (event: any) => {
-      if (type == 'customer') {
+      if (type === 'customer') {
         this.customerSig = new Promise((resolve) => {
           resolve(event.target.result)
         })
-      } else if (type == 'witness') {
+      } else if (type === 'witness') {
         this.witnessSIg = new Promise((resolve) => {
           resolve(event.target.result)
         })
@@ -231,9 +231,9 @@ export class BypassSignatureComponent implements OnInit {
 
 
   setImagetoform(fielimg: File, type: string) {
-    if (type == 'customer') {
+    if (type === 'customer') {
       this.bypassSigForm.controls.customerSigField.setValue(fielimg)
-    } else if (type == 'witness') {
+    } else if (type === 'witness') {
       this.bypassSigForm.controls.witnessSigField.setValue(fielimg)
     }
   }
@@ -252,7 +252,7 @@ export class BypassSignatureComponent implements OnInit {
 
     this.quotationService.bypasssignature(fd).subscribe({
       next: (results) => {
-        if (results.status == 200) {
+        if (results.status === 200) {
           this.dialog.open(MainDialogComponent, {
             panelClass: 'custom-dialog-container',
             data: {

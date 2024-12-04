@@ -379,7 +379,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
   async onStageChageFormStepper() {
     // this.loadingService.showLoader()
-    if (this.countload == 0) {
+    if (this.countload === 0) {
       // this.loadingService.showLoader()
       this.quotationReq.subscribe({
         next: (resquo) => {
@@ -554,7 +554,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         // *** ค้นหาเลขทะเบียนแล้วเลือกรายการ นำค่า pass ค่าลง form ***
                         // *** โชว์ปุ่มค้นหารถมือสอง ****
 
-                        (sessionData.value.channal !== 'checker' && value == '002') ? this.show2ndHandMPLSBtn = true : this.show2ndHandMPLSBtn = false
+                        (sessionData.value.channal !== 'checker' && value === '002') ? this.show2ndHandMPLSBtn = true : this.show2ndHandMPLSBtn = false
 
                         this.showdealerfield = true
                         this.showgeneralcarinfovisible = false
@@ -644,7 +644,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                     this.masterDataService.getDealergrade(value ? value : ``).subscribe({
                       next: (resultDealerGrade) => {
-                        if (resultDealerGrade.status == 200) {
+                        if (resultDealerGrade.status === 200) {
                           if (resultDealerGrade.data.active_notice == 'Y') {
 
 
@@ -652,7 +652,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                             if (userdata) {
 
                               const userdataObj = (JSON.parse(userdata) as IUserToken).data;
-                              if (userdataObj.channal == 'checker') {
+                              if (userdataObj.channal === 'checker') {
 
                                 // *** check image contain data ****
                                 if (resultDealerGrade.data.notice_image.data.length !== 0) {
@@ -701,7 +701,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   this.filterDealerList = of(value)
 
                   const selectValue = this.dealerList.find((items: { dl_code: string }) => {
-                    return items.dl_code == value[0].dl_code
+                    return items.dl_code === value[0].dl_code
                   })
 
                   if (typeof selectValue !== 'undefined') {
@@ -721,7 +721,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   this.productForm.controls.secondHandCarForm.reset()
                   // this.checkChangeMaxValuePrice();
-                  if (this.productForm.controls.detailForm.controls.bussinessCode.value == '002') {
+                  if (this.productForm.controls.detailForm.controls.bussinessCode.value === '002') {
                     if (this.productForm.controls.detailForm.controls.dealerCode.valid) {
                       // *** โชว์ปุ่มค้นหารถมือสอง ****
                       this.show2ndHandMPLSBtn = true
@@ -731,8 +731,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     }
                   } else {
 
-                    if (recordExists && (quoitem.cd_bussiness_code == '002')) {
-                      if (this.productForm.controls.detailForm.controls.bussinessCode.value == '001' || this.productForm.controls.detailForm.controls.bussinessCode.value == '003') {
+                    if (recordExists && (quoitem.cd_bussiness_code === '002')) {
+                      if (this.productForm.controls.detailForm.controls.bussinessCode.value === '001' || this.productForm.controls.detailForm.controls.bussinessCode.value === '003') {
                         this.show2ndHandMPLSBtn = false
                       } else {
                         this.show2ndHandMPLSBtn = true
@@ -753,7 +753,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   tap(async value => {
                     if (value) {
                       this.currentSelectBrand = this.brandList.filter((items: { brand_code: any; }) => {
-                        return items.brand_code == value
+                        return items.brand_code === value
                       });
                     } else {
                       this.currentSelectBrand = []
@@ -825,7 +825,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   const selectValue = this.currentSelectBrand
                   if (selectValue.length !== 0) {
                     this.modelSelect = this.modelList.filter((items: { brand_code: any; }) => {
-                      return items.brand_code == selectValue[0].brand_code
+                      return items.brand_code === selectValue[0].brand_code
                     }
                     );
 
@@ -842,7 +842,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                       // === set child list (model) === 
                       this.modelListFilter = this.modelList.filter((items: { brand_code: string }) => {
-                        return items.brand_code == selectValue[0].brand_code
+                        return items.brand_code === selectValue[0].brand_code
                       })
 
                       this.productForm.controls.detailForm.controls.carModelField.setValue('')
@@ -851,7 +851,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                     // === set child list (model) === 
                     this.modelListFilter = this.modelList.filter((items: { brand_code: string }) => {
-                      return items.brand_code == selectValue[0].brand_code
+                      return items.brand_code === selectValue[0].brand_code
                     })
 
                     // === set validate Brand === 
@@ -890,7 +890,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   startWith(''),
                   tap(async value => {
                     this.currentSelectModel = this.modelList.filter((items: { model_code: any; }) => {
-                      return items.model_code == value
+                      return items.model_code === value
                     })
                   }),
                   map(value => this._filterModel(value))
@@ -965,12 +965,12 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                     // ==== get model price from model select value ===
                     let modelprice = this.modelListFilter.filter((items: { model_code: any; brand_code: any }) => {
-                      return items.model_code == selectValue[0].model_code && items.brand_code == this.productForm.controls.detailForm.controls.carBrandField.value
+                      return items.model_code === selectValue[0].model_code && items.brand_code === this.productForm.controls.detailForm.controls.carBrandField.value
                     })
 
 
                     /// ==== set price (productValueField) from master of model code ==== 
-                    if (modelprice.length == 1) {
+                    if (modelprice.length === 1) {
                       // === set text of model select === 
                       this.modelSelectText = of(modelprice[0].model);
                       const valuePrice = modelprice[0].price
@@ -983,7 +983,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                       // ==== use loan_amont instead of factory_price when bussi code == '002' ===
                       let priceForCalTotalloss = this.productForm.controls.detailForm.controls.factoryPriceValueField.value ? this.productForm.controls.detailForm.controls.factoryPriceValueField.value : 0
-                      if (this.productForm.controls.detailForm.controls.bussinessCode.value == '002') {
+                      if (this.productForm.controls.detailForm.controls.bussinessCode.value === '002') {
                         priceForCalTotalloss = this.productForm.controls.detailForm.controls.loanAmountField.value ? this.productForm.controls.detailForm.controls.loanAmountField.value : 0
                       }
 
@@ -1207,7 +1207,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                 // === clear is over max ltv and over max ltv reason ===
 
-                if (busicode == '002') {
+                if (busicode === '002') {
 
                   // === business code == '002' ====
                   if (res) {
@@ -1303,7 +1303,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 if (res) {
                   // === set Insurance Year === 
                   this.InsuranceListFilter = this.InsuranceListTemp.filter((items: { insurer_code: any; }) => {
-                    return items.insurer_code == res
+                    return items.insurer_code === res
                   })
 
                   // ==== set name of insurer selelct field (25/05/2022) ====
@@ -1332,7 +1332,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   const yearInt = res
 
                   const insureselect = this.InsuranceListFilter.filter((value: { years_insur: any }) => {
-                    return value.years_insur == yearInt
+                    return value.years_insur === yearInt
                   })
 
                   const priceValue = insureselect[0].premium_insur;
@@ -1350,7 +1350,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   // ==== use loan_amont instead of factory_price when bussi code == '002' ===
                   let priceForCalTotalloss = this.productForm.controls.detailForm.controls.factoryPriceValueField.value ? this.productForm.controls.detailForm.controls.factoryPriceValueField.value : 0
-                  if (this.productForm.controls.detailForm.controls.bussinessCode.value == '002') {
+                  if (this.productForm.controls.detailForm.controls.bussinessCode.value === '002') {
                     priceForCalTotalloss = this.productForm.controls.detailForm.controls.loanAmountField.value ? this.productForm.controls.detailForm.controls.loanAmountField.value : 0
                   }
 
@@ -1419,13 +1419,13 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               this.productForm.controls.secondHandCarForm.controls.reg_date.valueChanges.subscribe(async (res) => {
 
 
-                // *** chec moto year from valueChange in case of bussiness_code == '003' 
+                // *** chec moto year from valueChange in case of bussiness_code === '003' 
 
                 if (res) {
-                  if (this.productForm.controls.detailForm.controls.bussinessCode.value == '003') {
+                  if (this.productForm.controls.detailForm.controls.bussinessCode.value === '003') {
                     const motoyearresult = await lastValueFrom(this.masterDataService.MPLS_calculate_moto_year(res))
 
-                    if (motoyearresult.status == 200) {
+                    if (motoyearresult.status === 200) {
                       this.productForm.controls.secondHandCarForm.controls.moto_year.setValue(motoyearresult.data.moto_year)
                     } else {
                       this.dialog.open(MainDialogComponent, {
@@ -1451,20 +1451,20 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               })
 
               // *** moto_year (19/04/2023) *** 
-              // *** if (bussiness_code == '002' recieve this value from getsecondcar api , if (bussiness_code == '003' get this value from calcualte year from select reg_date field)) ***
+              // *** if (bussiness_code === '002' recieve this value from getsecondcar api , if (bussiness_code === '003' get this value from calcualte year from select reg_date field)) ***
               this.productForm.controls.secondHandCarForm.controls.moto_year.valueChanges.subscribe(async (res_moto_year) => {
 
 
                 // *** calculate max ltv trigger when second hand car bussiness_code = '003' (require moto_year) ***
 
-                if (this.productForm.controls.detailForm.controls.bussinessCode.value == `003`) {
+                if (this.productForm.controls.detailForm.controls.bussinessCode.value === `003`) {
                   if (res_moto_year) {
 
                     const busicode = this.productForm.controls.detailForm.controls.bussinessCode.value
                     const bcSelect = this.productForm.controls.detailForm.controls.carBrandField.value
                     const bmSelect = this.productForm.controls.detailForm.controls.carModelField.value
                     let modelprice = this.modelListFilter.filter((items: { model_code: any; brand_code: any }) => {
-                      return items.model_code == this.productForm.controls.detailForm.controls.carModelField.value && items.brand_code == this.productForm.controls.detailForm.controls.carBrandField.value
+                      return items.model_code === this.productForm.controls.detailForm.controls.carModelField.value && items.brand_code === this.productForm.controls.detailForm.controls.carBrandField.value
                     })
                     // === get price from model select ==== 
                     let fPirce;
@@ -1472,7 +1472,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     if (bmSelect) {
 
                       fPirce = this.modelSelect.filter((items: { brand_code: any; model_code: any }) => {
-                        return items.brand_code == bcSelect && items.model_code == bmSelect
+                        return items.brand_code === bcSelect && items.model_code === bmSelect
                       })
 
 
@@ -1493,7 +1493,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     if (bcSelect && bmSelect && modelPrice) {
                       combineLatest([
 
-                        // ==== bussi_code == '003' ====
+                        // ==== bussi_code === '003' ====
                         this.masterDataService.getMaxLtv(
                           this.valuepricetemp,
                           this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
@@ -1512,7 +1512,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                           this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
                           // '001',
                           modelPrice,
-                          (busicode == '003' && this.productForm.controls.secondHandCarForm.controls.moto_year.value) ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : ''
+                          (busicode === '003' && this.productForm.controls.secondHandCarForm.controls.moto_year.value) ? this.productForm.controls.secondHandCarForm.controls.moto_year.value : ''
                         )
                       ]).subscribe({
                         next: (res) => {
@@ -1567,7 +1567,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               this.productForm.controls.secondHandCarForm.controls.prov_code.valueChanges.subscribe((res) => {
 
                 // *** set Prov_name value ***
-                const selectProv = this.masterProvinceList.data.find((item) => item.prov_code == res)
+                const selectProv = this.masterProvinceList.data.find((item) => item.prov_code === res)
                 if (selectProv) {
                   this.productForm.controls.secondHandCarForm.controls.prov_name.setValue(selectProv.prov_name, { emitEvent: false })
                 }
@@ -1608,7 +1608,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 const busicode = this.detailForm.controls.bussinessCode.value
                 const loanAmount = this.detailForm.controls.loanAmountField.value
 
-                if (busicode == '002') {
+                if (busicode === '002') {
                   if (loanAmount) {
                     // ==== กรอกยอดกู้แล้ว ====
                     if (loanAmount <= this.maxltvValue) {
@@ -1743,7 +1743,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 const qdealercode = quoitem.sl_code
                 const qmotoyear = quoitem.cd_moto_year ? quoitem.cd_moto_year : 0
                 // === over max ltv (bussiness code == '002') (25/08/2023) ===
-                const qisovermaxltv = quoitem.cd_is_over_max_ltv == 'Y' ? true : false
+                const qisovermaxltv = quoitem.cd_is_over_max_ltv === 'Y' ? true : false
                 const qovermaxltvreason = quoitem.cd_over_max_ltv_reason ?? ''
 
 
@@ -1907,7 +1907,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   // === set model select 
                   this.modelSelect = this.modelList.filter((items: { brand_code: any; }) => {
-                    return items.brand_code == qcarbrandcode
+                    return items.brand_code === qcarbrandcode
                   });
 
                   // === set text of brand select === 
@@ -1915,7 +1915,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   // === set child list (model) === 
                   this.modelListFilter = this.modelList.filter((items: { brand_code: any; }) => {
-                    return items.brand_code == qcarbrandcode
+                    return items.brand_code === qcarbrandcode
                   })
 
                   // === set validate Brand (auto data stamp on this.quotationdatatemp) === 
@@ -1930,9 +1930,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   // ==== get model price from model select value ===
                   let modelprice = this.modelListFilter.filter((items: { model_code: any; brand_code: any }) => {
-                    return items.model_code == qcarmodelcode && items.brand_code == this.productForm.controls.detailForm.controls.carBrandField.value
+                    return items.model_code === qcarmodelcode && items.brand_code == this.productForm.controls.detailForm.controls.carBrandField.value
                   })
-                  if (modelprice.length == 1) {
+                  if (modelprice.length === 1) {
                     // === set text of model select === 
                     this.modelSelectText = of(modelprice[0].model);
                     const valuePrice = modelprice[0].price
@@ -1954,13 +1954,13 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       return resultInsuranceMaster.data.find((a: { insurer_code: string }) => a.insurer_code === insurer_code)
                     })
                   this.InsuranceListFilter = this.InsuranceListTemp.filter((items: { insurer_code: any; }) => {
-                    return items.insurer_code == qinsurercode
+                    return items.insurer_code === qinsurercode
                   })
 
                   // // === stamp dealer code ==== 
                   const sessionData = this.userSessionQuotation
                   // === checker ===
-                  if (sessionData.value.channal == 'checker') {
+                  if (sessionData.value.channal === 'checker') {
                     if (quoitem.sl_code) {
                       this.productForm.controls.detailForm.controls.dealerCode.setValue(quoitem.sl_code, { emitEvent: false });
                       this.dealerSelectText = of(this.getDealerNamebyCode(quoitem.sl_code, this.dealerList))
@@ -2025,7 +2025,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     this.detailForm.controls.loanAmountField.updateValueAndValidity({ emitEvent: false });
                   }
 
-                  if (qbussinesscode == '002') {
+                  if (qbussinesscode === '002') {
 
                     // *** lock all detail field when stamp data finish ***
                     this.productForm.controls.detailForm.controls.carBrandField.disable({ onlySelf: true, emitEvent: false })
@@ -2051,7 +2051,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   // ==== use loan_amont instead of factory_price when bussi code == '002' ===
                   let priceForCalTotalloss = qfactoryprice ? qfactoryprice : 0
-                  if (this.productForm.controls.detailForm.controls.bussinessCode.value == '002') {
+                  if (this.productForm.controls.detailForm.controls.bussinessCode.value === '002') {
                     priceForCalTotalloss = qloanamount ? qloanamount : 0
                   }
 
@@ -2190,8 +2190,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     // *** add check reg_mile if bussicode is '002' and '003' *** (03/04/2023) 
 
     // const chkrequireregmile = 
-    // (this.productForm.controls.detailForm.controls.bussinessCode.value == '001') ||
-    // ((this.productForm.controls.detailForm.controls.bussinessCode.value == '002' || this.productForm.controls.detailForm.controls.bussinessCode.value == '003') && this.productForm.controls.secondHandCarForm.controls.reg_mile.value)
+    // (this.productForm.controls.detailForm.controls.bussinessCode.value === '001') ||
+    // ((this.productForm.controls.detailForm.controls.bussinessCode.value === '002' || this.productForm.controls.detailForm.controls.bussinessCode.value === '003') && this.productForm.controls.secondHandCarForm.controls.reg_mile.value)
     // ? true : false
 
     const { detailForm, secondHandCarForm } = this.productForm.controls;
@@ -2386,7 +2386,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
         // === *** extra add on for disalbe paymentRoundCountValue (เพิ่มเงื่่อนไขพิเศษในการ lock field จำนวนงวด เนื่องจาก trigger และ condition เยอะ) *** ===
         if (this.quotationdatatemp.data) {
-          if (this.quotationdatatemp.data[0].quo_status == 1) {
+          if (this.quotationdatatemp.data[0].quo_status === 1) {
           } else {
             this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable({ emitEvent: false });
           }
@@ -2537,9 +2537,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
   onKeyDown(event: KeyboardEvent) {
     // Check if the key pressed is not the space bar
-    if (event.keyCode !== 32) {
-      event.preventDefault(); // Disable default behavior
-    }
+    // if (event.keyCode !== 32) {
+    event.preventDefault(); // Disable default behavior
+    // }
   }
 
   handleKeyDown(event: KeyboardEvent): void {
@@ -2551,7 +2551,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   getDealerNamebyCode(dl_code: string, ListDealer: IResMasterDealerData[]): string {
 
     const dealerValue = ListDealer.find((items: { dl_code: string }) => {
-      return items.dl_code == dl_code
+      return items.dl_code === dl_code
     })
 
     if (typeof dealerValue !== 'undefined') {

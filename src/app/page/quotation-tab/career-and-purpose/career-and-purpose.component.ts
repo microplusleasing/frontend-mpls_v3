@@ -244,7 +244,7 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
 
   ngOnInit(): void {
     this.careerandpurposeForm.controls.careerForm.controls.isSubCareerField.valueChanges.subscribe((value) => {
-      (value == 1) ? this.showSubCareer = true : this.showSubCareer = false
+      (value === 1) ? this.showSubCareer = true : this.showSubCareer = false
     })
   }
 
@@ -274,7 +274,7 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
                 // === value Change ===
                 // *** purposeBuy ***
                 this.careerandpurposeForm.controls.purposeForm.controls.purposeBuy.valueChanges.subscribe((purposeBuyvalue) => {
-                  if (purposeBuyvalue == '2') {
+                  if (purposeBuyvalue === '2') {
                     this.isRepresentative = true;
                   } else {
                     this.isRepresentative = false;
@@ -283,7 +283,7 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
 
                 // *** resonBuy ***
                 this.careerandpurposeForm.controls.purposeForm.controls.reasonBuy.valueChanges.subscribe((reasonBuyValue) => {
-                  if (reasonBuyValue == '3') {
+                  if (reasonBuyValue === '3') {
                     this.isotherResontobuy = true;
                   } else {
                     this.isotherResontobuy = false;
@@ -292,11 +292,11 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
 
                 // *** carUser ***
                 this.careerandpurposeForm.controls.purposeForm.controls.carUser.valueChanges.subscribe((carUserValue) => {
-                  if (carUserValue == '0') {
+                  if (carUserValue === '0') {
                     this.isnotbuyforyourself = false;
                   } else {
                     this.isnotbuyforyourself = true;
-                    if (carUserValue == '4') {
+                    if (carUserValue === '4') {
                       this.isotherDriver = true;
                     } else {
                       this.isotherDriver = false;
@@ -338,15 +338,15 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
                   // === set purposeForm === 
 
                   this.careerandpurposeForm.controls.purposeForm.controls.purposeBuy.setValue(quoitem.pp_purpose_of_buy ?? '') // code of purpose buy name
-                  if (quoitem.pp_purpose_of_buy == '2') this.isRepresentative = true; // show วัตถุประสงค์ในการเช่าซื้อ text 
+                  if (quoitem.pp_purpose_of_buy === '2') this.isRepresentative = true; // show วัตถุประสงค์ในการเช่าซื้อ text 
                   this.careerandpurposeForm.controls.purposeForm.controls.purposeBuyName.setValue(quoitem.pp_purpose_of_buy_name ?? '')
                   this.careerandpurposeForm.controls.purposeForm.controls.reasonBuy.setValue(quoitem.pp_reason_of_buy ?? '')
-                  if (quoitem.pp_reason_of_buy == '3') this.isotherResontobuy = true;
+                  if (quoitem.pp_reason_of_buy === '3') this.isotherResontobuy = true;
                   this.careerandpurposeForm.controls.purposeForm.controls.reasonBuyEtc.setValue(quoitem.pp_reason_of_buy_name ?? '')
                   this.careerandpurposeForm.controls.purposeForm.controls.carUser.setValue(quoitem.pp_car_user ?? '')
-                  if (quoitem.pp_car_user == '0') this.isnotbuyforyourself = false;
-                  if (quoitem.pp_car_user != '0') this.isnotbuyforyourself = true
-                  if (quoitem.pp_car_user == '4') this.isotherDriver = true;
+                  if (quoitem.pp_car_user === '0') this.isnotbuyforyourself = false;
+                  if (quoitem.pp_car_user !== '0') this.isnotbuyforyourself = true
+                  if (quoitem.pp_car_user === '4') this.isotherDriver = true;
                   this.careerandpurposeForm.controls.purposeForm.controls.carUserName.setValue(quoitem.pp_car_user_name ?? '')
                   this.careerandpurposeForm.controls.purposeForm.controls.carUserName2.setValue(quoitem.pp_car_user_fullname ?? '')
                   this.careerandpurposeForm.controls.purposeForm.controls.carUserRelation.setValue(quoitem.pp_car_user_relation ?? '')
@@ -376,7 +376,7 @@ export class CareerAndPurposeComponent extends BaseService implements OnInit {
                   }
 
                   // ===== ***** check quo_status (if quo_status = 1 : lock all client field , valid in api can't update data) ****** =======
-                  if (this.quotationdatatemp.data[0].quo_status == 1) {
+                  if (this.quotationdatatemp.data[0].quo_status === 1) {
                     this.careerandpurposeForm.disable({ onlySelf: true, emitEvent: false })
                   }
                 }

@@ -222,7 +222,7 @@ export class MrtaProductComponent {
         )
       }
       let selectValue = this.mrtasellerdata.find((items: { emp_id: string }) => {
-        return items.emp_id == this.insurance_seller
+        return items.emp_id === this.insurance_seller
       })
 
       if (selectValue) {
@@ -252,7 +252,7 @@ export class MrtaProductComponent {
     }
 
     // === check pay_staus (1/10/2022) ===
-    if (this.pay_status == 1) {
+    if (this.pay_status === 1) {
       this.mrtaForm.disable()
       this.showgenQRbtn = false
     }
@@ -306,7 +306,7 @@ export class MrtaProductComponent {
                 this.mrtaForm.controls.mrtayearfieldValue.setValue(this.insurance_year);
 
                 const selectPlan = this.mrtainsurancedata.find((items) => {
-                  return items.insurance_code == this.insurance_code && items.years_insur == this.insurance_year
+                  return items.insurance_code === this.insurance_code && items.years_insur === this.insurance_year
                 })
 
                 if (selectPlan) {
@@ -368,7 +368,7 @@ export class MrtaProductComponent {
     this.mrtaForm.controls.mrtayearfieldValue.setValue(this.insurance_year);
 
     const selectPlan = this.mrtamainresult.find((items) => {
-      return items.insurance_code == this.insurance_code && items.years_insur == this.insurance_year
+      return items.insurance_code === this.insurance_code && items.years_insur === this.insurance_year
     })
 
     if (selectPlan) {
@@ -518,7 +518,7 @@ export class MrtaProductComponent {
     const insur_year = $event
 
     const selectPlan = this.mrtainsurancedata.find((items) => {
-      return items.insurance_code == insurance_code && items.years_insur == insur_year
+      return items.insurance_code === insurance_code && items.years_insur === insur_year
     })
 
     if (selectPlan) {
@@ -531,7 +531,7 @@ export class MrtaProductComponent {
   onChangeSeller($event: any) {
     const value = $event
     let selectValue = this.mrtasellerdata.find((items: { emp_id: string }) => {
-      return items.emp_id == value
+      return items.emp_id === value
     })
 
     // === set validate format dealer code === 

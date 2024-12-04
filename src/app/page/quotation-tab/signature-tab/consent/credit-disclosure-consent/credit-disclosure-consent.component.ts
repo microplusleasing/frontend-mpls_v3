@@ -59,7 +59,7 @@ export class CreditDisclosureConsentComponent extends BaseService implements OnI
 
           this.quotationService.MPLS_getservertime().subscribe({
             next: (res) => {
-              if (res.status == 200) {
+              if (res.status === 200) {
 
 
                 this.dateValue = res.date ? res.date : null
@@ -78,7 +78,7 @@ export class CreditDisclosureConsentComponent extends BaseService implements OnI
                   this.creditConsentValid.emit(true)
                 }
 
-                if (this.quotationdatatemp.data[0].quo_status == 1 || this.quotationdatatemp.data[0].cs_is_credit_consent !== null) {
+                if (this.quotationdatatemp.data[0].quo_status === 1 || this.quotationdatatemp.data[0].cs_is_credit_consent !== null) {
                   this.creditdisclosureForm.disable();
                 }
 

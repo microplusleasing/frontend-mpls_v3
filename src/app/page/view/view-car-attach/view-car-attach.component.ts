@@ -59,7 +59,7 @@ export class ViewCarAttachComponent extends BaseService implements OnInit {
             name: item.image_name ?? '',
             image_code: item.image_code ?? '',
             image_id: item.image_id ?? '',
-            image_header: `รูปภาพรถมือสอง (รูปที่ ${sequence})` ?? '',
+            image_header: `รูปภาพรถมือสอง (รูปที่ ${sequence})`,
             image_field_name: item.image_name ?? '',
             urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
             src: imageStr
@@ -74,7 +74,7 @@ export class ViewCarAttachComponent extends BaseService implements OnInit {
   }
 
   openimageMultipledialog(image: any) {
-    const imageselect = this.uploadedImagesMultiple.filter(img => img == image)
+    const imageselect = this.uploadedImagesMultiple.filter(img => img === image)
 
     if (imageselect) {
       this.dialog.open(ImageDialogComponent, {

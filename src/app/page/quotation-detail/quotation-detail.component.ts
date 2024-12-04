@@ -245,22 +245,22 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
                   // === quo_status ===
                   // *** set parent variable for use when quo_status is 1 here ***
-                  if (quoitem.quo_status == 1) {
+                  if (quoitem.quo_status === 1) {
                     this.lockallbtn = true
                   }
 
                   // *** tab 2 ***
-                  if (quoitem.otp_consent_verify == 'Y' || quoitem.otp_consent_verify == 'N') {
+                  if (quoitem.otp_consent_verify === 'Y' || quoitem.otp_consent_verify === 'N') {
                     // === may be check 'N' too === 
                     this.verifyeconsent = true
 
-                    if (quoitem.otp_consent_verify == 'Y') {
+                    if (quoitem.otp_consent_verify === 'Y') {
                       this.verifyeconsent_txt = 'ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ตเรียบร้อย'
                     } else {
                       this.verifyeconsent_txt = 'ไม่ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ต'
                     }
 
-                    if (quoitem.otp_consent_verify == 'Y') {
+                    if (quoitem.otp_consent_verify === 'Y') {
                       this.productdetailtab.showeconsentimagebutton = true
                     }
                   }
@@ -270,7 +270,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                     // *** check 2ndhand car contain image ***
 
                     if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value !== '002' && this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value !== '003') {
-                      if (quoitem.quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                      if (quoitem.quo_secondhand_car_verify === 'Y' || this.secondhandcarverify) {
                         this.econsentbtnDisable = false
                       }
                     } else {
@@ -278,7 +278,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                     }
                   }
 
-                  if (quoitem.quo_status == 3) {
+                  if (quoitem.quo_status === 3) {
                     this.canclequest = true
                   }
 
@@ -295,7 +295,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                   }
 
                   // *** tab 4 *** (image attach) 
-                  if (quoitem.otp_consent_verify == 'Y' || quoitem.quo_image_attach_verify) {
+                  if (quoitem.otp_consent_verify === 'Y' || quoitem.quo_image_attach_verify) {
                     this.imageattachtab.verifyImageAttach.setValue(true)
                     this.verifyimageattach = true
                   } else {
@@ -304,7 +304,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                   }
 
 
-                  // if (quoitem.quo_dopa_status == 'N') {
+                  // if (quoitem.quo_dopa_status === 'N') {
                   if (!this.verifyimageattach) {
                     this.imageattachtab.txtrequireimage = `*แนบไฟล์ "บัตรประชาชน" , "รูปหน้าลูกค้าพร้อมบัตรประชาชน" , "สำเนาบัตรประชาชนพร้อมลายเซ็นรับรองถูกต้อง"  และ "NCB Consent`
                   }
@@ -317,7 +317,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                     this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
                   } else {
 
-                    if (quoitem.cd_bussiness_code == '001') {
+                    if (quoitem.cd_bussiness_code === '001') {
                       this.imageattachtab.showsecondhandcarimageattach = false
                     } else {
                       this.imageattachtab.showsecondhandcarimageattach = true
@@ -383,11 +383,11 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     //           }
 
     //           // *** tab 2 ***
-    //           if (quoitem.otp_consent_verify == 'Y' || quoitem.otp_consent_verify == 'N') {
+    //           if (quoitem.otp_consent_verify === 'Y' || quoitem.otp_consent_verify === 'N') {
     //             // === may be check 'N' too === 
     //             this.verifyeconsent = true
 
-    //             if (quoitem.otp_consent_verify == 'Y') {
+    //             if (quoitem.otp_consent_verify === 'Y') {
     //               this.verifyeconsent_txt = 'ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ตเรียบร้อย'
     //             } else {
     //               this.verifyeconsent_txt = 'ไม่ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ต'
@@ -398,7 +398,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     //             this.econsentbtnDisable = false
     //           }
 
-    //           if (quoitem.quo_status == 3) {
+    //           if (quoitem.quo_status === 3) {
     //             this.canclequest = true
     //           }
 
@@ -415,7 +415,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     //           }
 
     //           // *** tab 4 *** (image attach) 
-    //           if (quoitem.otp_consent_verify == 'Y' || quoitem.quo_image_attach_verify) {
+    //           if (quoitem.otp_consent_verify === 'Y' || quoitem.quo_image_attach_verify) {
     //             this.imageattachtab.verifyImageAttach.setValue(true)
     //             this.verifyimageattach = true
     //           }
@@ -427,7 +427,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     //             this.verifysignature = true
     //           }
 
-    //           if (quoitem.quo_dopa_status == 'N') {
+    //           if (quoitem.quo_dopa_status === 'N') {
     //             if (!this.verifyimageattach) {
     //               this.imageattachtab.txtrequireimage = `*แนบไฟล์ "บัตรประชาชน" , "รูปหน้าลูกค้าพร้อมบัตรประชาชน" , "สำเนาบัตรประชาชนพร้อมลายเซ็นรับรองถูกต้อง"  และ "NCB Consent`
     //             }
@@ -666,7 +666,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               console.log(`flag success : ${JSON.stringify(value)}`)
 
               // === set router id ===
-              if (value.number == 200) {
+              if (value.number === 200) {
                 this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
 
                 // ==== ปลดล๊อค form เมื่อ dipchip สำเร็จ ====
@@ -704,7 +704,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                 console.log(`flag success : ${JSON.stringify(value)}`)
 
                 // === set router id ===
-                if (value.number == 200) {
+                if (value.number === 200) {
                   this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
 
                   // === status false (STATUS_CODE from dopa is null or 500 ) ===
@@ -833,7 +833,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     try {
       const resultCreateQEconsent = await lastValueFrom(this.quotationService.MPLS_dipchip(fd))
 
-      return (resultCreateQEconsent.status == 200) ? { status: true, refId: resultCreateQEconsent.data[0].quo_key_app_id, message: '' } : { status: false, refId: '', message: resultCreateQEconsent.message }
+      return (resultCreateQEconsent.status === 200) ? { status: true, refId: resultCreateQEconsent.data[0].quo_key_app_id, message: '' } : { status: false, refId: '', message: resultCreateQEconsent.message }
 
     } catch (e: any) {
       console.log(`error create e-consent quotation : ${e.message}`)
@@ -882,7 +882,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     try {
       const resultCreateQEconsent = await lastValueFrom(this.quotationService.MPLS_dipchipnoneconsent(fd))
 
-      return (resultCreateQEconsent.status == 200) ? { status: true, refId: resultCreateQEconsent.data[0].quo_key_app_id, message: '' } : { status: false, refId: '', message: resultCreateQEconsent.message }
+      return (resultCreateQEconsent.status === 200) ? { status: true, refId: resultCreateQEconsent.data[0].quo_key_app_id, message: '' } : { status: false, refId: '', message: resultCreateQEconsent.message }
 
     } catch (e: any) {
       console.log(`error create e-consent quotation : ${e.message}`)
@@ -978,7 +978,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
       this.loadingService.hideLoader()
 
-      if (resultCreateQEconsent.status == 200) {
+      if (resultCreateQEconsent.status === 200) {
         this.snackbarsuccess(`บันทึกฉบับร่างสำเร็จ`);
 
         const queryParams: Params = { id: resultCreateQEconsent.data.quotationid };
@@ -1123,7 +1123,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
       this.loadingService.hideLoader()
 
-      if (resultCreateQEconsent.status == 200) {
+      if (resultCreateQEconsent.status === 200) {
         this.snackbarsuccess(`บันทึกข้อมูลหน้า 'ข้อมูลบัตรประชาชน' สำเร็จ`);
 
         return true
@@ -1166,7 +1166,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
           ))
         }
 
-        if (updatePhoneresult.status == true || !isDirty) {
+        if (updatePhoneresult.status === true || !isDirty) {
           this.dialog.open(OtpVerifyDialogComponent, {
             disableClose: true,
             panelClass: 'custom-dialog-header',
@@ -1332,7 +1332,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         )
       )
 
-      if (checkmotoyearvalid.status == 200) {
+      if (checkmotoyearvalid.status === 200) {
 
         if (checkmotoyearvalid.data.result == 'Y') {
           // *** valid moto year ***
@@ -1351,7 +1351,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                 })
               ).subscribe({
                 next: (reqcreatecredit) => {
-                  if (reqcreatecredit.status == true) {
+                  if (reqcreatecredit.status === true) {
                     this.loadingService.hideLoader()
                     if (this.quotationResult$.value.data[0].quo_secondhand_car_verify !== 'Y') {
                       this.secondhandcarverify = false
@@ -1394,7 +1394,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                   })
                 ).subscribe({
                   next: (reqcreatecredit) => {
-                    if (reqcreatecredit.status == true) {
+                    if (reqcreatecredit.status === true) {
                       this.loadingService.hideLoader()
                       if (this.quotationResult$.value.data[0].quo_secondhand_car_verify !== 'Y') {
                         // this.secondhandcarverify = false
@@ -1410,7 +1410,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                         }).afterClosed().subscribe(async (res: IResDialog2ndhandCarImageAttach) => {
                           // console.log(`อิอิ`)
                           // *** set this.secondhandcarverify = true when return upload image 2ndhand car success (10/07/2023) ***
-                          if (res.upload_status == true) {
+                          if (res.upload_status === true) {
                             this.secondhandcarverify = true
 
                             // *** add condition ***
@@ -1420,7 +1420,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                             this.imageattachtab.showsecondhandcarimageattach = true
 
 
-                            if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                            if (this.quotationResult$.value.data[0].quo_secondhand_car_verify === 'Y' || this.secondhandcarverify) {
                               this.econsentbtnDisable = false
                             }
                             this.cizcardtab.cizForm.markAsPristine();
@@ -1435,7 +1435,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                       this.imageattachtab.showsecondhandcarimageattach = true
 
 
-                      if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                      if (this.quotationResult$.value.data[0].quo_secondhand_car_verify === 'Y' || this.secondhandcarverify) {
                         this.econsentbtnDisable = false
                       }
                       this.cizcardtab.cizForm.markAsPristine();
@@ -1484,10 +1484,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                       ).subscribe({
                         next: (reqcreatecredit) => {
                           this.loadingService.hideLoader()
-                          if (reqcreatecredit.status == true) {
+                          if (reqcreatecredit.status === true) {
 
                             // *** check type of image attach (new car or second hand car) ***
-                            if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
+                            if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value === '001') {
                               this.secondhandcarverify = true
                               this.imageattachtab.showsecondhandcarimageattach = false
                             } else {
@@ -1498,7 +1498,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                               this.imageattachtab.txtrequireimagesecondhandcar = ''
                             }
 
-                            if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                            if (this.quotationResult$.value.data[0].quo_secondhand_car_verify === 'Y' || this.secondhandcarverify) {
                               this.econsentbtnDisable = false
                             }
                             this.cizcardtab.cizForm.markAsPristine();
@@ -1555,10 +1555,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                           ).subscribe({
                             next: (reqcreatecredit) => {
                               this.loadingService.hideLoader()
-                              if (reqcreatecredit.status == true) {
+                              if (reqcreatecredit.status === true) {
 
                                 // *** check type of image attach (new car or second hand car) ***
-                                if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
+                                if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value === '001') {
                                   this.secondhandcarverify = true
                                   this.imageattachtab.showsecondhandcarimageattach = false
                                 } else {
@@ -1567,14 +1567,14 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                                   this.imageattachtab.txtrequireimagesecondhandcar = 'แนบไฟล์ "รูปรถมือสอง" อย่างน้อย 2 ภาพ'
                                 }
                                 // *** chage into same SecondhandCarAttachImageDialogComponent for new case (10/07/2023) ***
-                                if (res.upload_status == true) {
+                                if (res.upload_status === true) {
                                   this.secondhandcarverify = true
 
                                   // *** add condition ***
 
                                   this.imageattachtab.countload = 0
 
-                                  if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+                                  if (this.quotationResult$.value.data[0].quo_secondhand_car_verify === 'Y' || this.secondhandcarverify) {
                                     this.econsentbtnDisable = false
                                   }
                                   this.cizcardtab.cizForm.markAsPristine();
@@ -1721,10 +1721,10 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       ).subscribe({
         next: (reqcreatecredit) => {
           this.loadingService.hideLoader()
-          if (reqcreatecredit.status == true) {
+          if (reqcreatecredit.status === true) {
 
             // *** check type of image attach (new car or second hand car) ***
-            if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value == '001') {
+            if (this.productdetailtab.productForm.controls.detailForm.controls.bussinessCode.value === '001') {
 
               this.secondhandcarverify = true
               this.imageattachtab.countload = 0
@@ -1741,7 +1741,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               this.imageattachtab.showsecondhandcarimageattach = true
             }
 
-            if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+            if (this.quotationResult$.value.data[0].quo_secondhand_car_verify === 'Y' || this.secondhandcarverify) {
               this.econsentbtnDisable = false
             }
             this.cizcardtab.cizForm.markAsPristine();
@@ -1764,7 +1764,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
   async recieve_trigger_bussinesscode($event: boolean) {
     if ($event) {
-      if (this.quotationResult$.value.data[0].quo_secondhand_car_verify == 'Y' || this.secondhandcarverify) {
+      if (this.quotationResult$.value.data[0].quo_secondhand_car_verify === 'Y' || this.secondhandcarverify) {
         this.econsentbtnDisable = false
       }
     } else {
@@ -1786,7 +1786,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
     const dopastatus = this.quotationResult$.value.data[0].quo_dopa_status
 
-    if (dopastatus == 'Y') {
+    if (dopastatus === 'Y') {
 
       // ==== เคสที่ dopa status เป็น 'Y' สามารถทำรายการ e-consent ได้ ===
 
@@ -1794,12 +1794,12 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
       let app_no = resChkAppNum.data[0].application_no
 
-      if (app_no == '') {
+      if (app_no === '') {
         // *** gen application num ***
 
         const resultgenappno = await lastValueFrom(this.quotationService.MPLS_gen_application_no(this.actRoute.snapshot.queryParamMap.get('id') ?? ''))
 
-        if (resultgenappno.status == 200) {
+        if (resultgenappno.status === 200) {
           // *** create applic ation num success *** 
           app_no = resultgenappno.data[0].application_no
         } else {
@@ -1813,7 +1813,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
       const resultgetcurrentDate = await lastValueFrom(this.quotationService.MPLS_getservertime())
 
-      if (resultgetcurrentDate.status == 200) {
+      if (resultgetcurrentDate.status === 200) {
         // *** get server time success ***
         currentDate = resultgetcurrentDate.date
       }
@@ -1850,13 +1850,13 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
           this.loadingService.hideLoader()
 
-          if (reseconsentdialog.status == true) {
+          if (reseconsentdialog.status === true) {
 
             this.verifyeconsent_txt = reseconsentdialog.data === 'success'
               ? 'ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ตเรียบร้อย'
               : 'ไม่ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ต';
 
-            if (reseconsentdialog.data == 'success') {
+            if (reseconsentdialog.data === 'success') {
 
               this.snackbarsuccess('ทำรายการสำเร็จ')
               this.productdetailtab.showeconsentimagebutton = true
@@ -1865,7 +1865,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               // === set image attach valid (econsent non require image) === 
               this.verifyimageattach = true
               this.imageattachtab.txtrequireimage = ``
-            } else if (reseconsentdialog.data == 'fail') {
+            } else if (reseconsentdialog.data === 'fail') {
               this.quotationService.MPLS_validation_otp_econsent_non(this.quoid).subscribe({
                 next: (res_non) => {
                   this.loadingService.hideLoader()
@@ -2088,7 +2088,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
           this.loadingService.hideLoader()
           // === check result create consent (success when status == 200) ===
-          if (res_create_consent.status == 200) {
+          if (res_create_consent.status === 200) {
             // === sucess ===
             this.snackbarsuccess(`ทำรายการสำเร็จ : ${res_create_consent.message ? res_create_consent.message : 'No message'}`)
             // === do next stage === 

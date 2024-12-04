@@ -117,7 +117,7 @@ export class OtpVerifyDialogComponent implements OnInit {
       next: (res) => {
         this.loadingService.hideLoader()
         console.log(`res otp Data : ${JSON.stringify(res)}`)
-        if (res.status == 200) {
+        if (res.status === 200) {
           this._tabindex = 1
         } else {
           this._createotpResMsg = res.message

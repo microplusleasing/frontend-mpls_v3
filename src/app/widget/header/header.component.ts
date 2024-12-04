@@ -160,7 +160,7 @@ export class HeaderComponent implements OnInit {
 
       const result_insert_token = await lastValueFrom(this.btwService.generatetokenWelcomeCall(`W03`, tokenCreate))
 
-      if (result_insert_token.status == 200) {
+      if (result_insert_token.status === 200) {
         // === create token success === 
         // === open welcome call with query token === 
         const url = `${environment.httpheadercert}${environment.welcome_call_fcr_web}?Token=${tokenCreate}`
@@ -199,9 +199,9 @@ export class HeaderComponent implements OnInit {
 
   gohome() {
     const channal = this.usersession.channal
-    if (channal == 'seller' || channal == 'checker') {
+    if (channal === 'seller' || channal === 'checker') {
       this.router.navigate(['home'])
-    } else if (channal == 'collector') {
+    } else if (channal === 'collector') {
       this.router.navigate(['collector'])
     }
   }

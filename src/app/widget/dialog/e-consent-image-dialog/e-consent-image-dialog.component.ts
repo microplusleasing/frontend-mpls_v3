@@ -50,9 +50,9 @@ export class EConsentImageDialogComponent implements OnInit {
     // **** check quotation param ****
 
     if (
-      this.data.quotationid == null ||
-      this.data.quotationid == '' ||
-      this.data.quotationid == undefined
+      this.data.quotationid === null ||
+      this.data.quotationid === '' ||
+      this.data.quotationid === undefined
     ) {
       this.nullquotation_txt = `ไม่พบเลข quotationid`
     } else {

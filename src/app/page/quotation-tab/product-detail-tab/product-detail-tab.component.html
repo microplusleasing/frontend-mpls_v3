@@ -45,7 +45,7 @@
                             </mat-form-field>
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="show2ndHandMPLSBtn">
-                            <!-- ปุ่มค้นหารถมือสอง (MPLUS) (Bussiness code == '002') -->
+                            <!-- ปุ่มค้นหารถมือสอง (MPLUS) (Bussiness code === '002') -->
                             <button mat-raised-button color="primary" style="width: 50%;"
                                 (click)="onclick2ndhandSearchBtn()">
                                 ค้นหาเลขทะเบียน
@@ -236,7 +236,7 @@
                                         {{pms.term}}
                                     </mat-option>
                                 </mat-select>
-                                <mat-error *ngIf="this.paymentCountSelect.length == 0">
+                                <mat-error *ngIf="this.paymentCountSelect.length === 0">
                                     เลือกเงื่อนไขอื่นก่อน
                                 </mat-error>
                                 <mat-error

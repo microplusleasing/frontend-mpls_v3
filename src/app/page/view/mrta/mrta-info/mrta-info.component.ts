@@ -137,7 +137,7 @@ export class MrtaInfoComponent implements OnInit {
           }
           const checkmrtarecent = await lastValueFrom(this.masterDataService.checkmrtarecent(this.mrtainfodata.quo_key_app_id))
 
-          if (checkmrtarecent.status == 200) {
+          if (checkmrtarecent.status === 200) {
             if (checkmrtarecent.data.length !== 0) {
               const recentmrtavalue = checkmrtarecent.data[0]
               this.pay_status = recentmrtavalue.pay_status
@@ -194,7 +194,7 @@ export class MrtaInfoComponent implements OnInit {
     this._ireqsaveqrmrta.phone_number = this.mrtainfodata.phone_number
 
     this.masterDataService.saveqrpayment(this._ireqsaveqrmrta).subscribe((results) => {
-      if (results.status == 200) {
+      if (results.status === 200) {
         this.MRTAdata = mrtadataincludeapp
       }
     })

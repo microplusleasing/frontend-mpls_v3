@@ -280,7 +280,7 @@ export class LoginComponent extends BaseService {
       .subscribe({
         next: (result) => {
           this.loadingService.hideLoader();
-          if (result.status == 200) {
+          if (result.status === 200) {
             // === contain user in database ==== 
             if (this.returnUrl == '/') {
 
@@ -314,11 +314,11 @@ export class LoginComponent extends BaseService {
               localStorage.removeItem('currentUser');
               this.router.navigate(['/login'])
             });
-          } else if (result.status == 201) {
+          } else if (result.status === 201) {
             // === Not found user id on database
             this.messagetext = `ไม่เจอผู้ใช้งานในระบบ หรือรหัสผ่านไม่ถูกต้อง`
             this.showmessage = true;
-          } else if (result.status == 401) {
+          } else if (result.status === 401) {
             // *** add on other vertify error or etc (09/08/2023) ***
             this.dialog.open(MainDialogComponent, {
               panelClass: 'custom-dialog-container',
@@ -382,7 +382,7 @@ export class LoginComponent extends BaseService {
       email: useremail
     }).pipe(first()).subscribe({
       next: (result) => {
-        if (result.status == 200) {
+        if (result.status === 200) {
           this.successforgotpassword = true
           this.errorforgotemail = 'ส่ง Email สำเร็จ, เช็ค Email เพื่อดำเนินการต่อ'
         } else {
@@ -417,7 +417,7 @@ export class LoginComponent extends BaseService {
         newpassword: newpassword
       }).subscribe({
         next: (result) => {
-          if (result.status == 200) {
+          if (result.status === 200) {
             // this.successresetpassword = true
             // this.errorresetpassword = result.message
 

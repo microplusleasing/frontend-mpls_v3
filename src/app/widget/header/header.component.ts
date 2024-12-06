@@ -26,6 +26,9 @@ export class HeaderComponent implements OnInit {
   username: string = '';
   version: string = `${environment.version}`
 
+  /* ... add isLogin variable (06/12/2024) ... */
+  isLogin: boolean = false
+
 
 
 

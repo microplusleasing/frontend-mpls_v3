@@ -1,13 +1,21 @@
 <div *ngIf="cardLayout | async as layout">
   <div class="parent-center">
-</div>
+  </div>
   <div class="child-center">
     <div class="formContent">
-      <div class="formHerder" *ngIf="(showforgetpassword || showresetpassword) && showheader">
+      <!-- <div class="formHerder" *ngIf="(showforgetpassword || showresetpassword) && showheader">
         <button mat-icon-button color="primary" (click)="backtologin()">
           <mat-icon>arrow_back_ios_new</mat-icon>
           กลับไปหน้า Login
         </button>
+      </div> -->
+      <div *ngIf="(showforgetpassword || showresetpassword) && showheader">
+        <div class="v-center">
+          <button mat-icon-button color="primary" (click)="backtologin()">
+            <mat-icon>arrow_back_ios_new</mat-icon>
+          </button>
+          <span class="link" (click)="backtologin()">กลับไปหน้า Login</span>
+        </div>
       </div>
       <div class="wrapper-content">
 
@@ -119,8 +127,7 @@
                   <mat-grid-tile [colspan]="layout.list.maxcols">
                     <mat-form-field appearance="fill" style="width: 90%; font-size: 12px;">
                       <mat-label>Username</mat-label>
-                      <input matInput autocomplete="new-name" placeholder="ไอดีผู้ใช้งาน"
-                        [formControl]="usernameField"
+                      <input matInput autocomplete="new-name" placeholder="ไอดีผู้ใช้งาน" [formControl]="usernameField"
                         [ngClass]="{ 'is-invalid': _formresetchk && usernameField.errors }">
                       <mat-error *ngIf="_formresetchk && usernameField.errors">
                         <div *ngIf="usernameField.errors?.['required']">

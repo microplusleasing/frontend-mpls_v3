@@ -387,7 +387,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
         if (quotationid) {
           // === get deliver approve record === (api สำหรับแสดงรูปลายเซ็นคนที่ร้านและภาพรับรถลูกค้า)
           // ==== ถ้ามีรูป จะ lock field เพราะว่าเคยมีการส่งมอบรถไปแล้ว ===
-          this.quotationService.getsendcardeliverbyid(quotationid).subscribe(({
+          this.quotationService.getattachimagedeliverbyid(quotationid).subscribe(({
             //
             next: (results) => {
               // console.log(`success check immage 14 , 15 `)
@@ -581,6 +581,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
           this.setvalueaftersuccess()
 
         } else {
+          this.loadingService.hideLoader()
           this.snackbarfail(`แนบไฟล์ภาพส่งมอบรถไม่สำเร็จ : ${results.message ? results.message : 'No return Message'}`)
         }
 
@@ -588,8 +589,10 @@ export class SendCarTabComponent extends BaseService implements OnInit {
         console.log(`error when create send car : ${error.message ? error.message : 'No return message'}`);
         this.loadingService.hideLoader();
       }, complete: () => {
-        this.loadingService.hideLoader();
+
       }
+    }).add(() => {
+      this.loadingService.hideLoader();
     })
   }
 

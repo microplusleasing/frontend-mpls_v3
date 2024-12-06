@@ -10,6 +10,16 @@
           <img [src]="cizCardImage" class="img-box"><br>
           <span style="color: red;">{{this.quotationService.dopastatus.messageheader}}</span><br>
           <button mat-raised-button color="primary" (click)="onClickFacecompareBtn()">เปรียบเทียบใบหน้า</button>
+          
+          <button 
+          *ngIf="userSession.RADMIN === 'Y'" 
+          style="margin-left: 2em;" 
+          mat-raised-button color="primary"
+            (click)="onClickEditFacecompareImage()"
+            >
+            แก้ไข/upload ภาพ
+          </button>
+          
         </div>
       </div>
       <div class="flexbox">
@@ -38,7 +48,7 @@
 
         <mat-form-field appearance="outline">
           <mat-select required [formControl]="gender">
-            <mat-option [value]="null" disabled hidden>เลือกคำนำหน้า</mat-option>
+            <mat-option [value]="null" disabled hidden>เลือกเพศ</mat-option>
             <mat-option *ngFor="let item of masterGender" [value]="item.value">{{item.name}}</mat-option>
           </mat-select>
           <mat-label>
@@ -48,10 +58,47 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>เลขบัตรประชาชน</mat-label>
-          <input matInput required [formControl]="citizenId">
-          <mat-error *ngIf="this.citizenId.invalid">กรุณากรอกเลขบัตรประชาชน</mat-error>
+          <mat-select required [formControl]="nationality">
+            <mat-option [value]="null" disabled hidden>เลือกสัญชาติ</mat-option>
+            <mat-option *ngFor="let item of masterNationality.data" [value]="item.nationality_code">
+              {{item.nationality_name}}
+            </mat-option>
+          </mat-select>
+          <mat-label>
+            สัญชาติ
+          </mat-label>
+          <mat-error *ngIf="this.nationality.invalid">กรุณาเลือกสัญชาติ</mat-error>
         </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-select required [formControl]="identity">
+            <mat-option [value]="null" disabled hidden>เลือกหลักฐานแสดงตัวตน</mat-option>
+            <mat-option *ngFor="let item of masterIdentityType.data" [value]="item.identity_code">
+              {{item.identity_name}}
+            </mat-option>
+          </mat-select>
+          <mat-label>
+            หลักฐานแสดงตัวตน
+          </mat-label>
+          <mat-error *ngIf="this.identity.invalid">กรุณาเลือกประเภทหลักฐานแสดงตัวตน</mat-error>
+        </mat-form-field>
+
+        <div *ngIf="maincitizenForm.controls.identity.value && maincitizenForm.controls.identity.value == '01'">
+          <mat-form-field appearance="outline">
+            <mat-label>เลขบัตรประชาชน</mat-label>
+            <input matInput required [formControl]="citizenId">
+            <mat-error *ngIf="this.citizenId.invalid">กรุณากรอกเลขบัตรประชาชน</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div *ngIf="maincitizenForm.controls.identity.value && maincitizenForm.controls.identity.value == '07'">
+          <mat-form-field appearance="outline">
+            <mat-label>หมายเลข PASSPORT ID</mat-label>
+            <input matInput required [formControl]="passportId">
+            <mat-error *ngIf="this.passportId.invalid">กรุณากรอก PASSPORT ID</mat-error>
+          </mat-form-field>
+        </div>
+
+
 
         <mat-form-field appearance="outline">
           <mat-label>วันเกิด</mat-label>
@@ -466,7 +513,7 @@
         </mat-form-field>
       </div>
     </div>
-    
+
     <div class="flex-center">
       <!-- age valid -->
       <mat-error *ngIf="cizForm.controls.maincitizenForm.controls.age.hasError('min')">❌ :

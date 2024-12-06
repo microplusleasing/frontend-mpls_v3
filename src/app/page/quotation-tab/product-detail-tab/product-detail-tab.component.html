@@ -128,6 +128,55 @@
                                 <input type="text" matInput placeholder="เลขถัง" [formControl]="runningchassisNoField">
                             </mat-form-field>
                         </mat-grid-tile>
+                        <!-- Env-car -->
+                        <!-- Fuel Type -->
+                        <mat-grid-tile [colspan]="layout.list.cols3">
+                            <mat-form-field appearance="outline">
+                                <mat-select required [formControl]="fuelTypeField">
+                                    <mat-option [value]="null" disabled hidden>Fuel Type</mat-option>
+                                    <mat-option *ngFor="let item of masterFuelTypeList.data"
+                                        [value]="item.code">{{item.detail}}</mat-option>
+                                </mat-select>
+                                <mat-label>
+                                    Fuel Type
+                                </mat-label>
+                                <mat-error *ngIf="this.motorField.invalid">กรอก Fuel Type</mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <!-- Motor -->
+                        <mat-grid-tile [colspan]="layout.list.cols2">
+                            <mat-form-field appearance="outline">
+                                <mat-label>กำลังมอเตอร์ไฟฟ้า</mat-label>
+                                <input type="text" matInput placeholder="กำลังมอเตอร์ไฟฟ้า" [formControl]="motorField">
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <!-- Motor Number -->
+                        <mat-grid-tile [colspan]="layout.list.cols3">
+                            <mat-form-field appearance="outline">
+                                <mat-label>เลขมอเตอร์ไฟฟ้า</mat-label>
+                                <input type="text" matInput placeholder="เลขมอเตอร์ไฟฟ้า"
+                                    [formControl]="motorNumberField">
+                                <mat-error
+                                    *ngIf="detailForm.controls.motorNumberField.hasError('required')">กรอกเลขมอเตอร์ไฟฟ้า</mat-error>
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <!-- Battery Type -->
+                        <mat-grid-tile [colspan]="layout.list.cols2">
+                            <mat-form-field appearance="outline">
+                                <mat-label>ชนิดแบตเตอรี่</mat-label>
+                                <input type="text" matInput placeholder="ชนิดแบตเตอรี่"
+                                    [formControl]="batteryTypeField">
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <!-- Battery Capacity -->
+                        <mat-grid-tile [colspan]="layout.list.cols2">
+                            <mat-form-field appearance="outline">
+                                <mat-label>ความจุแบตเตอรี่</mat-label>
+                                <input type="text" matInput placeholder="ความจุแบตเตอรี่"
+                                    [formControl]="batteryCapacityField">
+                            </mat-form-field>
+                        </mat-grid-tile>
+                        <!-- ....... -->
 
                         <!-- add on secondhand car -->
                         <div [formGroup]="secondHandCarForm" *ngIf="shwosecondhandcardetail">
@@ -239,8 +288,7 @@
                                 <mat-error *ngIf="this.paymentCountSelect.length === 0">
                                     เลือกเงื่อนไขอื่นก่อน
                                 </mat-error>
-                                <mat-error
-                                    *ngIf="detailForm.controls.paymentRoundCountValueField.hasError('required')">
+                                <mat-error *ngIf="detailForm.controls.paymentRoundCountValueField.hasError('required')">
                                     เลือกจำนวนงวด
                                 </mat-error>
                             </mat-form-field>
@@ -281,7 +329,8 @@
                                 <mat-label>เหตุผล</mat-label>
                                 <input type="text" matInput placeholder="ระบุเหตุผล"
                                     [formControl]="overmaxltvreasonField">
-                                <mat-error *ngIf="secondHandCarForm.controls.overmaxltvreasonField.hasError('required')">
+                                <mat-error
+                                    *ngIf="secondHandCarForm.controls.overmaxltvreasonField.hasError('required')">
                                     กรุณากรอกเหตุผล
                                 </mat-error>
                             </mat-form-field>

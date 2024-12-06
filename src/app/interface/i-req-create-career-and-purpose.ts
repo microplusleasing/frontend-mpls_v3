@@ -24,6 +24,8 @@ export interface IReqCreateCareerAndPurpose {
   sub_salary_per_month: number | null
   sub_work_per_week: number | null
   sub_workplace_name: string
+  main_workplace_phone_no_1: string;
+  main_workplace_phone_no_2: string;
   // === purpose Path ===
   car_user: string, // career form (stamp via code , sync master data)
   car_user_citizen_id: string

@@ -18,7 +18,9 @@ import { IReqUserlogin } from 'src/app/interface/i-req-userlogin';
 export class AuthService {
 
   private currentUserSubject: BehaviorSubject<IUserToken>;
+  private agentCurrentUserSubject: BehaviorSubject<IUserToken>;
   public currentUser: Observable<IUserToken>;
+  public agentcurrentUser: Observable<IUserToken>;
 
   constructor(
     @Inject(DOCUMENT) private document: any,
@@ -34,7 +36,9 @@ export class AuthService {
     }
 
     this.currentUserSubject = new BehaviorSubject<IUserToken>(parselocal);
+    this.agentCurrentUserSubject = new BehaviorSubject<IUserToken>(parselocal);
     this.currentUser = this.currentUserSubject.asObservable();
+    this.agentcurrentUser = this.currentUserSubject.asObservable();
   }
 
   public get currentUserValue(): IUserToken {
@@ -49,6 +53,20 @@ export class AuthService {
 
     this.currentUserSubject = new BehaviorSubject<IUserToken>(parselocal);
     return this.currentUserSubject!.value;
+  }
+
+  public get agentcurrentUserValue(): IUserToken {
+    // === recheck when delete currentUser manually (17/10/2022) === 
+    let localstoreaccount = localStorage.getItem('agentcurrentUser');
+    let parselocal;
+    if (localstoreaccount) {
+      parselocal = JSON.parse(localstoreaccount)
+    } else {
+      parselocal = null
+    }
+
+    this.agentCurrentUserSubject = new BehaviorSubject<IUserToken>(parselocal);
+    return this.agentCurrentUserSubject!.value;
   }
 
   domain = this.document.location.hostname;
@@ -68,6 +86,7 @@ export class AuthService {
         // store user details and jwt token in local storage to keep user logged in between page refreshes
         if (user.status === 200) {
           localStorage.setItem('currentUser', JSON.stringify(user));
+          localStorage.removeItem('agentcurrentUser');
         }
         this.currentUserSubject.next(user);
         return user;
@@ -93,13 +112,6 @@ export class AuthService {
 
   tokenExpired(token: string) {
 
-    // const expiry = (JSON.parse(atob(token.split('.')[1]))).exp;
-
-    // const base64Url = token.split('.')[1];
-    // const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    // const jsonPayload = JSON.parse(buffer.Buffer.from(base64, 'base64').toString());
-    // const expiry = jsonPayload.exp;
-
     const tokenParts = token.split('.');
     if (tokenParts.length !== 3) {
       throw new Error('Invalid token format');
@@ -109,5 +121,19 @@ export class AuthService {
     const jsonPayload = JSON.parse(atob(base64));
     const expiry = jsonPayload.exp;
     return (Math.floor((new Date).getTime() / 1000)) >= expiry;
+  }
+
+  stampuserfromtoken(token: string) {
+
+    return this.http.post<IUserToken>(`${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getcurrentUserFormToken`, {token_oracle: token})
+      .pipe(map(user => {
+        // store user details and jwt token in local storage to keep user logged in between page refreshes
+        if (user.status == 200) {
+          localStorage.setItem('agentcurrentUser', JSON.stringify(user));
+          localStorage.removeItem('currentUser');
+        }
+        this.currentUserSubject.next(user);
+        return user;
+      }));
   }
 }

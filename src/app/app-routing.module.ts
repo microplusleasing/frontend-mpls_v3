@@ -12,6 +12,8 @@ import { MrtaInfoComponent } from './page/view/mrta/mrta-info/mrta-info.componen
 import { CollectorViewComponent } from './page/collector/collector-view/collector-view.component';
 import { CollectorDetailComponent } from './page/collector/collector-detail/collector-detail.component';
 import { ViewCarAttachComponent } from './page/view/view-car-attach/view-car-attach.component';
+import { AgentGuard } from './_helper/agent.guard';
+import { ExamineSendCarImageComponent } from './page/menu/examine-send-car-image/examine-send-car-image.component';
 
 const routes: Routes = [
   // { path: '', component: DashboardComponent, canActivate: [AuthGuardService] },
@@ -20,22 +22,25 @@ const routes: Routes = [
   { path: 'quotation-view', component: QuotationViewComponent, canActivate: [AuthGuardService] },
   { path: 'quotation-detail', component: QuotationDetailComponent, canActivate: [AuthGuardService] },
   { path: 'quotation-detail/:id', component: QuotationDetailComponent, canActivate: [AuthGuardService] },
+  { path: 'quotation-examine', component: QuotationDetailComponent, canActivate: [AgentGuard] },  /* ...  Agent guard ... */
+  { path: 'quotation-examine/:id', component: QuotationDetailComponent, canActivate: [AgentGuard] },  /* ...  Agent guard ... */
+  { path: 'examine-send-car-image-view', component: ExamineSendCarImageComponent, canActivate: [AgentGuard] },
   { path: 'bypass', component: BypassSignatureComponent, canActivate: [AuthGuardService] },
   { path: 'bypass/:id', component: BypassSignatureComponent, canActivate: [AuthGuardService] },
-  { path: 'mrta-info', component: MrtaInfoComponent, canActivate: [AuthGuardService]},
+  { path: 'mrta-info', component: MrtaInfoComponent, canActivate: [AuthGuardService] },
   { path: 'mrta-info/:id', component: MrtaInfoComponent, canActivate: [AuthGuardService] },
   // { path: 'collector-view', component: CollectorViewComponent, canActivate: [AuthGuardService] },
   // { path: 'collector-detail', component: CollectorDetailComponent, canActivate: [AuthGuardService] },
   // { path: 'collector-detail/:id', component: CollectorDetailComponent, canActivate: [AuthGuardService] },
-  { path: 'viewsign', component: ViewsignComponent }, 
-  { path: 'viewimg_used_moto', component: ViewCarAttachComponent }, 
-  { path: 'viewimg_used_moto/:application_num', component: ViewCarAttachComponent }, 
-  { path: 'notfound', component: NotFoundComponent }, 
-  { path: '**', redirectTo: 'notfound', pathMatch: 'full' } 
+  { path: 'viewsign', component: ViewsignComponent },
+  { path: 'viewimg_used_moto', component: ViewCarAttachComponent },
+  { path: 'viewimg_used_moto/:application_num', component: ViewCarAttachComponent },
+  { path: 'notfound', component: NotFoundComponent },
+  { path: '**', redirectTo: 'notfound', pathMatch: 'full' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)], 
-  exports: [RouterModule] 
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
 })
 export class AppRoutingModule { }

@@ -159,7 +159,7 @@ export class QuotationService {
     return this.http.post<IResBasic>(url, formData)
   }
 
-  getsendcardeliverbyid(quotation_id: string): Observable<IResBasicImage> {
+  getattachimagedeliverbyid(quotation_id: string): Observable<IResBasicImage> {
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/getattachimagedeliverbyid/${quotation_id}`
     return this.http.get<IResBasicImage>(url)
   }

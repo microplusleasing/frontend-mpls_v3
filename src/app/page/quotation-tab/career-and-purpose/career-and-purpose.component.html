@@ -166,10 +166,10 @@
                                 </mat-form-field>
                             </mat-grid-tile>
                             <mat-grid-tile [colspan]="layout.list.maxcols">
-                                <mat-form-field appearance="outline" style="width: 100%">
-                                    <mat-label>ตำแหน่งงาน</mat-label>
-                                    <input matInput color="primary" [formControl]="subCareerPositionField" type="text">
-                                    <mat-error *ngIf="subCareerPositionField.errors?.['maxlength']">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>แผนก/ฝ่าย/สังกัด/กรม/กอง</mat-label>
+                                    <input type="text" matInput [formControl]="subCareerDepartmentField">
+                                    <mat-error *ngIf="subCareerDepartmentField.errors?.['maxlength']">
                                         ข้อความยาวเกินกำหนด
                                     </mat-error>
                                 </mat-form-field>

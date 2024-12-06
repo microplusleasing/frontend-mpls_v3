@@ -33,7 +33,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
   resultfacecompareError: string;
   showuploadfaceimage: boolean = true;
   ismanual: boolean = false
-  isfaceconsent: boolean = false ;// === use value from ismaual but use other variable for handle render dom data ===
+  isfaceconsent: boolean = false;// === use value from ismaual but use other variable for handle render dom data ===
 
   firstName: string = ''
   lastName: string = ''
@@ -105,6 +105,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
       const customerfaceinput = this.facevalidform.controls.customerface
       const reasoninput = this.facevalidform.controls.reason
       const resultinput = this.facevalidform.controls.result
+      const consentinput = this.facevalidform.controls.consent
 
       if (value) {
         // ==== manual quotation ===
@@ -112,10 +113,12 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
         customerfaceinput.reset();
         reasoninput.reset();
         resultinput.reset();
+        consentinput.reset();
         citizenfaceinput.clearValidators();
         customerfaceinput.clearValidators();
         reasoninput.clearValidators();
         resultinput.clearValidators();
+        consentinput.clearValidators();
       } else {
         citizenfaceinput.setValidators(Validators.required)
         customerfaceinput.setValidators(Validators.required)
@@ -126,6 +129,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
       customerfaceinput.updateValueAndValidity();
       reasoninput.updateValueAndValidity();
       resultinput.updateValueAndValidity();
+      consentinput.updateValueAndValidity();
     })
   }
 
@@ -169,7 +173,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
             // === check channal , If no dipccip channal hide list field  ====
             if (resimage.data.is_dipchip_channal === 'N') {
               this.ismanual = true
-              this.isfaceconsent = false 
+              this.isfaceconsent = false
             } else {
               this.isfaceconsent = true
             }
@@ -221,7 +225,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
     console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
 
     const options = {
-      maxSizeMB: 2,
+      maxSizeMB: 1.5,
       maxWidthOrHeight: 1920,
       useWebWorker: true
     }
@@ -304,96 +308,11 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
     let fd = new FormData();
     fd.append('items', dataitems)
 
-    let fd_iapp = new FormData();
-    // ===== iapp face verification v2 (addon 28/02/2023) ====
-    // *** check file2 is less than 2mb ***
-
-    const _file1 = (this.file1) ? `data:image/jpeg;base64,${this.file1}` : `data:image/jpeg;base64,${this.facevalidform.controls.citizenface.value}`
-    fd_iapp.append('file1', _file1)
-
-    // === check file2 size (11/11/2022) === 
-    const bytearrayimagefile2 = this.ImageUtilService._base64sizemb(this.file2)
-
-    if (bytearrayimagefile2 > 2) {
-
-      const imgfile = (this.file2) ? await imageCompression.getFilefromDataUrl(`data:image/jpeg;base64,${this.file2}`, 'file2') : await imageCompression.getFilefromDataUrl(`data:image/jpeg;base64,${this.facevalidform.controls.customerface.value}`, 'file2')
-
-      const compressedFile = await imageCompression(imgfile, { maxSizeMB: 1 });
-
-      if (compressedFile) {
-        const fileimagecompreessBase64 = await this.ImageUtilService.blobToBase64(compressedFile)
-
-        fd_iapp.append('file2', `${fileimagecompreessBase64}`)
-
-      }
-    } else {
-      const _file2 = (this.file2) ? `data:image/jpeg;base64,${this.file2}` : `data:image/jpeg;base64,${this.facevalidform.controls.customerface.value}`
-      fd_iapp.append('file2', _file2)
-    }
-
-
-    // forkJoin([
-    //   this.iappService.getfacevalidation(fd_iapp),
-    //   this.quotationService.MPLS_stamp_check_face_valid(fd)
-    // ]).subscribe({
-    //   next: async ([res_iapp, res_stamp_check_face_valid]) => {
-
-    //     if (res_iapp.message) {
-    //       let fd = new FormData;
-    //       const datasend: IStampFaceVerificationLog = {
-    //         quotationid: this.data.quotationid,
-    //         duration: res_iapp.duration,
-    //         matched: res_iapp.matched,
-    //         message: res_iapp.message,
-    //         score: res_iapp.score,
-    //         threshold: res_iapp.threshold
-    //       }
-    //       const dataString = JSON.stringify(datasend)
-
-    //       fd.append('items', dataString)
-
-    //       const resultcreatelog = await lastValueFrom(this.quotationService.MPLS_stamp_face_verification_log_iapp(fd))
-
-    //       if (resultcreatelog.status === 200) {
-    //         // *** อาจปรับเปลี่ยนเป็นแสดง snackbar  พร้อมกับจังหวะที่ MPLS_stamp_check_face_valid สำเร็จได้ (res_stamp_check_face_valid === 200) ***
-    //         console.log(`บันทึกรายการ mpls_iapp_face_verification_log สำเร็จ !`)
-    //       } else {
-    //         console.log(`บันทึกรายการ mpls_iapp_face_verification_log ไม่สำเร็จ !`)
-    //       }
-    //     }
-
-    //     if (res_stamp_check_face_valid.status === 200) {
-    //       // === success ===
-    //       this.loadingService.hideLoader()
-    //       this.snackbarsuccess(`บันทึกข้อมูลยืนยันตัวบุคคลสำเร็จ`)
-    //       if (res_stamp_check_face_valid.data.isvalid === 'Y') {
-    //         this.isfacevalid = true
-    //         this.settextstatus = true
-    //       } else {
-    //         this.isfacevalid = false
-    //         this.settextstatus = true
-    //       }
-    //       this.facevalidform.disable()
-    //       this.facevalidform.controls.reason.disable()
-    //       // === clode dialog (requirement on 07/01/2023) ===
-    //       this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
-    //     } else {
-    //       this.snackbarfail(`ไม่สามารถบันทึกข้อมูลยืนยันตนบุคคลได้ : ${res_stamp_check_face_valid.message}`)
-    //     }
-    //   }, error: (e: any) => {
-    //     this.snackbarfail(`Error forkjoin : ${e.message ? e.message : 'No Message'}`)
-    //   }, complete: () => {
-    //     console.log(`trigger forkjoin (getfacevalidation, MPLS_stamp_check_face_valid) complete!`)
-    //   }
-    // })
-
     this.quotationService.MPLS_stamp_check_face_valid(fd).subscribe({
       next: (result) => {
         this.loadingService.showLoader()
         if (result.status === 200) {
           // === success ===
-          // this.loadingService.hideLoader()
-          // this.snackbarsuccess(`บันทึกข้อมูลยืนยันตัวบุคคลสำเร็จ`)
           if (result.data.isvalid === 'Y') {
             this.isfacevalid = true
             this.settextstatus = true
@@ -403,85 +322,13 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
           }
           this.facevalidform.disable()
           this.facevalidform.controls.reason.disable()
-          // === clode dialog (requirement on 07/01/2023) ===
-          // this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
-          // === stamp log to mpls_iapp_face_verify_log ==== 
 
-          this.iappService.getfacevalidation(fd_iapp).subscribe({
-            next: async (res_iapp) => {
-              // this.loadingService.hideLoader()
-              if (res_iapp.message) {
-                let fd_log = new FormData;
-                const datasend: IStampFaceVerificationLog = {
-                  quotationid: this.data.quotationid,
-                  duration: res_iapp.duration,
-                  matched: res_iapp.matched,
-                  message: res_iapp.message,
-                  score: res_iapp.score,
-                  threshold: res_iapp.threshold
-                }
-                const dataString = JSON.stringify(datasend)
+          /* ... show success snackbar ... */
 
-                fd_log.append('items', dataString)
+          this.loadingService.hideLoader()
+          this.snackbarsuccess(`สถานะบันทึกข้อมูล : สำเร็จ ✅`)
+          this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
 
-                const resultcreatelog = await lastValueFrom(this.quotationService.MPLS_stamp_face_verification_log_iapp(fd_log))
-
-                if (resultcreatelog.status === 200) {
-                  this.loadingService.hideLoader()
-                  this.snackbarsuccess(`
-                  สถานะบันทึกข้อมูล : สำเร็จ ✅\n 
-                  สถานะการตรวจใบหน้าผ่าน api :สำเร็จ ✅\n
-                  สถานะบันทึก log : สำเร็จ ✅`)
-                  this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
-                } else {
-                  this.loadingService.hideLoader()
-                  this.snackbarsuccess(`
-                  สถานะบันทึกข้อมูล : สำเร็จ ✅\n 
-                  สถานะการตรวจใบหน้าผ่าน api : สำเร็จ ✅\n
-                  สถานะบันทึก log : ไม่สำเร็จ ❌ (Error: ${resultcreatelog.message ? resultcreatelog.message : 'No return message'})`)
-                  this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
-                }
-              }
-            }, error: async (e: HttpErrorResponse) => {
-              // this.loadingService.hideLoader()
-              // this.snackbarfail(`
-              // สถานะบันทึกข้อมูล : สำเร็จ \n 
-              // สถานะการตรวจใบหน้าผ่าน api : ไม่สำเร็จ (Error: ${e.message ? e.message : 'No return message'}) \n  F
-              // สถานะบันทึก log : ไม่สำเร็จ`)
-              // this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
-              if (e.message) {
-                let fd_log = new FormData;
-                const datasend: IStampFaceVerificationLog = {
-                  quotationid: this.data.quotationid,
-                  duration: e.error.duration,
-                  message: e.error.message
-                }
-                const dataString = JSON.stringify(datasend)
-
-                fd_log.append('items', dataString)
-
-                const resultcreatelog = await lastValueFrom(this.quotationService.MPLS_stamp_face_verification_log_iapp(fd_log))
-
-                if (resultcreatelog.status === 200) {
-                  this.loadingService.hideLoader()
-                  this.snackbarsuccess(`
-                  สถานะบันทึกข้อมูล : สำเร็จ ✅ \n 
-                  สถานะการตรวจใบหน้าผ่าน api : ไม่สำเร็จ ❌ \n
-                  สถานะบันทึก log : สำเร็จ ✅`)
-                  this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
-                } else {
-                  this.loadingService.hideLoader()
-                  this.snackbarsuccess(`
-                  สถานะบันทึกข้อมูล : ✅ สำเร็จ \n 
-                  สถานะการตรวจใบหน้าผ่าน api : ❌ไม่สำเร็จ \n
-                  สถานะบันทึก log : ไม่สำเร็จ ❌(Error: ${resultcreatelog.message ? resultcreatelog.message : 'No return message'})`)
-                  this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
-                }
-              }
-            }, complete: () => {
-              // this.loadingService.hideLoader()
-            }
-          })
 
         } else {
           this.loadingService.hideLoader()
@@ -495,40 +342,165 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
       }
     })
 
-
-
     // =======================================================
 
-    // this.quotationService.MPLS_stamp_check_face_valid(fd).subscribe({
-    //   next: (result) => {
-
-    //     if (result.status === 200) {
-    //       // === success ===
-    //       this.loadingService.hideLoader()
-    //       this.snackbarsuccess(`บันทึกข้อมูลยืนยันตัวบุคคลสำเร็จ`)
-    //       if (result.data.isvalid === 'Y') {
-    //         this.isfacevalid = true
-    //         this.settextstatus = true
-    //       } else {
-    //         this.isfacevalid = false
-    //         this.settextstatus = true
-    //       }
-    //       this.facevalidform.disable()
-    //       this.facevalidform.controls.reason.disable()
-    //       // === clode dialog (requirement on 07/01/2023) ===
-    //       this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
-    //     } else {
-    //       this.snackbarfail(`ไม่สามารถบันทึกข้อมูลยืนยันตนบุคคลได้ : ${result.message}`)
-    //     }
-    //   }, error: (e) => {
-    //     console.log(`Error during update face valid status and result : ${e.message ? e.message : 'no return message'}`)
-    //     this.loadingService.hideLoader()
-    //   }, complete: () => {
-    //     this.loadingService.hideLoader()
-    //   }
-    // })
-
   }
+
+  /* .... remmove i-app face_compare api (05/07/2024) ... */
+  // async onfacevalidmanual() {
+  //   // === creat log face compare and update MPLS_QUOTATION (QUO_FACE_COMPARE_VERIFY) ====
+  //   this.loadingService.showLoader()
+
+  //   let dataForm = {
+  //     quotationid: this.data.quotationid,
+  //     reason: this.facevalidform.controls.reason.value ? this.facevalidform.controls.reason.value : '',
+  //     result: this.facevalidform.controls.result.value ? this.facevalidform.controls.result.value : '',
+  //     is_dipchip: this.facevalidform.controls.verifymanual.value ? 'N' : 'Y',
+  //     consent: this.facevalidform.controls.consent.value ? this.facevalidform.controls.consent.value : '',
+  //     consentDate: this.consentDate ? this.consentDate : null
+  //   }
+
+  //   const dataitems = JSON.stringify(dataForm)
+  //   // ==== fd (res of MPLS_stamp_check_face_valid), fd_iapp (getfacevalidation) ====
+  //   let fd = new FormData();
+  //   fd.append('items', dataitems)
+
+  //   let fd_iapp = new FormData();
+  //   // ===== iapp face verification v2 (addon 28/02/2023) ====
+  //   // *** check file2 is less than 2mb ***
+
+  //   const _file1 = (this.file1) ? `data:image/jpeg;base64,${this.file1}` : `data:image/jpeg;base64,${this.facevalidform.controls.citizenface.value}`
+  //   fd_iapp.append('file1', _file1)
+
+  //   // === check file2 size (11/11/2022) === 
+  //   const bytearrayimagefile2 = this.ImageUtilService._base64sizemb(this.file2)
+
+  //   if (bytearrayimagefile2 > 2) {
+
+  //     const imgfile = (this.file2) ? await imageCompression.getFilefromDataUrl(`data:image/jpeg;base64,${this.file2}`, 'file2') : await imageCompression.getFilefromDataUrl(`data:image/jpeg;base64,${this.facevalidform.controls.customerface.value}`, 'file2')
+
+  //     const compressedFile = await imageCompression(imgfile, { maxSizeMB: 1 });
+
+  //     if (compressedFile) {
+  //       const fileimagecompreessBase64 = await this.ImageUtilService.blobToBase64(compressedFile)
+
+  //       fd_iapp.append('file2', `${fileimagecompreessBase64}`)
+
+  //     }
+  //   } else {
+  //     const _file2 = (this.file2) ? `data:image/jpeg;base64,${this.file2}` : `data:image/jpeg;base64,${this.facevalidform.controls.customerface.value}`
+  //     fd_iapp.append('file2', _file2)
+  //   }
+
+  //   this.quotationService.MPLS_stamp_check_face_valid(fd).subscribe({
+  //     next: (result) => {
+  //       this.loadingService.showLoader()
+  //       if (result.status == 200) {
+  //         // === success ===
+  //         if (result.data.isvalid == 'Y') {
+  //           this.isfacevalid = true
+  //           this.settextstatus = true
+  //         } else {
+  //           this.isfacevalid = false
+  //           this.settextstatus = true
+  //         }
+  //         this.facevalidform.disable()
+  //         this.facevalidform.controls.reason.disable()
+  //         // === clode dialog (requirement on 07/01/2023) ===
+  //         // this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
+  //         // === stamp log to mpls_iapp_face_verify_log ==== 
+
+  //         this.iappService.getfacevalidation(fd_iapp).subscribe({
+  //           next: async (res_iapp) => {
+  //             // this.loadingService.hideLoader()
+  //             if (res_iapp.message) {
+  //               let fd_log = new FormData;
+  //               const datasend: IStampFaceVerificationLog = {
+  //                 quotationid: this.data.quotationid,
+  //                 duration: res_iapp.duration,
+  //                 matched: res_iapp.matched,
+  //                 message: res_iapp.message,
+  //                 score: res_iapp.score,
+  //                 threshold: res_iapp.threshold
+  //               }
+  //               const dataString = JSON.stringify(datasend)
+
+  //               fd_log.append('items', dataString)
+
+  //               const resultcreatelog = await lastValueFrom(this.quotationService.MPLS_stamp_face_verification_log_iapp(fd_log))
+
+  //               if (resultcreatelog.status == 200) {
+  //                 this.loadingService.hideLoader()
+  //                 this.snackbarsuccess(`
+  //                 สถานะบันทึกข้อมูล : สำเร็จ ✅\n 
+  //                 สถานะการตรวจใบหน้าผ่าน api :สำเร็จ ✅\n
+  //                 สถานะบันทึก log : สำเร็จ ✅`)
+  //                 this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
+  //               } else {
+  //                 this.loadingService.hideLoader()
+  //                 this.snackbarsuccess(`
+  //                 สถานะบันทึกข้อมูล : สำเร็จ ✅\n 
+  //                 สถานะการตรวจใบหน้าผ่าน api : สำเร็จ ✅\n
+  //                 สถานะบันทึก log : ไม่สำเร็จ ❌ (Error: ${resultcreatelog.message ? resultcreatelog.message : 'No return message'})`)
+  //                 this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
+  //               }
+  //             }
+  //           }, error: async (e: HttpErrorResponse) => {
+  //             // this.loadingService.hideLoader()
+  //             // this.snackbarfail(`
+  //             // สถานะบันทึกข้อมูล : สำเร็จ \n 
+  //             // สถานะการตรวจใบหน้าผ่าน api : ไม่สำเร็จ (Error: ${e.message ? e.message : 'No return message'}) \n  F
+  //             // สถานะบันทึก log : ไม่สำเร็จ`)
+  //             // this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
+  //             if (e.message) {
+  //               let fd_log = new FormData;
+  //               const datasend: IStampFaceVerificationLog = {
+  //                 quotationid: this.data.quotationid,
+  //                 duration: e.error.duration,
+  //                 message: e.error.message
+  //               }
+  //               const dataString = JSON.stringify(datasend)
+
+  //               fd_log.append('items', dataString)
+
+  //               const resultcreatelog = await lastValueFrom(this.quotationService.MPLS_stamp_face_verification_log_iapp(fd_log))
+
+  //               if (resultcreatelog.status == 200) {
+  //                 this.loadingService.hideLoader()
+  //                 this.snackbarsuccess(`
+  //                 สถานะบันทึกข้อมูล : สำเร็จ ✅ \n 
+  //                 สถานะการตรวจใบหน้าผ่าน api : ไม่สำเร็จ ❌ \n
+  //                 สถานะบันทึก log : สำเร็จ ✅`)
+  //                 this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
+  //               } else {
+  //                 this.loadingService.hideLoader()
+  //                 this.snackbarsuccess(`
+  //                 สถานะบันทึกข้อมูล : ✅ สำเร็จ \n 
+  //                 สถานะการตรวจใบหน้าผ่าน api : ❌ไม่สำเร็จ \n
+  //                 สถานะบันทึก log : ไม่สำเร็จ ❌(Error: ${resultcreatelog.message ? resultcreatelog.message : 'No return message'})`)
+  //                 this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
+  //               }
+  //             }
+  //           }, complete: () => {
+  //             // this.loadingService.hideLoader()
+  //           }
+  //         })
+
+  //       } else {
+  //         this.loadingService.hideLoader()
+  //         this.snackbarfail(`ไม่สามารถบันทึกข้อมูลยืนยันตนบุคคลได้ : ${result.message}`)
+  //       }
+  //     }, error: (e) => {
+  //       console.log(`Error during update face valid status and result : ${e.message ? e.message : 'no return message'}`)
+  //       this.loadingService.hideLoader()
+  //     }, complete: () => {
+  //       // this.loadingService.hideLoader()
+  //     }
+  //   })
+
+  //   // =======================================================
+
+  // }
 
   // === self utility ===
 

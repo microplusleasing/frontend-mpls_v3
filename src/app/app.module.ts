@@ -21,7 +21,7 @@ import { CizCardTabComponent } from './page/quotation-tab/ciz-card-tab/ciz-card-
 import { ProductDetailTabComponent } from './page/quotation-tab/product-detail-tab/product-detail-tab.component';
 import { BasicSnackbarComponent } from './widget/snackbar/basic-snackbar/basic-snackbar.component';
 import { OtpVerifyDialogComponent } from './widget/dialog/otp-verify-dialog/otp-verify-dialog.component';
-import { NgOtpInputModule } from  'ng-otp-input';
+import { NgOtpInputModule } from 'ng-otp-input';
 import { ImageAttachComponent } from './page/quotation-tab/image-attach/image-attach.component';
 import { OtpEconsentComponent } from './widget/dialog/otp-econsent/otp-econsent.component';
 import { CareerAndPurposeComponent } from './page/quotation-tab/career-and-purpose/career-and-purpose.component';
@@ -57,6 +57,12 @@ import { SecondhandCarAttachImageDialogComponent } from './widget/dialog/secondh
 import { ConfirmDeleteSecondhandCarImageAttachComponent } from './widget/dialog/confirm-delete-secondhand-car-image-attach/confirm-delete-secondhand-car-image-attach.component';
 import { ViewCarAttachComponent } from './page/view/view-car-attach/view-car-attach.component';
 import { MrtaProductNewComponent } from './page/view/mrta-product-new/mrta-product-new.component';
+import { ExamineSendCarImageComponent } from './page/menu/examine-send-car-image/examine-send-car-image.component';
+import { OracleBackwardComponent } from './widget/oracle-backward/oracle-backward.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { FaceValidEditComponent } from './widget/dialog/face-valid-edit/face-valid-edit.component';
+import { PermissionUploadFacecompareDialogComponent } from './widget/dialog/permission-upload-facecompare-dialog/permission-upload-facecompare-dialog.component';
+import { BasicConfirmDialogComponent } from './widget/dialog/basic-confirm-dialog/basic-confirm-dialog.component';
 
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import th from '@angular/common/locales/th';
@@ -76,7 +82,6 @@ const MY_DATE_FORMATS = {
     monthYearA11yLabel: 'MMMM YYYY',
   },
 };
-
 
 @NgModule({
   declarations: [
@@ -128,6 +133,11 @@ const MY_DATE_FORMATS = {
     ViewCarAttachComponent,
     DealerGradeImageDialogComponent,
     MrtaProductNewComponent,
+    ExamineSendCarImageComponent,
+    OracleBackwardComponent,
+    FaceValidEditComponent,
+    PermissionUploadFacecompareDialogComponent,
+    BasicConfirmDialogComponent,
   ],
   bootstrap: [AppComponent], 
   imports: [
@@ -139,7 +149,8 @@ const MY_DATE_FORMATS = {
     ReactiveFormsModule,
     MaterialModule,
     NgxSpinnerModule,
-    NgOtpInputModule
+    NgOtpInputModule,
+    MatDatepickerModule
   ],
   providers: [
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },

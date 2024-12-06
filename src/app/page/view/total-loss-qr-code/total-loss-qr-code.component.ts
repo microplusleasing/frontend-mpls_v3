@@ -27,14 +27,19 @@ export class TotalLossQrCodeComponent {
     if (this.application_num) {
       this.mrtaService.gentotallossqrpayment(this.application_num).subscribe({
         next: (results) => {
-          // === success stage ===
-          this.first_name_txt = results.data[0].name
-          this.last_name_txt = results.data[0].sname
-          this.item_price = results.data[0].item_price
-          this.image_qr$ = new Promise((resolve) => {
-            resolve(this.imageUtilService.getUrlImage(results.data[0].image_file[1].data))
-            this.showqr = true
-          })
+
+          if (results.status == 200) {
+            // === success stage ===
+            this.first_name_txt = results.data[0].name
+            this.last_name_txt = results.data[0].sname
+            this.item_price = results.data[0].item_price
+            this.image_qr$ = new Promise((resolve) => {
+              resolve(this.imageUtilService.getUrlImage(results.data[0].image_file[1].data))
+              this.showqr = true
+            })
+          } else {
+            console.log(`fail to gentotallossqrpayment with err message : ${results.message ? results.message : 'No return msg'}`)
+          }
         }, error: (e) => {
 
         }, complete: () => {

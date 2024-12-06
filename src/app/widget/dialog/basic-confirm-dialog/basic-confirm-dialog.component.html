@@ -1,0 +1,9 @@
+<!-- <h1 mat-dialog-title>Dialog Title</h1> -->
+<div mat-dialog-content style="text-align: center;">
+    <p>ยืนยันรายการ</p><br>
+    <p> ท่านยืนยันที่จะ {{data.header ? data.header : ''}} ใช่หรือไม่</p>
+  </div>
+  <div mat-dialog-actions align="center">
+    <button mat-button [mat-dialog-close]="false" cdkFocusInitial>ใช่</button>
+    <button mat-button [mat-dialog-close]="true" cdkFocusInitial>ไม่ใช่</button>
+  </div>

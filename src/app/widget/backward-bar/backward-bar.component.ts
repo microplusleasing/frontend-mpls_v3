@@ -18,15 +18,16 @@ export class BackwardBarComponent {
 
   disablecarcheckbtn: boolean = true;
 
+  @Input() pageno: string = ''
 
+  @Input() branch: string = ''
+  
   @Input() fname: string = ''
   @Input() lname: string = ''
   @Input() hpno: string = ''
   @Input() due: string = ''
-  @Input() branch: string = ''
   @Input() bill: string = ''
   @Input() status: string = ''
-  @Input() pageno: string = ''
   @Input() carcheckstatus: string = ''
   @Input() holder: string = ''
   @Input() apd: string = ''
@@ -34,6 +35,10 @@ export class BackwardBarComponent {
   @Input() ContractNo: string = ''
   @Input() Username: string = ''
   @Input() menu_id: string = ''
+
+  @Input() ac_status: string = ''
+  @Input() approve_date: string = ''
+
 
   constructor(
     private router: Router,

@@ -23,16 +23,28 @@ export class JwtInterceptor implements HttpInterceptor {
 
     // === set except some service that didn't use token === 
     const re = /thai-national-id-card|login | activeepaper/gi;
+    const alloworacleauth = /getquotationbyid|MasterTitle|getMasterProvince|getMariedStatus|getHouseType|getHouseOwnerType|/gi
     // const token = this.authService.getAuthToken();
     let currentUser = this.authService.currentUserValue;
+    // *** oracle token auth (JWT) ***
+    let agentcurrentUser = this.authService.agentcurrentUserValue;
 
     if (request.url.search(re) === -1) {
       if (currentUser && currentUser.token) {
         request = request.clone({
           setHeaders: { Authorization: `Bearer ${currentUser.token}` }
         });
+      } else {
+        // *** oracle token auth (JWT) ***
+        // ==== not in list of agent ====
+        if (request.url.search(alloworacleauth) !== -1) {
+          if (agentcurrentUser && agentcurrentUser.token) {
+            request = request.clone({
+              setHeaders: { Authorization: `Bearer ${agentcurrentUser.token}` }
+            })
+          }
+        }
       }
-
     }
 
     return next.handle(request).pipe(

@@ -13,7 +13,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
-import * as moment from 'moment';
+// import * as moment from 'moment';
 import { IResGetviewcontractlist, IResGetviewcontractlistData } from 'src/app/interface/i-res-getviewcontractlist'; // replace IResGetviewcontractlist
 import { IUserToken } from 'src/app/interface/i-user-token'; // replace IUserToken
 import { MatDialog } from '@angular/material/dialog';

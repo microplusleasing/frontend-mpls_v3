@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import * as moment from 'moment';
+import moment from 'moment';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { IResMasterProvinceData } from 'src/app/interface/i-res-master-province';
 import { IResMasterTitleData } from 'src/app/interface/i-res-master-title';

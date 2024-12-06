@@ -8,7 +8,7 @@ import { IMartaPaymentInsurance } from 'src/app/interface/i-mrta-payment-insuran
 import { MrtaService } from 'src/app/service/mrta.service';
 import { IReqMrtaAge } from 'src/app/interface/i-req-mrta-age';
 import { IResMrtaMasterData } from 'src/app/interface/i-res-mrta-master';
-import * as moment from 'moment';
+import moment from 'moment';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatDialog } from '@angular/material/dialog';
 import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dialog.component';

@@ -26,7 +26,7 @@ export const environment = {
   iappapikey: "F3kBa0O7D07SUYy5YmcfLeohWRxbipdn",
   faceRecogApi: "https://api.iapp.co.th/thai-national-id-card/v3/front",
   faceValidApi: "https://api.iapp.co.th/face-verification/v2/face_compare",
-  version: "uat version  1.04.01"
+  version: "uat version  1.05.08 (dev 0.1)"
 };
 
 // === build UAT === 
@@ -61,7 +61,7 @@ export const environment = {
 //   carcheckport: ''
 // };
 
-// // === build UAT (internet) (certificate 443) === (v2)
+// // === build UAT (internet) (certificate 443)=== (v2)
 // export const environment = {
 //   production: true,
 //   // apiurl: 'http://58.136.5.116:9989',

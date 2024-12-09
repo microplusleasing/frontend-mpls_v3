@@ -2036,6 +2036,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
                     this.productdetailtab.productForm.controls.consentVerify.setValue(true)
                     this.verifyeconsent = true
                     this.verifyeconsent_txt = 'ไม่ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ต'
+                    /* ... set text for require image type when econsent is false ... */
+                    this.imageattachtab.txtrequireimage = `*แนบไฟล์ "บัตรประชาชน" , "รูปหน้าลูกค้าพร้อมบัตรประชาชน" , "สำเนาบัตรประชาชนพร้อมลายเซ็นรับรองถูกต้อง"  และ "NCB Consent`
                   } else {
                     // === fail to update flag econsent ==== 
                     this.snackbarfail(`ไม่สามารถทำรายการได้ : ${res_non.message}`)
@@ -2056,7 +2058,7 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         this.loadingService.hideLoader()
         this.openMaindialog('ผิดพลาด', 'ไม่สามารถสร้างหมายเลขอ้างอิงได้ ', 'OK')
       }
-    } else if (dopastatus == 'N') {
+    } else if (dopastatus === 'N') {
       // === กรณี dopa status เป็น 'N' ไม่สามารถทำรายการ e-consent ได้ (auto flag non e-consent) ===
       if (this.quoid !== null || this.quoid !== '') {
         this.quotationService.MPLS_validation_otp_econsent_non(this.quoid).subscribe({
@@ -2068,6 +2070,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
               this.productdetailtab.productForm.controls.consentVerify.setValue(true)
               this.verifyeconsent = true
               this.verifyeconsent_txt = 'ไม่ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ต'
+              /* ... set text for require image type when econsent is false ... */
+                    this.imageattachtab.txtrequireimage = `*แนบไฟล์ "บัตรประชาชน" , "รูปหน้าลูกค้าพร้อมบัตรประชาชน" , "สำเนาบัตรประชาชนพร้อมลายเซ็นรับรองถูกต้อง"  และ "NCB Consent`
             } else {
               // === fail to update flag econsent ==== 
               this.snackbarfail(`ไม่สามารถทำรายการได้ : ${res_non.message}`)

@@ -146,7 +146,7 @@ export class LoginComponent extends BaseService {
             reset_card_width: `450px`,
             reset_card_font: '14px',
             reset_card_f_high: '30px',
-            reset_pass_match_f_high: '60px',
+            reset_pass_match_f_high: '70px',
             mobile: false
           };
         }

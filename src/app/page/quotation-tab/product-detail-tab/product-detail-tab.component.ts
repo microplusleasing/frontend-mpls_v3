@@ -1375,6 +1375,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               // *** insurerCodeField ***
               this.productForm.controls.detailForm.controls.insurerCodeField.valueChanges.subscribe((res) => {
                 if (res) {
+
+                  /* ... clear insurance year and plan price when insurerCodeField change (ประกัน) (09/12/2024) ... */
+                  this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null)
+                  this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValue(null)
+
                   // === set Insurance Year === 
                   this.InsuranceListFilter = this.InsuranceListTemp.filter((items: { insurer_code: any; }) => {
                     return items.insurer_code === res

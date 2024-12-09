@@ -2001,7 +2001,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
 
         this.dialog.open(OtpEconsentComponent, {
-          width: `100%`,
+          disableClose: true,
+          panelClass: 'custom-dialog-header',
+          width: `90%`,
           height: `90%`,
           data: senddata,
           scrollStrategy: this.sso.reposition()

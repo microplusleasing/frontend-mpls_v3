@@ -131,7 +131,7 @@
                         <!-- Env-car -->
                         <!-- Fuel Type -->
                         <mat-grid-tile [colspan]="layout.list.cols3">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-select required [formControl]="fuelTypeField">
                                     <mat-option [value]="null" disabled hidden>Fuel Type</mat-option>
                                     <mat-option *ngFor="let item of masterFuelTypeList.data"
@@ -145,14 +145,14 @@
                         </mat-grid-tile>
                         <!-- Motor -->
                         <mat-grid-tile [colspan]="layout.list.cols2">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>กำลังมอเตอร์ไฟฟ้า</mat-label>
                                 <input type="text" matInput placeholder="กำลังมอเตอร์ไฟฟ้า" [formControl]="motorField">
                             </mat-form-field>
                         </mat-grid-tile>
                         <!-- Motor Number -->
                         <mat-grid-tile [colspan]="layout.list.cols3">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>เลขมอเตอร์ไฟฟ้า</mat-label>
                                 <input type="text" matInput placeholder="เลขมอเตอร์ไฟฟ้า"
                                     [formControl]="motorNumberField">
@@ -162,7 +162,7 @@
                         </mat-grid-tile>
                         <!-- Battery Type -->
                         <mat-grid-tile [colspan]="layout.list.cols2">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>ชนิดแบตเตอรี่</mat-label>
                                 <input type="text" matInput placeholder="ชนิดแบตเตอรี่"
                                     [formControl]="batteryTypeField">
@@ -170,7 +170,7 @@
                         </mat-grid-tile>
                         <!-- Battery Capacity -->
                         <mat-grid-tile [colspan]="layout.list.cols2">
-                            <mat-form-field appearance="outline">
+                            <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>ความจุแบตเตอรี่</mat-label>
                                 <input type="text" matInput placeholder="ความจุแบตเตอรี่"
                                     [formControl]="batteryCapacityField">

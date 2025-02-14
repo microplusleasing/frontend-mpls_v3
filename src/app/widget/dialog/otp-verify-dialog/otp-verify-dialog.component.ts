@@ -8,9 +8,10 @@ import { LoadingService } from 'src/app/service/loading.service';
 import { QuotationService } from 'src/app/service/quotation.service';
 
 @Component({
-  selector: 'app-otp-verify-dialog',
-  templateUrl: './otp-verify-dialog.component.html',
-  styleUrls: ['./otp-verify-dialog.component.scss']
+    selector: 'app-otp-verify-dialog',
+    templateUrl: './otp-verify-dialog.component.html',
+    styleUrls: ['./otp-verify-dialog.component.scss'],
+    standalone: false
 })
 export class OtpVerifyDialogComponent implements OnInit {
 
@@ -117,7 +118,7 @@ export class OtpVerifyDialogComponent implements OnInit {
       next: (res) => {
         this.loadingService.hideLoader()
         console.log(`res otp Data : ${JSON.stringify(res)}`)
-        if (res.status == 200) {
+        if (res.status === 200) {
           this._tabindex = 1
         } else {
           this._createotpResMsg = res.message

@@ -10,9 +10,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
-  selector: 'app-e-paper-consent',
-  templateUrl: './e-paper-consent.component.html',
-  styleUrls: ['./e-paper-consent.component.scss']
+    selector: 'app-e-paper-consent',
+    templateUrl: './e-paper-consent.component.html',
+    styleUrls: ['./e-paper-consent.component.scss'],
+    standalone: false
 })
 export class EPaperConsentComponent extends BaseService implements OnInit {
 
@@ -70,7 +71,7 @@ export class EPaperConsentComponent extends BaseService implements OnInit {
           this.email$ = of(resquo.data[0].email)
 
           // === new condition lock next button (11/09/2022) === 
-          // if (this.quotationdatatemp.data[0].quo_status == 4 && this.quotationdatatemp.data[0].cs_is_disclosure_consent == 0) {
+          // if (this.quotationdatatemp.data[0].quo_status === 4 && this.quotationdatatemp.data[0].cs_is_disclosure_consent == 0) {
           //   this.disable_edit_btn = false
           // } else {
           //   this.disable_edit_btn = true
@@ -84,7 +85,7 @@ export class EPaperConsentComponent extends BaseService implements OnInit {
             this.epaperConsentValid.emit(true)
           }
 
-          if (this.quotationdatatemp.data[0].quo_status == 1 || this.quotationdatatemp.data[0].e_paper_consent_value !== null) {
+          if (this.quotationdatatemp.data[0].quo_status === 1 || this.quotationdatatemp.data[0].e_paper_consent_value !== null) {
             this.epaperform.disable();
           }
 

@@ -25,9 +25,10 @@ import { IUserTokenData } from 'src/app/interface/i-user-token';
 
 
 @Component({
-  selector: 'app-image-attach',
-  templateUrl: './image-attach.component.html',
-  styleUrls: ['./image-attach.component.scss']
+    selector: 'app-image-attach',
+    templateUrl: './image-attach.component.html',
+    styleUrls: ['./image-attach.component.scss'],
+    standalone: false
 })
 export class ImageAttachComponent extends BaseService implements OnInit {
   @Input() quotationReq = {} as Observable<IResQuotationDetail>;
@@ -129,7 +130,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
   onStageChageFormStepper() {
 
-    if (this.countload == 0) {
+    if (this.countload === 0) {
 
       this.uploadedImagesMultiple = []
       this.quotationReq.subscribe({
@@ -150,7 +151,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
             // *** check busicode with api (13/07/2023) ***
             const check_busi_code = await lastValueFrom(this.masterDataService.MPLS_check_busi_code({ quotation_id: quoitem.quo_key_app_id }))
 
-            if (check_busi_code.status == 200) {
+            if (check_busi_code.status === 200) {
               this.showsecondhandcarimageattach = (check_busi_code.data.bussiness_code !== '001');
               this.showsecondhandcarimageattach = (check_busi_code.data.bussiness_code === '002' || check_busi_code.data.bussiness_code === '003') ? true : false;
             }
@@ -216,7 +217,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                               if (item.image_code === '16') {
                                 return 'KYC';
                               }
-                              const foundImage = this.temp_master_categories.find((m_image) => m_image.image_code == item.image_code);
+                              const foundImage = this.temp_master_categories.find((m_image) => m_image.image_code === item.image_code);
                               return foundImage?.image_header ?? '';
                             })(),
                             image_field_name: item.image_name ?? '',
@@ -244,7 +245,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                             name: item.image_name ?? '',
                             image_code: item.image_code ?? '',
                             image_id: item.image_id ?? '',
-                            image_header: `${this.temp_master_categories_multiple.find((m_image) => m_image.image_code == item.image_code)?.image_header || ''} (รูปที่ ${sequence})`,
+                            image_header: `${this.temp_master_categories_multiple.find((m_image) => m_image.image_code === item.image_code)?.image_header || ''} (รูปที่ ${sequence})`,
                             image_field_name: item.image_name ?? '',
                             urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
                             src: imageStr
@@ -290,14 +291,14 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
 
                 this.uploadForm.controls.category.valueChanges.subscribe((value) => {
-                  const cselect = this.categories.find((item) => { return item.image_code == value })
+                  const cselect = this.categories.find((item) => { return item.image_code === value })
                   if (cselect) {
                     this.currentTypeSelect = cselect
                   }
                 })
 
                 this.uploadMultipleForm.controls.category.valueChanges.subscribe((value) => {
-                  const cselect = this.categoriesMultiple.find((item) => { return item.image_code == value })
+                  const cselect = this.categoriesMultiple.find((item) => { return item.image_code === value })
                   if (cselect) {
                     this.currentTypeSelect = cselect
                   }
@@ -355,7 +356,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
       // === call api create here === 
 
-      const recentSelect = this.categories.find((item) => { return item.image_code == this.uploadForm.controls.category.value ? this.uploadForm.controls.category.value : '' })
+      const recentSelect = this.categories.find((item) => { return item.image_code === this.uploadForm.controls.category.value ? this.uploadForm.controls.category.value : '' })
 
 
       let quotationdata = {
@@ -369,7 +370,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
       fd.append('image_file', await this._base64toblob(fileimage))
       this.quotationService.MPLS_create_image_attach_file(fd).subscribe({
         next: async (res_image_create) => {
-          if (res_image_create.status == 200) {
+          if (res_image_create.status === 200) {
             this.snackbarsuccess(`ทำรายการสำเร็จ : ${res_image_create.message ? res_image_create.message : 'No return message'}`)
             // === handle image variable next when success === 
             this.uploadedImages.push({
@@ -454,7 +455,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
   updateImage(image: any) {
 
     // == set currentimageeditcode to use in next fn (onFileChangeEdit) ==
-    const selectimage = this.uploadedImages.find(img => img == image);
+    const selectimage = this.uploadedImages.find(img => img === image);
 
     if (selectimage) {
       this.currentimageeditcode = selectimage.image_code
@@ -488,7 +489,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
           const imagesrc = reader.result
 
           // === keep current file to stamp when update is fail or stage can't update (quo_status == 1)
-          const currentpic = this.uploadedImages.filter((item) => { return (item.image_code == this.currentimageeditcode) })
+          const currentpic = this.uploadedImages.filter((item) => { return (item.image_code === this.currentimageeditcode) })
 
           this.uploadedImages = this.uploadedImages.map(img => {
             if (img.image_code === this.currentimageeditcode) {
@@ -504,7 +505,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
           // === call api update here ===
 
           const imageheader = this.temp_master_categories.find((value) => {
-            if (value.image_code == this.currentimageeditcode) {
+            if (value.image_code === this.currentimageeditcode) {
               return { ...value }
             } else {
               return
@@ -524,7 +525,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
             fd.append('image_file', await this._base64toblob(reader.result))
             this.quotationService.MPLS_update_image_attach_file(fd).subscribe({
               next: (res_image_update) => {
-                if (res_image_update.status == 200) {
+                if (res_image_update.status === 200) {
                   this.snackbarsuccess(`ทำรายการสำเร็จ : ${res_image_update.message ? res_image_update.message : 'No return message'}`)
                   // === handle image variable next when success === 
                 } else {
@@ -594,7 +595,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
       next: async (res_delete_image) => {
 
 
-        if (res_delete_image.status == 200) {
+        if (res_delete_image.status === 200) {
           this.snackbarsuccess(`ทำรายการสำเร็จ : ${res_delete_image.message ? res_delete_image.message : 'No return message'}`)
           // === handle image attach next when delete success ===
           this.uploadedImages = this.uploadedImages.filter(img => img !== image);
@@ -643,7 +644,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
       // === call api create here === 
 
-      const recentSelect = this.categoriesMultiple.find((item) => { return item.image_code == this.uploadMultipleForm.controls.category.value ? this.uploadMultipleForm.controls.category.value : '' })
+      const recentSelect = this.categoriesMultiple.find((item) => { return item.image_code === this.uploadMultipleForm.controls.category.value ? this.uploadMultipleForm.controls.category.value : '' })
 
 
       let quotationdata = {
@@ -689,7 +690,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
                     name: item.image_name ?? '',
                     image_code: item.image_code ?? '',
                     image_id: item.image_id ?? '',
-                    image_header: `${this.temp_master_categories_multiple.find((m_image) => m_image.image_code == item.image_code)?.image_header || ''} (รูปที่ ${sequence})`,
+                    image_header: `${this.temp_master_categories_multiple.find((m_image) => m_image.image_code === item.image_code)?.image_header || ''} (รูปที่ ${sequence})`,
                     image_field_name: item.image_name ?? '',
                     urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
                     src: imageStr
@@ -775,7 +776,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
   updateImageMultiple(image: any) {
 
     // == set currentimageeditcode to use in next fn (onFileChangeEdit) ==
-    const selectimage = this.uploadedImagesMultiple.find(img => img == image);
+    const selectimage = this.uploadedImagesMultiple.find(img => img === image);
 
     if (selectimage) {
       // this.currentimageeditcodeMultiple = selectimage.image_code
@@ -840,7 +841,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
             fd.append('image_file', await this._base64toblob(reader.result))
             this.quotationService.MPLS_update_image_attach_file_multiple(fd).subscribe({
               next: (res_image_update) => {
-                if (res_image_update.status == 200) {
+                if (res_image_update.status === 200) {
                   this.snackbarsuccess(`ทำรายการสำเร็จ : ${res_image_update.message ? res_image_update.message : 'No return message'}`)
                   // === handle image variable next when success === 
                 } else {
@@ -955,12 +956,12 @@ export class ImageAttachComponent extends BaseService implements OnInit {
     const checkverifysecondhandcarimagelist = this.uploadedImagesMultiple.filter((item) => { return (item.image_code == '12') })
     const checkverifyimage = this.uploadedImages.filter((item) => { return (item.image_code == '01' || item.image_code == '03' || item.image_code == '09' || item.image_code == '10') })
 
-    if (checkverifyimage.length == 4) {
+    if (checkverifyimage.length === 4) {
       // === set flag via api to update QUO_IMAGE_ATTACH_VERIFY TO 'Y' === SUCCESS DO NEXT PROCESS
 
       this.quotationService.MPLS_update_flag_image_attach_file(this.quotationdatatemp.data[0].quo_key_app_id ?? '').subscribe({
         next: (res_update_flag_image) => {
-          if (res_update_flag_image.status == 200) {
+          if (res_update_flag_image.status === 200) {
             // === success ===
             // this.snackbarsuccesscenter(`ทำรายการสำเร็จ : ${res_update_flag_image.message}`)
             // this.snackbarsuccesscenter(`ทำรายการสำเร็จ`)
@@ -973,7 +974,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
               if (checkverifysecondhandcarimagelist.length >= 2) {
                 this.quotationService.MPLS_update_flag_image_attach_file_multiple(this.quotationdatatemp.data[0].quo_key_app_id ?? '').subscribe({
                   next: (res_update_second_hand_verify) => {
-                    if (res_update_second_hand_verify.status == 200) {
+                    if (res_update_second_hand_verify.status === 200) {
                       this.txtrequireimagesecondhandcar = ''
                       this.emitverifysecondhandcarimage.emit(true)
                     }
@@ -1000,7 +1001,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
 
       this.quotationService.MPLS_update_flag_image_attach_file(this.quotationdatatemp.data[0].quo_key_app_id ?? '').subscribe({
         next: (res_update_flag_image) => {
-          if (res_update_flag_image.status == 200) {
+          if (res_update_flag_image.status === 200) {
             // === success ===
             // this.snackbarsuccesscenter(`ทำรายการสำเร็จ : ${res_update_flag_image.message}`)
             // this.snackbarsuccesscenter(`ทำรายการสำเร็จ`)
@@ -1010,7 +1011,7 @@ export class ImageAttachComponent extends BaseService implements OnInit {
               if (checkverifysecondhandcarimagelist.length >= 2) {
                 this.quotationService.MPLS_update_flag_image_attach_file_multiple(this.quotationdatatemp.data[0].quo_key_app_id ?? '').subscribe({
                   next: (res_update_second_hand_verify) => {
-                    if (res_update_second_hand_verify.status == 200) {
+                    if (res_update_second_hand_verify.status === 200) {
                       this.txtrequireimagesecondhandcar = ''
                       this.emitverifysecondhandcarimage.emit(true)
                     }

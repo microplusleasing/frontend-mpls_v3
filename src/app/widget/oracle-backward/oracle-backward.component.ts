@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 
 @Component({
-  selector: 'app-oracle-backward',
-  templateUrl: './oracle-backward.component.html',
-  styleUrls: ['./oracle-backward.component.scss']
+    selector: 'app-oracle-backward',
+    templateUrl: './oracle-backward.component.html',
+    styleUrls: ['./oracle-backward.component.scss'],
+    standalone: false
 })
 export class OracleBackwardComponent implements OnInit {
   constructor(

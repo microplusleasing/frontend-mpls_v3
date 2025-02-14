@@ -40,7 +40,7 @@ export class UserService {
           }
         }).afterClosed().subscribe(result => {
           // === not stage here ===
-          if (userdataObj.channal == 'collector') {
+          if (userdataObj.channal === 'collector') {
             this.router.navigate(['/collector-view'])
           } else {
             this.router.navigate(['/'])
@@ -58,10 +58,10 @@ export class UserService {
     // let chkrole = false;
     // for (const [key, value] of Object.entries(this.pagepermission)) {
     //   // console.log(`${key}: ${value}`);
-    //   if (key == role) {
+    //   if (key === role) {
     //     for (let i = 0; i < value.length; i++) {
-    //       if (pagename == '/') {
-    //         if (pagename == value[i]) {
+    //       if (pagename === '/') {
+    //         if (pagename === value[i]) {
     //           chkrole = true
     //         }
     //       } else {
@@ -76,7 +76,7 @@ export class UserService {
     //             chkrole = true
     //           }
     //         } else {
-    //           if (pagename == value[i]) {
+    //           if (pagename === value[i]) {
     //             chkrole = true
     //           }
     //         }

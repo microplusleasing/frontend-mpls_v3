@@ -1,15 +1,16 @@
-<h1 mat-dialog-title>{{data.header}}</h1>
+<h1 mat-dialog-title style="font-family: prompt;">{{data.header}}</h1>
 <div mat-dialog-content>
     <form [formGroup]="mainOTPForm">
         <mat-stepper labelPosition="bottom" [selectedIndex]="_tabindex" [linear]="true" style="height: 100%;">
             <mat-step [stepControl]="confirmEconsentForm" [editable]="_editabletab1" style="height: 100%;">
-                <ng-template matStepLabel>แบบฟอร์มการยินยอมเปิดเผยข้อมูลผ่านอินเทอร์เน็ต</ng-template>
+                <ng-template matStepLabel style="font-family: Prompt;">แบบฟอร์มการยินยอมเปิดเผยข้อมูลผ่านอินเทอร์เน็ต</ng-template>
                 <div [formGroup]="confirmEconsentForm">
-                    <h2 mat-dialog-title>ความยินยอมในการเปิดเผยข้อมูลโดยวิธีการผ่านระบบอินเทอร์เน็ต</h2>
-                    <mat-dialog-content class="mat-typography" style="max-height: 30em;" (scroll)="onScroll($event)">
+                    <h2 mat-dialog-title style="font-family: Prompt;">ความยินยอมในการเปิดเผยข้อมูลโดยวิธีการผ่านระบบอินเทอร์เน็ต</h2>
+                    <mat-dialog-content class="mat-typography" style="max-height: 30em; background: none;" (scroll)="onScroll($event)">
                         <div>
                             <div class="flex-center">
-                                <html id="econsentelement" style="background-color: rgb(240, 240, 240);">
+                                <!-- <html id="econsentelement" style="background-color: rgb(240, 240, 240);"> -->
+                                <html id="econsentelement" style="background: none;">
 
                                 <body style="margin: 0 1.5em 0;">
                                     <div class="flex-center">
@@ -108,7 +109,7 @@
 </div>
 <div mat-dialog-actions align="center">
     <!-- <button mat-raised-button [mat-dialog-close]="true" color="primary">{{data.button_name}}</button> -->
-    <div class="flex-center" *ngIf="_tabindex  == 0">
+    <div class="flex-center" *ngIf="_tabindex === 0">
         <!-- <div class="flex-center">
             <span>scrollTop : {{this.txt_scrollTop}}</span>
             <br>

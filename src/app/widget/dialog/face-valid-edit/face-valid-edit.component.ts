@@ -10,9 +10,10 @@ import { environment } from 'src/environments/environment';
 import imageCompression from 'browser-image-compression';
 
 @Component({
-  selector: 'app-face-valid-edit',
-  templateUrl: './face-valid-edit.component.html',
-  styleUrls: ['./face-valid-edit.component.scss']
+    selector: 'app-face-valid-edit',
+    templateUrl: './face-valid-edit.component.html',
+    styleUrls: ['./face-valid-edit.component.scss'],
+    standalone: false
 })
 export class FaceValidEditComponent extends BaseService implements OnInit {
 

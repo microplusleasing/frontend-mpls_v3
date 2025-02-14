@@ -8,9 +8,10 @@ import { LoadingService } from 'src/app/service/loading.service';
 import { QuotationService } from 'src/app/service/quotation.service';
 
 @Component({
-  selector: 'app-e-consent-image-dialog',
-  templateUrl: './e-consent-image-dialog.component.html',
-  styleUrls: ['./e-consent-image-dialog.component.scss']
+    selector: 'app-e-consent-image-dialog',
+    templateUrl: './e-consent-image-dialog.component.html',
+    styleUrls: ['./e-consent-image-dialog.component.scss'],
+    standalone: false
 })
 export class EConsentImageDialogComponent implements OnInit {
 
@@ -50,9 +51,9 @@ export class EConsentImageDialogComponent implements OnInit {
     // **** check quotation param ****
 
     if (
-      this.data.quotationid == null ||
-      this.data.quotationid == '' ||
-      this.data.quotationid == undefined
+      this.data.quotationid === null ||
+      this.data.quotationid === '' ||
+      this.data.quotationid === undefined
     ) {
       this.nullquotation_txt = `ไม่พบเลข quotationid`
     } else {

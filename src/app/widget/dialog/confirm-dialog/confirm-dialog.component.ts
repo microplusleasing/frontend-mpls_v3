@@ -3,9 +3,10 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IDialogConfirmEconsent } from 'src/app/interface/i-dialog-confirm-econsent';
 
 @Component({
-  selector: 'app-confirm-dialog',
-  templateUrl: './confirm-dialog.component.html',
-  styleUrls: ['./confirm-dialog.component.scss']
+    selector: 'app-confirm-dialog',
+    templateUrl: './confirm-dialog.component.html',
+    styleUrls: ['./confirm-dialog.component.scss'],
+    standalone: false
 })
 export class ConfirmDialogComponent implements OnInit {
   constructor(

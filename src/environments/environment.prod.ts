@@ -1,49 +1,49 @@
 // ============ UAT ================
 // === build UAT (internet) (certificate 443)=== (v2)
-export const environment = {
-  production: true,
-  // apiurl: 'http://58.136.5.116:9989',
-  // apiurl: '43.249.69.202',
-  apiurl: 'api2-mpls-uat.microplusleasing.com',
-  apiportsign: ':',
-  apiport: '',
-  httpheader: 'https://',
-  httpheadercert: 'https://',
-  apidipchip: 'api-dipch-uat.microplusleasing.com',
-  smsserviceallow: 1,
-  carcheck: 'web-repos-uat.microplusleasing.com',
-  carcheckapi: 'api-repos-uat.microplusleasing.com',
-  carcheckport: '',
-  citizen_card_img_preload: '/assets/image/placeholder-image.png',
-  welcome_call_fcr_web: 'web-welcome-uat.microplusleasing.com/fcr',
-
-  iappapikey: "F3kBa0O7D07SUYy5YmcfLeohWRxbipdn",
-  faceRecogApi: "https://api.iapp.co.th/thai-national-id-card/v3/front",
-  faceValidApi: "https://api.iapp.co.th/face-verification/v2/face_compare",
-  version: "uat version  1.05.07 (dev 0.1)"
-}
-
-// =========== production ===========
 // export const environment = {
 //   production: true,
 //   // apiurl: 'http://58.136.5.116:9989',
-//   apiurl: 'api2-mpls.microplusleasing.com',
-//   apiportsign: '',
+//   // apiurl: '43.249.69.202',
+//   apiurl: 'api2-mpls-uat.microplusleasing.com',
+//   apiportsign: ':',
 //   apiport: '',
 //   httpheader: 'https://',
 //   httpheadercert: 'https://',
-//   apidipchip: 'api-dipch.microplusleasing.com',
+//   apidipchip: 'api-dipch-uat.microplusleasing.com',
 //   smsserviceallow: 1,
-//   carcheck: 'web-repos.microplusleasing.com', // wait for sub-domain confirm
-//   carcheckapi: 'api-repos.microplusleasing.com',
+//   carcheck: 'web-repos-uat.microplusleasing.com',
+//   carcheckapi: 'api-repos-uat.microplusleasing.com',
 //   carcheckport: '',
 //   citizen_card_img_preload: '/assets/image/placeholder-image.png',
-//   welcome_call_fcr_web: 'web-welcome.microplusleasing.com/fcr',
+//   welcome_call_fcr_web: 'web-welcome-uat.microplusleasing.com/fcr',
+
 //   iappapikey: "F3kBa0O7D07SUYy5YmcfLeohWRxbipdn",
 //   faceRecogApi: "https://api.iapp.co.th/thai-national-id-card/v3/front",
 //   faceValidApi: "https://api.iapp.co.th/face-verification/v2/face_compare",
-//   version: "version  1.05.07"
-// };
+//   version: "uat version  1.05.08 (dev 0.2)"
+// }
+
+// =========== production ===========
+export const environment = {
+  production: true,
+  // apiurl: 'http://58.136.5.116:9989',
+  apiurl: 'api2-mpls.microplusleasing.com',
+  apiportsign: '',
+  apiport: '',
+  httpheader: 'https://',
+  httpheadercert: 'https://',
+  apidipchip: 'api-dipch.microplusleasing.com',
+  smsserviceallow: 1,
+  carcheck: 'web-repos.microplusleasing.com', // wait for sub-domain confirm
+  carcheckapi: 'api-repos.microplusleasing.com',
+  carcheckport: '',
+  citizen_card_img_preload: '/assets/image/placeholder-image.png',
+  welcome_call_fcr_web: 'web-welcome.microplusleasing.com/fcr',
+  iappapikey: "F3kBa0O7D07SUYy5YmcfLeohWRxbipdn",
+  faceRecogApi: "https://api.iapp.co.th/thai-national-id-card/v3/front",
+  faceValidApi: "https://api.iapp.co.th/face-verification/v2/face_compare",
+  version: "version  1.05.08.01"
+};
 
 // ===== api v1 =====
 // export const environment = {

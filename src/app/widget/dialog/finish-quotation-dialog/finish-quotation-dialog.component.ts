@@ -3,9 +3,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IDialogFinishQuotation } from 'src/app/interface/i-dialog-finish-quotation';
 
 @Component({
-  selector: 'app-finish-quotation-dialog',
-  templateUrl: './finish-quotation-dialog.component.html',
-  styleUrls: ['./finish-quotation-dialog.component.scss']
+    selector: 'app-finish-quotation-dialog',
+    templateUrl: './finish-quotation-dialog.component.html',
+    styleUrls: ['./finish-quotation-dialog.component.scss'],
+    standalone: false
 })
 export class FinishQuotationDialogComponent implements OnInit {
 

@@ -14,9 +14,10 @@ import { EConsentImageDialogComponent } from 'src/app/widget/dialog/e-consent-im
 import { IResGeteconsentimagebyidData } from 'src/app/interface/i-res-geteconsentimagebyid';
 
 @Component({
-  selector: 'app-viewsign',
-  templateUrl: './viewsign.component.html',
-  styleUrls: ['./viewsign.component.scss']
+    selector: 'app-viewsign',
+    templateUrl: './viewsign.component.html',
+    styleUrls: ['./viewsign.component.scss'],
+    standalone: false
 })
 export class ViewsignComponent implements OnInit {
 
@@ -109,7 +110,7 @@ export class ViewsignComponent implements OnInit {
           next: async ([res_viewsign, res_face_compare, res_econsent_image]) => {
             this.loadingService.hideLoader()
             // === handle viesign ===
-            if (res_viewsign.status == 200) {
+            if (res_viewsign.status === 200) {
               this.letverify$.next(true)
               const cussigimagebase64 = await this.getUrlImage(res_viewsign.data[0])
               this.customersignatureimg$.next(cussigimagebase64)
@@ -118,7 +119,7 @@ export class ViewsignComponent implements OnInit {
               this.witnesssignatureimg$.next(witnesssigimagebase64)
 
               // == check if aleady verify (verify_status)
-              if (res_viewsign.data[0].verify_status == 1) {
+              if (res_viewsign.data[0].verify_status === 1) {
                 this.alreadyverify$.next(true)
                 this.verifyby$.next(res_viewsign.data[0].verify_by)
               }
@@ -129,12 +130,12 @@ export class ViewsignComponent implements OnInit {
             // === handle face compare ===
 
             if (res_face_compare.status == 200) {
-              this.customerdipchipimg$.next((res_face_compare.data.file1 == null || res_face_compare.data.file1 == '') ? `${environment.citizen_card_img_preload}` : `data:image/jpeg;base64,${res_face_compare.data.file1}`)
-              this.facecustomerimg$.next((res_face_compare.data.file2 == null || res_face_compare.data.file2 == '') ? `${environment.citizen_card_img_preload}` : `data:image/jpeg;base64,${res_face_compare.data.file2}`)
+              this.customerdipchipimg$.next((res_face_compare.data.file1 === null || res_face_compare.data.file1 === '') ? `${environment.citizen_card_img_preload}` : `data:image/jpeg;base64,${res_face_compare.data.file1}`)
+              this.facecustomerimg$.next((res_face_compare.data.file2 === null || res_face_compare.data.file2 === '') ? `${environment.citizen_card_img_preload}` : `data:image/jpeg;base64,${res_face_compare.data.file2}`)
 
               this.quotationService.MPLS_is_check_face_valid_unlock(this.quotationid.value).subscribe({
                 next: (res_check_face) => {
-                  this.resultFaceCompare = res_check_face.data.status == 'Y' ? 'ตรงกัน' : 'ไม่ตรงกัน'
+                  this.resultFaceCompare = res_check_face.data.status === 'Y' ? 'ตรงกัน' : 'ไม่ตรงกัน'
                   this.reasonFaceCompare = res_check_face.data.reason ? res_check_face.data.reason : '-'
                 }, error: (e) => {
                   console.log(`Error : ${e.message ? e.message : 'No return message'}`)
@@ -198,7 +199,7 @@ export class ViewsignComponent implements OnInit {
           next: async (resultsreload) => {
             // map customer imgae and witness image from return data
             this.loadingService.hideLoader()
-            if (resultsreload.status == 200) {
+            if (resultsreload.status === 200) {
               this.letverify$.next(true)
               const cussigimagebase64 = await this.getUrlImage(resultsreload.data[0])
               this.customersignatureimg$.next(cussigimagebase64)
@@ -207,7 +208,7 @@ export class ViewsignComponent implements OnInit {
               this.witnesssignatureimg$.next(witnesssigimagebase64)
 
               // == check if aleady verify (verify_status)
-              if (resultsreload.data[0].verify_status == 1) {
+              if (resultsreload.data[0].verify_status === 1) {
                 this.alreadyverify$.next(true)
                 this.verifyby$.next(resultsreload.data[0].verify_by)
               }

@@ -16,9 +16,10 @@ import { IStampFaceVerificationLog } from 'src/app/interface/i-stamp-face-verifi
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-face-valid-dialog',
-  templateUrl: './face-valid-dialog.component.html',
-  styleUrls: ['./face-valid-dialog.component.scss']
+    selector: 'app-face-valid-dialog',
+    templateUrl: './face-valid-dialog.component.html',
+    styleUrls: ['./face-valid-dialog.component.scss'],
+    standalone: false
 })
 export class FaceValidDialogComponent extends BaseService implements OnInit {
 
@@ -145,7 +146,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
           next: ([resinfo, resimage]) => {
             this.loadingService.hideLoader()
             // ============ resinfo =============
-            if (resinfo.status == 200) {
+            if (resinfo.status === 200) {
               this.firstName = resinfo.data.first_name
               this.lastName = resinfo.data.last_name
               this.idcard_num = resinfo.data.idcard_num
@@ -166,11 +167,11 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
             this.facevalidform.controls.customerface.setValue(this.file2 ? this.file2 : '')
 
 
-            this.imageurl1 = (this.file1 == null || this.file1 == '') ? `${environment.citizen_card_img_preload}` : `data:image/jpeg;base64,${this.file1}`
-            this.imageurl2 = (this.file2 == null || this.file2 == '') ? `${environment.citizen_card_img_preload}` : `data:image/jpeg;base64,${this.file2}`
+            this.imageurl1 = (this.file1 === null || this.file1 === '') ? `${environment.citizen_card_img_preload}` : `data:image/jpeg;base64,${this.file1}`
+            this.imageurl2 = (this.file2 === null || this.file2 === '') ? `${environment.citizen_card_img_preload}` : `data:image/jpeg;base64,${this.file2}`
 
             // === check channal , If no dipccip channal hide list field  ====
-            if (resimage.data.is_dipchip_channal == 'N') {
+            if (resimage.data.is_dipchip_channal === 'N') {
               this.ismanual = true
               this.isfaceconsent = false
             } else {
@@ -182,8 +183,8 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
               if (resultdchkvalid.data.isdipchip) {
                 this.isfacevalid = true;
                 this.facevalidform.controls.reason.setValue(resultdchkvalid.data.reason)
-                this.facevalidform.controls.result.setValue(resultdchkvalid.data.status == 'Y' ? 'Y' : 'N')
-                this.facevalidform.controls.consent.setValue(resultdchkvalid.data.face_compare_consent == 'Y' ? 'Y' : 'N')
+                this.facevalidform.controls.result.setValue(resultdchkvalid.data.status === 'Y' ? 'Y' : 'N')
+                this.facevalidform.controls.consent.setValue(resultdchkvalid.data.face_compare_consent === 'Y' ? 'Y' : 'N')
                 this.facevalidform.disable()
                 this.facevalidform.controls.reason.disable()
               } else {
@@ -198,7 +199,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
               this.isfacevalid = false
             }
 
-            if (this.file2 == null || this.file2 == '') {
+            if (this.file2 === null || this.file2 === '') {
               this.showuploadfaceimage = true
             }
           }, error: (e) => {
@@ -270,7 +271,7 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
         fd.append('item', itemString)
 
         this.quotationService.MPLS_upload_customer_face(fd).subscribe((res) => {
-          if (res.status == 200) {
+          if (res.status === 200) {
             this.snackbarsuccess(`Upload ภาพสำเร็จ`)
           } else {
             this.snackbarfail(`Upload ไฟล์ภาพไม่สำเร็จ : ${res.message ? res.message : 'No return message'}`)
@@ -310,9 +311,9 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
     this.quotationService.MPLS_stamp_check_face_valid(fd).subscribe({
       next: (result) => {
         this.loadingService.showLoader()
-        if (result.status == 200) {
+        if (result.status === 200) {
           // === success ===
-          if (result.data.isvalid == 'Y') {
+          if (result.data.isvalid === 'Y') {
             this.isfacevalid = true
             this.settextstatus = true
           } else {

@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-waring-econsent-dialog',
-  templateUrl: './waring-econsent-dialog.component.html',
-  styleUrls: ['./waring-econsent-dialog.component.scss']
+    selector: 'app-waring-econsent-dialog',
+    templateUrl: './waring-econsent-dialog.component.html',
+    styleUrls: ['./waring-econsent-dialog.component.scss'],
+    standalone: false
 })
 export class WaringEconsentDialogComponent implements OnInit {
 

@@ -12,9 +12,10 @@ import { MasterDataService } from 'src/app/service/master.service';
 import { NegotiationService } from 'src/app/service/negotiation.service';
 
 @Component({
-  selector: 'app-create-living-nego-dialog',
-  templateUrl: './create-living-nego-dialog.component.html',
-  styleUrls: ['./create-living-nego-dialog.component.scss']
+    selector: 'app-create-living-nego-dialog',
+    templateUrl: './create-living-nego-dialog.component.html',
+    styleUrls: ['./create-living-nego-dialog.component.scss'],
+    standalone: false
 })
 export class CreateLivingNegoDialogComponent extends BaseService implements OnInit {
   // === variable master variable ===
@@ -98,7 +99,7 @@ export class CreateLivingNegoDialogComponent extends BaseService implements OnIn
 
     this.living_address.controls.province_code.valueChanges.subscribe((value) => {
       // === set province name with province code ====
-      const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_code })
+      const provSelect = this.masterProvince.data.find((res) => { return value === res.prov_code })
       this.living_address.controls.province_name.setValue(provSelect?.prov_name ? provSelect?.prov_name : '')
     })
 
@@ -135,7 +136,7 @@ export class CreateLivingNegoDialogComponent extends BaseService implements OnIn
       next: (res_createaddresss) => {
         console.log(`test : ${res_createaddresss}`)
 
-        if (res_createaddresss.status == 200) {
+        if (res_createaddresss.status === 200) {
           // route or do something (succeess) 
           this.dialogRef.close({
             create_status: true

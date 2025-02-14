@@ -128,7 +128,7 @@
             <mat-grid-list [cols]="layout.columns" [rowHeight]="'100px'">
                 <mat-grid-tile [colspan]="layout.list.maxcols">
                     <div class="wrapper">
-                        <button mat-raised-button color="primary" (disabled)="negoForm.valid == false"
+                        <button mat-raised-button color="primary" (disabled)="negoForm.valid === false"
                             (click)="onsearch()" class="center-button"
                             style="width: 40%; min-width: 100px;">ค้นหา</button>
                         <button mat-raised-button color="primary" (click)="onclear()" class="center-button"

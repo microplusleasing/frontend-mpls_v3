@@ -14,9 +14,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ImageDialogComponent } from 'src/app/widget/dialog/image-dialog/image-dialog.component';
 
 @Component({
-  selector: 'app-view-car-attach',
-  templateUrl: './view-car-attach.component.html',
-  styleUrls: ['./view-car-attach.component.scss']
+    selector: 'app-view-car-attach',
+    templateUrl: './view-car-attach.component.html',
+    styleUrls: ['./view-car-attach.component.scss'],
+    standalone: false
 })
 export class ViewCarAttachComponent extends BaseService implements OnInit {
 
@@ -59,7 +60,7 @@ export class ViewCarAttachComponent extends BaseService implements OnInit {
             name: item.image_name ?? '',
             image_code: item.image_code ?? '',
             image_id: item.image_id ?? '',
-            image_header: `รูปภาพรถมือสอง (รูปที่ ${sequence})` ?? '',
+            image_header: `รูปภาพรถมือสอง (รูปที่ ${sequence})`,
             image_field_name: item.image_name ?? '',
             urlsanitizer: this.sanitizer.bypassSecurityTrustUrl(imageStr),
             src: imageStr
@@ -74,7 +75,7 @@ export class ViewCarAttachComponent extends BaseService implements OnInit {
   }
 
   openimageMultipledialog(image: any) {
-    const imageselect = this.uploadedImagesMultiple.filter(img => img == image)
+    const imageselect = this.uploadedImagesMultiple.filter(img => img === image)
 
     if (imageselect) {
       this.dialog.open(ImageDialogComponent, {

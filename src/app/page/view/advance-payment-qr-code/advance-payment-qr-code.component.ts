@@ -1,12 +1,13 @@
 import { MrtaService } from 'src/app/service/mrta.service';
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { ImageUtilService } from 'src/app/service/image-util.service';
-import * as moment from 'moment';
+import moment from 'moment';
 
 @Component({
-  selector: 'app-advance-payment-qr-code',
-  templateUrl: './advance-payment-qr-code.component.html',
-  styleUrls: ['./advance-payment-qr-code.component.scss']
+    selector: 'app-advance-payment-qr-code',
+    templateUrl: './advance-payment-qr-code.component.html',
+    styleUrls: ['./advance-payment-qr-code.component.scss'],
+    standalone: false
 })
 export class AdvancePaymentQrCodeComponent {
 

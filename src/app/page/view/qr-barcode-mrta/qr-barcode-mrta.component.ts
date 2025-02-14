@@ -7,9 +7,10 @@ import { Component, Input, OnInit, Output, SimpleChanges, EventEmitter } from '@
 import { IUserToken } from 'src/app/interface/i-user-token';
 
 @Component({
-  selector: 'app-qr-barcode-mrta',
-  templateUrl: './qr-barcode-mrta.component.html',
-  styleUrls: ['./qr-barcode-mrta.component.scss']
+    selector: 'app-qr-barcode-mrta',
+    templateUrl: './qr-barcode-mrta.component.html',
+    styleUrls: ['./qr-barcode-mrta.component.scss'],
+    standalone: false
 })
 export class QrBarcodeMrtaComponent {
 
@@ -69,7 +70,7 @@ export class QrBarcodeMrtaComponent {
       this.qrpaymentdata.contract_no = changes['qrpaymentdata'].currentValue.contract_no
 
       const isFin = this.checkfinancerole()
-      if (isFin == 'FI') {
+      if (isFin === 'FI') {
         if (this.qrpaymentdata.pay_status !== 1) {
           this.showconfirmbtn = true
         } else {
@@ -178,7 +179,7 @@ export class QrBarcodeMrtaComponent {
           {
             console.log(`return confirm qr payment value : ${JSON.stringify(result)}`)
 
-            if (result.status == 200) {
+            if (result.status === 200) {
 
               this.updatepaymentstatus.emit(true)
 
@@ -213,7 +214,7 @@ export class QrBarcodeMrtaComponent {
   genqrpayment(application_num: string, premium_insur: number) {
     this.imageService.genmrtaqr(application_num, premium_insur).subscribe((result) => {
 
-      if (result.status == 200) {
+      if (result.status === 200) {
         this.genfinish.emit(true)
       }
       this.image_qr$ = new Promise((resolve) => {

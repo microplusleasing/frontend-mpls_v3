@@ -10,16 +10,12 @@
           <img [src]="cizCardImage" class="img-box"><br>
           <span style="color: red;">{{this.quotationService.dopastatus.messageheader}}</span><br>
           <button mat-raised-button color="primary" (click)="onClickFacecompareBtn()">เปรียบเทียบใบหน้า</button>
-          
-          <button 
-          *ngIf="userSession.RADMIN === 'Y'" 
-          style="margin-left: 2em;" 
-          mat-raised-button color="primary"
-            (click)="onClickEditFacecompareImage()"
-            >
-            แก้ไข/upload ภาพ
-          </button>
-          
+
+          @if (this.userSession.RADMIN == 'Y') {
+          <button style="margin-left: 2em;" mat-raised-button color="primary"
+            (click)="onClickEditFacecompareImage()">แก้ไข/upload ภาพ</button>
+          }
+
         </div>
       </div>
       <div class="flexbox">
@@ -127,7 +123,7 @@
       </div>
       <mat-divider></mat-divider>
 
-      <div class="header-left">
+      <div class="ciz-tab-header-left">
         ที่อยู่ตามบัตรประชาชน
       </div>
 
@@ -176,7 +172,7 @@
 
     <!-- ข้อมูลทั่วไป -->
     <div [formGroup]="generalinfoForm">
-      <div class="header-left">
+      <div class="ciz-tab-header-left">
         ข้อมูลส่วนบุคคล
       </div>
 
@@ -273,7 +269,7 @@
 
     <!-- ที่อยู่ปัจจุบัน -->
     <div [formGroup]="livingAddress">
-      <div class="header-left">
+      <div class="ciz-tab-header-left">
         ที่อยู่ปัจจุบัน
       </div>
       <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
@@ -341,7 +337,7 @@
 
     <!-- ที่อยู่ส่งจดหมาย -->
     <div [formGroup]="contactAddress">
-      <div class="header-left">
+      <div class="ciz-tab-header-left">
         ที่อยู่ส่งจดหมาย
       </div>
       <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
@@ -394,7 +390,7 @@
 
     <!-- ที่อยู่ตามทะเบียนบ้าน -->
     <div [formGroup]="houseRegisAddress">
-      <div class="header-left">
+      <div class="ciz-tab-header-left">
         ที่อยู่ตามทะเบียนบ้าน
       </div>
       <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
@@ -452,7 +448,7 @@
 
     <!-- ที่อยู่ที่ทำงาน -->
     <div [formGroup]="workAddress">
-      <div class="header-left">
+      <div class="ciz-tab-header-left">
         ที่อยู่ที่ทำงาน
       </div>
       <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"

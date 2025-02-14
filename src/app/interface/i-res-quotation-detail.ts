@@ -146,6 +146,7 @@ export interface IResQuotationDetailData {
     is_check_l_insur_company: number,
     is_check_l_insur_refund: number,
     is_check_l_insur_cancle_d: number,
+    is_salesheet_accept_value: number,
     pp_app_key_id: string;
     pp_purpose_of_buy?: string;
     pp_purpose_of_buy_name?: string;

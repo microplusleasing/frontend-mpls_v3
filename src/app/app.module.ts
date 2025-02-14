@@ -67,6 +67,7 @@ import { BasicConfirmDialogComponent } from './widget/dialog/basic-confirm-dialo
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import th from '@angular/common/locales/th';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { SalesheetComponent } from './page/quotation-tab/signature-tab/consent/salesheet/salesheet.component';
 
 
 registerLocaleData(th);
@@ -138,6 +139,7 @@ const MY_DATE_FORMATS = {
     FaceValidEditComponent,
     PermissionUploadFacecompareDialogComponent,
     BasicConfirmDialogComponent,
+    SalesheetComponent,
   ],
   bootstrap: [AppComponent], 
   imports: [

@@ -166,6 +166,20 @@ export class BaseService {
 
   // === *** Image Manage *** ===
 
+  getUrlImageBasic(data: any): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const buf = data.data
+      const base64format = "data:image/jpg;base64,"
+      const base64data = this._arrayBufferToBase64(buf)
+      const strurl = `${base64format}${base64data}`
+      if (strurl) {
+        resolve(strurl);
+      } else {
+        reject(`/assets/image/placeholder-image.png`);
+      }
+    })
+  }
+
   getUrlImage_cizcard_image(data: any): Promise<string> {
     return new Promise((resolve, reject) => {
       const buf = data.data
@@ -215,6 +229,11 @@ export class BaseService {
       binary += String.fromCharCode(bytes[i]);
     }
     return 'data:image/jpeg;base64,' + btoa(binary);
+  }
+
+  _arrayBufferToDataUrl(buffer: ArrayBuffer): string {
+    const blob = new Blob([buffer], { type: 'image/jpeg' }); // Adjust the MIME type as needed
+    return URL.createObjectURL(blob);
   }
 
   async _base64toblob(base64image: string) {

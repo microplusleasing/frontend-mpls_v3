@@ -171,7 +171,6 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     this.cd,
     this.fb,
     this.quotationService,
-    this.imageService,
     this.loadingService,
     this.dialog,
     this._snackBar,
@@ -2207,8 +2206,6 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       const pdpa_form = consent_tab.p_d_econsenttab.formPersonalDisclosureConsent
       // *** E-paper ***
       const e_paper_form = consent_tab.e_paper_econsenttab.epaperform
-      // ... salesheet accept value ... 
-      const salesheet_form = consent_tab.salesheettab.salesheetForm
       // *** Siganture ***
       const signature_form = consent_tab.signaturetab.signatureForm
 
@@ -2239,8 +2236,6 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
         // *** E-paper ***
         e_paper_consent_value: e_paper_form.controls.epaperconsentvalue.value == 1 ? 1 : 0,
         // e_paper_consent_value: e_paper_form.controls.epaperconsentvalue.value == 1 ? 'Y' : 'N',
-        // *** salesheet ***
-        salesheet_accept_value: salesheet_form.controls.salesheetacceptvalue.value ? 1 : 0
       }
 
       console.log(`data for create consent : ${JSON.stringify(quotationdata)}`)

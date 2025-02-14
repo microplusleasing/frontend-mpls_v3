@@ -11,8 +11,6 @@ import { IMrtaQrBarcode } from '../interface/i-mrta-qr-barcode';
 import { IQrAdvancePayment } from 'src/app/interface/i-qr-advance-payment';
 import { IQrTotalLoss } from 'src/app/interface/i-qr-total-loss';
 import { IResCheckImageRequire } from 'src/app/interface/i-res-check-image-require';
-import { IResGetsalesheetimage } from '../interface/i-res-mpls_get_salesheet_image';
-import { IResGetsalesheetimagecount } from '../interface/i-res-mpls_get_salesheet_image_count';
 
 @Injectable({
   providedIn: 'root'
@@ -73,16 +71,6 @@ export class ImageService {
     // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/getattachimagedeliverbyid/${quotation_id}`
     const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/checkimagerequire?quotationid=${quotationid}`
     return this.http.get<IResCheckImageRequire>(url)
-  }
-  
-  MPLS_get_salesheet_image(): Observable<IResGetsalesheetimage> {
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_get_salesheet_image`
-    return this.http.get<IResGetsalesheetimage>(url)
-  }
-
-  MPLS_get_salesheet_image_count(): Observable<IResGetsalesheetimagecount> {
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MPLS_get_salesheet_image_count`
-    return this.http.get<IResGetsalesheetimagecount>(url)
   }
 
 

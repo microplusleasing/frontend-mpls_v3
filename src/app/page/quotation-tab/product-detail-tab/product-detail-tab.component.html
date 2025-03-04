@@ -96,6 +96,8 @@
                                 <mat-hint class="hint-color">{{(modelSelectText | async)}}</mat-hint>
                             </mat-form-field>
                         </mat-grid-tile>
+                        <!-- ซ่อน field ในกรณี product_code เป็น `solarcell` -->
+                        @if (!isSolarcell) {
                         <mat-grid-tile [colspan]="layout.list.cols4">
                             <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>สี</mat-label>
@@ -260,6 +262,12 @@
                         <mat-grid-tile [colspan]="layout.list.cols3" *ngIf="!showchassisandengine">
                             <!-- Blank Field For fix layout -->
                         </mat-grid-tile>
+                        }
+                        @else {
+                        <mat-grid-tile [colspan]="layout.list.cols3">
+                            <!-- Blank Field For fix layout -->
+                        </mat-grid-tile>
+                        }
                         <mat-grid-tile [colspan]="layout.list.cols4" *ngIf="showPrice && (showBrandModelLoan$ | async)">
                             <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>อัตราดอกเบี้ย</mat-label>
@@ -347,7 +355,8 @@
                         <mat-grid-tile [colspan]="layout.list.maxcols" *ngIf="showPrice">
                             <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>ประกัน</mat-label>
-                                <mat-select [formControl]="insurerCodeField" [required]="true">
+                                <!-- <mat-select [formControl]="insurerCodeField" [required]="true"> -->
+                                <mat-select [formControl]="insurerCodeField">
                                     <!-- <mat-option value=""></mat-option> -->
                                     <mat-option [value]="undefined" disabled hidden>เลือกประกัน</mat-option>
                                     <mat-option *ngFor="let il of InsuranceList" [value]="il.insurer_code">
@@ -363,7 +372,8 @@
                             *ngIf="showPrice && (showInsuranceSelect$ | async)">
                             <mat-form-field appearance="outline" style="width: 100%">
                                 <mat-label>จำนวนปี</mat-label>
-                                <mat-select [formControl]="insuranceYearField" [required]="true">
+                                <!-- <mat-select [formControl]="insuranceYearField" [required]="true"> -->
+                                <mat-select [formControl]="insuranceYearField">
                                     <!-- <mat-option value=""></mat-option> -->
                                     <mat-option [value]="undefined" disabled hidden>เลือกจำนวนปี</mat-option>
                                     <mat-option *ngFor="let ils of InsuranceListFilter" [value]="ils.years_insur">
@@ -387,7 +397,7 @@
                                 </mat-select>
                             </mat-form-field>
                         </mat-grid-tile>
-                        <mat-grid-tile [colspan]="layout.list.cols4" *ngIf="showPrice">
+                        <mat-grid-tile [colspan]="layout.list.cols4" *ngIf="(showPrice && showIsincludeloanamount)">
                             <div class="form-group">
                                 <label *ngIf="false">รวมยอดกู้</label>
                                 <section class="example-section">

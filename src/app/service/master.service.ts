@@ -203,9 +203,9 @@ export class MasterDataService {
     return this.http.get<IResMasterQuoatationStatus>(url)
   }
 
-  getDealer(pro_code: string): Observable<IResMasterDealer> {
-    // const url = `${environment.httpheader}${this.domain}:${environment.apiport}/MasterDealer?pro_code=${pro_code}`
-    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MasterDealer?pro_code=${pro_code}`
+  getDealer(): Observable<IResMasterDealer> {
+    /* ... ยกเลิกการส่ง paramter pro_code ไปเรียกเพราะใช้ filter ในส่วนของ pro_code ที่ได้จากตอนเลือก bussiness_code ในหน้า credit แทน (solarcell) (20/02/2025) .. */
+    const url = `${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/MasterDealer`
     return this.http.get<IResMasterDealer>(url)
   }
 

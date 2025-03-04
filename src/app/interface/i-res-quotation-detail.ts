@@ -100,6 +100,8 @@ export interface IResQuotationDetailData {
     cd_engine_no_running: string;
     cd_chassis_no_running: string;
     cd_moto_year: number;
+    /* ... add field product_code (solarcell) update .. (20/02/2025) */
+    cd_product_code: string;
     cr_app_key_id: string;
     cr_main_career_name?: string;
     cr_main_career_code?: string;

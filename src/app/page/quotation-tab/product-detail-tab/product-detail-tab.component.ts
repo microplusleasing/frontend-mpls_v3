@@ -28,10 +28,10 @@ import { SecondhandCarViewDialogComponent } from 'src/app/widget/dialog/secondha
 import { IResGetfueltype } from 'src/app/interface/i-res-getfueltype';
 
 @Component({
-    selector: 'app-product-detail-tab',
-    templateUrl: './product-detail-tab.component.html',
-    styleUrls: ['./product-detail-tab.component.scss'],
-    standalone: false
+  selector: 'app-product-detail-tab',
+  templateUrl: './product-detail-tab.component.html',
+  styleUrls: ['./product-detail-tab.component.scss'],
+  standalone: false
 })
 export class ProductDetailTabComponent extends BaseService implements OnInit, AfterViewInit {
 
@@ -97,6 +97,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   prov_name = new FormControl()
   prov_code = new FormControl()
   moto_year = new FormControl()
+  /* .. solar (14/02/2025) ..*/
+  product_code = new FormControl('', Validators.required)
 
 
   detailForm = this.fb.group({
@@ -140,6 +142,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     batteryTypeField: this.batteryTypeField,
     batteryCapacityField: this.batteryCapacityField,
     fuelTypeField: this.fuelTypeField, // */ ... check this field to know fueltype of moto ...*/
+    /* .. solar .. */
+    product_code: this.product_code
 
   })
 
@@ -168,8 +172,15 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   })
 
   showPrice: boolean = false;
+  /* ... สร้างตัวแปรสำหรับการแสดง field 'รวมยอดกู้' (solarcell) (20/02/2025) .. */
+  showIsincludeloanamount: boolean = true
 
   bussinessList = [] as IResGetMasterBussinessData[];
+  /* .. create temp dealer , brand and model for handle solar (14/02/2025) .. */
+  tempDealerList = [] as IResMasterDealerData[];
+  tempBrandList = [] as IResMasterBrandData[];
+  tempModelList = [] as IResMasterModelData[];
+
   brandList = [] as IResMasterBrandData[];
   modelList = [] as IResMasterModelData[];
   masterProvinceList: IResMasterProvince = {} as IResMasterProvince
@@ -258,6 +269,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
   shwosecondhandcardetail: boolean = false
 
   warningMsgPaymentValueField: boolean = false;// === subscribe on paymentValueField (valueChange) to show or hide === 
+
+  /* .. check is Solarcell product_code .. */
+  isSolarcell: boolean = false
 
   cardLayout = this.breakpointObserver
     .observe('(min-width: 800px)')
@@ -412,13 +426,12 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
             const recordExists = (quoitem.cd_app_key_id !== '' && quoitem.cd_app_key_id !== null) ? true : false
             combineLatest([
               this.masterDataService.getMasterBussiness(),
-              this.masterDataService.getDealer('01'),
+              this.masterDataService.getDealer(),
               this.masterDataService.MPLS_getbrand(),
               this.masterDataService.MPLS_getmodel(),
               this.masterDataService.getMasterProvince(),
               this.masterDataService.getFuelType()
             ]).subscribe(async (res) => {
-              // console.log(`this is master Data : ${JSON.stringify(res)}`)
               // === set master to variable ===
 
               const priceincludevatValue = this.productForm.controls.detailForm.controls.priceincludevatField.value
@@ -441,8 +454,32 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 this.bussinessList = res[0].data
                 this.productForm.controls.detailForm.controls.bussinessCode.valueChanges.subscribe((value) => {
 
+                  /* ... solar (set product_code to form) .. */
+                  const select_business_code_record = this.bussinessList.find((item => { return item.bussiness_code === value }))
+
+                  if (select_business_code_record !== undefined) {
+                    const select_product_code = select_business_code_record?.product_code ?? ''
+                    this.productForm.controls.detailForm.controls.product_code.setValue(select_product_code)
+
+                    /* .. set value of dealderList with filter here (14/02/2025) .. */
+                    this.dealerList = this.tempDealerList
+                      .filter((item) => { return item.product_item === select_business_code_record?.product_code })
+                      .sort((a, b) => (a.dl_code > b.dl_code ? 1 : -1))
+                    /* .. set value of BrandList with filter here (14/02/2025) .. */
+                    this.brandList = this.tempBrandList
+                      .filter((item) => { return item.pro_code === select_business_code_record?.product_code })
+                      .sort((a, b) => (a.brand_code > b.brand_code ? 1 : -1));
+
+                    /* .. set value of modelList with filter here (14/02/2025) .. */
+                    this.modelList = this.tempModelList
+                      .filter((item) => { return item.pro_code === select_business_code_record?.product_code })
+                      .sort((a, b) => (a.model_code > b.model_code ? 1 : -1));
+                  }
+
                   // *** set filterbrandlist (08/04/2023) ****
-                  this.filterDealerList = of(res[1].data)
+                  // this.filterDealerList = of(res[1].data)
+                  /* .. replace filterDealerList with dealderList (solar) (14/02/2025) .. */
+                  this.filterDealerList = of(this.dealerList)
 
                   /* ... clear all filter of brand and model (add-on 26/01/2024) ... */
                   this.filterBrandList = of(this.brandList)
@@ -541,6 +578,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.shwosecondhandcardetail = false
                         this.showPrice = false
                         this.is2ndmpls = false
+                        this.isSolarcell = false
 
                         this.productForm.controls.detailForm.controls.carBrandField.enable({ onlySelf: true, emitEvent: false })
                         this.productForm.controls.detailForm.controls.carModelField.enable({ onlySelf: true, emitEvent: false })
@@ -573,6 +611,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(null)
                         this.productForm.controls.secondHandCarForm.updateValueAndValidity()
 
+                        /* .. solarcell set back insurance , insurer require (14/02/2025) .. */
+                        this.productForm.controls.detailForm.controls.insurerCodeField.setValidators(Validators.required)
+                        this.productForm.controls.detailForm.controls.insuranceYearField.setValidators(Validators.required)
+
                         this.productForm.controls.detailForm.controls.engineNoField.setValidators(null)
                         this.productForm.controls.detailForm.controls.runningengineNoField.setValidators(null)
                         this.productForm.controls.detailForm.controls.chassisNoField.setValidators(null)
@@ -598,6 +640,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.out_stand = 0
                         this.showpaymentvalue$.next(false)
                         this.is2ndmpls = true
+                        this.isSolarcell = false
 
                         // *** set Require to some field of second hand car (MPLS) ***
                         this.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(Validators.required)
@@ -608,6 +651,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.productForm.controls.secondHandCarForm.controls.prov_name.setValidators(Validators.required)
                         this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(Validators.required)
                         this.productForm.controls.secondHandCarForm.updateValueAndValidity()
+
+                        /* .. solarcell set back insurance , insurer require (14/02/2025) .. */
+                        this.productForm.controls.detailForm.controls.insurerCodeField.setValidators(Validators.required)
+                        this.productForm.controls.detailForm.controls.insuranceYearField.setValidators(Validators.required)
+                        this.productForm.controls.detailForm.updateValueAndValidity()
                       }
                       break;
                     case '003':
@@ -619,6 +667,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.showchassisandengine = true
                         this.shwosecondhandcardetail = true
                         this.is2ndmpls = false
+                        this.isSolarcell = false
 
                         this.productForm.controls.detailForm.controls.carBrandField.enable({ onlySelf: true, emitEvent: false })
                         this.productForm.controls.detailForm.controls.carModelField.enable({ onlySelf: true, emitEvent: false })
@@ -650,6 +699,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(Validators.required)
                         this.productForm.controls.secondHandCarForm.updateValueAndValidity()
 
+                        /* .. solarcell set back insurance , insurer require (14/02/2025) .. */
+                        this.productForm.controls.detailForm.controls.insurerCodeField.setValidators(Validators.required)
+                        this.productForm.controls.detailForm.controls.insuranceYearField.setValidators(Validators.required)
+
                         this.productForm.controls.detailForm.controls.engineNoField.setValidators(Validators.required)
                         this.productForm.controls.detailForm.controls.runningengineNoField.setValidators(Validators.required)
                         this.productForm.controls.detailForm.controls.chassisNoField.setValidators(Validators.required)
@@ -657,7 +710,46 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         this.productForm.controls.detailForm.updateValueAndValidity()
                       }
                       break;
+                    case '007':
+                      {
+                        // *** SolarCell ***
+                        this.show2ndHandMPLSBtn = false
+                        this.showdealerfield = true
+                        this.showgeneralcarinfovisible = true
+                        this.showBrandModelLoan$ = of(false)
+                        this.shwosecondhandcardetail = false
+                        this.showPrice = false
+                        this.is2ndmpls = false
+                        this.isSolarcell = true
 
+                        /*..  ปลดล๊อค Require  field of detail form (MPLS) with select solarcell .. */
+                        /*.. ปลดล็อค insurance field ...*/
+                        this.productForm.controls.detailForm.controls.insurerCodeField.setValidators(null)
+                        this.productForm.controls.detailForm.controls.insurerNameField.setValidators(null)
+                        this.productForm.controls.detailForm.controls.insuranceCodeField.setValidators(null)
+                        this.productForm.controls.detailForm.controls.insuranceNameField.setValidators(null)
+                        this.productForm.controls.detailForm.controls.insuranceYearField.setValidators(null)
+                        this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValidators(null)
+
+                        /*..  ปลดล๊อค Require  field of second hand car (MPLS) with select solarcell .. */
+                        this.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.model_year.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.cc.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.reg_no.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.reg_date.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.contract_ref.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.prov_name.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(null)
+                        this.productForm.controls.secondHandCarForm.updateValueAndValidity()
+
+                        this.productForm.controls.detailForm.controls.engineNoField.setValidators(null)
+                        this.productForm.controls.detailForm.controls.runningengineNoField.setValidators(null)
+                        this.productForm.controls.detailForm.controls.chassisNoField.setValidators(null)
+                        this.productForm.controls.detailForm.controls.runningchassisNoField.setValidators(null)
+                        this.productForm.controls.detailForm.updateValueAndValidity()
+
+                      }
+                      break;
                     default:
                       break;
                   }
@@ -667,9 +759,13 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
               // *** dealer ***
               if (res[1]) {
-                this.dealerList = res[1].data
+                /* .. steamp deadler list from api to tempDealerList  (solar) (14/02/2025) .. */
+                /* .. move set Value of dealerList to BussinessCode.valueChange (14/02/2025) .. */
+                this.tempDealerList = res[1].data
+
                 // === set validate format dealer code === 
-                this.productForm.controls.detailForm.controls.dealerCode.setValidators(this.validateDealerformat(this.dealerList))
+                // this.productForm.controls.detailForm.controls.dealerCode.setValidators(this.validateDealerformat(this.dealerList))
+                this.productForm.controls.detailForm.controls.dealerCode.setValidators(this.validateDealerformat(this.tempDealerList))
                 this.productForm.controls.detailForm.controls.dealerCode.valueChanges.pipe(
                   startWith(''),
                   map(value => {
@@ -786,7 +882,10 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
               // *** brand ***
               if (res[2]) {
-                this.brandList = res[2].data
+                /* .. stamp brandList to tempBrandList (solar) (14/02/2025) .. */
+                /* .. move set Value of BrandList to BussinessCode.valueChange (14/02/2025) .. */
+                this.tempBrandList = res[2].data
+
                 this.productForm.controls.detailForm.controls.carBrandField.valueChanges.pipe(
                   startWith(''),
                   switchMap(async value => {
@@ -858,8 +957,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // **** user this.currentSelectBrand instead of value (30/05/2023) ***
                   const selectValue = this.currentSelectBrand
                   if (selectValue.length !== 0) {
-                    this.modelSelect = this.modelList.filter((items: { brand_code: any; }) => {
-                      return items.brand_code === selectValue[0].brand_code
+                    this.modelSelect = this.modelList.filter((items: { brand_code: any, brand_name: any; }) => {
+                      return items.brand_code === selectValue[0].brand_code && items.brand_name === selectValue[0].brand_name
                     }
                     );
 
@@ -897,7 +996,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                     // === stamp car brand by code ===
 
-                    console.log(`this is brandList before error : ${JSON.stringify(this.brandList)}`)
                     if (this.brandList && this.brandList.length !== 0) {
                       const result = this.brandList.find((x: { brand_code: string; }) => x.brand_code === selectValue[0].brand_code);
                       if (result) {
@@ -918,7 +1016,13 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               }
 
               // *** model ***
+              /* ... กรณีเป็น bussiness_code === '007' ให้คำนวณจำนวนงวด แล้วปลด require field พวกประกัน (solarcell) (14/02/2025)  ... */
               if (res[3]) {
+
+                /* .. stamp modelList to tempModelList (solar) (14/02/2025) .. */
+                /* .. move set Value of modelList to BussinessCode.valueChange (14/02/2025) .. */
+                this.tempModelList = res[3].data
+
                 this.modelList = res[3].data
                 this.productForm.controls.detailForm.controls.carModelField.valueChanges.pipe(
                   startWith(''),
@@ -935,8 +1039,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     return filteredModels;
                   })
                 ).subscribe(async (value: IResMasterModelData[]) => {
-                  this.filterModelList = of(value)
 
+                  /*.. use pro_code instaed of fix value of pro_code parameters of api like (getMaxLtv, getMasterRate, getSizeModel) .. */
+                  const pro_code = this.detailForm.controls.product_code.value ?? ``
+
+                  this.filterModelList = of(value)
                   // *** set more null field (secondhand car include) (05/04/2023) ***
                   this.detailForm.controls.carColorField.setValue('', { emitEvent: false });
                   this.detailForm.controls.chassisNoField.setValue('', { emitEvent: false });
@@ -1028,10 +1135,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                       //=== call max lvt vaue === 
                       const resultMaxLtv = await lastValueFrom(this.masterDataService.getMaxLtv(
+                        /* ... ใช้ pro_code ทีไ่ด้จาก bussiness แทน fixed data pro_code = '01' (20/02/2025) ... */
                         // valuePrice,
                         priceForCalTotalloss,
                         this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : '',
-                        '01',
+                        this.productForm.controls.detailForm.controls.product_code.value ? this.productForm.controls.detailForm.controls.product_code.value : '',/* ... ยกเลิกการใช้ fix data ใน solarcell update .. */ // '01',
                         this.productForm.controls.detailForm.controls.carBrandField.value ? this.productForm.controls.detailForm.controls.carBrandField.value : '',
                         selectValue[0].model_code,
                         this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
@@ -1048,6 +1156,18 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       this.maxltvValue = resultMaxLtv.data[0].maxltv
                       this.maxlvtmessage$ = of(maxlvttext)
                       this.maxltvCurrent = resultMaxLtv.data[0].maxltv
+
+                      /* ... ยกเลิกการใช้ price ของ X_MODEL_P มาแทนที่ maxLtv ในกรณี solarcell เพราะมาใช้ function จาก getMaxLtv แทนได้ (solarcell) (20/02/2025) 
+                      const maxlvtsetFormat = this.numberWithCommas(resultMaxLtv.data[0].maxltv)
+                      const selectModel = this.modelList.find((item) => { return item.model_code === this.detailForm.controls.carModelField.value })
+                      if (selectModel !== null && selectModel) {
+                        const maxlvttext = `(สูงสุด ${selectModel.price} บาท)`
+                        this.maxltvValue$ = of(selectModel.price)
+                        this.maxltvValue = selectModel.price
+                        this.maxlvtmessage$ = of(maxlvttext)
+                        this.maxltvCurrent = selectModel.price
+                      }
+                      ... */
 
                       // === set max ltv field ===
                       this.productForm.controls.detailForm.controls.maxltvField.setValue(this.maxltvCurrent)
@@ -1077,7 +1197,15 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     }
 
                     if (selectValue[0].model_code) {
+                      /* ... กรณีที่ field bussiness_code ที่เลือกไว้เป็น '007' ให้ซ่อน 'รวมยอดกู้ไปก่อนค่อยแสดงอีกทีตอนเลือกประกัน (solarcell) (20/02/2025) ... */
+                      const busi_code = this.detailForm.controls.bussinessCode.value ?? ``
                       this.showPrice = true;
+                      if (busi_code !== '007') {
+                        this.showIsincludeloanamount = true
+                      } else {
+                        this.showIsincludeloanamount = false;
+                        this.detailForm.controls.isincludeloanamount.setValue(null)
+                      }
                       this.showchassisandengine = true
                     }
 
@@ -1120,7 +1248,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     if (bcSelect && bmSelect && modelPrice) {
 
                       this.masterDataService.getSizeModel(
-                        '01',
+                        pro_code, //'01',
                         bcSelect,
                         bmSelect,
                         this.productForm.controls.detailForm.controls.dealerCode.value ? this.productForm.controls.detailForm.controls.dealerCode.value : '',
@@ -1134,7 +1262,11 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                         // === แก้ไขการเรียกข้อมูล term (จำนวนงวด) จาก paremeter ที่เพิ่มมาจาก net_finance และ rate ===
 
                         const bussinessCode = this.productForm.controls.detailForm.controls.bussinessCode.value ? this.productForm.controls.detailForm.controls.bussinessCode.value : ``
-                        this.masterDataService.getMasterRate('01', result.data[0].size, bussinessCode).subscribe((resRate) => {
+                        this.masterDataService.getMasterRate(
+                          pro_code, // '01',
+                          result.data[0].size,
+                          bussinessCode
+                        ).subscribe((resRate) => {
                           this.rateSelect = resRate.data
                           // === set quotaion lookup data if old record ===
                           if (this.quotationdatatemp.data) {
@@ -1229,7 +1361,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 })
               } else {
                 // === Clear all temp (20/04/2023) ===
-
                 this.valuepricetemp = 0
                 this.selectModelCodeValueTemp = ''
               }
@@ -1375,6 +1506,9 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               // *** insurerCodeField ***
               this.productForm.controls.detailForm.controls.insurerCodeField.valueChanges.subscribe((res) => {
                 if (res) {
+
+                  /*... ในกรณี bussiness_code === '007' ให้ทำการปรับตัวแปร showis เป็น true เพื่อแสดง field 'รวมยอดกู้' (solarcell) (20/02/2025) ... */
+                  this.showIsincludeloanamount = true
 
                   /* ... clear insurance year and plan price when insurerCodeField change (ประกัน) (09/12/2024) ... */
                   this.productForm.controls.detailForm.controls.insuranceYearField.setValue(null)
@@ -1635,7 +1769,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
               })
 
-
               // *** prov_code (04/04/2023) ****
               this.productForm.controls.secondHandCarForm.controls.prov_code.valueChanges.subscribe((res) => {
 
@@ -1738,6 +1871,26 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
               });
 
 
+              /*... ราคาเงินสด (14/02/2025) .. */
+              this.detailForm.controls.priceincludevatField.valueChanges.subscribe((value) => {
+                console.log(`this is trigger value of priceincludevatField valueChagne !`)
+
+                const invalidFields = Object.keys(this.detailForm.controls)
+                  .map((key) => {
+                    const control = this.detailForm.controls[key as keyof typeof this.detailForm.controls];
+                    if (control.invalid) {
+                      return {
+                        field: key,
+                        errors: control.errors, // Get validation errors
+                      };
+                    }
+                    return null;
+                  })
+                  .filter((item) => item !== null); // Remove null values
+
+                console.log("Invalid fields with errors:", invalidFields);
+              })
+
 
 
 
@@ -1778,6 +1931,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                 // === second hand car field (03/04/2023) ===
                 const qbussinesscode = quoitem.cd_bussiness_code ?? '';
+                /* .. เพื่ม qproductcode ใน solarcell update (solarcell) (20/02/2025) .. */
+                const qproductcode = quoitem.cd_product_code ?? ``
                 const qmodelyear = quoitem.cd_model_year ?? '';
                 const qcc = quoitem.cd_cc ?? null;
                 const qregno = quoitem.cd_reg_no ?? '';
@@ -1801,7 +1956,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                 const qterm = quoitem.cd_payment_round_count ?? null;
                 const qisincludealoneamount = quoitem.cd_is_include_loanamount ? true : false;
                 const qloanamount = quoitem.cd_loan_amount ?? null
-                const qinsureplanpricevalue = quoitem.cd_insurance_plan_price ?? null
+                const qinsureplanpricevalue = quoitem.cd_insurance_plan_price ?? 0 // เปลี่ยนจาก null เป็น 0 ใน solarcell update (20/02/2025) //null
                 const qinsurercode = quoitem.cd_insurer_code ?? '';
                 const qinsurername = quoitem.cd_insurer_name ?? '';
                 const qinsurancecode = quoitem.cd_insurance_code ?? '';
@@ -1896,6 +2051,45 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                       this.productForm.controls.detailForm.updateValueAndValidity()
                     }
                     break;
+                  case '007':
+                    {
+                      // *** SolarCell ***
+                      this.show2ndHandMPLSBtn = false
+                      this.showdealerfield = true
+                      this.showgeneralcarinfovisible = true
+                      this.showBrandModelLoan$ = of(false)
+                      this.shwosecondhandcardetail = false
+                      this.showPrice = false
+                      this.is2ndmpls = false
+                      this.isSolarcell = true
+
+                      /*..  ปลดล๊อค Require  field of detail form (MPLS) with select solarcell .. */
+                      /*.. ปลดล็อค insurance field ...*/
+                      this.productForm.controls.detailForm.controls.insurerCodeField.setValidators(null)
+                      this.productForm.controls.detailForm.controls.insurerNameField.setValidators(null)
+                      this.productForm.controls.detailForm.controls.insuranceCodeField.setValidators(null)
+                      this.productForm.controls.detailForm.controls.insuranceNameField.setValidators(null)
+                      this.productForm.controls.detailForm.controls.insuranceYearField.setValidators(null)
+                      this.productForm.controls.detailForm.controls.insurancePlanPriceField.setValidators(null)
+
+                      /*..  ปลดล๊อค Require  field of second hand car (MPLS) with select solarcell .. */
+                      this.productForm.controls.secondHandCarForm.controls.reg_mile.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.model_year.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.cc.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.reg_no.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.reg_date.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.contract_ref.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.prov_name.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.controls.prov_code.setValidators(null)
+                      this.productForm.controls.secondHandCarForm.updateValueAndValidity()
+
+                      this.productForm.controls.detailForm.controls.engineNoField.setValidators(null)
+                      this.productForm.controls.detailForm.controls.runningengineNoField.setValidators(null)
+                      this.productForm.controls.detailForm.controls.chassisNoField.setValidators(null)
+                      this.productForm.controls.detailForm.controls.runningchassisNoField.setValidators(null)
+                      this.productForm.controls.detailForm.updateValueAndValidity()
+                    }
+                    break;
 
                   default:
                     break;
@@ -1908,11 +2102,30 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                 this.productForm.controls.detailForm.controls.carModelField.setValue(quoitem.cd_model_code ?? '', { emitEvent: false })
 
+                /* ... เพื่มการดักเงื่อนไข solarcell ลด field ที่ require (qinsureplanpricevalue) (solarcell) (15/02/2025) ... */
 
-                if (qfactoryprice && qcarbrandcode && qcarmodel && qterm && qsizemodel && qloanamount && qinsureplanpricevalue && qrate) {
+                const validFormDataExits =
+                  (
+                    (qbussinesscode !== `007` &&
+                      (
+                        qfactoryprice && qcarbrandcode && qcarmodel && qterm && qsizemodel && qloanamount && qinsureplanpricevalue && qrate
+                      )
+                    )
+                  ) ||
+                  (
+                    (qbussinesscode === `007`) &&
+                    (
+                      qfactoryprice && qcarbrandcode && qcarmodel && qterm && qsizemodel && qloanamount && qrate
+                    )
+                  )
 
+                if (validFormDataExits) {
 
-                  const resultRateMaster = await lastValueFrom(this.masterDataService.getMasterRate(`01`, qsizemodel, qbussinesscode));
+                  const resultRateMaster = await lastValueFrom(this.masterDataService.getMasterRate(
+                    qproductcode, /* .. ให้ qproductcode แทน fixed data ใน solarcell update (20/02/2025) .. */ // `01`,
+                    qsizemodel,
+                    qbussinesscode
+                  ));
 
                   // ==== change parameter for get insurance from factory_price to max_ltv (24/08/2022) ===
 
@@ -1924,7 +2137,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                     priceForCalTotalloss_,
                     // qfactoryprice,
                     qbussinesscode, // '001',
-                    '01',
+                    qproductcode, /* .. ให้ qproductcode แทน fixed data ใน solarcell update (20/02/2025) .. */ // `01`,
                     qcarbrandcode,
                     qcarmodelcode,
                     qdealercode,
@@ -1965,7 +2178,13 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   const net_finance = qloanamount + (qinsuranceplan ?? 0)
                   // const resultTerm = await lastValueFrom(this.masterDataService.getTermNew(`01`, qsizemodel, qrate, net_finance, '001'))
-                  const resultTerm = await lastValueFrom(this.masterDataService.getTermNew(`01`, qsizemodel, qrate, net_finance, qbussinesscode))
+                  const resultTerm = await lastValueFrom(this.masterDataService.getTermNew(
+                    qproductcode, /* .. ให้ qproductcode แทน fixed data ใน solarcell update (20/02/2025) .. */ // `01`,
+                    qsizemodel,
+                    qrate,
+                    net_finance,
+                    qbussinesscode
+                  ))
 
                   let netfinance;
                   if (qisincludealoneamount) {
@@ -1980,8 +2199,24 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
                   // ***==== Car Brand ====***
 
                   // === map api with return value ====
-                  this.brandList = res[2].data
-                  this.modelList = res[3].data
+
+                  /* .. w8 for change login (solar) (14/02/2025) .. */
+                  /* ... เปลี่ยนการ stamp master data ลง temp ก่อนแล้วค่อย filter เอาโดยใช้ pro_code (qproductcode) ... */
+                  this.tempBrandList = res[2].data
+                  this.tempModelList = res[3].data
+
+                  // this.brandList = res[2].data
+                  // this.modelList = res[3].data
+
+                  /* .. set value of BrandList with filter here (20/02/2025) .. */
+                  this.brandList = this.tempBrandList
+                    .filter((item) => { return item.pro_code === qproductcode })
+                    .sort((a, b) => (a.brand_code > b.brand_code ? 1 : -1));
+
+                  /* .. set value of modelList with filter here (20/02/2025) .. */
+                  this.modelList = this.tempModelList
+                    .filter((item) => { return item.pro_code === qproductcode })
+                    .sort((a, b) => (a.model_code > b.model_code ? 1 : -1));
 
 
                   // === set model select 
@@ -2108,6 +2343,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
                   // === stamp value to field ==== 
                   this.productForm.controls.detailForm.controls.bussinessCode.setValue(qbussinesscode, { emitEvent: false })
+                  /* .. stamp product_code to form (solarcell) (20/02/2025) .. */
+                  this.productForm.controls.detailForm.controls.product_code.setValue(qproductcode, { emitEvent: false })
                   this.productForm.controls.detailForm.controls.dealerCode.setValue(qdealercode, { emitEvent: false })
                   this.dealerSelectText = of(this.getDealerNamebyCode(qdealercode, this.dealerList))
                   this.productForm.controls.detailForm.controls.carBrandField.setValue(qcarbrandcode, { emitEvent: false }); /// investigate on 13/03/2023
@@ -2273,6 +2510,8 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
 
   showlistInsurancePlan() {
+
+
     const modelValue = this.productForm.controls.detailForm.controls.carModelField.value
     const isrYerarselect = this.productForm.controls.detailForm.controls.insurerCodeField.value
     if (modelValue && isrYerarselect) {
@@ -2305,19 +2544,23 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
     const chkrequireregmile =
       (
-        bussinessCode === '001' || (['002'].includes(bussinessCode ? bussinessCode : '') && regMile) ||
-        ((['003'].includes(bussinessCode ? bussinessCode : '') &&
-          regMile &&
-          modelYear &&
-          cc &&
-          regNo &&
-          regDate &&
-          provCode &&
-          engineNo &&
-          engineNoRunning &&
-          chassisNo &&
-          chasssisNoRunning
-        ))
+        (bussinessCode === '001' || '007' /* .. ในกรณีเป็น solarcell ไม่ต้องมีค่าพวก fiedl ของรถมือสอง ... */) ||
+        (['002'].includes(bussinessCode ? bussinessCode : '') && regMile) ||
+        (
+          (
+            ['003'].includes(bussinessCode ? bussinessCode : '') &&
+            regMile &&
+            modelYear &&
+            cc &&
+            regNo &&
+            regDate &&
+            provCode &&
+            engineNo &&
+            engineNoRunning &&
+            chassisNo &&
+            chasssisNoRunning
+          )
+        )
       ) ? true : false;
 
     if (
@@ -2325,7 +2568,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       this.productForm.controls.detailForm.controls.interestRateField.value &&
       this.productForm.controls.detailForm.controls.paymentRoundCountValueField.value &&
       this.productForm.controls.detailForm.controls.loanAmountField.value &&
-      this.productForm.controls.detailForm.controls.insurerCodeField.value &&
+      (this.productForm.controls.detailForm.controls.insurerCodeField.value || bussinessCode === '007') &&
       chkrequireregmile
     ) {
       this.lockbtncalculate$.next(false)
@@ -2333,7 +2576,6 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
     else {
       // === clear payment value when condition out match ===
       this.lockbtncalculate$.next(true)
-      // console.log('975')
       this.productForm.controls.detailForm.controls.paymentValueField.setValue(null, { emitEvent: false })
       this.paymentvalue$.next(0);
       this.out_stand = 0
@@ -2345,11 +2587,23 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
     this.loadingService.showLoader()
 
-    if (
-      this.productForm.controls.detailForm.controls.interestRateField.value && // อัตราดอกเบี้ย
-      this.productForm.controls.detailForm.controls.loanAmountField.value && // ยอดกู้
-      this.productForm.controls.detailForm.controls.insuranceYearField.value  // จำนวนปี (ประกัน)
-    ) {
+    /* ... กรณีเป็น business_code === '007' ไม่จำเป็นต้องกรอก insuranceYearField .. */
+    const busi_code = this.detailForm.controls.bussinessCode.value ?? ``
+
+    const valid =
+      (busi_code !== `007` && (
+        this.productForm.controls.detailForm.controls.interestRateField.value && // อัตราดอกเบี้ย
+        this.productForm.controls.detailForm.controls.loanAmountField.value && // ยอดกู้
+        this.productForm.controls.detailForm.controls.insuranceYearField.value) // จำนวนปี (ประกัน)
+      ) ||
+      (
+        busi_code === `007` && (
+          this.productForm.controls.detailForm.controls.interestRateField.value && // อัตราดอกเบี้ย
+          this.productForm.controls.detailForm.controls.loanAmountField.value // ยอดกู้
+        )
+      )
+
+    if (valid) {
       const size_model = this.productForm.controls.detailForm.controls.sizeModelField.value ? this.productForm.controls.detailForm.controls.sizeModelField.value : ''
       const rate = this.productForm.controls.detailForm.controls.interestRateField.value
 
@@ -2357,7 +2611,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       // === create net_finance ===
       let netfinance;
       const isincludeloanamount = this.productForm.controls.detailForm.controls.isincludeloanamount.value
-      const paymentvalue = this.productForm.controls.detailForm.controls.loanAmountField.value
+      const paymentvalue = this.productForm.controls.detailForm.controls.loanAmountField.value ?? 0 // ให้เป็น 0 กรณีไม่ได้เลือกประกันมาใน case solcarcell (14/02/2025)
       const insuranceplan = (this.productForm.controls.detailForm.controls.insurancePlanPriceField.value ?? 0)
       const busicode = this.productForm.controls.detailForm.controls.bussinessCode.value ?? ''
 
@@ -2366,35 +2620,43 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       } else {
         netfinance = paymentvalue
       }
-      // this.masterDataService.getTermNew('01', size_model, rate, netfinance, '001').subscribe((resPayment) => {
-      this.masterDataService.getTermNew('01', size_model, rate, netfinance, busicode).subscribe((resPayment) => {
-        // === manage data here ===
-        this.loadingService.hideLoader()
 
-        this.paymentCountSelect = resPayment.data
-        this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable({ emitEvent: false });
+      /* ... check rate must not null .. */
+      if (rate) {
+        /*.. หลังจาก solarcell update ให้ใช้ pro_code จากค่าจริงแทน fixed value (14/02/2025) .. */
+        const pro_code = this.detailForm.controls.product_code.value ?? ``
+        this.masterDataService.getTermNew(pro_code, size_model, rate, netfinance, busicode).subscribe((resPayment) => {
+          // === manage data here ===
+          this.loadingService.hideLoader()
 
-        // === check payment count round value is include in parameter GetTermNew ====
+          this.paymentCountSelect = resPayment.data
+          this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable({ emitEvent: false });
 
-        const currentPaymentRoundCountValue = this.detailForm.controls.paymentRoundCountValueField.value ?? null
+          // === check payment count round value is include in parameter GetTermNew ====
 
-        if (currentPaymentRoundCountValue) {
+          const currentPaymentRoundCountValue = this.detailForm.controls.paymentRoundCountValueField.value ?? null
 
-          if (resPayment.data.some((d) => d.term === currentPaymentRoundCountValue)) {
-            this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(this.quotationdatatemp.data[0].cd_payment_round_count, { emitEvent: false })
+          if (currentPaymentRoundCountValue) {
+
+            if (resPayment.data.some((d) => d.term === currentPaymentRoundCountValue)) {
+              this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(this.quotationdatatemp.data[0].cd_payment_round_count, { emitEvent: false })
+            } else {
+              this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
+            }
           } else {
             this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
           }
-        } else {
-          this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(null, { emitEvent: false })
-        }
 
-        // === lock when have application_no ===
-        if (this.quotationdatatemp.data[0].application_num) {
-          // this.productForm.controls.detailForm.controls.paymentRoundCountValueField.disable();
-        }
+          // === lock when have application_no ===
+          if (this.quotationdatatemp.data[0].application_num) {
+            // this.productForm.controls.detailForm.controls.paymentRoundCountValueField.disable();
+          }
 
-      })
+        })
+      } else {
+        this.loadingService.hideLoader()
+        this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(undefined, { emitEvent: false });
+      }
     } else {
       this.loadingService.hideLoader()
       this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(undefined, { emitEvent: false });
@@ -2441,12 +2703,32 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
 
   async checkvalidpaymentandpaymentcalculateauto() {
 
+    /* ... ในกรณีเป็น businesse_code === '007' ไม่ได้ require insuranceyearField เปลี่ยน logic (solarcell) (20/02/2025) .. */
+    /* ... กรณีเป็น business_code === '007' ไม่จำเป็นต้องกรอก insuranceYearField .. */
+
+    const busi_code = this.detailForm.controls.bussinessCode.value ?? ``
+    const product_code = this.detailForm.controls.product_code.value ?? ``
+    const valid =
+      (
+        (
+          busi_code !== `007` &&
+          (
+            this.productForm.controls.detailForm.controls.interestRateField.value && // อัตราดอกเบี้ย
+            this.productForm.controls.detailForm.controls.loanAmountField.value && // ยอดกู้
+            this.productForm.controls.detailForm.controls.insuranceYearField.value  // จำนวนปี (ประกัน)
+          )
+        ) ||
+        (
+          busi_code === `007` &&
+          (
+            this.productForm.controls.detailForm.controls.interestRateField.value && // อัตราดอกเบี้ย
+            this.productForm.controls.detailForm.controls.loanAmountField.value // ยอดกู้
+          )
+        )
+      )
+
     this.loadingService.showLoader()
-    if (
-      this.productForm.controls.detailForm.controls.interestRateField.value && // อัตราดอกเบี้ย
-      this.productForm.controls.detailForm.controls.loanAmountField.value && // ยอดกู้
-      this.productForm.controls.detailForm.controls.insuranceYearField.value  // จำนวนปี (ประกัน)
-    ) {
+    if (valid) {
       const size_model = this.productForm.controls.detailForm.controls.sizeModelField.value ? this.productForm.controls.detailForm.controls.sizeModelField.value : ''
       const rate = this.productForm.controls.detailForm.controls.interestRateField.value
 
@@ -2454,7 +2736,7 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       // === create net_finance ===
       let netfinance;
       const isincludeloanamount = this.productForm.controls.detailForm.controls.isincludeloanamount.value
-      const paymentvalue = this.productForm.controls.detailForm.controls.loanAmountField.value
+      const paymentvalue = this.productForm.controls.detailForm.controls.loanAmountField.value ?? 0 // ให้เป็น 0 กรณีไม่ได้เลือกประกันมาใน case solcarcell (14/02/2025)
       const insuranceplan = (this.productForm.controls.detailForm.controls.insurancePlanPriceField.value ?? 0)
       const busicode = this.productForm.controls.detailForm.controls.bussinessCode.value ?? ''
 
@@ -2463,30 +2745,42 @@ export class ProductDetailTabComponent extends BaseService implements OnInit, Af
       } else {
         netfinance = paymentvalue
       }
-      this.masterDataService.getTermNew('01', size_model, rate, netfinance, busicode).subscribe((resPayment) => {
-        // === manage data here ===
-        this.loadingService.hideLoader()
+      /* ... check rate must not null .. */
+      if (rate) {
+        this.masterDataService.getTermNew(
+          product_code, /* .. ให้ qproductcode แทน fixed data ใน solarcell update (20/02/2025) .. */ // `01`,
+          size_model,
+          rate,
+          netfinance,
+          busicode
+        ).subscribe((resPayment) => {
+          // === manage data here ===
+          this.loadingService.hideLoader()
 
-        this.paymentCountSelect = resPayment.data
+          this.paymentCountSelect = resPayment.data
 
 
-        // === *** extra add on for disalbe paymentRoundCountValue (เพิ่มเงื่่อนไขพิเศษในการ lock field จำนวนงวด เนื่องจาก trigger และ condition เยอะ) *** ===
-        if (this.quotationdatatemp.data) {
-          if (this.quotationdatatemp.data[0].quo_status === 1) {
-          } else {
-            this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable({ emitEvent: false });
+          // === *** extra add on for disalbe paymentRoundCountValue (เพิ่มเงื่่อนไขพิเศษในการ lock field จำนวนงวด เนื่องจาก trigger และ condition เยอะ) *** ===
+          if (this.quotationdatatemp.data) {
+            if (this.quotationdatatemp.data[0].quo_status === 1) {
+            } else {
+              this.productForm.controls.detailForm.controls.paymentRoundCountValueField.enable({ emitEvent: false });
+            }
           }
-        }
 
-        // ===========================================================================================================================================
+          // ===========================================================================================================================================
 
-        if (this.quotationdatatemp.data[0].cd_payment_round_count) {
-          this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue((this.quotationdatatemp.data[0].cd_payment_round_count ? this.quotationdatatemp.data[0].cd_payment_round_count : null), { emitEvent: false })
-        }
+          if (this.quotationdatatemp.data[0].cd_payment_round_count) {
+            this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue((this.quotationdatatemp.data[0].cd_payment_round_count ? this.quotationdatatemp.data[0].cd_payment_round_count : null), { emitEvent: false })
+          }
 
-        // === lock when have application_no ===
+          // === lock when have application_no ===
 
-      })
+        })
+      } else {
+        this.loadingService.hideLoader()
+        this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(undefined, { emitEvent: false });
+      }
     } else {
       this.loadingService.hideLoader()
       this.productForm.controls.detailForm.controls.paymentRoundCountValueField.setValue(undefined, { emitEvent: false });

@@ -46,7 +46,7 @@
                         </mat-grid-tile>
                         <mat-grid-tile [colspan]="layout.list.cols6" *ngIf="show2ndHandMPLSBtn">
                             <!-- ปุ่มค้นหารถมือสอง (MPLUS) (Bussiness code === '002') -->
-                            <button mat-raised-button color="primary" style="width: 50%;"
+                            <button mat-flat-button color="primary" style="width: 50%;"
                                 (click)="onclick2ndhandSearchBtn()">
                                 ค้นหาเลขทะเบียน
                             </button>
@@ -424,7 +424,7 @@
             <!-- <div class=flex-center> -->
             <div class="flexbox-col">
                 <div *ngIf="is_edit">
-                    <button mat-raised-button color="primary" (click)="onbtnpaymentcalculate()"
+                    <button mat-flat-button color="primary" (click)="onbtnpaymentcalculate()"
                         [disabled]="(lockbtncalculate$ | async)"> คำนวณค่างวด </button>
                 </div>
                 <div *ngIf="showPrice" hidden>

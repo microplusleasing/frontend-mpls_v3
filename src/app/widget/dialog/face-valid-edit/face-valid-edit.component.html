@@ -32,14 +32,14 @@
                     <img style="max-height: 400px; max-width: 400px;" [src]="this.photofaceimageurl">
                 </div>
                 <div>
-                    <button mat-raised-button color="primary" (click)="takefile.click()">
+                    <button mat-flat-button color="primary" (click)="takefile.click()">
                         อัพโหลดภาพถ่ายเปรียบเทียบภาพหน้าลูกค้า
                     </button>
                 </div>
                 <input #takefile (change)="attachphotofaceimage($event)" type="file" accept="image/jpeg"
                     capture="environment" style="visibility: hidden;" />
                 <div>
-                    <button mat-raised-button color="primary" 
+                    <button mat-flat-button color="primary" 
                     [disabled]="!editfacecompareimageform.valid"
                     (click)="OnClickUploadfacecompareimage()">
                         ยืนยันการอัพโหลดภาพ

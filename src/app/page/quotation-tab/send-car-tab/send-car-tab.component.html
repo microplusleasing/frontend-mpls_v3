@@ -12,7 +12,7 @@
                     <canvas #signaturePad id="signature-pad" width="700" height="200"></canvas>
                     <br>
                     <div class="clear-btn-container">
-                        <button mat-raised-button color="primary" (click)="clearCanvas()"
+                        <button mat-flat-button color="primary" (click)="clearCanvas()"
                             style="margin-bottom: 1em;">เซ็นต์ใหม่</button>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                             <button [disabled]="
                             !(firstimageattach && 
                             ((firstimageattach | async) !== '/assets/image/placeholder-image.png'
-                            )) " mat-raised-button color="primary" type="button" (click)="onNextStep()">ต่อไป</button>
+                            )) " mat-flat-button color="primary" type="button" (click)="onNextStep()">ต่อไป</button>
                         </div>
 
                     </mat-tab>
@@ -145,7 +145,7 @@
                                 </mat-form-field>
                             </div>
 
-                            <button mat-raised-button color="primary" [disabled]="
+                            <button mat-flat-button color="primary" [disabled]="
                                 !(sendcarForm.controls.livingAddress_subDistrict.value &&
                                 sendcarForm.controls.livingAddress_district.value &&
                                 sendcarForm.controls.livingAddress_provinceName.value &&
@@ -233,7 +233,7 @@
             </div>
 
             <div class="col-md-12 mt-4" *ngIf="(allowedit$ | async)" style="margin-top: 1em;">
-                <button mat-raised-button class=btnsubmit color="primary" [disabled]="!(this.sendcarForm.valid
+                <button mat-flat-button class=btnsubmit color="primary" [disabled]="!(this.sendcarForm.valid
                  && this.loyaltychild.loyaltyform.valid)" (click)="uploaddeliverapproveimg()"
                     >ยืนยันข้อมูล</button>
             </div>

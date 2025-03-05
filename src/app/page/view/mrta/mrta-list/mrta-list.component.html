@@ -44,7 +44,7 @@
                     </mat-grid-tile>
                     <mat-grid-tile [colspan]="layout.list.maxcols">
                         <div class="col text-center">
-                            <button mat-raised-button color="primary" (click)="onsearch()" [disabled]="!mrtaform.valid">
+                            <button mat-flat-button color="primary" (click)="onsearch()" [disabled]="!mrtaform.valid">
                                 <span>ค้นหา</span>
                                 <mat-icon>search</mat-icon>
                             </button>
@@ -87,7 +87,7 @@
                     <ng-container matColumnDef="btnClick">
                         <th mat-header-cell *matHeaderCellDef [style.background-color]="headercolor"> </th>
                         <td mat-cell *matCellDef="let element">
-                            <button mat-raised-button color="primary"
+                            <button mat-flat-button color="primary"
                                 (click)="onclickcustomer(element.application_num)">
                                 ขายประกัน mrta
                             </button>
@@ -114,7 +114,7 @@
         <div *ngIf="showwarning" style="text-align: center;">
             <h2>{{textrows}}</h2>
             <br>
-            <button mat-raised-button color="primary" (click)="closedialogclick()">
+            <button mat-flat-button color="primary" (click)="closedialogclick()">
                 ปิด
             </button>
         </div>

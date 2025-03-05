@@ -41,7 +41,7 @@
                 </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile [colspan]="layout.list.cols3">
-                <button mat-raised-button color="primary" (click)="opengooglemap()" >
+                <button mat-flat-button color="primary" (click)="opengooglemap()" >
                     เปิด Google
                     map</button>
             </mat-grid-tile>
@@ -65,7 +65,7 @@
             </mat-grid-tile>
 
             <mat-grid-tile [colspan]="layout.list.maxcols">
-                <button mat-raised-button color="primary" (click)="onClickCreateLivingPlaceBtn()"
+                <button mat-flat-button color="primary" (click)="onClickCreateLivingPlaceBtn()"
                     [disabled]="!this.living_address.valid">ยืนยัน</button>
             </mat-grid-tile>
         </mat-grid-list>

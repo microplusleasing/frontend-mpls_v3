@@ -35,7 +35,7 @@
         </mat-grid-list>
         <mat-grid-list [cols]="layout.columns" [rowHeight]="'100px'">
             <mat-grid-tile [colspan]="layout.list.maxcols">
-                <button mat-raised-button color="primary" (click)="uploadbypassimage()" type="submit"
+                <button mat-flat-button color="primary" (click)="uploadbypassimage()" type="submit"
                     [disabled]="!this.bypassSigForm.valid" style="width: 80%;">Upload image</button>
             </mat-grid-tile>
         </mat-grid-list>
@@ -74,7 +74,7 @@
                 </mat-card>
             </div>
             <div class="col-md-12">
-                <button class="mt-4 mb-4" mat-raised-button color="primary" (click)="uploadbypassimage()" type="submit"
+                <button class="mt-4 mb-4" mat-flat-button color="primary" (click)="uploadbypassimage()" type="submit"
                     [disabled]="!this.bypassSigForm.valid" style="width: 100%;">Upload image</button>
             </div>
         </div>

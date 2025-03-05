@@ -19,7 +19,7 @@
                 </mat-grid-tile>
                 <mat-grid-tile [colspan]="layout.list.maxcols">
                     <div class="col text-center">
-                        <button mat-raised-button color="primary" (click)="onSearchSecondHandCar()"
+                        <button mat-flat-button color="primary" (click)="onSearchSecondHandCar()"
                             [disabled]="!secondhandcarForm.valid">
                             <span>ค้นหา</span>
                             <mat-icon>search</mat-icon>
@@ -98,7 +98,7 @@
 
             <!-- ปุ่มยืนยัน -->
             <div style="text-align: center;">
-                <button mat-raised-button color="primary" [disabled]="!confirmbtn"
+                <button mat-flat-button color="primary" [disabled]="!confirmbtn"
                     (click)="confirmCarSeclect()">ยืนยันรถ</button>
             </div>
 

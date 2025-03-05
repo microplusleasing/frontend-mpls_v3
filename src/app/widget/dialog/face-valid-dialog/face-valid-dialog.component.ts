@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { forkJoin, lastValueFrom, Observable, of } from 'rxjs';
@@ -22,6 +22,8 @@ import { HttpErrorResponse } from '@angular/common/http';
     standalone: false
 })
 export class FaceValidDialogComponent extends BaseService implements OnInit {
+
+  dialogRef = inject(MatDialogRef);
 
   file1: string;
   file2: string;
@@ -70,10 +72,15 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
     private ImageUtilService: ImageUtilService,
     public override _snackBar: MatSnackBar,
     public override dialog: MatDialog,
-    public dialogRef: MatDialogRef<FaceValidDialogComponent>,
+    // public dialogRef: MatDialogRef<FaceValidDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: IDialogFaceValid
   ) {
     super(dialog, _snackBar)
+
+    /* .. set size of angular material dialog version 19 ..  (05/03/2025) .. */
+
+    this.dialogRef.updateSize(`80%`, `90%`)
+
     this.file1 = ''
     this.file2 = ''
     this.imageurl1 = ''
@@ -81,9 +88,9 @@ export class FaceValidDialogComponent extends BaseService implements OnInit {
     this.errmsg = ''
     this.resultfacecompareError = ''
 
-    dialogRef.backdropClick().subscribe(() => {
+    this.dialogRef.backdropClick().subscribe(() => {
       // Close the dialog
-      dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
+      this.dialogRef.close({ status: this.isfacevalid, settextstatus: this.settextstatus });
     })
 
     this.facevalidform.controls.result.valueChanges.subscribe((value) => {

@@ -14,7 +14,7 @@
               <input matInput [formControl]="phone_number">
             </mat-form-field><br>
             <h3>{{_createotpResMsg}}</h3>
-            <button mat-raised-button color="primary"
+            <button mat-flat-button color="primary"
               (click)="createoptphonevalid()" type="submit">ยืนยันเบอร์โทรศัพท์ถูกต้อง</button>
           </div>
         </div>
@@ -26,7 +26,7 @@
             <mat-label>กรอกเลข OTP</mat-label>
             <ng-otp-input [formCtrl]="otp_value" [config]="{length:6, allowNumbersOnly: true}" style="margin-top: 1em;"></ng-otp-input><br>
             <h3>{{_validationResMsg}}</h3>
-            <button mat-raised-button color="primary" (click)="activateotpphone()" type="submit"> ยืนยัน OTP</button>
+            <button mat-flat-button color="primary" (click)="activateotpphone()" type="submit"> ยืนยัน OTP</button>
           </div>
         </div>
       </mat-step>
@@ -40,6 +40,6 @@
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-raised-button [mat-dialog-close]="true" color="primary"
+  <button mat-flat-button [mat-dialog-close]="true" color="primary"
     (click)="closeDialog()">{{data.button_name}}</button>
 </div>

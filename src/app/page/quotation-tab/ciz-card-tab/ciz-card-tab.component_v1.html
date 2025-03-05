@@ -2,17 +2,17 @@
   <form [formGroup]="cizForm">
     <div [formGroup]="maincitizenForm">
       <div class="flexbox">
-        <button mat-raised-button color="primary" (click)="onClickDipchipBtn()" *ngIf="this.showdipchipbtn"
+        <button mat-flat-button color="primary" (click)="onClickDipchipBtn()" *ngIf="this.showdipchipbtn"
           [disabled]="dipchipButtonDisabled">Dipchip</button>
       </div>
       <div class="flex-image-header" style="margin-bottom: 1.5em;">
         <div>
           <img [src]="cizCardImage" class="img-box"><br>
           <span style="color: red;">{{this.quotationService.dopastatus.messageheader}}</span><br>
-          <button mat-raised-button color="primary" (click)="onClickFacecompareBtn()">เปรียบเทียบใบหน้า</button>
+          <button mat-flat-button color="primary" (click)="onClickFacecompareBtn()">เปรียบเทียบใบหน้า</button>
 
           @if (this.userSession.RADMIN == 'Y') {
-          <button style="margin-left: 2em;" mat-raised-button color="primary"
+          <button style="margin-left: 2em;" mat-flat-button color="primary"
             (click)="onClickEditFacecompareImage()">แก้ไข/upload ภาพ</button>
           }
 
@@ -272,7 +272,7 @@
       <div class="ciz-tab-header-left">
         ที่อยู่ปัจจุบัน
       </div>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+      <button style="margin-bottom: 1rem;" [disabled]="lockallbtn" class="button-mapping" mat-flat-button color="primary"
         (click)="sameCitizenAddress('living')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับบัตรปชช.
@@ -312,7 +312,7 @@
         </mat-form-field>
       </div>
 
-      <button [disabled]="lockallbtn" mat-raised-button color="primary" (click)="opengooglemap()">เปิด Google
+      <button style="margin-bottom: 1em;" [disabled]="lockallbtn" mat-flat-button color="primary" (click)="opengooglemap()">เปิด Google
         map</button>
 
       <div class="flexbox">
@@ -340,12 +340,12 @@
       <div class="ciz-tab-header-left">
         ที่อยู่ส่งจดหมาย
       </div>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+      <button style="margin-bottom: 1em;" [disabled]="lockallbtn" class="button-mapping" mat-flat-button color="primary"
         (click)="sameCitizenAddress('contact')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับบัตรปชช.
       </button>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+      <button style="margin-bottom: 1em;" [disabled]="lockallbtn" class="button-mapping" mat-flat-button color="primary"
         (click)="samelivinAddress('contact')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ปัจจุบัน
@@ -393,17 +393,17 @@
       <div class="ciz-tab-header-left">
         ที่อยู่ตามทะเบียนบ้าน
       </div>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+      <button style="margin-bottom: 1em;" [disabled]="lockallbtn" class="button-mapping" mat-flat-button color="primary"
         (click)="sameCitizenAddress('houseregis')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับบัตรปชช.
       </button>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+      <button style="margin-bottom: 1em;" [disabled]="lockallbtn" class="button-mapping" mat-flat-button color="primary"
         (click)="samelivinAddress('houseregis')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ปัจจุบัน
       </button>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+      <button style="margin-bottom: 1em;" [disabled]="lockallbtn" class="button-mapping" mat-flat-button color="primary"
         (click)="samecontactAddress('houseregis')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ส่งจดหมาย
@@ -451,17 +451,17 @@
       <div class="ciz-tab-header-left">
         ที่อยู่ที่ทำงาน
       </div>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+      <button style="margin-bottom: 1em;" [disabled]="lockallbtn" class="button-mapping" mat-flat-button color="primary"
         (click)="sameCitizenAddress('work')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับบัตรปชช.
       </button>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+      <button style="margin-bottom: 1em;" [disabled]="lockallbtn" class="button-mapping" mat-flat-button color="primary"
         (click)="samelivinAddress('work')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ปัจจุบัน
       </button>
-      <button [disabled]="lockallbtn" class="button-mapping" mat-raised-button color="primary"
+      <button style="margin-bottom: 1em;" [disabled]="lockallbtn" class="button-mapping" mat-flat-button color="primary"
         (click)="samecontactAddress('work')">
         <mat-icon>file_upload</mat-icon>
         ใช้ที่อยู่เดียวกับที่อยู่ส่งจดหมาย

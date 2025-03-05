@@ -863,8 +863,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     if (!this.cizcardtab.cizForm.dirty) {
       if (this.quoid) {
         this.dialog.open(FaceValidDialogComponent, {
-          width: `80%`,
-          height: `90%`,
+          // width: `80%`,
+          // height: `90%`,
           data: {
             quotationid: `${this.quoid}`,
           }
@@ -1164,8 +1164,6 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
     // *** requirent on 20/04/2023 ****
     this.dialog.open(EConsentImageDialogComponent, {
       panelClass: 'custom-dialog-header',
-      width: `80%`,
-      height: `90%`,
       data: {
         quotationid: this.quoid
       }

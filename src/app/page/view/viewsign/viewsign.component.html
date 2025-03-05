@@ -105,7 +105,7 @@
             </mat-grid-tile>
             <mat-grid-tile style="text-align: center;" [colspan]="layout.list.maxcols"
                 *ngIf="(letverify$ | async) && !(this.alreadyverify$ | async)">
-                <button mat-raised-button color="primary" (click)="onclickbtn()"
+                <button mat-flat-button color="primary" (click)="onclickbtn()"
                     [disabled]="!((this.viewsignForm.valid) && !(this.alreadyverify$ | async))">ยืนยัน</button>
             </mat-grid-tile>
             <mat-grid-tile style="text-align: center;" [colspan]="layout.list.maxcols" *ngIf="(iserr$ | async)">

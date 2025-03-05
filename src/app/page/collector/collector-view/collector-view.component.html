@@ -128,10 +128,10 @@
             <mat-grid-list [cols]="layout.columns" [rowHeight]="'100px'">
                 <mat-grid-tile [colspan]="layout.list.maxcols">
                     <div class="wrapper">
-                        <button mat-raised-button color="primary" (disabled)="negoForm.valid === false"
+                        <button mat-flat-button color="primary" (disabled)="negoForm.valid === false"
                             (click)="onsearch()" class="center-button"
                             style="width: 40%; min-width: 100px;">ค้นหา</button>
-                        <button mat-raised-button color="primary" (click)="onclear()" class="center-button"
+                        <button mat-flat-button color="primary" (click)="onclear()" class="center-button"
                             style="width: 40%; min-width: 100px;">Clear</button>
                     </div>
                 </mat-grid-tile>
@@ -176,7 +176,7 @@
                             <mat-card-content>
                                 สถานะการตรวจสภาพรถ : {{item[i].details ? item[i].details : ' - ' }}
                             </mat-card-content>
-                            <!-- <button mat-raised-button color="primary" style="font-size: 12;">
+                            <!-- <button mat-flat-button color="primary" style="font-size: 12;">
                                     ดูข้อมูล...
                                 </button> -->
                             <mat-card-content>

@@ -63,7 +63,7 @@ import { ControlService } from 'src/app/service/control.service';
 })
 export class QuotationDetailComponent extends BaseService implements OnInit {
 
-
+  version: string = `${environment.version}`
   @ViewChild('stepper') stepper!: MatStepper
   // === lay out ===
   // ** stepper **
@@ -968,7 +968,8 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
       cizcardImage: this.cizcardtab.cizCardImage_string ? this.cizcardtab.cizCardImage_string : '',
       dipchipuuid: dipchipuuid ? dipchipuuid : '',
       nationality: '01',
-      identity: '01'
+      identity: '01',
+      client_version: this.version
     }
 
     const itemString = JSON.stringify(quotationdata)
@@ -1114,8 +1115,9 @@ export class QuotationDetailComponent extends BaseService implements OnInit {
 
       nationality: ciz_form.controls.maincitizenForm.controls.nationality.value ? ciz_form.controls.maincitizenForm.controls.nationality.value : '',
       identity: ciz_form.controls.maincitizenForm.controls.identity.value ? ciz_form.controls.maincitizenForm.controls.identity.value : '',
-      passportid: ciz_form.controls.maincitizenForm.controls.passportId.value ? ciz_form.controls.maincitizenForm.controls.passportId.value : ''
-
+      passportid: ciz_form.controls.maincitizenForm.controls.passportId.value ? ciz_form.controls.maincitizenForm.controls.passportId.value : '',
+      /* ... add version to mpls_quotation to check cache version (12/06/2025) ... */
+      client_version: this.version
     }
 
     const itemString = JSON.stringify(quotationdata)

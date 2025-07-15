@@ -35,6 +35,7 @@ import { environment } from 'src/environments/environment';
 })
 export class CizCardTabComponent extends BaseService implements OnInit, AfterViewInit {
 
+  version: string = `${environment.version}`
   @Input() quotationReq = {} as Observable<IResQuotationDetail>;
   @Output() dipchipRes = new EventEmitter<IReqFlagDipchip>();
   @Output() facevalid = new EventEmitter();

@@ -84,7 +84,7 @@ export class AuthService {
     return this.http.post<IUserToken>(`${environment.httpheader}${environment.apiurl}${environment.apiportsign}${environment.apiport}/loginuser`, data)
       .pipe(map(user => {
         // store user details and jwt token in local storage to keep user logged in between page refreshes
-        if (user.status == 200) {
+        if (user.status === 200) {
           localStorage.setItem('currentUser', JSON.stringify(user));
           localStorage.removeItem('agentcurrentUser');
         }

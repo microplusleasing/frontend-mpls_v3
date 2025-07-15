@@ -1,5 +1,5 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { BehaviorSubject, map } from 'rxjs';
 import { IDialogEConsentImage } from 'src/app/interface/i-dialog-e-consent-image';
@@ -8,11 +8,14 @@ import { LoadingService } from 'src/app/service/loading.service';
 import { QuotationService } from 'src/app/service/quotation.service';
 
 @Component({
-  selector: 'app-e-consent-image-dialog',
-  templateUrl: './e-consent-image-dialog.component.html',
-  styleUrls: ['./e-consent-image-dialog.component.scss']
+    selector: 'app-e-consent-image-dialog',
+    templateUrl: './e-consent-image-dialog.component.html',
+    styleUrls: ['./e-consent-image-dialog.component.scss'],
+    standalone: false
 })
 export class EConsentImageDialogComponent implements OnInit {
+
+  dialogRef = inject(MatDialogRef)
 
   nullquotation_txt: string = ''
   econsentimage$ = new BehaviorSubject<string>('')
@@ -39,9 +42,10 @@ export class EConsentImageDialogComponent implements OnInit {
     private loadingService: LoadingService,
     public quotationService: QuotationService,
     private breakpointObserver: BreakpointObserver,
-    public dialogRef: MatDialogRef<EConsentImageDialogComponent>,
+    // public dialogRef: MatDialogRef<EConsentImageDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: IDialogEConsentImage,
   ) {
+    this.dialogRef.updateSize(`80%`, `90%`)
     this.econsentimage$.next('/assets/image/placeholder-image.png')
   }
 
@@ -50,9 +54,9 @@ export class EConsentImageDialogComponent implements OnInit {
     // **** check quotation param ****
 
     if (
-      this.data.quotationid == null ||
-      this.data.quotationid == '' ||
-      this.data.quotationid == undefined
+      this.data.quotationid === null ||
+      this.data.quotationid === '' ||
+      this.data.quotationid === undefined
     ) {
       this.nullquotation_txt = `ไม่พบเลข quotationid`
     } else {

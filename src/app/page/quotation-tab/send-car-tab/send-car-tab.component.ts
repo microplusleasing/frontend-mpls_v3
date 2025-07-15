@@ -21,9 +21,10 @@ import { MainDialogComponent } from 'src/app/widget/dialog/main-dialog/main-dial
 import { LoyaltyConsentComponent } from '../signature-tab/consent/loyalty-consent/loyalty-consent.component';
 
 @Component({
-  selector: 'app-send-car-tab',
-  templateUrl: './send-car-tab.component.html',
-  styleUrls: ['./send-car-tab.component.scss']
+    selector: 'app-send-car-tab',
+    templateUrl: './send-car-tab.component.html',
+    styleUrls: ['./send-car-tab.component.scss'],
+    standalone: false
 })
 export class SendCarTabComponent extends BaseService implements OnInit {
 
@@ -191,7 +192,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
               if (this.quotationresultData.data[0].application_num) {
                 this.quotationService.getinsurancedetailbyid(this.quotationresultData.data[0].application_num).subscribe({
                   next: (result) => {
-                    if (result.status == 200) {
+                    if (result.status === 200) {
                       this.insurancedetailData = result
 
                       // === set parameter loyalty consent value === 
@@ -211,7 +212,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
 
                 const checkmrtarecent = await lastValueFrom(this.masterDataService.checkmrtarecent(this.quotationresultData.data[0].quo_key_app_id))
 
-                if (checkmrtarecent.status == 200) {
+                if (checkmrtarecent.status === 200) {
                   if (checkmrtarecent.data.length !== 0) {
                     const recentmrtavalue = checkmrtarecent.data[0]
                     this.pay_status = recentmrtavalue.pay_status
@@ -273,7 +274,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
 
     //     if (resQuo) {
     //       this.quotationresultData = resQuo
-    //       if (this.quotationresultData.status == 200) {
+    //       if (this.quotationresultData.status === 200) {
     //         // this.setquotationDatatoForm();
 
     //         // === set living address data record to form ==== 
@@ -296,7 +297,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
     //         if (this.quotationresultData.data[0].application_num) {
     //           this.quotationService.getinsurancedetailbyid(this.quotationresultData.data[0].application_num).subscribe({
     //             next: (result) => {
-    //               if (result.status == 200) {
+    //               if (result.status === 200) {
     //                 this.insurancedetailData = result
 
     //                 // === set parameter loyalty consent value === 
@@ -316,7 +317,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
 
     //           const checkmrtarecent = await lastValueFrom(this.masterDataService.checkmrtarecent(this.quotationresultData.data[0].quo_key_app_id))
 
-    //           if (checkmrtarecent.status == 200) {
+    //           if (checkmrtarecent.status === 200) {
     //             if (checkmrtarecent.data.length !== 0) {
     //               const recentmrtavalue = checkmrtarecent.data[0]
     //               this.pay_status = recentmrtavalue.pay_status
@@ -381,7 +382,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
   onStageChageFormStepper() {
 
     if (this.quotationresultData.data[0].quo_key_app_id) {
-      if (this.countload == 0) {
+      if (this.countload === 0) {
         const quotationid = this.quotationresultData.data[0].quo_key_app_id
         if (quotationid) {
           // === get deliver approve record === (api สำหรับแสดงรูปลายเซ็นคนที่ร้านและภาพรับรถลูกค้า)
@@ -391,7 +392,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
             next: (results) => {
               // console.log(`success check immage 14 , 15 `)
 
-              if (results.status == 200) {
+              if (results.status === 200) {
                 this.allowedit$.next(false)
                 this.setImagetodisplay(results.data)
                 this.sendcarForm.controls.dealerName.setValue(this.quotationresultData.data[0].dealer_signature_owner)
@@ -439,7 +440,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
               } else {
 
                 console.log(`no have data`)
-                if (this.userSession.RADMIN == 'Y') {
+                if (this.userSession.RADMIN === 'Y') {
                   this.showpage$.next(false)
                 }
               }
@@ -481,7 +482,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
   setquotationDatatoForm() {
     console.log(`this is quotation data from parent (sendCar): ${this.quotationresultData.data[0].first_name}`);
 
-    // === check status of quotaion (if loan_result == 'Y' send true back) === 
+    // === check status of quotaion (if loan_result === 'Y' send true back) === 
     if (this.quotationresultData.data[0].loan_result !== 'Y') {
       this.changeEvent.emit(false);
     }
@@ -573,7 +574,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
     this.quotationService.MPLS_create_send_car_deliver_and_loyalty_consent(fd).subscribe({
       next: (results) => {
         this.loadingService.hideLoader();
-        if (results.status == 200) {
+        if (results.status === 200) {
 
           this.snackbarsuccess(`ทำรายการสำเร็จ`);
           // === set stage to finish ==== 
@@ -654,9 +655,9 @@ export class SendCarTabComponent extends BaseService implements OnInit {
   }
 
   tabChange($event: any) {
-    if ($event.index == 1) {
+    if ($event.index === 1) {
       // === loyalty tab ===
-    } else if ($event.index == 3) {
+    } else if ($event.index === 3) {
       // === payment mrta select ===
       // *** trigger applicatin_num_qr value to gen advance-payment and total-loss-payment ****
       this.application_num_qr = this.quotationresultData.data[0].application_num
@@ -715,7 +716,7 @@ export class SendCarTabComponent extends BaseService implements OnInit {
     this._ireqsaveqrmrta.phone_number = this.quotationresultData.data[0].phone_number
 
     this.quotationService.saveqrpayment(this._ireqsaveqrmrta).subscribe((results) => {
-      if (results.status == 200) {
+      if (results.status === 200) {
         this.MRTAdata = mrtadataincludeapp
       }
     })

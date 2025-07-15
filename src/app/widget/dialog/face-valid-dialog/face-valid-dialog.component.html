@@ -1,101 +1,105 @@
-<div [formGroup]="facevalidform">
-    <div style="margin-top: 1em;">
-        <span>{{this.errmsg}}</span>
-    </div>
-    <div class="flex-image-header">
-        <div>
-            <div style="text-align: center;">
-                ภาพจาก dipchip
-            </div>
-            <br>
-            <div class="sp1em imgbox">
-                <img style="max-height: 400px;" [src]="this.imageurl1">
-            </div>
+<!-- header -->
+<div mat-dialog-title></div>
+<!-- content -->
+    <div mat-dialog-content [formGroup]="facevalidform">
+        <div style="margin-top: 1em;">
+            <span>{{this.errmsg}}</span>
         </div>
-        <div>
+        <div class="flex-image-header">
             <div>
                 <div style="text-align: center;">
-                    ภาพหน้าลูกค้า
-                    <br>
-                    <div class="sp1em imgbox">
-                        <img style="max-height: 400px;" [src]="this.imageurl2">
-                    </div><br>
-                    <div *ngIf="showuploadfaceimage && !isfacevalid && !ismanual">
+                    ภาพจาก dipchip
+                </div>
+                <br>
+                <div class="sp1em imgbox">
+                    <img style="max-height: 400px;" [src]="this.imageurl1">
+                </div>
+            </div>
+            <div>
+                <div>
+                    <div style="text-align: center;">
+                        ภาพหน้าลูกค้า
+                        <br>
+                        <div class="sp1em imgbox">
+                            <img style="max-height: 400px;" [src]="this.imageurl2">
+                        </div><br>
+                        <div *ngIf="showuploadfaceimage && !isfacevalid && !ismanual">
 
-                        <button mat-raised-button color="primary" class="button-upload" (click)="takefile.click();">
-                            <mat-icon>photo_camera</mat-icon>
-                            ถ่ายรูปหน้าลูกค้า
-                        </button>
+                            <button mat-flat-button color="primary" class="button-upload" (click)="takefile.click();">
+                                <mat-icon>photo_camera</mat-icon>
+                                ถ่ายรูปหน้าลูกค้า
+                            </button>
+                        </div>
+                        <br>
+                        <input #takefile (change)="attachfaceimage($event)" type="file" accept="image/jpeg"
+                            capture="environment" style="visibility: hidden;" />
                     </div>
-                    <br>
-                    <input #takefile (change)="attachfaceimage($event)" type="file" accept="image/jpeg"
-                        capture="environment" style="visibility: hidden;" />
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="flex-center" style="margin-top: 1em;">
+        <div class="flex-center" style="margin-top: 1em;">
 
-        <!-- Consent Detail -->
-        <div style="margin-top: 1em; max-width: 300px;" *ngIf="isfaceconsent">
-            <span>
-                ข้าพเจ้า ชื่อ {{firstName}} นามสกุล {{lastName}} <br>
-                เลขที่บัตรประชาชน {{idcard_num}} <br>
-                วันที่ในการให้ความยินยอม {{consentDate !== null ?
+            <!-- Consent Detail -->
+            <div style="margin-top: 1em; max-width: 300px;" *ngIf="isfaceconsent">
+                <span>
+                    ข้าพเจ้า ชื่อ {{firstName}} นามสกุล {{lastName}} <br>
+                    เลขที่บัตรประชาชน {{idcard_num}} <br>
+                    วันที่ในการให้ความยินยอม {{consentDate !== null ?
                     (consentDate | thaidate: 'main'): ''}} เวลา {{consentDate | date: 'HH:mm'}} <br>
-                ความยินยอมนี้จัดทำขึ้นด้วยความสมัครใจของข้าพเจ้า ยินยอมให้บริษัท ไมโครพลัสลิสซิ่ง จำกัด <br>
-                นำรูปภาพถ่ายหน้าของข้าพเจ้า จัดเก็บ วิเคราะห์ ใช้เพื่อประโยชน์ในการประกอบพิจารณาสินเชื่อ
-                ของบริษัท ไมโครพลัสสิสซิ่ง จำกัด
-            </span>
-        </div>
-        <div style="margin-top: 1em;" *ngIf="!ismanual">
-            <mat-radio-group [formControl]='consent' color="primary">
-                <mat-radio-button class="custom-radio-button" value="Y">ยินยอม</mat-radio-button>
-                <mat-radio-button class="custom-radio-button" value="N">ไม่ยินยอม</mat-radio-button>
-            </mat-radio-group>
-        </div>
-
-        <div style="margin-top: 2em;">
-            <span>ยืนยันบุคคลเดียวกัน</span>
-        </div>
-
-        <div style="margin-top: 1em;" *ngIf="!ismanual">
-            <mat-radio-group [formControl]='result' color="primary">
-                <mat-radio-button class="custom-radio-button" value="Y">ตรงกัน </mat-radio-button>
-                <mat-radio-button class="custom-radio-button" value="N">ไม่ตรงกัน</mat-radio-button>
-            </mat-radio-group>
-        </div>
-
-        <div style="margin-top: 1em;" *ngIf="!ismanual">
-            <mat-form-field appearance="fill" style="width: 400px;">
-                <mat-label>เหตุผล</mat-label>
-                <textarea matInput [formControl]="reason"></textarea>
-                <mat-error *ngIf="facevalidform.controls.reason.hasError('required')"> กรุณาระบุเหตุผลในกรณีเลือก
-                    ไม่ยืนยันเป็นบุคคลเดียวกัน</mat-error>
-            </mat-form-field>
-
-            <div *ngIf="false">
-                <button mat-raised-button color="primary" (click)="onfacevalid()"
-                    [disabled]="!this.facevalidform.valid">Compare Face</button>
+                    ความยินยอมนี้จัดทำขึ้นด้วยความสมัครใจของข้าพเจ้า ยินยอมให้บริษัท ไมโครพลัสลิสซิ่ง จำกัด <br>
+                    นำรูปภาพถ่ายหน้าของข้าพเจ้า จัดเก็บ วิเคราะห์ ใช้เพื่อประโยชน์ในการประกอบพิจารณาสินเชื่อ
+                    ของบริษัท ไมโครพลัสสิสซิ่ง จำกัด
+                </span>
             </div>
-        </div>
+            <div style="margin-top: 1em;" *ngIf="!ismanual">
+                <mat-radio-group [formControl]='consent' color="primary">
+                    <mat-radio-button class="custom-radio-button" value="Y">ยินยอม</mat-radio-button>
+                    <mat-radio-button class="custom-radio-button" value="N">ไม่ยินยอม</mat-radio-button>
+                </mat-radio-group>
+            </div>
 
-        <div *ngIf="ismanual">
+            <div style="margin-top: 2em;">
+                <span>ยืนยันบุคคลเดียวกัน</span>
+            </div>
+
+            <div style="margin-top: 1em;" *ngIf="!ismanual">
+                <mat-radio-group [formControl]='result' color="primary">
+                    <mat-radio-button class="custom-radio-button" value="Y">ตรงกัน </mat-radio-button>
+                    <mat-radio-button class="custom-radio-button" value="N">ไม่ตรงกัน</mat-radio-button>
+                </mat-radio-group>
+            </div>
+
+            <div style="margin-top: 1em;" *ngIf="!ismanual">
+                <mat-form-field appearance="fill" style="width: 400px;">
+                    <mat-label>เหตุผล</mat-label>
+                    <textarea matInput [formControl]="reason"></textarea>
+                    <mat-error *ngIf="facevalidform.controls.reason.hasError('required')"> กรุณาระบุเหตุผลในกรณีเลือก
+                        ไม่ยืนยันเป็นบุคคลเดียวกัน</mat-error>
+                </mat-form-field>
+
+                <div *ngIf="false">
+                    <button mat-flat-button color="primary" (click)="onfacevalid()"
+                        [disabled]="!this.facevalidform.valid">Compare Face</button>
+                </div>
+            </div>
+
+            <div *ngIf="ismanual">
+                <div style="margin-top: 1em;">
+                    <mat-label>ยืนยืนเป็นเคส Manual : </mat-label>
+                    <mat-checkbox [formControl]='verifymanual' color='primary'
+                        class="example-margin">ยืนยัน</mat-checkbox>
+                </div>
+                <mat-hint>*เลือกสำหรับกรณีเป็นรายการที่ไม่ได้ผ่านทาง DIPCHIP (กรอกข้อมูลด้วยตัวเอง)</mat-hint>
+            </div>
+
             <div style="margin-top: 1em;">
-                <mat-label>ยืนยืนเป็นเคส Manual : </mat-label>
-                <mat-checkbox [formControl]='verifymanual' color='primary' class="example-margin">ยืนยัน</mat-checkbox>
+                <div *ngIf="!isfacevalid">
+                    <button mat-flat-button color="primary" (click)="onfacevalidmanual()"
+                        [disabled]="!this.facevalidform.valid">ยืนยันข้อมูล</button>
+                </div>
             </div>
-            <mat-hint>*เลือกสำหรับกรณีเป็นรายการที่ไม่ได้ผ่านทาง DIPCHIP (กรอกข้อมูลด้วยตัวเอง)</mat-hint>
+
+
         </div>
-
-        <div style="margin-top: 1em;">
-            <div *ngIf="!isfacevalid">
-                <button mat-raised-button color="primary" (click)="onfacevalidmanual()"
-                    [disabled]="!this.facevalidform.valid">ยืนยันข้อมูล</button>
-            </div>
-        </div>
-
-
     </div>
-</div>

@@ -1,7 +1,7 @@
 <span class="example-pizza-party">
-    <div *ngIf="data.type == 'success'">
+    <div *ngIf="data.type === 'success'">
       <div  *ngIf="data.age < 20"> ❌ : {{data.message}}</div>
       <div  *ngIf="data.age >= 20"> ✅ : {{data.message}}</div>
     </div>
-    <div *ngIf="data.type == 'fail'"> ❌ : {{data.message}}</div>
+    <div *ngIf="data.type === 'fail'"> ❌ : {{data.message}}</div>
   </span>

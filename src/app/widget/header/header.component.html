@@ -2,7 +2,7 @@
   <mat-toolbar color="primary" style="height: 2em;">
     <button mat-icon-button class="example-icon small-icon" aria-label="Example icon-button with menu icon"
       [matMenuTriggerFor]="menu">
-      <mat-icon>menu</mat-icon>
+      <mat-icon style="color: white">menu</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item class="small-icon" (click)="openUserInfo()">
@@ -13,19 +13,6 @@
           User Info.
         </span>
       </button>
-      <!-- <button mat-menu-item class="small-icon" (click)="opendialogPage()">
-          <mat-icon>
-            wysiwyg
-          </mat-icon>
-          <span>Rate Table</span>
-        </button>
-  
-        <button mat-menu-item class="small-icon" (click)="opendialogCalculate()">
-          <mat-icon>
-            calculate
-          </mat-icon>
-          <span>คำนวณค่างวด</span>
-        </button> -->
       <button mat-menu-item class="small-icon" (click)="opendialogMrta()">
         <mat-icon>
           credit_card
@@ -50,16 +37,11 @@
     </a>
     <span *ngIf="false" style="font-size: 14px;">{{username}}</span>
     <span class="example-spacer"></span>
-    <!-- <button *ngIf="getUserCurrentData().channal == 'dealer' || getUserCurrentData().channal == 'checker'" mat-icon-button
-      class="example-icon favorite-icon small-icon" aria-label="Example icon-button with heart icon"
-      (click)="goquotationview()">
-      <mat-icon>toc</mat-icon>
-    </button> -->
-    <button mat-icon-button class="example-icon favorite-icon small-icon"
+    <button style="color: white" mat-icon-button class="example-icon favorite-icon small-icon"
       aria-label="Example icon-button with heart icon" (click)="godashboard()">
       <mat-icon>home</mat-icon>
     </button>
-    <button mat-icon-button class="example-icon favorite-icon small-icon"
+    <button style="color: white" mat-icon-button class="example-icon favorite-icon small-icon"
       aria-label="Example icon-button with heart icon" (click)="logoutClick()">
       <mat-icon>logout</mat-icon>
     </button>

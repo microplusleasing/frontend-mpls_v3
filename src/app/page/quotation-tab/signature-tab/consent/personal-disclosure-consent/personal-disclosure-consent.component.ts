@@ -9,9 +9,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
-  selector: 'app-personal-disclosure-consent',
-  templateUrl: './personal-disclosure-consent.component.html',
-  styleUrls: ['./personal-disclosure-consent.component.scss']
+    selector: 'app-personal-disclosure-consent',
+    templateUrl: './personal-disclosure-consent.component.html',
+    styleUrls: ['./personal-disclosure-consent.component.scss'],
+    standalone: false
 })
 export class PersonalDisclosureConsentComponent extends BaseService implements OnInit {
 
@@ -74,7 +75,7 @@ export class PersonalDisclosureConsentComponent extends BaseService implements O
           // === stamp field with save or fix value ====
           // const ispersonaldisclosureselect = this.quotationdatatemp.data[0].cs_is_disclosure_consent
 
-          // if (this.quotationdatatemp.data[0].quo_status == 4 && this.quotationdatatemp.data[0].cs_is_disclosure_consent == 0) {
+          // if (this.quotationdatatemp.data[0].quo_status === 4 && this.quotationdatatemp.data[0].cs_is_disclosure_consent === 0) {
           //   this.disable_edit_btn = false
           // } else {
           //   this.disable_edit_btn = true
@@ -97,7 +98,7 @@ export class PersonalDisclosureConsentComponent extends BaseService implements O
             this.personalDisclosureValid.emit(true)
           }
 
-          if (this.quotationdatatemp.data[0].quo_status == 1 || this.quotationdatatemp.data[0].identity_approve_consent_value !== null) {
+          if (this.quotationdatatemp.data[0].quo_status === 1 || this.quotationdatatemp.data[0].identity_approve_consent_value !== null) {
             // === lock form when send data Pthep ===
             this.formPersonalDisclosureConsent.disable();
           }

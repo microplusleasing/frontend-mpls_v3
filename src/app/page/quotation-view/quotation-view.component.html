@@ -4,7 +4,7 @@
         <mat-grid-list [cols]="layout.columns" [rowHeight]="'90px'">
             <div class="flex-center">
                 <div style="margin-top: 1em; margin-left: 2em;" *ngIf="!(isAdmin$ | async)">
-                    <button type="button" mat-raised-button color="primary" (click)="addNewQuotation()" class="btnhome">
+                    <button type="button" mat-flat-button color="primary" (click)="addNewQuotation()" class="btnhome">
                         <mat-icon>add</mat-icon>
                         เพิ่มใบสมัครใหม่
                     </button>
@@ -14,7 +14,7 @@
 
         <div class="flex-center">
             <mat-card class="card-header-home" style="width: 90%;">
-                <mat-grid-list [cols]="layout.columns" [rowHeight]="'70px'">
+                <mat-grid-list [cols]="layout.columns" [rowHeight]="'90px'">
                     <!-- ชื่อลูกค้า -->
                     <mat-grid-tile [colspan]="layout.list.cols3">
                         <mat-form-field appearance="outline" class="example-full-width">
@@ -77,9 +77,9 @@
                     <!-- ปุ่ม 'ค้นหา' กับปุ่ม 'clear' -->
                     <mat-grid-tile [colspan]="layout.list.maxcols">
 
-                        <button type="button" mat-raised-button color="primary" [disabled]="!searchform.valid"
+                        <button type="button" mat-flat-button color="primary" [disabled]="!searchform.valid"
                             (click)="onfindsearch()">ค้นหา</button>
-                        <button type="button" mat-raised-button color="primary" (click)="clearandrefresh()"
+                        <button type="button" mat-flat-button color="primary" (click)="clearandrefresh()"
                             style="margin-left: 1.5em;">clear</button>
                     </mat-grid-tile>
 
@@ -89,83 +89,85 @@
 
             <!-- Table  -->
 
-            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 sp1em" style="width: 90%;">
-                <!-- Position Column -->
-                <ng-container matColumnDef="sequence">
-                    <th mat-header-cell *matHeaderCellDef> ลำดับ </th>
-                    <td mat-cell *matCellDef="let element">{{element.line_number}}</td>
-                </ng-container>
-
-                <!-- Name Column -->
-                <ng-container matColumnDef="dateCreate">
-                    <th mat-header-cell *matHeaderCellDef> วันที่ </th>
-                    <td mat-cell *matCellDef="let element">
-                        {{element.created_time !== null ? (element.created_time | thaidate: 'medium'): ''}}
-                    </td>
-                </ng-container>
-
-                <!-- Weight Column -->
-                <ng-container matColumnDef="quotationNo">
-                    <th mat-header-cell *matHeaderCellDef> เลขที่ </th>
-                    <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
-                </ng-container>
-
-                <!-- Symbol Column -->
-                <ng-container matColumnDef="customerName">
-                    <th mat-header-cell *matHeaderCellDef> ชื่อผู้สมัคร </th>
-                    <td mat-cell *matCellDef="let element"> {{element.first_name}} {{element.last_name}} </td>
-                </ng-container>
-
-                <!-- Symbol Column -->
-                <ng-container matColumnDef="dealerName">
-                    <th mat-header-cell *matHeaderCellDef> ชื่อ Dealer </th>
-                    <td mat-cell *matCellDef="let element"> {{element.dl_name}} </td>
-                </ng-container>
-
-                <!-- Symbol Column -->
-                <ng-container matColumnDef="branchName">
-                    <th mat-header-cell *matHeaderCellDef> สาขา </th>
-                    <td mat-cell *matCellDef="let element"> {{element.branch_name}} </td>
-                </ng-container>
-
-
-                <!-- button -->
-                <ng-container matColumnDef="buttonName">
-                    <th mat-header-cell *matHeaderCellDef> </th>
-                    <td mat-cell *matCellDef="let element">
-                        <button type="button" mat-raised-button color="primary"
-                            (click)="onbtnclick(element.quo_key_app_id, 'info')"> View
-                        </button>
-                        <button *ngIf="(showbypass$ | async)" style="margin-left: 1em;" mat-raised-button color="warm"
-                            type="button" (click)="onbtnclick(element.quo_key_app_id, 'bypass')">
-                            bypass </button>
-
-                    </td>
-                </ng-container>
-
-                <ng-container matColumnDef="canclebtn">
-                    <th mat-header-cell *matHeaderCellDef> </th>
-                    <td mat-cell *matCellDef="let element">
-                        <button type="button" mat-raised-button color="warn"
-                            (click)="cancleCase(element.quo_key_app_id)" *ngIf="!(isAdmin$ | async)">
-                            ยกเลิก
-                        </button>
-                    </td>
-                </ng-container>
-
-                <ng-container matColumnDef="statusName">
-                    <th mat-header-cell *matHeaderCellDef> สถานะ </th>
-                    <td mat-cell *matCellDef="let element"> {{element._client_quo_status}} </td>
-                </ng-container>
-
-                <ng-container matColumnDef="consentStatus">
-                    <th mat-header-cell *matHeaderCellDef> Consent </th>
-                    <td mat-cell *matCellDef="let element">&nbsp; {{element._client_otp_consent_verify}} </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;  let i = index"></tr>
-            </table>
+            <div class="table-width">
+                <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 sp1em">
+                    <!-- Position Column -->
+                    <ng-container matColumnDef="sequence">
+                        <th mat-header-cell *matHeaderCellDef> ลำดับ </th>
+                        <td mat-cell *matCellDef="let element">{{element.line_number}}</td>
+                    </ng-container>
+    
+                    <!-- Name Column -->
+                    <ng-container matColumnDef="dateCreate">
+                        <th mat-header-cell *matHeaderCellDef> วันที่ </th>
+                        <td mat-cell *matCellDef="let element">
+                            {{element.created_time !== null ? (element.created_time | thaidate: 'medium'): ''}}
+                        </td>
+                    </ng-container>
+    
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="quotationNo">
+                        <th mat-header-cell *matHeaderCellDef> เลขที่ </th>
+                        <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
+                    </ng-container>
+    
+                    <!-- Symbol Column -->
+                    <ng-container matColumnDef="customerName">
+                        <th mat-header-cell *matHeaderCellDef> ชื่อผู้สมัคร </th>
+                        <td mat-cell *matCellDef="let element"> {{element.first_name}} {{element.last_name}} </td>
+                    </ng-container>
+    
+                    <!-- Symbol Column -->
+                    <ng-container matColumnDef="dealerName">
+                        <th mat-header-cell *matHeaderCellDef> ชื่อ Dealer </th>
+                        <td mat-cell *matCellDef="let element"> {{element.dl_name}} </td>
+                    </ng-container>
+    
+                    <!-- Symbol Column -->
+                    <ng-container matColumnDef="branchName">
+                        <th mat-header-cell *matHeaderCellDef> สาขา </th>
+                        <td mat-cell *matCellDef="let element"> {{element.branch_name}} </td>
+                    </ng-container>
+    
+    
+                    <!-- button -->
+                    <ng-container matColumnDef="buttonName">
+                        <th mat-header-cell *matHeaderCellDef> </th>
+                        <td mat-cell *matCellDef="let element">
+                            <button type="button" mat-flat-button color="primary"
+                                (click)="onbtnclick(element.quo_key_app_id, 'info')"> View
+                            </button>
+                            <button *ngIf="(showbypass$ | async)" style="margin-left: 1em;" mat-flat-button color="warm"
+                                type="button" (click)="onbtnclick(element.quo_key_app_id, 'bypass')">
+                                bypass </button>
+    
+                        </td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="canclebtn">
+                        <th mat-header-cell *matHeaderCellDef> </th>
+                        <td mat-cell *matCellDef="let element">
+                            <button type="button" mat-flat-button color="warn"
+                                (click)="cancleCase(element.quo_key_app_id)" *ngIf="!(isAdmin$ | async)">
+                                ยกเลิก
+                            </button>
+                        </td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="statusName">
+                        <th mat-header-cell *matHeaderCellDef> สถานะ </th>
+                        <td mat-cell *matCellDef="let element"> {{element._client_quo_status}} </td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="consentStatus">
+                        <th mat-header-cell *matHeaderCellDef> Consent </th>
+                        <td mat-cell *matCellDef="let element">&nbsp; {{element._client_otp_consent_verify}} </td>
+                    </ng-container>
+    
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;  let i = index"></tr>
+                </table>
+            </div>
 
             <mat-paginator [length]="pageLength" [pageSize]="pageSize" [hidePageSize]="true" [pageIndex]="pageno-1"
                 (page)="onPaginationChange($event)" aria-label="Select page">

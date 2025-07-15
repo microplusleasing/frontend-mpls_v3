@@ -20,7 +20,8 @@
         <mat-grid-list [cols]="layout.columns" [rowHeight]="'50px'">
             <mat-grid-tile [colspan]="layout.list.maxcols">
                 <div class="textcenter-viewsign">
-                    <a>ลูกค้า</a>
+                    <!-- <a>ลูกค้า</a> -->
+                    <span>ลูกค้า</span>
                 </div>
             </mat-grid-tile>
         </mat-grid-list>
@@ -33,7 +34,8 @@
         <mat-grid-list [cols]="layout.columns" [rowHeight]="'50px'">
             <mat-grid-tile [colspan]="layout.list.maxcols">
                 <div class="textcenter-viewsign">
-                    <a>พยาน</a>
+                    <!-- <a>พยาน</a> -->
+                     <span>พยาน</span>
                 </div>
             </mat-grid-tile>
         </mat-grid-list>
@@ -50,7 +52,8 @@
         <mat-grid-list [cols]="layout.columns" [rowHeight]="'50px'">
             <mat-grid-tile [colspan]="layout.list.maxcols">
                 <div class="textcenter-viewsign">
-                    <a>หน้าบัตรประชาชน</a>
+                    <!-- <a>หน้าบัตรประชาชน</a> -->
+                     <span>หน้าบัตรประชาชน</span>
                 </div>
             </mat-grid-tile>
         </mat-grid-list>
@@ -64,7 +67,8 @@
         <mat-grid-list [cols]="layout.columns" [rowHeight]="'50px'">
             <mat-grid-tile [colspan]="layout.list.maxcols">
                 <div class="textcenter-viewsign">
-                    <a>หน้าภาพลูกค้า</a>
+                    <!-- <a>หน้าภาพลูกค้า</a> -->
+                     <span>หน้าภาพลูกค้า</span>
                 </div>
             </mat-grid-tile>
         </mat-grid-list>
@@ -85,7 +89,8 @@
         <mat-grid-list [cols]="layout.columns" [rowHeight]="'50px'">
             <mat-grid-tile [colspan]="layout.list.maxcols">
                 <div class="textcenter-viewsign">
-                    <a>รูปภาพ E-consent</a>
+                    <!-- <a>รูปภาพ E-consent</a> -->
+                     <span>รูปภาพ E-consent</span>
                 </div>
             </mat-grid-tile>
         </mat-grid-list>
@@ -100,7 +105,7 @@
             </mat-grid-tile>
             <mat-grid-tile style="text-align: center;" [colspan]="layout.list.maxcols"
                 *ngIf="(letverify$ | async) && !(this.alreadyverify$ | async)">
-                <button mat-raised-button color="primary" (click)="onclickbtn()"
+                <button mat-flat-button color="primary" (click)="onclickbtn()"
                     [disabled]="!((this.viewsignForm.valid) && !(this.alreadyverify$ | async))">ยืนยัน</button>
             </mat-grid-tile>
             <mat-grid-tile style="text-align: center;" [colspan]="layout.list.maxcols" *ngIf="(iserr$ | async)">

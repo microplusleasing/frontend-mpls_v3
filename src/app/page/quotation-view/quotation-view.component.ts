@@ -56,7 +56,8 @@ interface Status {
 @Component({
   selector: 'app-quotation-view',
   templateUrl: './quotation-view.component.html',
-  styleUrls: ['./quotation-view.component.scss']
+  styleUrls: ['./quotation-view.component.scss'],
+  standalone: false
 })
 export class QuotationViewComponent extends BaseService implements OnInit {
   dataListTemp: IResQuotationView = {} as IResQuotationView;
@@ -215,48 +216,54 @@ export class QuotationViewComponent extends BaseService implements OnInit {
     this.quotationService.getquotationlist(1, '', { searchidcard: '', searchname: '', searchrefpaynum: '', searchpaystatus: '' }).subscribe({
       next: (resultListQuotation) => {
 
+        if (resultListQuotation.status === 200) {
+          // === addd new text form quo_status (14/09/2022) ===
+          resultListQuotation.data.map((items, i) => {
+            switch (items.quo_status) {
+              case 0:
+                items._client_quo_status = 'ส่งงาน';
+                break;
+              case 1:
+                items._client_quo_status = 'Lock';
+                break;
+              case 4:
+                items._client_quo_status = 'Draft';
+                break;
+            }
 
-        // === addd new text form quo_status (14/09/2022) ===
-        resultListQuotation.data.map((items,i) => {
-          switch (items.quo_status) {
-            case 0:
-              items._client_quo_status = 'ส่งงาน';
-              break;
-            case 1:
-              items._client_quo_status = 'Lock';
-              break;
-            case 4:
-              items._client_quo_status = 'Draft';
-              break;
-          }
+            switch (items.otp_consent_verify) {
+              case 'Y':
+                items._client_otp_consent_verify = 'E';
+                break;
+              case 'N':
+                items._client_otp_consent_verify = 'O';
+                break;
+              case null:
+                items._client_otp_consent_verify = '-';
+                break;
+            }
 
-          switch (items.otp_consent_verify) {
-            case 'Y':
-              items._client_otp_consent_verify = 'E';
-              break;
-            case 'N':
-              items._client_otp_consent_verify = 'O';
-              break;
-            case null:
-              items._client_otp_consent_verify = '-';
-              break;
-          }
-          
-          return items;
+            return items;
 
-        })
+          })
 
-        this.dataListTemp = resultListQuotation
+          this.dataListTemp = resultListQuotation
 
-        // === add index to client page === 
-        this.dataList = this.dataListTemp
-        this.dataSource.data = (resultListQuotation.data) as any
-        this.paginator.pageIndex = 0
-        this.pageLength = this.dataListTemp.rowcount
-        this.pageSize = this.dataListTemp.pagesize
-        // this.dataSource.sort = this.sort
+          // === add index to client page === 
+          this.dataList = this.dataListTemp
+          this.dataSource.data = (resultListQuotation.data) as any
+          this.paginator.pageIndex = 0
+          this.pageLength = this.dataListTemp.rowcount
+          this.pageSize = this.dataListTemp.pagesize
+          // this.dataSource.sort = this.sort
+        } else {
+          /* ... error during getquotationlist api .. */
+          this.snackbarfail(`${resultListQuotation.message ?? `Error getquotationlist with no error message`}`)
+        }
       }, error: (err) => {
         console.log(`errr : ${err.error.message}`)
+        this.loadingService.hideLoader()
+        this.snackbarfail(`${err.message ? err.message : 'No return message'}`)
       }, complete: async () => {
         this.loadingService.hideLoader();
       }
@@ -278,11 +285,11 @@ export class QuotationViewComponent extends BaseService implements OnInit {
       // === service for check role login permission (04/07/2022) ====
       this.userService.checkrolelogin();
 
-      if (sessionUserObject.data.RADMIN == 'Y') {
+      if (sessionUserObject.data.RADMIN === 'Y') {
         // ==== set IsAdmin for Admin role (26/05/2022) ====
         this.isAdmin$.next(true)
         this.showbypass$.next(true)
-      } else if (sessionUserObject.data.RADMIN == 'FI') {
+      } else if (sessionUserObject.data.RADMIN === 'FI') {
         this.isAdmin$.next(true)
         this.showrefpaynumbtn = true
       } else {
@@ -394,7 +401,7 @@ export class QuotationViewComponent extends BaseService implements OnInit {
         // ==== set IsAdmin for Admin role (26/05/2022) ====
         this.isAdmin$.next(true)
         this.showbypass$.next(true)
-      } else if (sessionUserObject.data.RADMIN == 'FI') {
+      } else if (sessionUserObject.data.RADMIN === 'FI') {
         this.isAdmin$.next(true)
         this.showrefpaynumbtn = true
       } else {
@@ -598,7 +605,7 @@ export class QuotationViewComponent extends BaseService implements OnInit {
                 items._client_quo_status = 'Draft';
                 break;
             }
-  
+
             switch (items.otp_consent_verify) {
               case 'Y':
                 items._client_otp_consent_verify = 'E';
@@ -610,7 +617,7 @@ export class QuotationViewComponent extends BaseService implements OnInit {
                 items._client_otp_consent_verify = '-';
                 break;
             }
-  
+
             return items;
 
           })
@@ -659,7 +666,7 @@ export class QuotationViewComponent extends BaseService implements OnInit {
             // paystatus: ''
           }
         })
-      } else if (type == 'bypass') {
+      } else if (type === 'bypass') {
         this.router.navigate(['/bypass'], { queryParams: { id: id } })
       } else {
 
@@ -695,7 +702,7 @@ export class QuotationViewComponent extends BaseService implements OnInit {
       if (result) {
         this.quotationService.MPLS_canclequotation(quotationid).subscribe({
           next: (result) => {
-            if (result.status == 200) {
+            if (result.status === 200) {
               // === success cancle status ===
               // this.dialog.open(MainDialogComponent, {
               //   panelClass: 'custom-dialog-container',
@@ -715,7 +722,7 @@ export class QuotationViewComponent extends BaseService implements OnInit {
               this.snackbarfail(`ยกเลิกใบคำขอไม่สำเร็จ : ${result.message ? result.message : 'No return message'}`)
             }
           }, error: (e) => {
-            // if (e.error.status == 400) {
+            // if (e.error.status === 400) {
             //   this.dialog.open(MainDialogComponent, {
             //     panelClass: 'custom-dialog-container',
             //     data: {

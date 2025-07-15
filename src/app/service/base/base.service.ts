@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import * as moment from 'moment';
+import moment from 'moment';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { IResMasterProvinceData } from 'src/app/interface/i-res-master-province';
 import { IResMasterTitleData } from 'src/app/interface/i-res-master-title';
@@ -30,7 +30,7 @@ export class BaseService {
       this.usernamefordipchip = userdataObj.USERNAME ? userdataObj.USERNAME : '';
 
       if (userdataObj.channal) {
-        if (userdataObj.channal == 'checker') {
+        if (userdataObj.channal === 'checker') {
           this.checker_id = userdataObj.USERID ? userdataObj.USERID : '';
         }
       }
@@ -57,15 +57,15 @@ export class BaseService {
     for (var i = 0; i < str.length; i++) {
       let StrTemp = str.charCodeAt(i).toString(2);
       // result.push(StrTemp);
-      if (StrTemp.length == 0) result.push("00000000" + StrTemp);
-      else if (StrTemp.length == 1) result.push("0000000" + StrTemp);
-      else if (StrTemp.length == 2) result.push("000000" + StrTemp);
-      else if (StrTemp.length == 3) result.push("00000" + StrTemp);
-      else if (StrTemp.length == 4) result.push("0000" + StrTemp);
-      else if (StrTemp.length == 5) result.push("000" + StrTemp);
-      else if (StrTemp.length == 6) result.push("00" + StrTemp);
-      else if (StrTemp.length == 7) result.push("0" + StrTemp);
-      else if (StrTemp.length == 8) result.push(StrTemp);
+      if (StrTemp.length === 0) result.push("00000000" + StrTemp);
+      else if (StrTemp.length === 1) result.push("0000000" + StrTemp);
+      else if (StrTemp.length === 2) result.push("000000" + StrTemp);
+      else if (StrTemp.length === 3) result.push("00000" + StrTemp);
+      else if (StrTemp.length === 4) result.push("0000" + StrTemp);
+      else if (StrTemp.length === 5) result.push("000" + StrTemp);
+      else if (StrTemp.length === 6) result.push("00" + StrTemp);
+      else if (StrTemp.length === 7) result.push("0" + StrTemp);
+      else if (StrTemp.length === 8) result.push(StrTemp);
     }
 
     let resultStr = result.toString().replace(/[,]/g, "");
@@ -73,16 +73,16 @@ export class BaseService {
     let reStr = "";
     let j = 0;
     for (let i = 0; i < result1.length; i += 4) {
-      if (j % 4 == 0) {
+      if (j % 4 === 0) {
         reStr += String.fromCharCode((parseInt(result1[i] + result1[i + 1] + result1[i + 2] + result1[i + 3], 2) + 65));
       }
-      else if (j % 4 == 1) {
+      else if (j % 4 === 1) {
         reStr += String.fromCharCode((parseInt(result1[i] + result1[i + 1] + result1[i + 2] + result1[i + 3], 2) + 74));
       }
-      else if (j % 4 == 2) {
+      else if (j % 4 === 2) {
         reStr += String.fromCharCode((parseInt(result1[i] + result1[i + 1] + result1[i + 2] + result1[i + 3], 2) + 97));
       }
-      else if (j % 4 == 3) {
+      else if (j % 4 === 3) {
         reStr += String.fromCharCode((parseInt(result1[i] + result1[i + 1] + result1[i + 2] + result1[i + 3], 2) + 104));
       }
       j++;
@@ -106,7 +106,7 @@ export class BaseService {
 
   mapProvinceNameById(pResult: string, pMaster: IResMasterProvinceData[]): string {
     const select = pMaster.filter((items: ({ prov_code: string })) => {
-      return items.prov_code == pResult
+      return items.prov_code === pResult
     })
 
     if (select.length !== 0) {
@@ -118,7 +118,7 @@ export class BaseService {
 
   mapProvinceIdByName(pResult: string, pMaster: IResMasterProvinceData[]): string {
     const select = pMaster.filter((items: ({ prov_name: string })) => {
-      return items.prov_name == pResult
+      return items.prov_name === pResult
     })
 
     if (select.length !== 0) {
@@ -141,7 +141,7 @@ export class BaseService {
 
   mapTitleIdByname(pResult: string, pMaster: IResMasterTitleData[]) {
     const select = pMaster.filter((items: ({ title_name: string })) => {
-      return items.title_name == pResult
+      return items.title_name === pResult
     })
     if (select.length !== 0) {
       return select[0].title_id
@@ -165,6 +165,20 @@ export class BaseService {
 
 
   // === *** Image Manage *** ===
+
+  getUrlImageBasic(data: any): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const buf = data.data
+      const base64format = "data:image/jpg;base64,"
+      const base64data = this._arrayBufferToBase64(buf)
+      const strurl = `${base64format}${base64data}`
+      if (strurl) {
+        resolve(strurl);
+      } else {
+        reject(`/assets/image/placeholder-image.png`);
+      }
+    })
+  }
 
   getUrlImage_cizcard_image(data: any): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -215,6 +229,11 @@ export class BaseService {
       binary += String.fromCharCode(bytes[i]);
     }
     return 'data:image/jpeg;base64,' + btoa(binary);
+  }
+
+  _arrayBufferToDataUrl(buffer: ArrayBuffer): string {
+    const blob = new Blob([buffer], { type: 'image/jpeg' }); // Adjust the MIME type as needed
+    return URL.createObjectURL(blob);
   }
 
   async _base64toblob(base64image: string) {

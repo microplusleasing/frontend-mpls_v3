@@ -16,9 +16,10 @@ import { MasterDataService } from 'src/app/service/master.service';
 import { QuotationService } from 'src/app/service/quotation.service';
 
 @Component({
-  selector: 'app-secondhand-car-attach-image-dialog',
-  templateUrl: './secondhand-car-attach-image-dialog.component.html',
-  styleUrls: ['./secondhand-car-attach-image-dialog.component.scss']
+    selector: 'app-secondhand-car-attach-image-dialog',
+    templateUrl: './secondhand-car-attach-image-dialog.component.html',
+    styleUrls: ['./secondhand-car-attach-image-dialog.component.scss'],
+    standalone: false
 })
 export class SecondhandCarAttachImageDialogComponent implements OnInit {
 
@@ -184,7 +185,7 @@ export class SecondhandCarAttachImageDialogComponent implements OnInit {
     if (checkverifysecondhandcarimagelist.length >= 2) {
       this.quotationService.MPLS_update_flag_image_attach_file_multiple(this.data.quotationid ?? '').subscribe({
         next: (res_update_second_hand_verify) => {
-          if (res_update_second_hand_verify.status == 200) {
+          if (res_update_second_hand_verify.status === 200) {
             const iresdialog_2ndhandcar: IResDialog2ndhandCarImageAttach = {
               upload_status: true,
               state: `success`

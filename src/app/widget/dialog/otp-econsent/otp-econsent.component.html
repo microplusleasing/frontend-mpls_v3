@@ -1,15 +1,16 @@
-<h1 mat-dialog-title>{{data.header}}</h1>
+<h1 mat-dialog-title style="font-family: prompt;">{{data.header}}</h1>
 <div mat-dialog-content>
     <form [formGroup]="mainOTPForm">
         <mat-stepper labelPosition="bottom" [selectedIndex]="_tabindex" [linear]="true" style="height: 100%;">
             <mat-step [stepControl]="confirmEconsentForm" [editable]="_editabletab1" style="height: 100%;">
-                <ng-template matStepLabel>แบบฟอร์มการยินยอมเปิดเผยข้อมูลผ่านอินเทอร์เน็ต</ng-template>
+                <ng-template matStepLabel style="font-family: Prompt;">แบบฟอร์มการยินยอมเปิดเผยข้อมูลผ่านอินเทอร์เน็ต</ng-template>
                 <div [formGroup]="confirmEconsentForm">
-                    <h2 mat-dialog-title>ความยินยอมในการเปิดเผยข้อมูลโดยวิธีการผ่านระบบอินเทอร์เน็ต</h2>
-                    <mat-dialog-content class="mat-typography" style="max-height: 30em;" (scroll)="onScroll($event)">
+                    <h2 mat-dialog-title style="font-family: Prompt;">ความยินยอมในการเปิดเผยข้อมูลโดยวิธีการผ่านระบบอินเทอร์เน็ต</h2>
+                    <mat-dialog-content class="mat-typography" style="max-height: 30em; background: none;" (scroll)="onScroll($event)">
                         <div>
                             <div class="flex-center">
-                                <html id="econsentelement" style="background-color: rgb(240, 240, 240);">
+                                <!-- <html id="econsentelement" style="background-color: rgb(240, 240, 240);"> -->
+                                <html id="econsentelement" style="background: none;">
 
                                 <body style="margin: 0 1.5em 0;">
                                     <div class="flex-center">
@@ -42,7 +43,7 @@
                                     <p>บัตรประจำตัวประชาชน หรือหนังสือเดินทาง เลขที่ {{data.citizenid}}
                                         หมายเลขโทรศัพท์เคลื่อนที่
                                         {{data.phone_number}}</p><br>
-                                    <p>ประเภทสินเชื่อ เช่าซื้อ รถจักรยานยนต์ (21)</p><br>
+                                    <p>ประเภทสินเชื่อ เช่าซื้ออื่นๆ (21)</p><br>
                                     <p>หมายเลขอ้างอิง {{data.application_no}}</p><br>
                                     <p>วันเวลาที่ทำรายการความยินยอมในการเปิดเผยข้อมูล {{data.currentDate !== null ?
                                         (data.currentDate | thaidate: 'main'): ''}} {{data.currentDate !== null ?
@@ -94,7 +95,7 @@
                     <ng-otp-input [formCtrl]="otp_value"
                         [config]="{length:6, allowNumbersOnly: true}"></ng-otp-input><br>
                     <h3>{{_validationResMsg}}</h3>
-                    <button mat-raised-button color="primary" (click)="activateotpeconsent($event)"> ยืนยัน OTP</button>
+                    <button mat-flat-button color="primary" (click)="activateotpeconsent($event)"> ยืนยัน OTP</button>
                 </div>
             </mat-step>
             <mat-step [stepControl]="otpvalidation" [editable]="_editabletab3">
@@ -107,8 +108,8 @@
     </form>
 </div>
 <div mat-dialog-actions align="center">
-    <!-- <button mat-raised-button [mat-dialog-close]="true" color="primary">{{data.button_name}}</button> -->
-    <div class="flex-center" *ngIf="_tabindex  == 0">
+    <!-- <button mat-flat-button [mat-dialog-close]="true" color="primary">{{data.button_name}}</button> -->
+    <div class="flex-center" *ngIf="_tabindex === 0">
         <!-- <div class="flex-center">
             <span>scrollTop : {{this.txt_scrollTop}}</span>
             <br>
@@ -118,7 +119,7 @@
             <br>
 
         </div> -->
-        <!-- <button mat-raised-button color="primary" (click)="test_gen_image()"> ทดสอบภาพ</button>
+        <!-- <button mat-flat-button color="primary" (click)="test_gen_image()"> ทดสอบภาพ</button>
         <br> -->
         <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
             [formControl]="econsentvalue" [formControl]="econsentvalue">
@@ -127,7 +128,7 @@
                 {{item.label}}
             </mat-radio-button>
         </mat-radio-group>
-        <button mat-raised-button color="primary" [disabled]="!this.confirmEconsentForm.controls.econsentvalue.valid"
+        <button mat-flat-button color="primary" [disabled]="!this.confirmEconsentForm.controls.econsentvalue.valid"
             (click)="onClickAcceptEconsent()">ยืนยันรายการ</button>
     </div>
 </div>

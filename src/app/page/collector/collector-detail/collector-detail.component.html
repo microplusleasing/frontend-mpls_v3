@@ -447,12 +447,12 @@
                                 <mat-grid-list [cols]="layout.columns" [rowHeight]="layout.rowHeight">
                                     <mat-grid-tile [colspan]="layout.list.maxcols">
                                         <div class="wrapper">
-                                            <button mat-raised-button color="primary" (click)="sumbitnegocreaterecord()"
+                                            <button mat-flat-button color="primary" (click)="sumbitnegocreaterecord()"
                                                 [disabled]="!followupForm.controls.negofollowup.valid">
                                                 <mat-icon>save</mat-icon>
                                                 บันทึก
                                             </button>
-                                            <button mat-raised-button color="warn" style="margin-left: 1em;"
+                                            <button mat-flat-button color="warn" style="margin-left: 1em;"
                                                 (click)="canclecreatefollowup()">
                                                 <mat-icon>close</mat-icon>
                                                 ยกเลิก
@@ -567,7 +567,7 @@
                                 </div>
                                 <div class="col-sm">
                                     <div class="wrapper">
-                                        <button mat-raised-button color="primary" (click)="sumbitnegolalon()"
+                                        <button mat-flat-button color="primary" (click)="sumbitnegolalon()"
                                             [disabled]="!followupForm.controls.negolalon.valid">
                                             <mat-icon>save</mat-icon>
                                             บันทึก
@@ -622,7 +622,7 @@
                     </div>
                     <div class="flexpos" *ngIf="show_create_living_place_button">
                         <div>
-                            <button mat-raised-button color="primary" (click)="createlivingplace()"
+                            <button mat-flat-button color="primary" (click)="createlivingplace()"
                                 style="margin: 0.5em;">
                                 <span>เพื่มที่อยู่</span>
                                 <mat-icon>add</mat-icon>

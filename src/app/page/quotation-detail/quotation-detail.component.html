@@ -14,19 +14,19 @@
             </app-ciz-card-tab>
             <div class="flex-center" *ngIf="!canclequest">
                 <div>
-                    <button [disabled]="lockallbtn" mat-raised-button color="primary" (click)="onclickSavecitizendata()"
+                    <button [disabled]="lockallbtn" mat-flat-button color="primary" (click)="onclickSavecitizendata()"
                         [disabled]="this.createorupdatecitizendataDisable">
                         บันทึกข้อมูล
                     </button>
                 </div>
                 <br>
-                <button *ngIf="this.visiblePhoneValid" mat-raised-button color="primary"
+                <button *ngIf="this.visiblePhoneValid" mat-flat-button color="primary"
                     (click)="onClickBtnVerifyPhone()" [disabled]="disablePhoneValidbtn">
                     <!-- [disabled]="!(this.cizcardtab.cizForm.controls.generalinfoForm.controls.phoneNumber.valid)"> -->
                     ยืนยันเบอร์โทรศัพท์ลูกค้า
                 </button>
                 <br>
-                <button mat-raised-button color="primary" matStepperNext [disabled]="!this.cizcardtab.cizForm.valid"
+                <button mat-flat-button color="primary" matStepperNext [disabled]="!this.cizcardtab.cizForm.valid"
                     type="button">
                     Next
                 </button>
@@ -44,29 +44,29 @@
                     <br>
                     <span>✅ : {{verifyeconsent_txt}}</span>
                     <!-- <span>✅ : ได้รับการยืนยันการเปิดเผยข้อมูลผ่านระบบอินเทอร์เน็ตแล้ว</span> -->
-                    <!-- <span *ngIf="quotationResult$.value.data[0].otp_consent_verify == 'Y'">✅ : ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ตเรียบร้อย</span> -->
-                    <!-- <span *ngIf="quotationResult$.value.data[0].otp_consent_verify == 'N'">✅ : ไม่ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ต</span> -->
+                    <!-- <span *ngIf="quotationResult$.value.data[0].otp_consent_verify === 'Y'">✅ : ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ตเรียบร้อย</span> -->
+                    <!-- <span *ngIf="quotationResult$.value.data[0].otp_consent_verify === 'N'">✅ : ไม่ได้รับการยืนยันการเปิดเผยข้อมูลเครดิตผ่านช่องทางอินเตอร์เน็ต</span> -->
                     <span></span>
                     <br>
                 </div>
                 <div class="flexbox" style="margin-top: 1em;">
                     <div class="flex-center">
-                        <button mat-raised-button color="primary" (click)="onclickCreateCreditBtn()"
+                        <button mat-flat-button color="primary" (click)="onclickCreateCreditBtn()"
                             [disabled]="this.createorupdatecreditbtnDisable">
                             บันทึกข้อมูล
                         </button>
                     </div>
                     <div class="flex-center">
                         <div *ngIf="productdetailtab.showeconsentimagebutton">
-                            <button mat-raised-button color="primary" (click)="onClickEconsentImageView()">
+                            <button mat-flat-button color="primary" (click)="onClickEconsentImageView()">
                                 ดูเอกสาร E-consent
                             </button>
                         </div>
                     </div>
                     <div class="flex-center">
                         <div *ngIf="!verifyeconsent" class="flex-center">
-                            <!-- <button mat-raised-button color="primary" (click)="onclickEconsentBtn()" [disabled]="!this.productdetailtab.productForm.controls.detailForm.valid"> -->
-                            <button mat-raised-button color="primary" (click)="onclickEconsentBtn()"
+                            <!-- <button mat-flat-button color="primary" (click)="onclickEconsentBtn()" [disabled]="!this.productdetailtab.productForm.controls.detailForm.valid"> -->
+                            <button mat-flat-button color="primary" (click)="onclickEconsentBtn()"
                                 [disabled]="this.econsentbtnDisable">
                                 ยืนยันการสมัคร
                             </button>
@@ -83,7 +83,7 @@
             <app-career-and-purpose [quotationReq]="quotationResult$"></app-career-and-purpose>
             <div class="flex-center">
                 <div class="flex-center" style="margin-top: 1em;">
-                    <button mat-raised-button color="primary" (click)="onclickCreateCareerandPurposeBtn()"
+                    <button mat-flat-button color="primary" (click)="onclickCreateCareerandPurposeBtn()"
                         [disabled]="this.createorupdatecareerandPurposebtnDisable || lockallbtn">
                         บันทึกข้อมูล
                     </button>

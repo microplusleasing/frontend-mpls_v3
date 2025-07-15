@@ -52,9 +52,14 @@
   align-items: center;
 }
 
-.header-left {
-  margin: 0.5;
+.ciz-tab-header-left {
+  // margin: 0.5;
+  margin-bottom: 1em;
+  margin-top: 1em;
   font-size: 16px;
+  font-size: large;
+  text-decoration: underline;
+  color: #3f51b5;
 }
 
 .flex-image-header {

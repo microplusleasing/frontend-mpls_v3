@@ -3,9 +3,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IDialog } from 'src/app/interface/i-dialog';
 
 @Component({
-  selector: 'app-main-dialog',
-  templateUrl: './main-dialog.component.html',
-  styleUrls: ['./main-dialog.component.scss']
+    selector: 'app-main-dialog',
+    templateUrl: './main-dialog.component.html',
+    styleUrls: ['./main-dialog.component.scss'],
+    standalone: false
 })
 export class MainDialogComponent implements OnInit {
 

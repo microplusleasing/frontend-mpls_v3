@@ -31,6 +31,8 @@ export interface IReqCreateCredit {
 
     bussiness_code: string;
     bussiness_name: string;
+    /* .. add field product_code on patch (solarcell) update (20/02/2025) .. */
+    product_code: string;
     model_year: string;
     cc: number | null;
     reg_no: string;

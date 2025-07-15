@@ -85,8 +85,8 @@ mat-form-field.mat-form-field {
 }
 
 .leftVerticalAlign {
-    left: 1em;    
-    position: absolute;  
+    left: 1em;
+    position: absolute;
     top: 50%;
     transform: translate(0px, -50%);
     margin: 0;
@@ -94,4 +94,21 @@ mat-form-field.mat-form-field {
 
 a:hover {
     text-decoration: underline;
+}
+
+.v-center {
+    display: flex;
+    align-items: center; /* Vertically centers the items */
+    gap: 8px; /* Adds space between the button and the text */
   }
+  
+  .v-center button {
+    display: flex; /* Ensures the button itself has proper alignment for its contents */
+    align-items: center;
+  }
+
+.link {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}

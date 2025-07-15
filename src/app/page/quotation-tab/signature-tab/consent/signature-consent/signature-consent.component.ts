@@ -12,9 +12,10 @@ import { BaseService } from 'src/app/service/base/base.service';
 import { LoadingService } from 'src/app/service/loading.service';
 
 @Component({
-  selector: 'app-signature-consent',
-  templateUrl: './signature-consent.component.html',
-  styleUrls: ['./signature-consent.component.scss']
+    selector: 'app-signature-consent',
+    templateUrl: './signature-consent.component.html',
+    styleUrls: ['./signature-consent.component.scss'],
+    standalone: false
 })
 export class SignatureConsentComponent extends BaseService implements OnInit {
 

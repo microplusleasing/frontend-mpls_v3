@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import * as moment from 'moment';
+import moment from 'moment';
 import { combineLatest, debounceTime, forkJoin, lastValueFrom, map, Observable, of, Subject } from 'rxjs';
 import { IReqFlagDipchip } from 'src/app/interface/i-req-flag-dipchip';
 import { IResHouseOwnerType } from 'src/app/interface/i-res-house-owner-type';
@@ -28,12 +28,14 @@ import { BasicSnackbarComponent } from 'src/app/widget/snackbar/basic-snackbar/b
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-ciz-card-tab',
-  templateUrl: './ciz-card-tab.component_v1.html',
-  styleUrls: ['./ciz-card-tab.component.scss']
+    selector: 'app-ciz-card-tab',
+    templateUrl: './ciz-card-tab.component_v1.html',
+    styleUrls: ['./ciz-card-tab.component.scss'],
+    standalone: false
 })
 export class CizCardTabComponent extends BaseService implements OnInit, AfterViewInit {
 
+  version: string = `${environment.version}`
   @Input() quotationReq = {} as Observable<IResQuotationDetail>;
   @Output() dipchipRes = new EventEmitter<IReqFlagDipchip>();
   @Output() facevalid = new EventEmitter();
@@ -308,14 +310,14 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     // === manual ===
     this.cizForm.controls.maincitizenForm.controls.provinceCode.valueChanges.subscribe((value) => {
       if (!this.isdipchip) {
-        const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_code })
+        const provSelect = this.masterProvince.data.find((res) => { return value === res.prov_code })
         this.cizForm.controls.maincitizenForm.controls.provinceName.setValue(provSelect?.prov_name ? provSelect?.prov_name : '')
       }
     })
 
     this.cizForm.controls.maincitizenForm.controls.titleCode.valueChanges.subscribe((value) => {
       if (!this.isdipchip) {
-        const provSelect = this.masterTitle.data.find((res) => { return value == res.title_id })
+        const provSelect = this.masterTitle.data.find((res) => { return value === res.title_id })
         this.cizForm.controls.maincitizenForm.controls.titleName.setValue(provSelect?.title_name ? provSelect?.title_name : '')
       }
     })
@@ -324,7 +326,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     // === dipchip ===
     this.cizForm.controls.maincitizenForm.controls.provinceName.valueChanges.subscribe((value) => {
       if (this.isdipchip) {
-        const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
+        const provSelect = this.masterProvince.data.find((res) => { return value === res.prov_name })
         this.cizForm.controls.maincitizenForm.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
       }
 
@@ -332,28 +334,28 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
 
     this.cizForm.controls.livingAddress.controls.provinceName.valueChanges.subscribe((value) => {
       if (this.isdipchip) {
-        const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
+        const provSelect = this.masterProvince.data.find((res) => { return value === res.prov_name })
         this.cizForm.controls.livingAddress.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect.prov_code : '')
       }
     })
 
     this.cizForm.controls.contactAddress.controls.provinceName.valueChanges.subscribe((value) => {
       if (this.isdipchip) {
-        const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
+        const provSelect = this.masterProvince.data.find((res) => { return value === res.prov_name })
         this.cizForm.controls.contactAddress.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
       }
     })
 
     this.cizForm.controls.houseRegisAddress.controls.provinceName.valueChanges.subscribe((value) => {
       if (this.isdipchip) {
-        const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
+        const provSelect = this.masterProvince.data.find((res) => { return value === res.prov_name })
         this.cizForm.controls.houseRegisAddress.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
       }
     })
 
     this.cizForm.controls.workAddress.controls.provinceName.valueChanges.subscribe((value) => {
       if (this.isdipchip) {
-        const provSelect = this.masterProvince.data.find((res) => { return value == res.prov_name })
+        const provSelect = this.masterProvince.data.find((res) => { return value === res.prov_name })
         this.cizForm.controls.workAddress.controls.provinceCode.setValue(provSelect?.prov_code ? provSelect?.prov_code : '')
       }
     })
@@ -408,7 +410,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                   if (value.data && value.data[0].ciz_age && value.data[0].ciz_age < 20) {
                     // code to execute if value.data[0].ciz_age is less than 20 (no valid)
                     this.quotationService.MPLS_cancle_quotation(value.data[0].quo_key_app_id).subscribe((response) => {
-                      if (response.status == 200) {
+                      if (response.status === 200) {
 
                         // === Warning dialog and navigate dashboard ===
                         this.dialog.open(MainDialogComponent, {
@@ -588,12 +590,12 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                     this.quotationid = quodata.quo_key_app_id
 
                     // *** ล๊อค field เบอร์โทรศัพท์ที่ได้ทำการ verify แล้ว (OTP_PHONE_VERIFY = 'Y') ***
-                    if (quodata.otp_phone_verify == 'Y') {
+                    if (quodata.otp_phone_verify === 'Y') {
                       this.cizForm.controls.generalinfoForm.controls.phoneNumber.disable()
                     }
 
                     // *** check and trigger field phone number on form field ***
-                    if (quodata.phone_number == '') {
+                    if (quodata.phone_number === '') {
                       this.cizForm.controls.generalinfoForm.controls.phoneNumber.markAllAsTouched()
                     }
 
@@ -623,7 +625,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
                 } else {
                   // this.loadingService.hideLoader();
 
-                  if (this.userSession.RADMIN == 'Y') {
+                  if (this.userSession.RADMIN === 'Y') {
                     this.showdipchipbtn = false;
                   } else {
                     this.showdipchipbtn = true;
@@ -646,7 +648,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     } else {
       // this.loadingService.hideLoader()
 
-      if (this.userSession.RADMIN == 'Y') {
+      if (this.userSession.RADMIN === 'Y') {
         this.showdipchipbtn = false;
       } else {
         this.showdipchipbtn = true;
@@ -704,13 +706,13 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
               !quodata.ciz_postal_code ? this.cizForm.controls.maincitizenForm.controls.postalCode.enable() : {};
             }
 
-            if (quodata.ciz_phone_valid_status == 'Y') {
+            if (quodata.ciz_phone_valid_status === 'Y') {
               this.cizForm.controls.generalinfoForm.controls.phoneNumber.disable()
             }
           }
         })
 
-        if (this.quotationdatatemp.status == 200) {
+        if (this.quotationdatatemp.status === 200) {
           this.setquotationdata();
         }
 
@@ -850,7 +852,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     this.cizForm.controls.generalinfoForm.controls.phoneNumber.markAllAsTouched()
 
     // === check lock form when quo_status = 1 (lock all field) 
-    if (quoitem.quo_status == 1) {
+    if (quoitem.quo_status === 1) {
       this.cizForm.disable()
       //
       this.lockallbtn = true
@@ -873,7 +875,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       }).subscribe({
         next: async (result) => {
           this.loadingService.hideLoader()
-          if (result.number == 200) {
+          if (result.number === 200) {
 
             const dipchipdata = result.data[0]
 
@@ -924,14 +926,14 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
             this.cizForm.markAsDirty()
             this.dipchipRes.emit({ status: true, uuid: dipchipdata.UUID })
 
-          } else if (result.number == 500) {
+          } else if (result.number === 500) {
             this.isdipchip = false
             // === handle token expire === 
-            if (result.message == 'Token is Expire') {
+            if (result.message === 'Token is Expire') {
               this.dipchipService.addtimetokendipchip().subscribe({
                 next: (result) => {
                   countround++
-                  if (countround == 1) {
+                  if (countround === 1) {
                     this.onClickDipchipBtn();
                   }
 
@@ -942,7 +944,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
               // this.snackbarfail(`Token is Expire`)
               // this.showdipchipbtn = false
               // this.cizForm.enable()
-            } else if (result.message == 'Not found!') {
+            } else if (result.message === 'Not found!') {
 
               this.snackbarfail(`ไม่พบข้อมูล DIPCHIP : ${result.message}`)
               this.showdipchipbtn = false
@@ -976,7 +978,7 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   }
 
   sameCitizenAddress(type: string) {
-    if (type == 'living') {
+    if (type === 'living') {
 
       this.cizForm.controls.livingAddress.controls.address.setValue(this.cizForm.controls.maincitizenForm.controls.address.value)
       this.cizForm.controls.livingAddress.controls.subDistrict.setValue(this.cizForm.controls.maincitizenForm.controls.subDistrict.value)
@@ -984,19 +986,19 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
       this.cizForm.controls.livingAddress.controls.provinceCode.setValue(this.cizForm.controls.maincitizenForm.controls.provinceCode.value)
       this.cizForm.controls.livingAddress.controls.postalCode.setValue(this.cizForm.controls.maincitizenForm.controls.postalCode.value)
 
-    } else if (type == 'contact') {
+    } else if (type === 'contact') {
       this.cizForm.controls.contactAddress.controls.address.setValue(this.cizForm.controls.maincitizenForm.controls.address.value)
       this.cizForm.controls.contactAddress.controls.subDistrict.setValue(this.cizForm.controls.maincitizenForm.controls.subDistrict.value)
       this.cizForm.controls.contactAddress.controls.district.setValue(this.cizForm.controls.maincitizenForm.controls.district.value)
       this.cizForm.controls.contactAddress.controls.provinceCode.setValue(this.cizForm.controls.maincitizenForm.controls.provinceCode.value)
       this.cizForm.controls.contactAddress.controls.postalCode.setValue(this.cizForm.controls.maincitizenForm.controls.postalCode.value)
-    } else if (type == 'work') {
+    } else if (type === 'work') {
       this.cizForm.controls.workAddress.controls.address.setValue(this.cizForm.controls.maincitizenForm.controls.address.value)
       this.cizForm.controls.workAddress.controls.subDistrict.setValue(this.cizForm.controls.maincitizenForm.controls.subDistrict.value)
       this.cizForm.controls.workAddress.controls.district.setValue(this.cizForm.controls.maincitizenForm.controls.district.value)
       this.cizForm.controls.workAddress.controls.provinceCode.setValue(this.cizForm.controls.maincitizenForm.controls.provinceCode.value)
       this.cizForm.controls.workAddress.controls.postalCode.setValue(this.cizForm.controls.maincitizenForm.controls.postalCode.value)
-    } else if (type == 'houseregis') {
+    } else if (type === 'houseregis') {
       this.cizForm.controls.houseRegisAddress.controls.address.setValue(this.cizForm.controls.maincitizenForm.controls.address.value)
       this.cizForm.controls.houseRegisAddress.controls.subDistrict.setValue(this.cizForm.controls.maincitizenForm.controls.subDistrict.value)
       this.cizForm.controls.houseRegisAddress.controls.district.setValue(this.cizForm.controls.maincitizenForm.controls.district.value)
@@ -1006,19 +1008,19 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
     this.cizForm.markAsDirty();
   }
   samelivinAddress(type: string) {
-    if (type == 'contact') {
+    if (type === 'contact') {
       this.cizForm.controls.contactAddress.controls.address.setValue(this.cizForm.controls.livingAddress.controls.address.value)
       this.cizForm.controls.contactAddress.controls.subDistrict.setValue(this.cizForm.controls.livingAddress.controls.subDistrict.value)
       this.cizForm.controls.contactAddress.controls.district.setValue(this.cizForm.controls.livingAddress.controls.district.value)
       this.cizForm.controls.contactAddress.controls.provinceCode.setValue(this.cizForm.controls.livingAddress.controls.provinceCode.value)
       this.cizForm.controls.contactAddress.controls.postalCode.setValue(this.cizForm.controls.livingAddress.controls.postalCode.value)
-    } else if (type == 'work') {
+    } else if (type === 'work') {
       this.cizForm.controls.workAddress.controls.address.setValue(this.cizForm.controls.livingAddress.controls.address.value)
       this.cizForm.controls.workAddress.controls.subDistrict.setValue(this.cizForm.controls.livingAddress.controls.subDistrict.value)
       this.cizForm.controls.workAddress.controls.district.setValue(this.cizForm.controls.livingAddress.controls.district.value)
       this.cizForm.controls.workAddress.controls.provinceCode.setValue(this.cizForm.controls.livingAddress.controls.provinceCode.value)
       this.cizForm.controls.workAddress.controls.postalCode.setValue(this.cizForm.controls.livingAddress.controls.postalCode.value)
-    } else if (type == 'houseregis') {
+    } else if (type === 'houseregis') {
       this.cizForm.controls.houseRegisAddress.controls.address.setValue(this.cizForm.controls.livingAddress.controls.address.value)
       this.cizForm.controls.houseRegisAddress.controls.subDistrict.setValue(this.cizForm.controls.livingAddress.controls.subDistrict.value)
       this.cizForm.controls.houseRegisAddress.controls.district.setValue(this.cizForm.controls.livingAddress.controls.district.value)
@@ -1029,14 +1031,14 @@ export class CizCardTabComponent extends BaseService implements OnInit, AfterVie
   }
 
   samecontactAddress(type: string) {
-    if (type == 'work') {
+    if (type === 'work') {
       this.cizForm.controls.workAddress.controls.address.setValue(this.cizForm.controls.contactAddress.controls.address.value)
       this.cizForm.controls.workAddress.controls.subDistrict.setValue(this.cizForm.controls.contactAddress.controls.subDistrict.value)
       this.cizForm.controls.workAddress.controls.district.setValue(this.cizForm.controls.contactAddress.controls.district.value)
       this.cizForm.controls.workAddress.controls.provinceCode.setValue(this.cizForm.controls.contactAddress.controls.provinceCode.value)
       this.cizForm.controls.workAddress.controls.postalCode.setValue(this.cizForm.controls.contactAddress.controls.postalCode.value)
     }
-    if (type == 'houseregis') {
+    if (type === 'houseregis') {
       this.cizForm.controls.houseRegisAddress.controls.address.setValue(this.cizForm.controls.contactAddress.controls.address.value)
       this.cizForm.controls.houseRegisAddress.controls.subDistrict.setValue(this.cizForm.controls.contactAddress.controls.subDistrict.value)
       this.cizForm.controls.houseRegisAddress.controls.district.setValue(this.cizForm.controls.contactAddress.controls.district.value)

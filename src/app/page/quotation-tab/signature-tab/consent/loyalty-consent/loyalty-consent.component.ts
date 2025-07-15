@@ -5,9 +5,10 @@ import { Observable, of, Subject } from 'rxjs';
 import { IResQuotationDetail } from 'src/app/interface/i-res-quotation-detail';
 
 @Component({
-  selector: 'app-loyalty-consent',
-  templateUrl: './loyalty-consent.component.html',
-  styleUrls: ['./loyalty-consent.component.scss']
+    selector: 'app-loyalty-consent',
+    templateUrl: './loyalty-consent.component.html',
+    styleUrls: ['./loyalty-consent.component.scss'],
+    standalone: false
 })
 export class LoyaltyConsentComponent implements OnInit {
 

@@ -29,12 +29,19 @@
         </app-e-paper-consent>
     </mat-tab>
 
+    <!-- add-on tab (salesheet) 01/01/2025 -->
+     <mat-tab label="เอกสาร Salesheet" [disabled]="salesheetTabDisable">
+        <app-salesheet [quotationReq]="quotationReq" (someEvent)="onNextStep()"
+        (salesheetValid)="recieve_salesheetvalid($event)">
+        </app-salesheet>
+     </mat-tab>
+
     <mat-tab label="ลงลายมือชื่อใบสมัคร" [disabled]="signatureTabDisable">
     <!-- <mat-tab label="ลงลายมือชื่อใบสมัคร"> -->
         <app-signature-consent [quotationReq]="quotationReq"></app-signature-consent>
         <div class="center-position">
-            <!-- <button mat-raised-button color="primary" [disabled]="!signatureForm.valid">สร้างใบคำขอ</button> -->
-            <button mat-raised-button color="primary" [disabled]="!this.signaturetab.signatureForm.valid" (click)="createConsentBtn()">สร้างใบคำขอ</button>
+            <!-- <button mat-flat-button color="primary" [disabled]="!signatureForm.valid">สร้างใบคำขอ</button> -->
+            <button mat-flat-button color="primary" [disabled]="!this.signaturetab.signatureForm.valid" (click)="createConsentBtn()">สร้างใบคำขอ</button>
         </div>
     </mat-tab>
 </mat-tab-group>

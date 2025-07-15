@@ -31,9 +31,10 @@ import { LoadingService } from 'src/app/service/loading.service';
 import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-collector-detail',
-  templateUrl: './collector-detail.component.html',
-  styleUrls: ['./collector-detail.component.scss']
+    selector: 'app-collector-detail',
+    templateUrl: './collector-detail.component.html',
+    styleUrls: ['./collector-detail.component.scss'],
+    standalone: false
 })
 export class CollectorDetailComponent extends BaseService implements OnInit {
 

@@ -2,7 +2,7 @@ import { IReqFacevalidV2 } from '../interface/i-req-facevalid-v2'; // v1 Ifaceva
 import { IResFacevalidV2 } from '../interface/i-res-facevalid-v2'; // v1 IfacevalidApi
 // import { IfaceApi } from './../../interface/iface-api'; // v1 IfaceApi
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 

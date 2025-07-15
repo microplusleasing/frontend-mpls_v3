@@ -10,13 +10,13 @@
             </div>
             <div class="card" style="width: 80%;">
                 <div style="text-align: center;">
-                    <span [ngStyle]="{'color':this.uploadedImages.length == 2 ? 'green' : 'red' }">
+                    <span [ngStyle]="{'color':this.uploadedImages.length === 2 ? 'green' : 'red' }">
                         {{this.txtsecondhandcarheaderstatus}}
                     </span>
                 </div>
 
                 <!-- <div *ngIf="this.uploadedImages.length < 2"> -->
-                    <button mat-raised-button color="primary" (click)="fileInput.click();" style="margin-left: 1em;;">
+                    <button mat-flat-button color="primary" (click)="fileInput.click();" style="margin-left: 1em;;">
                         <mat-icon>photo_library</mat-icon>
                         แนบไฟล์ภาพ
                     </button>
@@ -40,7 +40,7 @@
             </mat-expansion-panel>
         </div>
         <div style="margin-top: 1em; text-align: center;">
-            <button mat-raised-button color="primary" [disabled]="this.uploadedImages.length < 2"
+            <button mat-flat-button color="primary" [disabled]="this.uploadedImages.length < 2"
                 (click)="savesecondhandcarimagelist()">
                 บันทึกภาพ
             </button>

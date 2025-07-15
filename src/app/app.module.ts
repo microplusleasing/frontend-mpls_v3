@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, registerLocaleData } from '@angular/common';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormGroupDirective, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './module/material/material.module';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { QuotationViewComponent } from './page/quotation-view/quotation-view.component';
 import { QuotationDetailComponent } from './page/quotation-detail/quotation-detail.component';
@@ -60,10 +60,17 @@ import { MrtaProductNewComponent } from './page/view/mrta-product-new/mrta-produ
 import { ExamineSendCarImageComponent } from './page/menu/examine-send-car-image/examine-send-car-image.component';
 import { OracleBackwardComponent } from './widget/oracle-backward/oracle-backward.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { FaceValidEditComponent } from './widget/dialog/face-valid-edit/face-valid-edit.component';
 import { PermissionUploadFacecompareDialogComponent } from './widget/dialog/permission-upload-facecompare-dialog/permission-upload-facecompare-dialog.component';
 import { BasicConfirmDialogComponent } from './widget/dialog/basic-confirm-dialog/basic-confirm-dialog.component';
+
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import th from '@angular/common/locales/th';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { SalesheetComponent } from './page/quotation-tab/signature-tab/consent/salesheet/salesheet.component';
+
+
+registerLocaleData(th);
 
 const MY_DATE_FORMATS = {
   parse: {
@@ -132,7 +139,9 @@ const MY_DATE_FORMATS = {
     FaceValidEditComponent,
     PermissionUploadFacecompareDialogComponent,
     BasicConfirmDialogComponent,
+    SalesheetComponent,
   ],
+  bootstrap: [AppComponent], 
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -141,7 +150,6 @@ const MY_DATE_FORMATS = {
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    HttpClientModule,
     NgxSpinnerModule,
     NgOtpInputModule,
     MatDatepickerModule
@@ -152,11 +160,12 @@ const MY_DATE_FORMATS = {
     DatePipe,
     FormGroupDirective,
     {
-      provide: HTTP_INTERCEPTORS,
-      useClass: JwtInterceptor,
-      multi: true
-    }
-  ],
-  bootstrap: [AppComponent, ExamineSendCarImageComponent]
-})
+        provide: HTTP_INTERCEPTORS,
+        useClass: JwtInterceptor,
+        multi: true
+    },
+    provideHttpClient(withInterceptorsFromDi()),
+    provideAnimationsAsync(),
+    provideHttpClient()
+] })
 export class AppModule { }

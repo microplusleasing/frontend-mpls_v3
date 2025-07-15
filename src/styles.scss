@@ -1,4 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+// Customize the entire app. Change :root to your selector if you want to scope the styles.
+:root {
+  @include mat.toolbar-overrides((container-background-color: #005cbb,
+      container-text-color: white,
+    ));
+}
+
 
 @font-face {
   font-family: Prompt;
@@ -25,13 +34,23 @@ h1,
 h2,
 h3,
 h4,
-div {
+s div,
+div form,
+div form .ng-container,
+div form .ng-container .mat-grid-list .mat-grid-tile,
+div form .ng-container .mat-grid-list .mat-grid-tile .mat-form-field,
+div form .ng-container .mat-grid-list .mat-grid-tile .mat-form-field .mat-label {
+  font-family: Prompt;
+}
+
+* {
   font-family: Prompt;
 }
 
 // * angular material *
 .mat-card,
 .mat-raised-button,
+.mat-flat-button,
 .mat-select,
 .mat-option-text,
 .mat-menu-item,
@@ -44,12 +63,29 @@ div {
 .mat-card h2,
 .mat-dialog-title h1,
 .mat-dialog-title h2,
-.mat-h1, .mat-typography h1,
-.mat-h2, .mat-title, .mat-typography h2,
-.mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button,
+.mat-h1,
+.mat-h2,
+.mat-title,
+.mat-typography h2,
+.mat-button,
+.mat-icon-button,
+.mat-stroked-button,
+.mat-flat-button,
 .mat-snack-bar-container,
-.mat-h3, .mat-subheading-2, .mat-typography h3,
-.mat-h4, .mat-subheading-1, .mat-typography h4 {
+.mat-h3,
+.mat-subheading-2,
+.mat-typography h3,
+.mat-h4,
+.mat-subheading-1,
+.mat-typography h4,
+.mat-form-girld,
+.mat-h1,
+.mat-headline-5,
+.mat-typography .mat-h1,
+.mat-typography .mat-headline-5,
+.mat-typography h1,
+.mat-mdc-dialog-container .mat-mdc-dialog-title,
+.mat-mdc-dialog-container .mat-mdc-dialog-title+.mat-mdc-dialog-content {
   font-family: Prompt;
 }
 
@@ -80,4 +116,26 @@ body {
 
 .sp1em {
   margin: 1em;
+}
+
+span .mat-mdc-option .mdc-list-item__primary-text,
+.mat-mdc-option .mdc-list-item__primary-text {
+  font-family: Prompt !important;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+
+// use for handle dialog in angular material version 19 
+
+.cdk-overlay-pane.mat-mdc-dialog-panel {
+  max-width: 100% !important;
 }

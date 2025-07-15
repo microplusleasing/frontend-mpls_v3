@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'thaidate'
+    name: 'thaidate',
+    standalone: false
 })
 export class ThaidateformatDirective implements PipeTransform {
   transform(date: Date, format: string): string {
@@ -56,17 +57,17 @@ export class ThaidateformatDirective implements PipeTransform {
     let returnDate: string;
 
     returnDate = outputDateMedium.join(" ");
-    if (format == 'full') {
+    if (format === 'full') {
       returnDate = outputDateFull.join(" ");
     }
-    if (format == 'medium') {
+    if (format === 'medium') {
       returnDate = outputDateMedium.join(" ");
     }
-    if (format == 'short') {
+    if (format === 'short') {
       returnDate = outputDateShort.join(" ");
     }
 
-    if (format == 'main') {
+    if (format === 'main') {
       returnDate = outputmainformat.join(" ");
     }
     return returnDate;

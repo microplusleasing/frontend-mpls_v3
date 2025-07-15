@@ -15,6 +15,7 @@ export interface IResMasterModelData {
     battery_type: string
     battery_capacity: string
     fuel_type: string
+    pro_code: string
 }
 
 export interface IResMasterModel {

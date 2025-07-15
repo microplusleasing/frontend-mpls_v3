@@ -100,6 +100,8 @@ export interface IResQuotationDetailData {
     cd_engine_no_running: string;
     cd_chassis_no_running: string;
     cd_moto_year: number;
+    /* ... add field product_code (solarcell) update .. (20/02/2025) */
+    cd_product_code: string;
     cr_app_key_id: string;
     cr_main_career_name?: string;
     cr_main_career_code?: string;
@@ -146,6 +148,7 @@ export interface IResQuotationDetailData {
     is_check_l_insur_company: number,
     is_check_l_insur_refund: number,
     is_check_l_insur_cancle_d: number,
+    is_salesheet_accept_value: number,
     pp_app_key_id: string;
     pp_purpose_of_buy?: string;
     pp_purpose_of_buy_name?: string;

@@ -443,7 +443,7 @@ export class QuotationService {
   setstatusdopa(quotationid: string) {
 
     // === check master dopa valid status have data === 
-    if (this.dopavalidstatus.length == 0) {
+    if (this.dopavalidstatus.length === 0) {
       this.MPLS_get_dopa_valid_status().subscribe((res) => {
         this.dopavalidstatus = res.data.status_code
       })
@@ -452,13 +452,13 @@ export class QuotationService {
     this.getdopastatusbyid(quotationid).subscribe({
       next: (result) => {
 
-        if (result.status == 200) {
+        if (result.status === 200) {
           const resultdata = result.data[0]
 
           // if (resultdata.status_code !== '0') {
           if (!(this.dopavalidstatus.includes(resultdata.status_code))) {
 
-            if (resultdata.status_desc == '' || resultdata.status_desc == null || resultdata.status_desc == '500') {
+            if (resultdata.status_desc === '' || resultdata.status_desc == null || resultdata.status_desc === '500') {
               this.dopastatus = {
                 message: `❌ ไม่สามารถเชื่อมต่อกับระบบฐานข้อมูลกรมการปกครองได้`,
                 messageheader: `ไม่สามารถเชื่อมต่อกับระบบฐานข้อมูลกรมการปกครองได้`,
@@ -501,7 +501,7 @@ export class QuotationService {
   setstatusdopa_unlock(quotationid: string) {
 
     // === check master dopa valid status have data === 
-    if (this.dopavalidstatus.length == 0) {
+    if (this.dopavalidstatus.length === 0) {
       this.MPLS_get_dopa_valid_status_unlock().subscribe((res) => {
         this.dopavalidstatus = res.data.status_code
       })
@@ -510,13 +510,13 @@ export class QuotationService {
     this.getdopastatusbyid(quotationid).subscribe({
       next: (result) => {
 
-        if (result.status == 200) {
+        if (result.status === 200) {
           const resultdata = result.data[0]
 
           // if (resultdata.status_code !== '0') {
           if (!(this.dopavalidstatus.includes(resultdata.status_code))) {
 
-            if (resultdata.status_desc == '' || resultdata.status_desc == null || resultdata.status_desc == '500') {
+            if (resultdata.status_desc === '' || resultdata.status_desc === null || resultdata.status_desc === '500') {
               this.dopastatus = {
                 message: `❌ ไม่สามารถเชื่อมต่อกับระบบฐานข้อมูลกรมการปกครองได้`,
                 messageheader: `ไม่สามารถเชื่อมต่อกับระบบฐานข้อมูลกรมการปกครองได้`,

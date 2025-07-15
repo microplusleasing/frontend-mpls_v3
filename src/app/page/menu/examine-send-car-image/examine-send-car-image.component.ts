@@ -27,9 +27,10 @@ import * as XLSX from 'xlsx';
 
 
 @Component({
-  selector: 'app-examine-send-car-image',
-  templateUrl: './examine-send-car-image.component.html',
-  styleUrls: ['./examine-send-car-image.component.scss']
+    selector: 'app-examine-send-car-image',
+    templateUrl: './examine-send-car-image.component.html',
+    styleUrls: ['./examine-send-car-image.component.scss'],
+    standalone: false
 })
 export class ExamineSendCarImageComponent extends BaseService implements OnInit {
 

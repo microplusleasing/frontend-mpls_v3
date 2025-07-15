@@ -14,6 +14,7 @@ export interface IResGetMasterBussinessData {
     cs_no: string
     credit_process: string
     reprint: string
+    product_code: string
     gfms_product_code: any
     product_name: string
 }
